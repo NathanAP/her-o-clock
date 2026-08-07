@@ -57,3 +57,16 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 4 - Faça suas alterações.
 5 - Caso necessário, garanta que tudo esteja funcionando corretamente.
 6 - Retorne um resumo do que foi feito.
+
+# Versionamento
+
+O versionamento deve ocorrer sempre seguindo estas regras. Para segui-las, considere a seguinte versão: `11.22.33.44`.
+
+- A primeira casa (`11`) representa a versão `major`.
+    - Ao subir essa versão, todas abaixo dela devem ser zeradas. Ou seja, se fossemos para a versão `12`, a versão final seria `12.0.0.0`.
+- A segunda casa (`22`) representa a versão `minor`.
+    - Ao subir essa versão, todas abaixo dela devem ser zeradas enquanto as acima permanecem a mesma. Ou seja, se fossemos para a versão `23`, a versão final seria `11.23.0.0`.
+- A terceira casa (`33`) representa a versão `bugfix`.
+    - Ao subir essa versão, todas abaixo dela devem ser zeradas enquanto as acima permanecem a mesma. Ou seja, se fossemos para a versão `34`, a versão final seria `11.22.34.0`.
+- A quarta casa (`44`) representa a versão `docs`.
+    - Ao subir essa versão, nenhuma das outras devem ser alteradas. Ou seja, se fossemos para a versão `45`, a versão final seria `11.22.33.45`.
