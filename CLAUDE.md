@@ -14,7 +14,7 @@ Her-o-clock é um jogo de RPG idle minúsculo que leva você ao incrível mundo 
 - Pequenas sessões ativas, grandes sessões enquanto ocioso.
 - Árvore de habilidades extensa.
 - Sistema de classes e subclasses.
-- Auto scroller.
+- Auto-scroller.
 - Farm de itens
 - Universo incrível.
 - Personagens cativantes.
@@ -57,6 +57,10 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 4 - Faça suas alterações.
 5 - Caso necessário, garanta que tudo esteja funcionando corretamente.
 6 - Retorne um resumo do que foi feito.
+
+# Bugs
+
+- Erros de gramática na documentação ou no jogo são considerados bugs.
 
 # Versionamento
 

@@ -6,7 +6,7 @@ Explicar como a jogabilidade de Her-o-clock funciona.
 
 ## Ideia principal
 
-- Her-o-clock é um jogo auto scroller minúsculo, isso quer dizer que o tamanho da tela é intencionalmente pequeno para poder caber em um cantinho da tela sem atrapalhar outras tarefas do usuário.
+- Her-o-clock é um jogo auto-scroller minúsculo, isso quer dizer que o tamanho da tela é intencionalmente pequeno para poder caber em um cantinho da tela sem atrapalhar outras tarefas do usuário.
 - O jogador escolhe seus heróis e escolhe uma fase para ser iniciada.
 - A partir de agora é tudo automático:
     - Os heróis andam de baixo para cima infinitamente até encontrar lacaios inimigos.
@@ -37,8 +37,9 @@ Este é o fluxo principal do jogo.
 
 ## Heróis
 
+- Jogadores podem escolher até quatro heróis por vez.
 - Só podem agir enquanto estiverem vivos.
-- Possuem suas próprias características, história, estatísticas e habilidades.
+- Possuem suas próprias características, história, atributos e habilidades.
 
 ### Ações automáticas
 
@@ -52,7 +53,7 @@ Este é o fluxo principal do jogo.
 ## Vilões
 
 - Estão sempre presentes no fim das fases.
-- Possuem suas próprias características, história, estatísticas e habilidades.
+- Possuem suas próprias características, história, atributos e habilidades.
 
 ### Ações automáticas
 
@@ -66,7 +67,7 @@ Este é o fluxo principal do jogo.
 ## Lacaios
 
 - Estão espalhados em grupos e em pontos estratégicos nas fases.
-- Possuem suas próprias características, história, estatísticas e habilidades.
+- Possuem suas próprias características, história, atributos e habilidades.
 
 ### Ações automáticas
 
@@ -75,3 +76,15 @@ Este é o fluxo principal do jogo.
 - Enquanto em batalha:
     - Atacam os heróis com seu ataque básico.
     - Quando disponíveis usam suas habilidades automaticamente.
+
+## Combate
+
+- O combate sempre ocorre automaticamente conforme as atributos dos personagens.
+
+## Campo de batalha
+
+- Os personagens se dispõe no campo de batalha conforme a ordem definida pelo jogador.
+- Para os heróis o campo de batalha dispõe de: 3 posições na frente e 3 posições atrás.
+    - Geralmente os personagens com mais defesa e vida ficam na frente enquanto personagens mais frágeis ficam atrás, mas isso varia de acordo com cada estratégia (no caso dos heróis) ou fase (no caso dos lacaios).
+- Para os lacaios o campo de batalha dispõe de: 3 posições na frente, 3 posições no meio e 3 posições atrás.
+- Vilões sempre estão no fundo da fase em uma área especial para eles e não ocupam nenhum dos 9 espaços disponíveis para lacaios.
