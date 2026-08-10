@@ -42,11 +42,11 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 ### Atributo principal: Especialidade (SPE)
 
-- INT aumenta ataques elementais e redução de recarga do personagem.
-    - Para cada 1 ponto de INT, o personagem ganha 1 ponto de dano elemental.
-    - Para cada 1 ponto de INT, o personagem ganha 1% de redução de recarga enquanto estiver utilizando equipamentos leves.
-    - Para cada 1 ponto de INT, o personagem ganha 0.2% de redução de recarga enquanto estiver utilizando equipamentos pesados.
-- Personagens com mais INT são capazes de utilizar equipamentos e armaduras especiais.
+- SPE aumenta ataques elementais e redução de recarga do personagem.
+    - Para cada 1 ponto de SPE, o personagem ganha 1 ponto de dano elemental.
+    - Para cada 1 ponto de SPE, o personagem ganha 1% de redução de recarga enquanto estiver utilizando equipamentos leves.
+    - Para cada 1 ponto de SPE, o personagem ganha 0.2% de redução de recarga enquanto estiver utilizando equipamentos pesados.
+- Personagens com mais SPE são capazes de utilizar equipamentos e armaduras especiais.
 
 ## Atributos secundários
 
