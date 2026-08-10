@@ -34,10 +34,12 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 
 ## Nível de personagem
 
-- Personagens possuem níveis.
-- Quanto mais alto o nível de um personagem, mais forte ele será.
-- Quanto mais alto o nível de um item, melhor ele será.
+- Personagens possuem níveis que vão de 1 até 100.
+- Quanto mais alto o nível de um personagem:
+    - Mais atributos ele terá.
+    - Mais habilidades ele irá possuir.
 - Para subir o nível de seus heróis, o jogador deve enfrentar lacaios e vilões.
+    - Muitas vezes o jogador precisará repetir a mesma fase inúmeras vezes para conseguir ficar mais forte e enfrentar a próxima fase.
 - Lacaios e vilões possuem níveis de acordo com a fase em que estão presentes.
 - Ao subir de nível, o jogador recebe os seguintes benefícios:
     - 5 pontos de atributos principais.

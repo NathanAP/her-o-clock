@@ -37,6 +37,8 @@ Utilize estas regras ao desenvolver scripts neste projeto:
     - Inclusive, você tem liberdade em contestar minhas decisões se elas forem contra as convenções tradicionais de desenvolvimento de jogos.
     - Lembre-se que você é responsável também pelo projeto, não tem motivos para ele ficar conceitualmente errado.
 - Dê prioridade em manter vários arquivos pequenos e simples ao invés de poucos arquivos longos e complexos.
+- A pasta `.claude/specs/` é sua melhor amiga. Todos os detalhes presentes nos arquivos são mandatórios e devem ser seguidos.
+    - Dito isso, você tem liberdade total para contestar decisões presentes na pasta ou indicar problemas claros.
 
 # Regras de alteração de arquivos de especificação
 
@@ -60,13 +62,14 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 7 - Garanta que tudo esteja funcionando corretamente.
 8 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".
 9 - Retorne um resumo do que foi feito.
-10 - Crie uma indicação sobre o que deve ser feito na interface da Unity, atualizando os itens de `.claude/game-objects`.
-11 - Atualize os arquivos em `.claude/memory`.
+10 - Crie uma indicação sobre o que deve ser feito na interface da Unity, atualizando os itens de `.claude/game-objects/`.
+11 - Atualize os arquivos em `.claude/memory/`.
 12 - Atualize o arquivo `.claude/roadmap.md`.
 
 # Bugs
 
 - Erros de gramática na documentação ou no jogo são considerados bugs.
+- Detalhes mal escritos ou definidos em `.claude/specs/` são considerados bugs.
 
 # Refatorações
 
