@@ -4,6 +4,16 @@
 
 Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
+## Health Point (HP)
+
+- HP indica a vida atual e máxima do personagem.
+- A vida atual nunca pode ultrapassar a vida máxima.
+- A vida mínima é sempre 0.
+    - Dito isso, um personagem pode acabar recebendo dano acima da vida atual, mas o valor sempre se resultará em 0.
+- Enquanto a vida atual estiver acima de 0, o personagem é considerado vivo.
+- Enquanto a vida atual estiver em 0, o personagem é considerado morto.
+- É possível burlar a morte através de habilidades ou buffs.
+
 ## Atributos principais
 
 - Os atributos principais estão presentes em todos os personagens.
@@ -13,17 +23,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
     - Os pontos de atributos ganhos nos níveis podem ser redefinidos a qualquer momento.
 - Os jogadores podem aumentar as atributos principais através de outros meios (itens, árvore de habilidades, árvore de progresso).
 
-### Atributo principal: Health Point (HP)
-
-- HP indica a vida máxima do personagem.
-    - Para cada 1 ponto de HP, o personagem ganha 10 pontos de vida máxima.
-- A vida atual nunca pode ultrapassar a vida máxima.
-- A vida mínima é sempre 0.
-- Enquanto a vida atual estiver acima de 0, o personagem é considerado vivo.
-- Enquanto a vida atual estiver em 0, o personagem é considerado morto.
-- É possível burlar a morte através de habilidades ou buffs.
-
-### Atributo principal: Poder (POW)
+### Poder (POW)
 
 - POW aumenta ataques físicos e vida máxima do personagem.
     - Para cada 1 ponto de POW, o personagem ganha 1 ponto de dano físico.
@@ -31,7 +31,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
     - Para cada 1 ponto de POW, o personagem ganha 0.5% de velocidade de regeneração de vida.
 - Personagens com mais POW são capazes de utilizar equipamentos e armaduras mais pesados.
 
-### Atributo principal: Agilidade (AGI)
+### Agilidade (AGI)
 
 - AGI aumenta evasão e velocidade de ataque básico do personagem
     - Para cada 1 ponto de AGI, o personagem ganha 1% de velocidade de ataque quando estiver utilizando equipamentos leves.
@@ -40,13 +40,18 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
     - Para cada 1 ponto de AGI, o personagem ganha 0.2% de chance de evasão quando estiver utilizando equipamentos pesados.
 - Personagens com mais AGI são capazes de utilizar equipamentos e armaduras mais ágeis.
 
-### Atributo principal: Especialidade (SPE)
+### Especialidade (SPE)
 
 - SPE aumenta ataques elementais e redução de recarga do personagem.
     - Para cada 1 ponto de SPE, o personagem ganha 1 ponto de dano elemental.
     - Para cada 1 ponto de SPE, o personagem ganha 1% de redução de recarga enquanto estiver utilizando equipamentos leves.
     - Para cada 1 ponto de SPE, o personagem ganha 0.2% de redução de recarga enquanto estiver utilizando equipamentos pesados.
 - Personagens com mais SPE são capazes de utilizar equipamentos e armaduras especiais.
+
+### Constituição (CON)
+
+- CON ajuda a aumentar a vida máxima do personagem.
+    - Para cada 1 ponto de CON, o personagem ganha 10 pontos de vida máxima.
 
 ## Atributos secundários
 
