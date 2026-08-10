@@ -11,7 +11,7 @@ Explicar como a jogabilidade de Her-o-clock funciona.
 - A partir de agora é tudo automático:
     - Os heróis andam de baixo para cima infinitamente até encontrar lacaios inimigos.
     - Os inimigos aparecem e um combate é iniciado imediatamente.
-    - A batalha continuam até que um dos lados seja derrotado.
+    - A batalha continua até que um dos lados seja derrotado.
 - Derrotar inimigos concede dinheiro, experiência e itens de artesanato.
 - Em caso de derrota dos heróis, a fase é reiniciada automaticamente.
 - A última batalha da fase é sempre contra um vilão inimigo.
@@ -79,11 +79,11 @@ Este é o fluxo principal do jogo.
 
 ## Combate
 
-- O combate sempre ocorre automaticamente e não podem ser manipulados pelo jogador.
+- O combate sempre ocorre automaticamente e não pode ser manipulado pelo jogador.
 
 ## Campo de batalha
 
-- Os personagens se dispõe no campo de batalha conforme a ordem definida pelo jogador.
+- Os personagens se dispõem no campo de batalha conforme a ordem definida pelo jogador.
 - Para os heróis o campo de batalha dispõe de: 3 posições na frente e 3 posições atrás.
     - Geralmente os personagens com mais defesa e vida ficam na frente enquanto personagens mais frágeis ficam atrás, mas isso varia de acordo com cada estratégia (no caso dos heróis) ou fase (no caso dos lacaios).
 - Para os lacaios o campo de batalha dispõe de: 3 posições na frente, 3 posições no meio e 3 posições atrás.
