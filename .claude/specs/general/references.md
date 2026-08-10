@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Documentar as as principais referências.
+Documentar as principais referências.
 
 ## TBH: Task Bar Hero
 

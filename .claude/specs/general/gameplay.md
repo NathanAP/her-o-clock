@@ -79,7 +79,7 @@ Este é o fluxo principal do jogo.
 
 ## Combate
 
-- O combate sempre ocorre automaticamente conforme as atributos dos personagens.
+- O combate sempre ocorre automaticamente e não podem ser manipulados pelo jogador.
 
 ## Campo de batalha
 

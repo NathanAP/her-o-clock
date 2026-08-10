@@ -9,7 +9,7 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - Os heróis são os personagens usados pelo jogador.
 - A principal característica de design é que todos eles são robôs, mesmo que possuam traços humanos (movimentação, expressões).
 - Os heróis podem ser equipados por itens conforme o jogador escolher.
-- Cada herói possui suas particularidades que estão descritas em suas fichas presente na pasta `.claude/specs/characters/heroes`.
+- Cada herói possui suas particularidades que estão descritas em suas fichas presentes na pasta `.claude/specs/characters/heroes`.
 
 ### Grupo de heróis
 
@@ -22,7 +22,7 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - Os lacaios são personagens que aparecem nas fases antes e/ou junto com os vilões.
 - A principal característica de design é que eles podem ser humanos, robôs ou monstruosidades criadas pelos vilões.
 - Os lacaios aparecem repetidamente em grupos pré definidos nas fases.
-- Cada lacaio possui suas particularidades que estão descritas em suas fichas presente na pasta `.claude/specs/characters/minions`.
+- Cada lacaio possui suas particularidades que estão descritas em suas fichas presentes na pasta `.claude/specs/characters/minions`.
 
 ## Vilões
 
@@ -30,7 +30,7 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - Vilões podem ser também chamados e considerados os "bosses" ou "chefões" do jogo.
 - A principal característica de design é que eles podem ser humanos, robôs ou monstruosidades.
 - Os vilões podem aplicar buffs aos lacaios ou debuffs aos jogadores conforme suas características.
-- Cada lacaio possui suas particularidades que estão descritas em suas fichas presente na pasta `.claude/specs/characters/villains`.
+- Cada vilão possui suas particularidades que estão descritas em suas fichas presentes na pasta `.claude/specs/characters/villains`.
 
 ## Nível de personagem
 

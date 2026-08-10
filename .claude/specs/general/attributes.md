@@ -66,7 +66,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 - É a quantidade de pontos de vida que um personagem regenera por segundo.
 - Regeneração de vida não é considerada uma cura.
-- Qualquer valor abaixo de regeneração de vida abaixo de 0 é considerado como sendo 0.
+- Qualquer valor de regeneração de vida abaixo de 0 é considerado como sendo 0.
 
 ### Evasão
 
@@ -79,7 +79,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Uma evasão normal elimina 40% do dano que seria causado ao personagem.
     - Esse valor pode ser potencializado por outros meios (itens, árvore de habilidades, entre outros).
 - Se um personagem possuir mais de 100% de evasão, a sua evasão sempre vai ser considerada como 100%.
-- Qualquer valor abaixo de evasão abaixo de 0 é considerado como sendo 0.
+- Qualquer valor de evasão abaixo de 0 é considerado como sendo 0.
 
 ### Velocidade de ataque
 
@@ -94,7 +94,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
     - Se uma habilidade possui 10 segundos de recarga e o personagem possui 50% de redução de recarga, aquele personagem pode usar essa habilidade a cada 5 segundos.
     - Se uma habilidade possui 1 minuto de recarga e o personagem possui 50% de redução de recarga, aquele personagem pode usar essa habilidade a cada 30 segundos.
 - Se um personagem possuir mais de 60% de redução de recarga, a sua redução de recarga sempre vai ser considerada como 60%.
-- Qualquer valor abaixo de redução de recarga abaixo de 0 é considerado como sendo 0.
+- Qualquer valor de redução de recarga abaixo de 0 é considerado como sendo 0.
 
 ### Armadura física
 
@@ -110,7 +110,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Atributo defensivo capaz de fazer com que o personagem evite parcialmente um ataque elemental.
 - Personagens possuem resistência elemental para cada elemento individualmente.
     - Ou seja, a resistência ao elemento A não mitiga dano de elemento B e nem C.
-- Diferente da armadura física, a resistência elemental mitiga o dano em % de acodo com a potência da resistência. Por exemplo:
+- Diferente da armadura física, a resistência elemental mitiga o dano em % de acordo com a potência da resistência. Por exemplo:
     - Se um personagem possui 30% do elemento A e recebe 1000 de dano de elemento A, apenas 700 de dano é recebido.
     - Se um personagem possui 30% do elemento B e recebe 1000 de dano do elemento C, o dano completo é recebido.
 - A resistência elemental escala infinitamente para positivo ou negativo. Ou seja:
