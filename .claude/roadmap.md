@@ -20,4 +20,4 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 - Vamos começar montando uma base simples para o projeto funcionar.
 - Vamos discutir como podemos organizar o roadmap para irmos aos poucos até uma jogabilidade aceitável.
-- Detalhes sobre personagens, itens, habilidades, árvore de progresso, etc não precisam ser feitas agora.
+- Detalhes sobre personagens, itens, árvore de habilidades, árvore de progresso, etc não precisam ser feitas agora.
