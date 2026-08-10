@@ -88,3 +88,15 @@ Este é o fluxo principal do jogo.
     - Geralmente os personagens com mais defesa e vida ficam na frente enquanto personagens mais frágeis ficam atrás, mas isso varia de acordo com cada estratégia (no caso dos heróis) ou fase (no caso dos lacaios).
 - Para os lacaios o campo de batalha dispõe de: 3 posições na frente, 3 posições no meio e 3 posições atrás.
 - Vilões sempre estão no fundo da fase em uma área especial para eles e não ocupam nenhum dos 9 espaços disponíveis para lacaios.
+
+### Escolhendo alvos
+
+- Os personagens usam ataques básicos para atacar o inimigo que estiver mais próximo, entretanto outras fontes podem afetar essa decisão (itens, árvore de habilidades, entre outros).
+- Habilidades são usadas conforme suas regras. Por exemplo:
+    - Se a habilidade descrever que ela "ataca o inimigo mais distante".
+    - Se a habilidade descrever que ela "ataca TODOS em uma área 2x2".
+- Habilidades podem afetar aliados e inimigos conforme sua descrição. Por exemplo:
+    - Se a habilidade descrever que ela "ataca TODOS em uma área 2x2" e for usada em um local com aliados, os aliados também sofrerão aquele ataque.
+    - Se a habilidade descrever que ela "cura TODOS em uma área 2x2" e for usada em um local com inimigos, os inimigos também sofrerão aquela cura.
+- Habilidades em área tentam afetar positivamente o máximo de aliados e o mínimo de inimigos possível.
+- Habilidades em área tentam afetar negativamente o máximo de inimigos e o mínimo de aliados possível.
