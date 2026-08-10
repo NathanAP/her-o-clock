@@ -47,4 +47,8 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 
 ## Buffs
 
+- Os buffs serão descritos futuramente.
+
 ## Debuffs
+
+- Os debuffs serão descritos futuramente.
