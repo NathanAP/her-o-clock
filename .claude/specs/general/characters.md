@@ -2,15 +2,35 @@
 
 ## Objetivo
 
-Especificar detalhes gerais sobre os personagens presentes em Her-o-clock.
+Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clock.
 
 ## Heróis
 
+- Os heróis são os personagens usados pelo jogador.
+- A principal característica de design é que todos eles são robôs, mesmo que possuam traços humanos (movimentação, expressões).
+- Os heróis podem ser equipados por itens conforme o jogador escolher.
+- Cada herói possui suas particularidades que estão descritas em suas fichas presente na pasta `.claude/specs/characters/heroes`.
+
+### Grupo de heróis
+
+- Um grupo de heróis é composto de até 4 personagens e podem ser escolhidos pelo jogador a qualquer momento.
+- Um grupo de heróis pode ser montado do jeito que o jogador preferir.
+- Durante a escolha do grupo, o jogador pode também alterar a formação em campo de batalha, dispondo de 6 posições (3 à frente e 3 atrás).
+
 ## Lacaios
+
+- Os lacaios são personagens que aparecem nas fases antes e/ou junto com os vilões.
+- A principal característica de design é que eles podem ser humanos, robôs ou monstruosidades criadas pelos vilões.
+- Os lacaios aparecem repetidamente em grupos pré definidos nas fases.
+- Cada lacaio possui suas particularidades que estão descritas em suas fichas presente na pasta `.claude/specs/characters/minions`.
 
 ## Vilões
 
-## Fichas
+- Os vilões são personagens que aparecem ao final de cada fase sozinhos ou junto de seus lacaios.
+- Vilões podem ser também chamados e considerados os "bosses" ou "chefões" do jogo.
+- A principal característica de design é que eles podem ser humanos, robôs ou monstruosidades.
+- Os vilões podem aplicar buffs aos lacaios ou debuffs aos jogadores conforme suas características.
+- Cada lacaio possui suas particularidades que estão descritas em suas fichas presente na pasta `.claude/specs/characters/villains`.
 
 ## Nível de personagem
 

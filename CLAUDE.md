@@ -32,8 +32,10 @@ Her-o-clock é um jogo de RPG idle minúsculo que leva você ao incrível mundo 
 
 Utilize estas regras ao desenvolver scripts neste projeto:
 
-- Faça uso da orientação à objetos.
 - Mantenha o código organizado o tempo inteiro.
+- Você deve seguir as convenções tradicionais de desenvolvimento de jogos durante suas ações.
+    - Inclusive, você tem liberdade em contestar minhas decisões se elas forem contra as convenções tradicionais de desenvolvimento de jogos.
+    - Lembre-se que você é responsável também pelo projeto, não tem motivos para ele ficar conceitualmente errado.
 - Dê prioridade em manter vários arquivos pequenos e simples ao invés de poucos arquivos longos e complexos.
 
 # Regras de alteração de arquivos de especificação
@@ -52,15 +54,36 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 1 - Leia atentamente os arquivos de especificação conforme necessidade.
 2 - Entenda qual é o objetivo da atual alteração através do arquivo `.claude/roadmap.md`.
 3 - Caso seja necessário, garanta que você entendeu totalmente seu objetivo. Você pode até fazer uma entrevista comigo ou desenhar esboços para confirmar objetivos.
-3 - Faça um planejamento para alcançar seu objetivo.
-4 - Espere aprovação.
-4 - Faça suas alterações.
-5 - Caso necessário, garanta que tudo esteja funcionando corretamente.
-6 - Retorne um resumo do que foi feito.
+4 - Faça um planejamento para alcançar seu objetivo.
+5 - Espere aprovação.
+6 - Faça suas alterações.
+7 - Garanta que tudo esteja funcionando corretamente.
+8 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".
+9 - Retorne um resumo do que foi feito.
+10 - Crie uma indicação sobre o que deve ser feito na interface da Unity, atualizando os itens de `.claude/game-objects`.
+11 - Atualize os arquivos em `.claude/memory`.
+12 - Atualize o arquivo `.claude/roadmap.md`.
 
 # Bugs
 
 - Erros de gramática na documentação ou no jogo são considerados bugs.
+
+# Refatorações
+
+- Refatorações são consideradas normais e necessárias.
+- Caso uma refatoração seja necessária, você deve explicar os motivos e dizer o que precisa ser feito.
+- Não tenha medo em fazer uma refatoração quando necessário, é melhor do que fazer uma gambiarra ou um workaround muito extenso.
+
+# Revisão
+
+- Quando em modo de revisão, você deve ser o mais crítico possível, mesmo sabendo que há pontos cegos no seu critério de avaliação.
+- O modelo mínimo para operações de revisão é o Opus 4.8.
+- Siga o mesmo fluxo de desenvolvimento quando for aplicar um desenvolvimento de revisão.
+
+# Pasta game-objects
+
+- A pasta `.claude/game-objects/` serve para você descrever o que é cada GameObject da Unity.
+- Você tem liberdade total sobre os arquivos, mas descreva-os de forma que fique claro o que cada um contém, valores recomendados e associações necessárias para que o projeto rode normalmente.
 
 # Versionamento
 
@@ -74,3 +97,14 @@ O versionamento deve ocorrer sempre seguindo estas regras. Para segui-las, consi
     - Ao subir essa versão, todas abaixo dela devem ser zeradas enquanto as acima permanecem a mesma. Ou seja, se fossemos para a versão `34`, a versão final seria `11.22.34.0`.
 - A quarta casa (`44`) representa a versão `docs`.
     - Ao subir essa versão, nenhuma das outras devem ser alteradas. Ou seja, se fossemos para a versão `45`, a versão final seria `11.22.33.45`.
+
+## Pasta versions
+
+- Essa pasta contém um resumo geral do que foi feito em cada versão do jogo.
+- Você tem controle total sobre ela.
+- Utilize a nomenclatura `timestamp_versao.md` para melhor organização.
+
+# Memória
+
+- A pasta `.claude/memory/` é exclusivamente sua para manter um resumo geral do projeto. É por ali que você vai se guiar quando for chamado uma próxima vez.
+- Crie resumos importante do projeto e o mantenha atualizado em casos de mudanças.
