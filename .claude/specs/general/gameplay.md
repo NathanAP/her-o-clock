@@ -87,9 +87,10 @@ Este é o fluxo principal do jogo.
 
 ## Campo de batalha
 
-- O campo de batalha é um tabuleiro único de 6 colunas por 12 fileiras, totalizando 72 casas, sempre visto de baixo para cima.
-    - As fileiras de 1 a 6 formam a área dos heróis, com 36 casas no total.
-    - As fileiras de 7 a 12 formam a área dos lacaios e vilões, com 36 casas no total.
+- O campo de batalha é um tabuleiro único de 6 colunas por 8 fileiras, totalizando 48 casas, sempre visto de baixo para cima.
+    - As fileiras de 1 a 4 formam a área dos heróis, com 24 casas no total.
+    - As fileiras de 5 a 8 formam a área dos lacaios e vilões, com 24 casas no total.
+- As duas áreas possuem o mesmo tamanho de propósito. Se em algum momento ficar claro que os heróis precisam de mais ou de menos espaço que os lacaios, essa é a primeira coisa a ser ajustada.
 - As duas áreas definem apenas onde cada lado começa a batalha. Elas não limitam para onde os personagens podem ir depois que a batalha começa.
 - Os personagens se dispõem no campo de batalha conforme a ordem definida pelo jogador.
     - Geralmente os personagens com mais defesa e vida ficam na frente enquanto personagens mais frágeis ficam atrás, mas isso varia de acordo com cada estratégia (no caso dos heróis) ou fase (no caso dos lacaios).

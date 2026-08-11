@@ -62,7 +62,7 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 7 - Garanta que tudo esteja funcionando corretamente.
 8 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".
 9 - Retorne um resumo do que foi feito.
-10 - Crie uma indicação sobre o que deve ser feito na interface da Unity, atualizando os itens de `.claude/game-objects/`.
+10 - Atualize os arquivos em `.claude/game-objects/`.
 11 - Atualize os arquivos em `.claude/memory/`.
 12 - Atualize o arquivo `.claude/roadmap.md`.
 
