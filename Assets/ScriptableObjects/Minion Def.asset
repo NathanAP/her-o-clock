@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bf44a08b4b6abc4a9c7c7dca3fbd4aa, type: 3}
+  m_Name: Minion Def
+  m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
+  DisplayName: Motorista
+  Kind: 1
+  Color: {r: 0.9098039, g: 0.43529412, b: 0.65882355, a: 1}
+  Level: 1
+  MinRange: 1
+  MaxRange: 1
+  Stats:
+    Power: 8
+    Agility: 5
+    Specialty: 0
+    Constitution: 8
+    Equipment: 0
+    BaseAttacksPerSecond: 1
+    PhysicalArmor: 0

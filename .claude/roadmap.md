@@ -16,8 +16,46 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 # Versões
 
-## 0.1.0.0
+## 0.1.0.0 (feita)
 
-- Vamos começar montando uma base simples para o projeto funcionar.
-- Vamos discutir como podemos organizar o roadmap para irmos aos poucos até uma jogabilidade aceitável.
-- Detalhes sobre personagens, itens, árvore de habilidades, árvore de progresso, etc não precisam ser feitas agora.
+- Base de código do projeto e a primeira coisa acontecendo na tela.
+- Tabuleiro visível, personagens coloridos posicionados nele, e eles andando até o inimigo e parando no alcance.
+- Sem combate: nada de dano, morte ou habilidade.
+- O resumo completo está em `.claude/versions/20260811_0.1.0.0.md`.
+
+## 0.2.0.0 (próxima)
+
+- Combate.
+- Ataque básico, velocidade de ataque, mitigação, evasão e morte.
+- É a primeira versão em que o jogo é jogável.
+
+## 0.3.0.0
+
+- Items.
+- Ataques básicos agora variam de acordo com o item, fazendo a batalha ser diferente cada vez.
+
+## 0.4.0.0
+
+- Fase.
+- Grupos de lacaios em sequência, vilão no fim, vitória e derrota, reinício automático.
+
+## 0.5.0.0
+
+- Progressão.
+- Experiência, nível e distribuição de pontos de atributo.
+
+## 0.6.0.0
+
+- Persistência.
+- Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
+
+## 0.7.0.0
+
+- Habilidades.
+- Recarga, área, provocação e reposicionamento.
+
+# Ordem escolhida
+
+- Cada versão depende apenas das anteriores.
+- As habilidades ficam por último de propósito, pois são o sistema que mais mexe em todos os outros. Fazer habilidade antes do combate estar estável significa refazer habilidade.
+- Enquanto toda a funcionalidade básica não estiver pronta, o jogo continua em game objects lisos e coloridos.
