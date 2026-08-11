@@ -131,6 +131,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Atributo ofensivo que indica quantos ataques básicos por segundo um personagem faz.
 - Esse atributo se diz respeito exclusivamente aos ataques básicos dos personagens.
 - O valor mínimo de velocidade de ataque é 0, que indicaria que o personagem perdeu a habilidade de fazer ataques básicos.
+- Por padrão a velocidade de ataque de um personagem é 1.
 
 ### Velocidade de movimento
 
