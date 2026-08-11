@@ -72,6 +72,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
     - Dano físico e dano elemental.
     - Vida máxima.
     - Velocidade de ataque.
+    - Velocidade de movimento.
     - Regeneração de vida.
 
 ## Atributos secundários
@@ -130,6 +131,15 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Atributo ofensivo que indica quantos ataques básicos por segundo um personagem faz.
 - Esse atributo se diz respeito exclusivamente aos ataques básicos dos personagens.
 - O valor mínimo de velocidade de ataque é 0, que indicaria que o personagem perdeu a habilidade de fazer ataques básicos.
+
+### Velocidade de movimento
+
+- Atributo que indica o quão rápido um personagem se movimenta pelo campo de batalha.
+- É medido em casas por segundo, da mesma forma que a velocidade de ataque é medida em ataques por segundo.
+- Todo personagem possui 2 casas por segundo de velocidade de movimento base, e os ganhos vindos de AGI e de outras fontes são somados por cima desse valor.
+    - Com esse valor, atravessar o campo de batalha inteiro leva 6 segundos e reposicionar uma casa leva meio segundo.
+- Um personagem só se movimenta quando não possui nenhum alvo válido dentro do seu alcance, conforme descrito em `gameplay.md`.
+- O valor mínimo de velocidade de movimento é 0, que indicaria que o personagem perdeu a habilidade de se movimentar.
 
 ### Redução de recarga
 
@@ -214,10 +224,6 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - O total roubado não pode ser abaixo de 0.
 - Receber vida por roubo de vida é considerada uma cura.
 
-### Velocidade de movimento
-
-- Atributo que indica o quão rápido um personagem se movimenta pelo campo de batalha.
-
 ### Espinhos
 
 - Atributo defensivo que faz com que o personagem devolva parte do dano físico recebido ao seu atacante.
@@ -226,3 +232,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - O dano devolvido é sempre físico e é mitigado normalmente pela armadura física do atacante.
 - Espinhos nunca reage a um dano vindo de outro espinhos, para evitar devoluções infinitas entre dois personagens.
 - O total devolvido não pode ser abaixo de 0.
+
+### Ocupação
+
+- Atributo responsável por indicar quantas casas aquele personagem ocupa.

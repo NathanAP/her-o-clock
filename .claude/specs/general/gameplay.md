@@ -87,13 +87,15 @@ Este é o fluxo principal do jogo.
 
 ## Campo de batalha
 
-- O campo de batalha é um tabuleiro único de 6 colunas por 12 fileiras, sempre visto de baixo para cima.
-    - As fileiras entre 1 e 6 formam a área dos heróis, com 12 casas no total.
-    - As fileiras entre 6 e 12 formam a área dos lacaios e vilões, com 12 casas no total.
+- O campo de batalha é um tabuleiro único de 6 colunas por 12 fileiras, totalizando 72 casas, sempre visto de baixo para cima.
+    - As fileiras de 1 a 6 formam a área dos heróis, com 36 casas no total.
+    - As fileiras de 7 a 12 formam a área dos lacaios e vilões, com 36 casas no total.
+- As duas áreas definem apenas onde cada lado começa a batalha. Elas não limitam para onde os personagens podem ir depois que a batalha começa.
 - Os personagens se dispõem no campo de batalha conforme a ordem definida pelo jogador.
     - Geralmente os personagens com mais defesa e vida ficam na frente enquanto personagens mais frágeis ficam atrás, mas isso varia de acordo com cada estratégia (no caso dos heróis) ou fase (no caso dos lacaios).
 - A partir do momento que a batalha começa, os personagens se movimentam automaticamente para atacar o seu adversário alvo, mesmo que signifique invadir o espaço adversário.
-- Cada casa comporta no máximo um personagem.
+- Heróis e lacaios geralmente ocupam uma casa, mas habilidades, buffs ou debuffs podem mudar isso.
+- Vilões acabam tendo mais variações de ocupação de casas.
 
 ### Distância
 
@@ -105,10 +107,13 @@ Este é o fluxo principal do jogo.
 
 ### Alcance
 
-- Alcance é a distância máxima, em casas, que um personagem consegue atingir com seu ataque básico.
+- Alcance é a faixa de distância, em casas, que um personagem consegue atingir com seu ataque básico.
+    - O alcance máximo é a maior distância que o personagem consegue atingir e todo personagem possui um.
+    - O alcance mínimo é a menor distância que o personagem consegue atingir e a maior parte dos personagens não possui um.
+    - Um inimigo só está dentro do alcance quando a distância até ele respeita as duas pontas ao mesmo tempo.
 - Alcance é uma característica do personagem e pode ser alterada por outros meios (itens, árvore de habilidades, habilidades, buffs e debuffs).
-- Personagens corpo a corpo possuem alcance 1 e só atingem inimigos nas casas vizinhas.
-- Personagens à distância possuem alcance maior e conseguem atingir inimigos por cima das fileiras da frente.
+- Personagens corpo a corpo possuem alcance máximo 1 e só atingem inimigos nas casas vizinhas.
+- Personagens à distância possuem alcance máximo maior e conseguem atingir inimigos por cima das fileiras da frente.
 - Certas armas dependem exclusivamente de uma distância mínima (por exemplo, um arco ou uma sniper), nesse caso, o personagem precisa se movimentar para conseguir realizar seu ataque.
     - Perceba que um personagem pode acabar encurralado pelo seu alvo. Nesse caso, o ideal é ele buscar um meio viável para poder voltar a atacar.
     - Nessa mesma situação, o personagem encurralado pode estar atacando outro alvo. Nesse caso, o ataque dele continua normalmente.
@@ -148,7 +153,12 @@ Este é o fluxo principal do jogo.
     - Se a habilidade descrever que ela "ataca o inimigo mais distante".
     - Se a habilidade descrever que ela "ataca o inimigo com a menor porcentagem de vida atual".
     - Se a habilidade descrever que ela "ataca TODOS em uma área 3x3".
-- Habilidades também possuem o seu próprio alcance, que não precisa ser igual ao alcance do ataque básico do personagem.
+- Habilidades também possuem o seu próprio alcance e o seu próprio formato de área, que não precisam ter nenhuma relação com o ataque básico do personagem.
+    - Por exemplo, um personagem com alcance 2 no ataque básico pode possuir uma habilidade que atinge todos os inimigos em linha reta até o fim do campo de batalha.
+- Uma habilidade só é avaliada pelas suas próprias regras, nunca pelo alcance do ataque básico de quem a usa.
+    - No exemplo acima, se existir um inimigo na linha da habilidade, ela é usada imediatamente, mesmo que esse inimigo esteja muito além das 2 casas do ataque básico.
+    - Ignorar isso transformaria a habilidade em desvantagem, pois o personagem ficaria esperando o inimigo chegar perto para usar algo que já podia ter usado.
+- Uma habilidade pronta que não encontra nenhum alvo válido pelas suas próprias regras segura a carga e tenta novamente no instante seguinte. Ela nunca é usada no vazio.
 - Uma habilidade que não descreve nenhuma regra de alvo utiliza a mesma ordem de prioridade do ataque básico.
 - Habilidades podem afetar aliados e inimigos conforme sua descrição. Por exemplo:
     - Se a habilidade descrever que ela "ataca TODOS em uma área 3x3" e for usada em um local com aliados, os aliados também sofrerão aquele ataque.
@@ -170,5 +180,7 @@ Este é o fluxo principal do jogo.
 
 - Lacaios e vilões mortos desaparecem do campo de batalha e liberam a casa que ocupavam.
 - Heróis mortos permanecem caídos na casa que ocupavam e podem ser revividos ali mesmo.
-- Um herói caído não é um alvo válido para nada, não bloqueia o avanço de ninguém e não conta para habilidades em área.
-- Personagens vivos nunca ocupam a casa de um herói caído, para que ele possa ser revivido no mesmo lugar.
+- Um herói caído não é um alvo válido para nada e não conta para habilidades em área.
+- Um herói caído não protege ninguém. Ele não impede que os inimigos avancem e nem que eles ataquem quem está atrás dele.
+- Personagens vivos nunca param na casa de um herói caído, para que ele possa ser revivido no mesmo lugar.
+    - Como a diagonal conta como distância 1, contornar essa casa quase nunca custa movimento adicional.

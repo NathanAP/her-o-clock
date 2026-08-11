@@ -15,8 +15,9 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 
 - Um grupo de heróis é composto de até 4 personagens e pode ser escolhido pelo jogador a qualquer momento.
 - Um grupo de heróis pode ser montado do jeito que o jogador preferir.
-- Durante a escolha do grupo, o jogador pode também alterar a formação em campo de batalha, dispondo de 9 posições (3 colunas por 3 fileiras).
-    - Como o grupo possui no máximo 4 heróis, sempre sobram casas vazias. Isso é intencional e é o que permite ao jogador escolher entre concentrar o grupo ou espalhá-lo contra ataques em área.
+- Durante a escolha do grupo, o jogador pode também alterar a formação inicial em campo de batalha, dispondo das 36 casas da área dos heróis (6 colunas por 6 fileiras).
+    - Como o grupo possui no máximo 4 heróis, a maior parte da área fica vazia. Isso é intencional e é o que permite ao jogador escolher entre concentrar o grupo ou espalhá-lo contra ataques em área.
+    - A formação define apenas onde a batalha começa. A partir dali os personagens se movimentam sozinhos, conforme descrito em `gameplay.md`.
 
 ## Lacaios
 
