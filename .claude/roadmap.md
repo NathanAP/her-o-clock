@@ -38,30 +38,32 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - As specs, as versões e os game-objects continuam em português.
 - O resumo completo está em `.claude/versions/20260811_0.2.1.0.md`.
 
-## 0.3.0.0 (próxima)
-
-- Items.
-- Ataques básicos agora variam de acordo com o item, fazendo a batalha ser diferente cada vez.
-
-## 0.4.0.0
+## 0.3.0.0
 
 - Fase.
 - Grupos de lacaios em sequência, vilão no fim, vitória e derrota, reinício automático.
+    - Será que é possível fazer tudo isso via json ou vamos ter que prédefinir cada fase como objetos da Unity?
 
-## 0.5.0.0
+## 0.4.0.0
 
 - Progressão.
 - Experiência, nível e distribuição de pontos de atributo.
 
-## 0.6.0.0
+## 0.5.0.0
 
 - Persistência.
 - Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
 
-## 0.7.0.0
+## 0.6.0.0
 
 - Habilidades.
 - Recarga, área, provocação e reposicionamento.
+
+## 0.7.0.0 (próxima)
+
+- Items.
+- Ataques básicos agora variam de acordo com o item.
+- Uma mesma seed ainda define como a batalha vai ocorrer.
 
 # Ordem escolhida
 
