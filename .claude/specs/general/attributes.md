@@ -33,10 +33,13 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 ### Agilidade (AGI)
 
-- AGI aumenta evasão e velocidade de ataque básico do personagem.
+- AGI aumenta evasão, velocidade de ataque básico e velocidade de movimento do personagem.
     - Para cada 1 ponto de AGI, o personagem ganha 1% de velocidade de ataque quando estiver utilizando equipamentos leves.
     - Para cada 1 ponto de AGI, o personagem ganha 0.5% de velocidade de ataque quando estiver utilizando equipamentos mágicos.
     - Para cada 1 ponto de AGI, o personagem ganha 0.2% de velocidade de ataque quando estiver utilizando equipamentos pesados.
+    - Para cada 1 ponto de AGI, o personagem ganha 1% de velocidade de movimento quando estiver utilizando equipamentos leves.
+    - Para cada 1 ponto de AGI, o personagem ganha 0.75% de velocidade de movimento quando estiver utilizando equipamentos mágicos.
+    - Para cada 1 ponto de AGI, o personagem ganha 0.5% de velocidade de movimento quando estiver utilizando equipamentos pesados.
     - AGI é a fonte principal de evasão, mas a conversão em chance de evasão é feita por rendimento decrescente e está descrita em "Evasão".
 - Personagens com mais AGI são capazes de utilizar equipamentos e armaduras mais leves.
 
@@ -97,7 +100,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - A chance de evasão é calculada por rendimento decrescente sobre o total de AGI do personagem:
     - `Chance de evasão = 100 × AGI ÷ (AGI + Constante)`
     - A constante é 100 enquanto o personagem estiver utilizando equipamentos leves.
-    - A constante é 300 enquanto o personagem estiver utilizando equipamentos mágicos.
+    - A constante é 200 enquanto o personagem estiver utilizando equipamentos mágicos.
     - A constante é 500 enquanto o personagem estiver utilizando equipamentos pesados.
 - Por exemplo, utilizando equipamentos leves:
     - Um personagem com 25 de AGI possui 20% de evasão.
@@ -105,9 +108,9 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
     - Um personagem com 300 de AGI possui 75% de evasão.
     - Um personagem com 900 de AGI possui 90% de evasão.
 - Por exemplo, utilizando equipamentos mágicos:
-    - Um personagem com 100 de AGI possui 25% de evasão.
-    - Um personagem com 300 de AGI possui 50% de evasão.
-    - Um personagem com 900 de AGI possui 75% de evasão.
+    - Um personagem com 100 de AGI possui 33.3% de evasão.
+    - Um personagem com 200 de AGI possui 50% de evasão.
+    - Um personagem com 600 de AGI possui 75% de evasão.
 - Por exemplo, utilizando equipamentos pesados:
     - Um personagem com 100 de AGI possui 16.7% de evasão.
     - Um personagem com 500 de AGI possui 50% de evasão.
@@ -210,6 +213,10 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
     - Se um personagem causa 100 de dano elemental e possui 3% de roubo de vida, ele não recebe cura.
 - O total roubado não pode ser abaixo de 0.
 - Receber vida por roubo de vida é considerada uma cura.
+
+### Velocidade de movimento
+
+- Atributo que indica o quão rápido um personagem se movimenta pelo campo de batalha.
 
 ### Espinhos
 
