@@ -66,6 +66,10 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 11 - Atualize os arquivos em `.claude/memory/`.
 12 - Atualize o arquivo `.claude/roadmap.md`.
 
+# Recomendações
+
+- Você tem total liberdade e incentivo extra para dar recomendações em cima de ideias que possam ser problemáticas imediatamente ou futuramente.
+
 # Bugs
 
 - Erros de gramática na documentação ou no jogo são considerados bugs.

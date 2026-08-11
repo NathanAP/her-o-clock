@@ -95,7 +95,11 @@ Este é o fluxo principal do jogo.
     - Geralmente os personagens com mais defesa e vida ficam na frente enquanto personagens mais frágeis ficam atrás, mas isso varia de acordo com cada estratégia (no caso dos heróis) ou fase (no caso dos lacaios).
 - A partir do momento que a batalha começa, os personagens se movimentam automaticamente para atacar o seu adversário alvo, mesmo que signifique invadir o espaço adversário.
 - Heróis e lacaios geralmente ocupam uma casa, mas habilidades, buffs ou debuffs podem mudar isso.
-- Vilões acabam tendo mais variações de ocupação de casas.
+- Vilões acabam tendo mais variações de ocupação de casas. Por exemplo, um vilão pode ocupar uma área de 2x2 casas.
+- Um personagem que ocupa mais de uma casa continua sendo um único personagem, e isso vale para todas as regras de combate.
+    - A distância até ele é medida a partir da casa ocupada mais próxima.
+    - Uma habilidade em área que alcança várias casas ocupadas por ele o atinge uma única vez.
+    - Ele pode ser cercado normalmente, e é comum que vilões possuam habilidades para afastar os heróis quando isso acontece.
 
 ### Distância
 
@@ -114,14 +118,7 @@ Este é o fluxo principal do jogo.
 - Alcance é uma característica do personagem e pode ser alterada por outros meios (itens, árvore de habilidades, habilidades, buffs e debuffs).
 - Personagens corpo a corpo possuem alcance máximo 1 e só atingem inimigos nas casas vizinhas.
 - Personagens à distância possuem alcance máximo maior e conseguem atingir inimigos por cima das fileiras da frente.
-- Certas armas dependem exclusivamente de uma distância mínima (por exemplo, um arco ou uma sniper), nesse caso, o personagem precisa se movimentar para conseguir realizar seu ataque.
-    - Perceba que um personagem pode acabar encurralado pelo seu alvo. Nesse caso, o ideal é ele buscar um meio viável para poder voltar a atacar.
-    - Nessa mesma situação, o personagem encurralado pode estar atacando outro alvo. Nesse caso, o ataque dele continua normalmente.
-- Se um personagem não possui nenhum alvo válido dentro do seu alcance, ele avança uma casa na direção do inimigo mais próximo e tenta novamente.
-    - O avanço só acontece para casas vazias.
-    - Avançar custa tempo e portanto custa dano, então uma formação mal montada é punida naturalmente.
-    - Essa regra também é o que permite que personagens corpo a corpo alcancem o vilão depois que os lacaios da frente morrem.
-- Se um personagem não possui alvo válido e também não consegue avançar, ele apenas aguarda.
+- Certas armas dependem exclusivamente de uma distância mínima (por exemplo, um arco ou uma sniper). Nesse caso o personagem precisa se movimentar para conseguir realizar seu ataque, conforme descrito em "Movimentação".
 
 ### Escolhendo alvos
 
@@ -146,6 +143,28 @@ Este é o fluxo principal do jogo.
 - Provocação não é um atributo e não acumula. Ela é aplicada por habilidades e existe apenas enquanto durar.
     - Se dois inimigos provocarem o mesmo personagem, vale a provocação mais recente.
 - A escolha de alvo é toda posicional e visível no tabuleiro justamente para que o jogador consiga prever o combate apenas olhando para a tela. Provocação é a única coisa capaz de quebrar essa leitura, e por isso ela é sempre temporária e sempre vem de uma habilidade.
+
+### Movimentação
+
+- Um personagem só se movimenta quando não consegue atacar seu alvo de onde está. Enquanto conseguir atacar, ele permanece parado.
+- O alvo que define a movimentação é escolhido pela mesma ordem de prioridade do ataque básico, mas ignorando o filtro de alcance.
+    - Ou seja, quando ninguém está dentro do alcance, a cadeia é consultada novamente sobre todos os inimigos vivos, e o personagem se movimenta em direção a quem ela escolher.
+    - É por isso que uma provocação continua funcionando mesmo quando quem provocou está longe demais para ser atacado.
+- Se o alvo está mais distante que o alcance máximo, o personagem avança uma casa na direção dele e tenta atacar novamente.
+- Se o alvo está mais próximo que o alcance mínimo, o personagem recua uma casa para longe dele e tenta atacar novamente.
+    - O recuo é o que permite que armas como arco e sniper voltem a atacar depois que um inimigo encosta nelas.
+- O personagem sempre se movimenta para a casa vazia que mais o aproxima de conseguir atacar.
+- Movimentar custa tempo e portanto custa dano, então uma formação mal montada é punida naturalmente.
+- Essa regra também é o que permite que personagens corpo a corpo alcancem o vilão depois que os lacaios da frente morrem.
+- A movimentação é decidida sempre pelo ataque básico. Um personagem nunca se movimenta apenas para conseguir usar uma habilidade.
+    - Habilidades que dependem de reposicionamento resolvem isso sozinhas, movendo o personagem como parte do próprio efeito.
+
+#### Personagem encurralado
+
+- Um personagem está encurralado quando não consegue atacar seu alvo e também não possui nenhuma casa vazia para onde se movimentar.
+- Um personagem encurralado escolhe o próximo alvo válido da cadeia de prioridade e ataca normalmente, se houver algum dentro do seu alcance.
+- Se não houver nenhum alvo válido, ele apenas aguarda até que a situação mude.
+- Ficar encurralado é a principal fraqueza das armas que dependem de distância mínima, e é intencional que seja assim.
 
 ### Habilidades
 
