@@ -7,14 +7,14 @@ using UnityEngine;
 namespace HerOClock.Movement
 {
     /// <summary>
-    /// Cuida da movimentacao de um personagem, seguindo a secao "Movimentacao" de gameplay.md.
+    /// Handles one character's movement, following the "Movimentação" section of gameplay.md.
     ///
-    /// Um personagem so se movimenta quando nao consegue atacar seu alvo de onde esta.
-    /// Se o alvo esta longe demais ele avanca, se esta perto demais ele recua, e sempre
-    /// vai para a casa vazia que mais o aproxima de conseguir atacar.
+    /// A character only moves when it cannot attack its target from where it stands. If the
+    /// target is too far it advances, if the target is too close it backs away, and it always
+    /// goes to the free cell that best improves its chance of attacking.
     ///
-    /// Nao e MonoBehaviour de proposito. Quem chama o Tick e o BattleDirector, para que
-    /// exista um unico laco de atualizacao em ordem previsivel.
+    /// Not a MonoBehaviour on purpose. The BattleDirector calls Tick, so there is a single
+    /// update loop running in a predictable order.
     /// </summary>
     public class CharacterMover
     {
@@ -38,6 +38,13 @@ namespace HerOClock.Movement
             get { return isStepping; }
         }
 
+        /// <summary>Interrupts any step in progress. Used when restarting the battle.</summary>
+        public void Reset()
+        {
+            isStepping = false;
+            stepProgress = 0f;
+        }
+
         public void Tick(float deltaTime, IReadOnlyList<Character> enemies)
         {
             if (!character.IsAlive)
@@ -51,15 +58,15 @@ namespace HerOClock.Movement
                 return;
             }
 
-            // Consegue atacar alguem de onde esta? Entao fica parado.
+            // Can it attack anyone from where it stands? Then it stays put.
             if (TargetSelector.Select(character, enemies, true) != null)
             {
                 return;
             }
 
-            // Nao consegue atacar ninguem. A cadeia e consultada de novo, agora sem o
-            // filtro de alcance, para decidir em direcao a quem andar. E isso que faz
-            // uma provocacao continuar valendo mesmo com o provocador longe demais.
+            // Nobody is in range. The chain is consulted again, this time without the range
+            // filter, to decide who to walk towards. That is what keeps a taunt working even
+            // when the taunter is too far away to be attacked.
             Character walkTarget = TargetSelector.Select(character, enemies, false);
             if (walkTarget == null)
             {
@@ -86,8 +93,8 @@ namespace HerOClock.Movement
 
                 int cost = RangeCost(GridPosition.Distance(neighbour, target.Position));
 
-                // So vale a pena sair do lugar se a casa nova aproxima de conseguir atacar.
-                // O desempate e posicional para a movimentacao ser reproduzivel.
+                // Moving is only worth it when the new cell brings the character closer to
+                // being able to attack. Ties are broken positionally so movement is reproducible.
                 if (cost < bestCost || (found && cost == bestCost && IsLowerPosition(neighbour, bestPosition)))
                 {
                     bestPosition = neighbour;
@@ -98,16 +105,15 @@ namespace HerOClock.Movement
 
             if (!found)
             {
-                // Encurralado: nao existe casa que melhore a situacao.
-                // Quem escolhe outro alvo e a propria cadeia de prioridade no proximo tick.
+                // Cornered: no cell improves the situation. Picking another target is up to
+                // the priority chain itself on the next tick.
                 return;
             }
 
             float cellsPerSecond = character.Stats.CellsPerSecond;
             if (cellsPerSecond <= 0f)
             {
-                // Velocidade de movimento 0 significa que o personagem perdeu a
-                // habilidade de se movimentar.
+                // A movement speed of 0 means the character lost the ability to move.
                 return;
             }
 
@@ -116,8 +122,8 @@ namespace HerOClock.Movement
             stepProgress = 0f;
             stepDuration = 1f / cellsPerSecond;
 
-            // A casa de destino e ocupada imediatamente, antes da animacao terminar,
-            // para que ninguem tente entrar nela no mesmo instante.
+            // The destination cell is claimed immediately, before the animation ends, so that
+            // nobody else tries to enter it in the meantime.
             character.MoveTo(stepTo);
             isStepping = true;
         }
@@ -138,8 +144,8 @@ namespace HerOClock.Movement
         }
 
         /// <summary>
-        /// O quanto uma distancia esta fora da faixa de alcance do personagem.
-        /// Zero significa que ele consegue atacar dali.
+        /// How far a distance falls outside the character's range band.
+        /// Zero means it can attack from there.
         /// </summary>
         private int RangeCost(int distance)
         {

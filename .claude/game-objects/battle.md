@@ -42,7 +42,19 @@ Quando está tudo certo, ele escreve quantos heróis enfrentam quantos inimigos.
 
 ### Valores recomendados
 
-- Character Scale: `0.8`. Deixa o quadrado do personagem um pouco menor que a casa, para o tabuleiro aparecer por baixo e as casas continuarem visíveis.
+**Aparência provisória**, dentro de `View Settings`. Todas as medidas são frações de uma casa, então `1` equivale à casa inteira. Podem ser ajustadas com o jogo rodando.
+
+- Body Size: `0.5` por `0.7`, e Body Offset Y `-0.1`. Retângulo em pé, porque o sprite de um robô dificilmente será quadrado.
+- Health Bar Size: `0.8` por `0.1`, e Health Bar Offset Y `0.4`. Fica no topo da casa, acima do corpo.
+- Flash Duration: `0.12`. Quanto tempo o corpo fica claro depois de levar um golpe.
+
+**Combate**
+
+- Random Seed: `0` sorteia uma semente nova a cada Play. Qualquer outro valor reproduz sempre a mesma batalha, o que serve para investigar algo que aconteceu. A semente usada é escrita no Console ao iniciar.
+- Restart Delay: `2`. Segundos de espera antes de reiniciar a batalha depois que um lado é derrotado.
+
+**Desempenho**
+
 - Target Frame Rate: `30`. O jogo fica aberto o dia inteiro em um cantinho da tela, então não faz sentido gastar GPU à toa.
 
 ## BattleDirector
@@ -56,7 +68,14 @@ Ele é o único laço de atualização do combate. Os personagens não possuem `
 Ao entrar em Play, a hierarquia abaixo do `Battle` fica assim:
 
 - `Tabuleiro` — um filho por casa, cada um com um `SpriteRenderer` verde na sorting layer `Background`. Tons alternados deixam as casas visíveis e a área dos lacaios fica mais escura que a dos heróis.
-- Um filho por personagem, nomeado com o `DisplayName` da ficha, com `SpriteRenderer` na sorting layer `Characters` e o componente `Character`.
+- Um filho por personagem, nomeado com o `DisplayName` da ficha, com os componentes `Character` e `CharacterView`. Cada personagem tem três filhos próprios: `Corpo`, `BarraFundo` e `BarraVida`.
+- `Dano` — objetos temporários com os números que sobem e somem. São criados e destruídos durante o combate.
+
+## TextMeshPro
+
+Os números de dano usam TextMeshPro, que vem junto com o pacote `com.unity.ugui`.
+
+Na primeira vez a Unity abre um diálogo pedindo para importar o **TMP Essential Resources**. É preciso aceitar, senão os números não aparecem. É uma vez só por projeto.
 
 ## Sorting layers necessárias
 

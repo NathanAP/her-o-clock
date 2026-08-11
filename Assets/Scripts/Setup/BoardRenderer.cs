@@ -5,9 +5,9 @@ using UnityEngine;
 namespace HerOClock.Setup
 {
     /// <summary>
-    /// Desenha o tabuleiro com quadrados verdes, conforme o roadmap pede enquanto
-    /// nao existe arte. Tons alternados deixam as casas visiveis, e a area dos
-    /// lacaios e viloes fica um pouco mais escura para as duas metades se distinguirem.
+    /// Draws the board with green squares, as the roadmap asks for while there is no art.
+    /// Alternating shades keep the cells visible, and the minion and villain area is a little
+    /// darker so the two halves can be told apart.
     /// </summary>
     public static class BoardRenderer
     {
@@ -20,12 +20,12 @@ namespace HerOClock.Setup
         {
             BattleGridConfig config = grid.Config;
 
-            GameObject board = new GameObject("Tabuleiro");
+            GameObject board = new GameObject("Board");
             board.transform.SetParent(parent, false);
 
             foreach (GridPosition position in grid.AllPositions())
             {
-                GameObject cell = new GameObject("Casa " + position.Column + "-" + position.Row);
+                GameObject cell = new GameObject("Cell " + position.Column + "-" + position.Row);
                 cell.transform.SetParent(board.transform, false);
                 cell.transform.position = grid.WorldPositionOf(position);
                 cell.transform.localScale = new Vector3(config.CellSize, config.CellSize, 1f);

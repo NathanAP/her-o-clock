@@ -1,8 +1,8 @@
 namespace HerOClock.Characters
 {
     /// <summary>
-    /// Tipo do personagem. Define a cor provisoria e regras que dependem do tipo,
-    /// como o lacaio sumir ao morrer enquanto o heroi fica caido no campo.
+    /// Type of character. Drives the placeholder colour and the rules that depend on type,
+    /// such as minions vanishing on death while heroes stay fallen on the field.
     /// </summary>
     public enum CharacterKind
     {

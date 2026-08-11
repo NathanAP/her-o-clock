@@ -6,11 +6,11 @@ using UnityEngine;
 namespace HerOClock.Setup
 {
     /// <summary>
-    /// Quem comeca a batalha em qual casa.
+    /// Who starts the battle on which cell.
     ///
-    /// Para os herois isso e a formacao escolhida pelo jogador. Para os lacaios e
-    /// viloes e o grupo pre definido da fase. A formacao define apenas onde a batalha
-    /// comeca, nao limita a movimentacao depois.
+    /// For heroes this is the formation chosen by the player. For minions and villains it is
+    /// the stage's predefined group. A formation only defines where the battle starts, it does
+    /// not restrict movement afterwards.
     /// </summary>
     [CreateAssetMenu(fileName = "BattleFormation", menuName = "Her-o-clock/Battle Formation")]
     public class BattleFormation : ScriptableObject
@@ -24,7 +24,7 @@ namespace HerOClock.Setup
             [Min(1)] public int Row;
         }
 
-        [Tooltip("Lado do combate. Herois de um lado, lacaios e viloes do outro.")]
+        [Tooltip("Side of the fight. Heroes on one side, minions and villains on the other.")]
         public Team Team = Team.Heroes;
 
         public List<Placement> Placements = new List<Placement>();

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91027e72146172b418b6c150583ad98c, type: 3}
   m_Name: Form Enemies
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Setup.BattleFormation
-  Team: 0
+  Team: 1
   Placements:
   - Character: {fileID: 11400000, guid: 2b10c4de3e9abff458883a68f18ca681, type: 2}
     Column: 2

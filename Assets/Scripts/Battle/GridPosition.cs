@@ -3,7 +3,7 @@ using System;
 namespace HerOClock.Battle
 {
     /// <summary>
-    /// Uma casa do campo de batalha. Coluna e fileira comecam em 1, igual a spec.
+    /// A cell on the battlefield. Column and row start at 1, matching the spec.
     /// </summary>
     [Serializable]
     public struct GridPosition : IEquatable<GridPosition>
@@ -18,8 +18,8 @@ namespace HerOClock.Battle
         }
 
         /// <summary>
-        /// Distancia em casas contando a diagonal como 1, igual ao rei do xadrez.
-        /// Ou seja, a maior diferenca entre as fileiras e as colunas.
+        /// Distance in cells, counting diagonals as 1, like a chess king.
+        /// In other words, the largest difference between rows and columns.
         /// </summary>
         public static int Distance(GridPosition a, GridPosition b)
         {
@@ -45,7 +45,7 @@ namespace HerOClock.Battle
 
         public override string ToString()
         {
-            return "(coluna " + Column + ", fileira " + Row + ")";
+            return "(column " + Column + ", row " + Row + ")";
         }
     }
 }

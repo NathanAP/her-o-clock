@@ -37,7 +37,6 @@ As cores seguem o roadmap: azul para heróis, rosa para lacaios, vermelho para v
 - Max Range: `1`
 - Equipment: `Heavy`
 - Power: `20`, Agility: `5`, Specialty: `0`, Constitution: `30`
-- Base Attacks Per Second: `0.8`
 - Physical Armor: `100`
 
 ### Heroi Arqueiro
@@ -50,7 +49,6 @@ As cores seguem o roadmap: azul para heróis, rosa para lacaios, vermelho para v
 - Max Range: `4`
 - Equipment: `Light`
 - Power: `10`, Agility: `25`, Specialty: `0`, Constitution: `10`
-- Base Attacks Per Second: `1.2`
 - Physical Armor: `10`
 
 O alcance mínimo `2` é o que faz este personagem recuar quando um inimigo encosta nele. É o melhor jeito de ver a regra de recuo funcionando.
@@ -65,7 +63,6 @@ O alcance mínimo `2` é o que faz este personagem recuar quando um inimigo enco
 - Max Range: `1`
 - Equipment: `Light`
 - Power: `8`, Agility: `5`, Specialty: `0`, Constitution: `8`
-- Base Attacks Per Second: `1`
 - Physical Armor: `0`
 
 ### Vilao
@@ -78,8 +75,17 @@ O alcance mínimo `2` é o que faz este personagem recuar quando um inimigo enco
 - Max Range: `2`
 - Equipment: `Heavy`
 - Power: `25`, Agility: `10`, Specialty: `15`, Constitution: `40`
-- Base Attacks Per Second: `0.7`
 - Physical Armor: `150`
+
+### Campos de defesa e ofensiva
+
+Além dos acima, toda ficha possui campos que ainda não têm fonte no jogo, pois dependem de itens e habilidades. Podem ficar em zero, ou ser preenchidos na mão para experimentar:
+
+- Fire Resistance, Water Resistance, Electric Resistance: pontos de resistência a cada elemento. Passam pela mesma curva da armadura física.
+- Thorns Percent: dano físico devolvido a quem ataca, de 0 a 100.
+- Life Steal Percent: vida recuperada ao causar dano físico, de 0 a 100.
+
+Como o ataque básico ainda é sempre físico, as três resistências elementais não têm efeito nenhum por enquanto. Espinhos e roubo de vida funcionam desde já.
 
 ## BattleFormation
 

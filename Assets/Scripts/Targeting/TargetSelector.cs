@@ -5,15 +5,15 @@ using HerOClock.Characters;
 namespace HerOClock.Targeting
 {
     /// <summary>
-    /// Escolhe o alvo de um personagem seguindo a ordem de prioridade de gameplay.md.
+    /// Picks a character's target following the priority order in gameplay.md.
     ///
-    /// A cadeia e usada de duas formas:
-    /// respeitando o alcance, para decidir quem atacar;
-    /// e ignorando o alcance, para decidir em direcao a quem se movimentar.
+    /// The chain is used in two ways:
+    /// honouring range, to decide who to attack;
+    /// and ignoring range, to decide who to walk towards.
     ///
-    /// Toda comparacao e feita com numeros inteiros de proposito. Sem float no meio,
-    /// a escolha e sempre a mesma para o mesmo estado de tabuleiro, o que permite
-    /// reproduzir um combate e, mais para frente, simular a progressao offline.
+    /// Every comparison uses integers on purpose. With no floats involved, the choice is
+    /// always the same for the same board state, which lets us replay a battle and, later
+    /// on, simulate offline progression.
     /// </summary>
     public static class TargetSelector
     {
@@ -24,7 +24,7 @@ namespace HerOClock.Targeting
                 return null;
             }
 
-            // Regra 1: provocacao ignora todo o resto.
+            // Rule 1: a taunt overrides everything else.
             if (self.TauntedBy != null && self.TauntedBy.IsAlive)
             {
                 if (!respectRange || self.CanAttack(self.TauntedBy))
@@ -59,13 +59,13 @@ namespace HerOClock.Targeting
         }
 
         /// <summary>
-        /// Regras 2 a 6. Cada uma so e consultada quando a anterior termina empatada.
-        /// A regra 6 e posicional justamente porque ela nunca pode empatar, entao a
-        /// cadeia sempre termina com um unico vencedor.
+        /// Rules 2 through 6. Each one is only consulted when the previous one ties.
+        /// Rule 6 is positional precisely because it can never tie, so the chain always
+        /// ends with a single winner.
         /// </summary>
         private static bool IsBetterTarget(Character self, Character candidate, Character current)
         {
-            // Regra 2: o inimigo mais proximo.
+            // Rule 2: the closest enemy.
             int candidateDistance = GridPosition.Distance(self.Position, candidate.Position);
             int currentDistance = GridPosition.Distance(self.Position, current.Position);
             if (candidateDistance != currentDistance)
@@ -73,8 +73,8 @@ namespace HerOClock.Targeting
                 return candidateDistance < currentDistance;
             }
 
-            // Regra 3: a menor porcentagem de vida atual.
-            // Comparada por multiplicacao cruzada para nao precisar de divisao.
+            // Rule 3: the lowest percentage of current health.
+            // Compared by cross multiplication so no division is needed.
             long candidateShare = (long)candidate.CurrentHealth * current.Stats.MaxHealth;
             long currentShare = (long)current.CurrentHealth * candidate.Stats.MaxHealth;
             if (candidateShare != currentShare)
@@ -82,19 +82,19 @@ namespace HerOClock.Targeting
                 return candidateShare < currentShare;
             }
 
-            // Regra 4: a menor vida maxima.
+            // Rule 4: the lowest maximum health.
             if (candidate.Stats.MaxHealth != current.Stats.MaxHealth)
             {
                 return candidate.Stats.MaxHealth < current.Stats.MaxHealth;
             }
 
-            // Regra 5: a menor armadura fisica.
+            // Rule 5: the lowest physical armour.
             if (candidate.Stats.PhysicalArmor != current.Stats.PhysicalArmor)
             {
                 return candidate.Stats.PhysicalArmor < current.Stats.PhysicalArmor;
             }
 
-            // Regra 6: a menor fileira e, em caso de empate, a menor coluna.
+            // Rule 6: the lowest row and, on a tie, the lowest column.
             if (candidate.Position.Row != current.Position.Row)
             {
                 return candidate.Position.Row < current.Position.Row;

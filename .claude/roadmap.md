@@ -23,13 +23,22 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Sem combate: nada de dano, morte ou habilidade.
 - O resumo completo está em `.claude/versions/20260811_0.1.0.0.md`.
 
-## 0.2.0.0 (próxima)
+## 0.2.0.0 (feita)
 
 - Combate.
 - Ataque básico, velocidade de ataque, mitigação, evasão e morte.
-- É a primeira versão em que o jogo é jogável.
+- Barra de vida, piscada ao levar dano e números de dano flutuantes.
+- Enquanto não existem fases, a batalha reinicia sozinha para permitir observar o balanceamento.
+- O resumo completo está em `.claude/versions/20260811_0.2.0.0.md`.
 
-## 0.3.0.0
+## 0.2.1.0 (feita)
+
+- Padronização de idioma no código.
+- Scripts, comentários, documentação em XML, textos do Inspector e mensagens de Console em inglês, junto com a pasta `.claude/memory/`.
+- As specs, as versões e os game-objects continuam em português.
+- O resumo completo está em `.claude/versions/20260811_0.2.1.0.md`.
+
+## 0.3.0.0 (próxima)
 
 - Items.
 - Ataques básicos agora variam de acordo com o item, fazendo a batalha ser diferente cada vez.

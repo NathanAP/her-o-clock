@@ -215,9 +215,9 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 - Atributo ofensivo que faz com que o personagem se cure ao desferir um ataque físico.
 - O roubo de vida também é calculado em habilidades.
-- O roubo de vida deve sempre ser arredondado para o valor inteiro mais próximo. Por exemplo:
-    - Valores abaixo de 0.5 se tornam 0 e igual ou acima se tornam 1.
-    - Valores abaixo de 1.5 se tornam 1 e igual ou acima se tornam 2.
+- O roubo de vida é arredondado conforme descrito em "Arredondamento". Por exemplo:
+    - 0.4 se torna 0 e 0.6 se torna 1.
+    - 1.4 se torna 1 e 1.6 se torna 2.
 - O cálculo de roubo de vida é feito sempre em cima do dano final causado. Por exemplo:
     - Se um personagem causa 100 de dano físico e possui 3% de roubo de vida, ele vai curar 3 pontos de vida.
     - Se um personagem tenta causar 100 de dano ao adversário e o dano for mitigado para apenas 10 (por conta de armadura ou evasão), ele não vai receber cura (cálculo terminado em 0.3 e arredondado para 0).
@@ -237,3 +237,39 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 ### Ocupação
 
 - Atributo responsável por indicar quantas casas aquele personagem ocupa.
+
+## Ordem do cálculo de dano
+
+- Todo ataque, seja básico ou de habilidade, é resolvido sempre nesta ordem:
+
+1. **Dano base.** É o dano físico ou elemental de quem ataca. Um mesmo ataque nunca é físico e elemental ao mesmo tempo.
+2. **Espinhos.** Calculado sobre o dano base, antes de qualquer mitigação. O valor devolvido é resolvido como um ataque físico independente contra quem atacou, passando pela mitigação dele normalmente.
+3. **Mitigação.** Armadura física para dano físico, resistência do elemento correspondente para dano elemental.
+4. **Evasão.** Sorteada uma única vez por ataque. Uma evasão normal elimina 40% do dano e uma evasão perfeita elimina 75%.
+5. **Dano final.** Arredondado para o valor inteiro mais próximo e subtraído da vida atual.
+6. **Roubo de vida.** Calculado sobre o dano final e apenas em ataques físicos.
+
+### As reduções sempre multiplicam entre si
+
+- Evasão e mitigação nunca são somadas, sempre multiplicadas. Por exemplo:
+    - Um personagem com 75% de mitigação que sofre uma evasão normal de 40% recebe `100% × 60% × 25% = 15%` do dano.
+    - Se as reduções fossem somadas, esse mesmo personagem receberia `100% - 40% - 75%`, o que resultaria em dano negativo.
+- Somar reduções permitiria que um personagem alcançasse 100% e se tornasse imune, o que contraria diretamente a regra descrita em "Rendimento decrescente".
+
+### Quando o ataque vira cura
+
+- Quando a resistência ao elemento do ataque ultrapassa 100%, o ataque deixa de causar dano e passa a curar, conforme descrito em "Resistência elemental".
+- Nesse caso a evasão não é sorteada, pois não existe dano para ser evitado.
+- Espinhos e roubo de vida também não acontecem, pois nenhum dano foi causado.
+
+### Arredondamento
+
+- Todo valor de dano, cura, roubo de vida e espinhos é arredondado para o valor inteiro mais próximo. Por exemplo:
+    - 0.4 se torna 0 e 0.6 se torna 1.
+    - 12.3 se torna 12 e 12.7 se torna 13.
+- Quando o valor cai exatamente no meio, ele é arredondado para o inteiro par mais próximo. Por exemplo:
+    - 0.5 se torna 0 e 1.5 se torna 2.
+    - 2.5 se torna 2 e 3.5 se torna 4.
+- Esse desempate pelo par é o arredondamento padrão da linguagem em que o jogo é feito, e não uma escolha de design.
+    - Ele também possui uma vantagem prática: sempre arredondar o meio para cima acumularia um viés para cima ao longo de milhares de golpes, e o desempate pelo par não acumula viés nenhum.
+- O arredondamento acontece apenas no final de cada cálculo, nunca nos passos intermediários.

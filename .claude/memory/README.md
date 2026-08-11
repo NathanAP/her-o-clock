@@ -1,11 +1,12 @@
 # Memory
 
-## Objetivo
+## Purpose
 
-Esta pasta guarda o resumo geral do projeto que serve de ponto de partida nas próximas sessões de desenvolvimento. Utilize os arquivos inicialmente e quando precisar de mais detalhes, acesse os arquivos originais para obter informações completas.
+This folder holds the general summary of the project that serves as a starting point in future development sessions. Read these files first, and when more detail is needed, go to the original files for the full picture.
 
-## Convenção
+## Convention
 
-- Um arquivo por assunto, sempre mantido atualizado quando algo muda.
-- Utilize a nomenclatura `assunto.md`.
-- Deve conter apenas o que não é óbvio ao ler o código, as specs ou o histórico do git.
+- One file per subject, always kept up to date when something changes.
+- Use the naming pattern `subject.md`.
+- It should contain only what is not obvious from reading the code, the specs or the git history.
+- This folder is written in English, together with the scripts. The files under `.claude/specs/`, `.claude/versions/` and `.claude/game-objects/` stay in Portuguese.

@@ -33,6 +33,7 @@ Her-o-clock é um jogo de RPG idle minúsculo que leva você ao incrível mundo 
 Utilize estas regras ao desenvolver scripts neste projeto:
 
 - Mantenha o código organizado o tempo inteiro.
+- Tudo deve estar em inglês, desde variáveis até comentários, labels, tooltips, headers, etc.
 - Você deve seguir as convenções tradicionais de desenvolvimento de jogos durante suas ações.
     - Inclusive, você tem liberdade em contestar minhas decisões se elas forem contra as convenções tradicionais de desenvolvimento de jogos.
     - Lembre-se que você é responsável também pelo projeto, não tem motivos para ele ficar conceitualmente errado.
@@ -56,8 +57,8 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 1 - Leia atentamente os arquivos de especificação conforme necessidade.
 2 - Entenda qual é o objetivo da atual alteração através do arquivo `.claude/roadmap.md`.
 3 - Caso seja necessário, garanta que você entendeu totalmente seu objetivo. Você pode até fazer uma entrevista comigo ou desenhar esboços para confirmar objetivos.
-4 - Faça um planejamento para alcançar seu objetivo.
-5 - Espere aprovação.
+4 - Faça um planejamento para alcançar seu objetivo. Me avise se eu preciso fechar a Unity ou fazer alguma operação extra antes de começar.
+5 - Mostre seu planejamento e aguarde aprovação.
 6 - Faça suas alterações.
 7 - Garanta que tudo esteja funcionando corretamente.
 8 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".

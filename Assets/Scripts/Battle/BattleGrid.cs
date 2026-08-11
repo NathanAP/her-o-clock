@@ -4,8 +4,8 @@ using UnityEngine;
 namespace HerOClock.Battle
 {
     /// <summary>
-    /// Sabe quais casas existem, quem ocupa cada uma e onde cada casa fica no mundo.
-    /// O tabuleiro fica centralizado na origem.
+    /// Knows which cells exist, who occupies each one and where each cell sits in the world.
+    /// The board is centred on the origin.
     /// </summary>
     public class BattleGrid
     {
@@ -15,7 +15,7 @@ namespace HerOClock.Battle
         public BattleGrid(BattleGridConfig config)
         {
             this.config = config;
-            // Indices de 1 ate Columns e de 1 ate Rows, entao a posicao 0 fica sem uso de proposito.
+            // Indices run from 1 to Columns and from 1 to Rows, so index 0 is left unused.
             occupants = new IGridOccupant[config.Columns + 1, config.Rows + 1];
         }
 
@@ -66,7 +66,7 @@ namespace HerOClock.Battle
         }
 
         /// <summary>
-        /// Converte uma casa na posicao correspondente do mundo, com o tabuleiro centralizado na origem.
+        /// Converts a cell into its world position, with the board centred on the origin.
         /// </summary>
         public Vector3 WorldPositionOf(GridPosition position)
         {
@@ -76,8 +76,8 @@ namespace HerOClock.Battle
         }
 
         /// <summary>
-        /// As oito casas ao redor, todas a distancia 1. Casas fora do tabuleiro nao entram.
-        /// A ordem e sempre a mesma para que o combate seja reproduzivel.
+        /// The eight surrounding cells, all at distance 1. Cells outside the board are skipped.
+        /// The order is always the same so that combat stays reproducible.
         /// </summary>
         public IEnumerable<GridPosition> Neighbours(GridPosition position)
         {

@@ -4,32 +4,48 @@ using UnityEngine;
 namespace HerOClock.Characters
 {
     /// <summary>
-    /// Converte os atributos principais nos atributos secundarios, seguindo attributes.md.
-    /// Toda porcentagem e devolvida na escala de 0 a 100, igual a spec.
+    /// Turns primary attributes into secondary ones, following attributes.md.
+    /// Every percentage is returned on a 0 to 100 scale, matching the spec.
     /// </summary>
     [Serializable]
     public class CharacterStats
     {
-        [Header("Atributos principais")]
+        [Header("Primary attributes")]
         [Min(0)] public int Power;
         [Min(0)] public int Agility;
         [Min(0)] public int Specialty;
         [Min(0)] public int Constitution;
 
-        [Header("Equipamento")]
+        [Header("Equipment")]
         public EquipmentClass Equipment = EquipmentClass.Light;
 
-        [Header("Bases")]
-        [Tooltip("Ataques por segundo antes do bonus de AGI. A spec ainda nao define esse valor, entao ele e por personagem.")]
-        [Min(0f)] public float BaseAttacksPerSecond = 1f;
-
-        [Tooltip("Armadura fisica vinda de equipamento. Ainda nao existem itens, entao e preenchida na mao.")]
+        [Header("Defence")]
+        [Tooltip("Physical armour granted by equipment. Items do not exist yet, so it is filled by hand.")]
         [Min(0)] public int PhysicalArmor;
 
-        /// <summary>Velocidade de movimento base de todo personagem, em casas por segundo.</summary>
+        [Tooltip("Resistance points against fire. Uses the same curve as physical armour.")]
+        [Min(0)] public int FireResistance;
+
+        [Tooltip("Resistance points against water. Uses the same curve as physical armour.")]
+        [Min(0)] public int WaterResistance;
+
+        [Tooltip("Resistance points against electricity. Uses the same curve as physical armour.")]
+        [Min(0)] public int ElectricResistance;
+
+        [Tooltip("Physical damage reflected back at the attacker, from 0 to 100.")]
+        [Range(0f, 100f)] public float ThornsPercent;
+
+        [Header("Offence")]
+        [Tooltip("Health recovered when dealing physical damage, from 0 to 100.")]
+        [Range(0f, 100f)] public float LifeStealPercent;
+
+        /// <summary>Base attack speed of every character, in attacks per second.</summary>
+        public const float BaseAttacksPerSecond = 1f;
+
+        /// <summary>Base movement speed of every character, in cells per second.</summary>
         public const float BaseCellsPerSecond = 2f;
 
-        // --- Atributos secundarios lineares ---
+        // --- Linear secondary attributes ---
 
         public int MaxHealth
         {
@@ -56,23 +72,23 @@ namespace HerOClock.Characters
             get { return BaseCellsPerSecond * (1f + Agility * MoveSpeedPerAgility); }
         }
 
-        // --- Atributos secundarios com rendimento decrescente ---
+        // --- Secondary attributes with diminishing returns ---
 
-        /// <summary>Chance de evasao, de 0 a 100. Nunca alcanca 100.</summary>
+        /// <summary>Evasion chance, from 0 to 100. Never reaches 100.</summary>
         public float EvasionChance
         {
             get { return DiminishingReturns(100f, Agility, EvasionConstant); }
         }
 
-        /// <summary>Reducao de recarga, de 0 a 60. Nunca alcanca 60.</summary>
+        /// <summary>Cooldown reduction, from 0 to 60. Never reaches 60.</summary>
         public float CooldownReduction
         {
             get { return DiminishingReturns(60f, Specialty, CooldownConstant); }
         }
 
         /// <summary>
-        /// Mitigacao fisica, de 0 a 75. A constante cresce com o nivel de quem ataca,
-        /// entao a mesma armadura vale menos contra inimigos mais fortes.
+        /// Physical mitigation, from 0 to 75. The constant grows with the attacker's level,
+        /// so the same armour is worth less against stronger enemies.
         /// </summary>
         public float PhysicalMitigationAgainst(int attackerLevel)
         {
@@ -80,8 +96,8 @@ namespace HerOClock.Characters
         }
 
         /// <summary>
-        /// Curva de rendimento decrescente da spec: Teto x Pontos / (Pontos + Constante).
-        /// O teto nunca e alcancado, apenas aproximado, entao nao existe trava manual.
+        /// The diminishing returns curve from the spec: Cap x Points / (Points + Constant).
+        /// The cap is never reached, only approached, so no manual clamp is needed anywhere.
         /// </summary>
         public static float DiminishingReturns(float cap, float points, float constant)
         {
@@ -93,7 +109,7 @@ namespace HerOClock.Characters
             return cap * points / (points + constant);
         }
 
-        // --- Tabelas por classe de equipamento ---
+        // --- Per equipment class tables ---
 
         private float AttackSpeedPerAgility
         {

@@ -1,18 +1,18 @@
 namespace HerOClock.Characters
 {
     /// <summary>
-    /// Classe do equipamento usado pelo personagem, conforme items.md.
-    /// Ela define como os atributos principais viram atributos secundarios.
+    /// Class of the equipment worn by the character, as described in items.md.
+    /// It defines how primary attributes turn into secondary ones.
     /// </summary>
     public enum EquipmentClass
     {
-        /// <summary>Liberado por AGI. Melhor em evasao e velocidade de ataque.</summary>
+        /// <summary>Unlocked by AGI. Best at evasion and attack speed.</summary>
         Light,
 
-        /// <summary>Liberado por SPE. Melhor em reducao de recarga.</summary>
+        /// <summary>Unlocked by SPE. Best at cooldown reduction.</summary>
         Magic,
 
-        /// <summary>Liberado por POW. Melhor em armadura e resistencia.</summary>
+        /// <summary>Unlocked by POW. Best at armour and resistance.</summary>
         Heavy
     }
 }
