@@ -50,26 +50,20 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 ## 0.4.0.0 (próxima)
 
-- Análise de fichas.
-- Esse formato fica bom pra você? Faz sentido ser assim?
-- Como podemos programar cada habilidade? Eu penso um pouco em como o League of Legends e Magic fazem... principalmente o Magic Arena que é feito em Unity. Cada keyword vira um arquivo?
-
-## 0.5.0.0
-
 - Progressão.
 - Experiência, nível e distribuição de pontos de atributo.
 
-## 0.6.0.0
+## 0.5.0.0
 
 - Persistência.
 - Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
 
-## 0.7.0.0
+## 0.6.0.0
 
 - Habilidades.
 - Recarga, área, provocação e reposicionamento.
 
-## 0.8.0.0
+## 0.7.0.0
 
 - Items.
 - Ataques básicos agora variam de acordo com o item.
