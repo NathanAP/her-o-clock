@@ -4,12 +4,23 @@
 
 Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clock.
 
+## Fichas
+
+- As fichas de cada personagem do jogo estão presentes na pasta `.claude/specs/characters`.
+- O desenvolvimento do jogo deve espelhar as fichas dos personagens.
+- As fichas também indicam valores de dano, redução de recarga, escala para buffs e debuffs, entre outros.
+- As habilidades descritas nas fichas possuem níveis, então certos valores podem acabar mudando (o valor do dano pode aumentar a cada nível investido na habilidade). Nesses casos:
+    - Valores descritos em `arrays` indicam a escalabilidade conforme o nível (index 0 = nível 1, index 1 = nível 2 e assim por diante).
+        - Por exemplo: `{ ..., "duration": [10, 20, 30, 40, 50] }` indica que aquela habilidade possui uma escala conforme seu atual nível.
+    - Valores descritos diretamente em numéricos indicam a escalabilidade constante, ou seja, todos os níveis daquela habilidade usam o mesmo valor.
+        - Por exemplo: `{ ..., "duration": 20 }` indica que aquela habilidade possui a mesma duração em todos os níveis.
+- Tudo relacionado a tempo na ficha (tempo de duração, tempo de recarga, etc) está indicado em segundos.
+
 ## Heróis
 
 - Os heróis são os personagens usados pelo jogador.
 - A principal característica de design é que todos eles são robôs, mesmo que possuam traços humanos (movimentação, expressões).
 - Os heróis podem ser equipados por itens conforme o jogador escolher.
-- Cada herói possui suas particularidades que estão descritas em suas fichas presentes na pasta `.claude/specs/characters/heroes`.
 
 ### Grupo de heróis
 
@@ -24,7 +35,6 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - Os lacaios são personagens que aparecem nas fases antes e/ou junto com os vilões.
 - A principal característica de design é que eles podem ser humanos, robôs ou monstruosidades criadas pelos vilões.
 - Os lacaios aparecem repetidamente em grupos pré definidos nas fases.
-- Cada lacaio possui suas particularidades que estão descritas em suas fichas presentes na pasta `.claude/specs/characters/minions`.
 
 ## Vilões
 
@@ -32,7 +42,6 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - Vilões podem ser também chamados e considerados os "bosses" ou "chefões" do jogo.
 - A principal característica de design é que eles podem ser humanos, robôs ou monstruosidades.
 - Os vilões podem aplicar buffs aos lacaios ou debuffs aos jogadores conforme suas características.
-- Cada vilão possui suas particularidades que estão descritas em suas fichas presentes na pasta `.claude/specs/characters/villains`.
 
 ## Nível de personagem
 

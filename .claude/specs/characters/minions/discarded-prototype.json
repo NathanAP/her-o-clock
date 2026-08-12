@@ -1,8 +1,13 @@
 {
+    "id": "discarded-prototype",
+    "displayName": "Discarded Prototype",
+    "kind": "minion",
+    "initialLevel": 1,
+    "maxLevel": 10,
     "info": {
         "name": "Discarded Prototype",
         "type": "Robot",
-        "summary": "Discarded prototypes are failed experimental robots that were exposed to the Catarsys.",
+        "description": "Discarded prototypes are failed experimental robots that were exposed to the Catarsys.",
         "lore": "Discarded prototypes are the result of failed experiments in the creation of advanced robotic beings. These robots were exposed to the Catarsys, became hostile and eventually were discarded. DR Carter uses them now as a weapon.",
         "characteristics": {
             "age": 1,
@@ -19,11 +24,11 @@
     "hidden": {
         "realLore": "Discarded prototypes are actually dead people that were exposed to the Catarsys but were not able to resist or control the effects. Many attempts were done so there are a lot of them hidden in the government facilities. They are used as weapons by DR Carter, who is the only one that can control them."
     },
-    "initialAttributes": {
-        "strength": 1,
-        "agility": 1,
-        "intelligence": 0,
-        "endurance": 2
+    "baseAttributes": {
+        "pow": 1,
+        "agi": 1,
+        "spe": 0,
+        "con": 2
     },
     "abilities": []
 }

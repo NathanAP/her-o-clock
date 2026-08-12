@@ -1,8 +1,13 @@
 {
+    "id": "tempo",
+    "displayName": "Tempo",
+    "kind": "hero",
+    "initialLevel": 1,
+    "maxLevel": 100,
     "info": {
         "name": "Tempo",
         "type": "Robot",
-        "summary": "Tempo is a hero character known for their ability to manipulate time and speed.",
+        "description": "Tempo is a hero character known for their ability to manipulate time and speed.",
         "lore": "Tempo is the latest hero made in Unia designed with a new discovered technology. The time manipulation allowed Tempo to escape a surprise attacks from an unknown enemy. Now Tempo's mission is to find the others heroes and find out who is behind the attack.",
         "characteristics": {
             "age": 2,
@@ -24,16 +29,16 @@
         "realGender": "Female",
         "realFatherName": "Donovan Roads Carter"
     },
-    "initialAttributes": {
-        "strength": 6,
-        "agility": 9,
-        "intelligence": 8,
-        "endurance": 7
+    "baseAttributes": {
+        "pow": 6,
+        "agi": 9,
+        "spe": 8,
+        "con": 7
     },
     "abilities": [
         {
             "name": "No time to waste!",
-            "description": "Tempo increases their own speed, granting increased attack speed, movement speed and cooldown reduction for X seconds.",
+            "description": "Tempo increases their own speed, granting increased attack speed, movement speed and cooldown reduction for a duration.",
             "cooldown": [30, 28, 25, 22, 20],
             "duration": [5, 6, 7, 8, 9],
             "type": "buff",
@@ -42,16 +47,22 @@
             "areaRow": 0,
             "effects": [
                 {
-                    "type": "buff_attack_speed_%",
-                    "value": [20, 20, 20, 20, 20]
+                    "type": "modify_stat",
+                    "stat": "attackSpeed",
+                    "mode": "percent",
+                    "value": 20
                 },
                 {
-                    "type": "buff_movement_speed_%",
-                    "value": [20, 20, 20, 20, 20]
+                    "type": "modify_stat",
+                    "stat": "movementSpeed",
+                    "mode": "percent",
+                    "value": 20
                 },
                 {
-                    "type": "buff_cooldown_reduction_%",
-                    "value": [15, 15, 15, 15, 15]
+                    "type": "modify_stat",
+                    "stat": "cooldownReduction",
+                    "mode": "percent",
+                    "value": 15
                 }
             ]
         },
@@ -65,16 +76,22 @@
             "areaRow": 2,
             "effects": [
                 {
-                    "type": "debuff_attack_speed_%",
-                    "value": [10, 10, 10, 10, 10]
+                    "type": "modify_stat",
+                    "stat": "attackSpeed",
+                    "mode": "percent",
+                    "value": -10
                 },
                 {
-                    "type": "debuff_movement_speed_%",
-                    "value": [10, 10, 10, 10, 10]
+                    "type": "modify_stat",
+                    "stat": "movementSpeed",
+                    "mode": "percent",
+                    "value": -10
                 },
                 {
-                    "type": "debuff_cooldown_reduction_%",
-                    "value": [8, 8, 8, 8, 8]
+                    "type": "modify_stat",
+                    "stat": "cooldownReduction",
+                    "mode": "percent",
+                    "value": -8
                 }
             ]
         },
@@ -82,7 +99,6 @@
             "name": "Fast and Furious!",
             "description": "Tempo travels through enemies enemies close to each other, attacking each of them with increased damage and landing behind the last enemy attacked.",
             "cooldown": [20, 18, 18, 18, 16],
-            "duration": null,
             "type": "physical_attack",
             "areaColumn": 1,
             "areaRow": 1,
@@ -90,15 +106,13 @@
                 {
                     "type": "physical_damage",
                     "baseDamage": [50, 60, 70, 80, 90],
-                    "strengthScaling": 0.2
+                    "powScaling": 0.2
                 },
                 {
-                    "type": "intangible",
-                    "duration": [1, 1, 1, 1, 1]
+                    "type": "intangible"
                 },
                 {
-                    "type": "untargetable",
-                    "duration": [1, 1, 1, 1, 1]
+                    "type": "untargetable"
                 },
                 {
                     "type": "teleport",

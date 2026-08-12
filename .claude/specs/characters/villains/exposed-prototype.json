@@ -1,0 +1,34 @@
+{
+    "id": "exposed-prototype",
+    "displayName": "Exposed Prototype",
+    "kind": "villain",
+    "initialLevel": 1,
+    "maxLevel": 10,
+    "info": {
+        "name": "Exposed Prototype",
+        "type": "Robot",
+        "description": "Exposed prototypes are failed experimental robots that were exposed to the Catarsys in a high level of contamination. They now exhale a toxic gas that can affect the heroes and make them weaker.",
+        "lore": "Exposed prototypes are the result of failed experiments in the creation of advanced robotic beings. They were exposed to the Catarsys in a high level of contamination and became toxic for anyone who comes into contact with them.",
+        "characteristics": {
+            "age": 1,
+            "gender": "Unknown",
+            "body": "Rusty robots that act mindlessly, attacking anything that moves. They are made of metal and have a humanoid shape, but their design is crude and unfinished.",
+            "height": "Between 150 cm and 200 cm",
+            "weight": "Between 50 kg and 100 kg"
+        },
+        "outfit": {
+            "description": "Discarded prototypes have no outfit, as they are unfinished robots. Their metal bodies are exposed and show signs of wear and tear.",
+            "colors": ["rusty brown", "grey", "black"]
+        }
+    },
+    "hidden": {
+        "realLore": "Just like the exposed prototypes, they are dead people that were exposed to the Catarsys in a high level. The contamination made them lose their minds instantly and became toxic."
+    },
+    "baseAttributes": {
+        "pow": 2,
+        "agi": 2,
+        "spe": 0,
+        "con": 4
+    },
+    "abilities": []
+}
