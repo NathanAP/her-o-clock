@@ -19,6 +19,7 @@ Utilize este arquivo para visualizar e manter a estrutura geral do projeto organ
     - Audio (músicas e efeitos sonoros)
     - Prefabs (prefabs de personagens, cenário e interface)
     - Scenes (cenas do jogo)
+    - Stages (arquivos .json das fases)
     - ScriptableObjects (dados de personagens, itens, habilidades e fases)
     - Scripts (código C# do jogo)
     - Settings (configurações de render pipeline e input)

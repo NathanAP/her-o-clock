@@ -16,13 +16,13 @@ MonoBehaviour:
   Placements:
   - Character: {fileID: 11400000, guid: 53bb90ad68e0e0647b3764395839f1fb, type: 2}
     Column: 3
-    Row: 1
+    Row: 2
   - Character: {fileID: 11400000, guid: 53bb90ad68e0e0647b3764395839f1fb, type: 2}
     Column: 4
-    Row: 1
+    Row: 2
   - Character: {fileID: 11400000, guid: fab6720aa0a2eb4448e746c4819cacf7, type: 2}
     Column: 2
-    Row: 2
+    Row: 1
   - Character: {fileID: 11400000, guid: fab6720aa0a2eb4448e746c4819cacf7, type: 2}
     Column: 5
-    Row: 2
+    Row: 1

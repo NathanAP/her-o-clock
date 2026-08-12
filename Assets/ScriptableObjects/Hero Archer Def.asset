@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf44a08b4b6abc4a9c7c7dca3fbd4aa, type: 3}
   m_Name: Hero Archer Def
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
+  Id: hero-archer
   DisplayName: Arqueiro foda
   Kind: 0
   Color: {r: 0.43529412, g: 0.65882355, b: 0.9411765, a: 1}
@@ -24,5 +25,9 @@ MonoBehaviour:
     Specialty: 0
     Constitution: 10
     Equipment: 0
-    BaseAttacksPerSecond: 1.2
     PhysicalArmor: 10
+    FireResistance: 0
+    WaterResistance: 0
+    ElectricResistance: 0
+    ThornsPercent: 0
+    LifeStealPercent: 0

@@ -23,12 +23,15 @@ Esses valores ficam em asset justamente para conseguirmos testar outros tamanhos
 
 ## CharacterDefinition
 
-Ficha de um personagem. Enquanto não existem heróis, lacaios e vilões de verdade, servem para montar um elenco de teste.
+Ficha de um personagem. É o molde imutável: história, design, cor e habilidades. O nível, os atributos e futuramente o equipamento pertencem à **instância** criada em campo, não à ficha.
+
+O campo `Id` é obrigatório e é por ele que os arquivos de fase e, no futuro, os saves apontam para a ficha. **Nunca mude um `Id` depois que existir conteúdo referindo-se a ele.**
 
 As cores seguem o roadmap: azul para heróis, rosa para lacaios, vermelho para vilões.
 
 ### Heroi Tanque
 
+- Id: `hero-tank`
 - Display Name: `Heroi Tanque`
 - Kind: `Hero`
 - Color: `#3B6FD4`
@@ -41,6 +44,7 @@ As cores seguem o roadmap: azul para heróis, rosa para lacaios, vermelho para v
 
 ### Heroi Arqueiro
 
+- Id: `hero-archer`
 - Display Name: `Heroi Arqueiro`
 - Kind: `Hero`
 - Color: `#6FA8F0`
@@ -55,22 +59,24 @@ O alcance mínimo `2` é o que faz este personagem recuar quando um inimigo enco
 
 ### Lacaio
 
+- Id: `minion-standard`
 - Display Name: `Lacaio`
 - Kind: `Minion`
 - Color: `#E86FA8`
-- Level: `1`
 - Min Range: `1`
 - Max Range: `1`
 - Equipment: `Light`
 - Power: `8`, Agility: `5`, Specialty: `0`, Constitution: `8`
 - Physical Armor: `0`
 
+O campo `Level` da ficha é ignorado para lacaios e vilões: quem define o nível deles é a fase em que aparecem.
+
 ### Vilao
 
+- Id: `villain-boss`
 - Display Name: `Vilao`
 - Kind: `Villain`
 - Color: `#C22B2B`
-- Level: `1`
 - Min Range: `1`
 - Max Range: `2`
 - Equipment: `Heavy`
@@ -87,13 +93,25 @@ Além dos acima, toda ficha possui campos que ainda não têm fonte no jogo, poi
 
 Como o ataque básico ainda é sempre físico, as três resistências elementais não têm efeito nenhum por enquanto. Espinhos e roubo de vida funcionam desde já.
 
+## CharacterDatabase
+
+Um único asset chamado `CharacterDatabase`, com a lista de todas as fichas.
+
+Existe porque os arquivos de fase são JSON e não conseguem guardar referência de asset. Eles nomeiam o personagem por `Id` e este banco resolve. Os saves vão precisar exatamente da mesma coisa.
+
+Arraste as quatro fichas para a lista `Characters`. O banco reclama no Console se alguma ficha estiver sem `Id` ou se dois `Id` forem iguais.
+
+## StageDatabase
+
+Um único asset chamado `StageDatabase`, com a lista dos arquivos `.json` das fases, na ordem em que devem ser jogadas.
+
+Arraste `act1-stage1.json` e `act1-stage2.json` de `Assets/Stages/` para a lista `Stages`.
+
+Os arquivos são referenciados como `TextAsset`, e não carregados por nome de uma pasta `Resources`, para que renomear ou mover uma fase nunca quebre a referência.
+
 ## BattleFormation
 
-Quem começa a batalha em qual casa. São dois assets.
-
-O campo `Team` nasce como `Heroes` nos dois. **Uma das formações precisa ser trocada para `Enemies` na mão.** Se as duas ficarem em `Heroes`, ninguém tem inimigo, ninguém tem alvo e ninguém se movimenta. O `BattleBootstrap` detecta isso e escreve no Console.
-
-### Formacao Herois
+O time do jogador e onde ele começa no tabuleiro. Agora existe **apenas a formação dos heróis** — os inimigos vêm das fases.
 
 - Team: `Heroes`
 - Placements:
@@ -102,23 +120,6 @@ O campo `Team` nasce como `Heroes` nos dois. **Uma das formações precisa ser t
     - `Heroi Arqueiro`, Column `2`, Row `2`
     - `Heroi Arqueiro`, Column `5`, Row `2`
 
-O mesmo `CharacterDefinition` pode aparecer várias vezes. Cada linha cria um personagem separado.
+A mesma ficha pode aparecer várias vezes. Cada linha cria um personagem separado, com atributos próprios.
 
-### Formacao Inimigos
-
-- Team: `Enemies`
-- Placements:
-    - `Lacaio`, Column `2`, Row `6`
-    - `Lacaio`, Column `3`, Row `6`
-    - `Lacaio`, Column `5`, Row `7`
-    - `Vilao`, Column `4`, Row `8`
-
-## O que essa formação demonstra
-
-Ela foi montada de propósito para deixar visível cada regra implementada:
-
-- Os dois tanques começam na fileira 1 com alcance 1, então precisam atravessar meio tabuleiro andando até encostar em alguém.
-- Os arqueiros começam na fileira 2 com alcance de 2 a 4 casas, então param muito antes dos tanques. Isso mostra que alcance realmente muda o comportamento.
-- Os lacaios vêm na direção contrária ao mesmo tempo, então os dois lados se encontram no meio.
-- Quando um lacaio encosta em um arqueiro, o arqueiro recua, porque a distância ficou abaixo do alcance mínimo dele.
-- Se o arqueiro ficar sem casa vazia para recuar, ele fica parado. É o personagem encurralado da spec.
+A antiga `Formacao Inimigos` deixou de ser usada e pode ser apagada. O conteúdo dela virou a primeira onda de `act1-stage1.json`.

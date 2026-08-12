@@ -38,13 +38,17 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - As specs, as versões e os game-objects continuam em português.
 - O resumo completo está em `.claude/versions/20260811_0.2.1.0.md`.
 
-## 0.3.0.0
+## 0.3.0.0 (feita)
 
 - Fase.
 - Grupos de lacaios em sequência, vilão no fim, vitória e derrota, reinício automático.
-    - Será que é possível fazer tudo isso via json ou vamos ter que prédefinir cada fase como objetos da Unity?
+- As fases são arquivos `.json`, escritos fora da Unity e validados antes de rodar. As fichas de personagem continuam ScriptableObject.
+- Os heróis não recuperam vida entre ondas, o que cria a necessidade de farmar.
+- O chão rola entre as ondas, representando o grupo avançando pela cidade.
+- Ficha e instância passaram a ser coisas separadas, preparando a progressão.
+- O resumo completo está em `.claude/versions/20260811_0.3.0.0.md`.
 
-## 0.4.0.0
+## 0.4.0.0 (próxima)
 
 - Progressão.
 - Experiência, nível e distribuição de pontos de atributo.
@@ -59,7 +63,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Habilidades.
 - Recarga, área, provocação e reposicionamento.
 
-## 0.7.0.0 (próxima)
+## 0.7.0.0
 
 - Items.
 - Ataques básicos agora variam de acordo com o item.

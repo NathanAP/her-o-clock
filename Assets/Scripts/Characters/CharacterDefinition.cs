@@ -10,6 +10,9 @@ namespace HerOClock.Characters
     public class CharacterDefinition : ScriptableObject
     {
         [Header("Identity")]
+        [Tooltip("Stable text id used by stage files and, later, by save games. Never change it once content refers to it.")]
+        public string Id = "";
+
         public string DisplayName = "Unnamed";
         public CharacterKind Kind = CharacterKind.Hero;
 

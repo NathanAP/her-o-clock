@@ -21,19 +21,25 @@ namespace HerOClock.Characters
         /// </summary>
         public Character TauntedBy { get; set; }
 
-        public CharacterStats Stats
-        {
-            get { return Definition.Stats; }
-        }
+        /// <summary>
+        /// This instance's own stats, copied from the definition on initialisation.
+        ///
+        /// The definition is a shared asset: several characters can come from the same sheet,
+        /// and in the editor it is the file on disk. Reading stats straight from it would make
+        /// every hero of the same type share one set of numbers, and levelling one up would
+        /// edit the asset itself and persist after Play.
+        /// </summary>
+        public CharacterStats Stats { get; private set; }
+
+        /// <summary>
+        /// This instance's level. Heroes take it from the sheet for now, minions and villains
+        /// take it from the stage they appear in, as stated in characters.md.
+        /// </summary>
+        public int Level { get; private set; }
 
         public CharacterKind Kind
         {
             get { return Definition.Kind; }
-        }
-
-        public int Level
-        {
-            get { return Definition.Level; }
         }
 
         public int MinRange
@@ -57,14 +63,17 @@ namespace HerOClock.Characters
         /// <summary>Raised on damage, healing or death, so the view can react.</summary>
         public event System.Action Changed;
 
-        public void Initialize(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid)
+        public void Initialize(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid, int level)
         {
             Definition = definition;
             Team = team;
             this.grid = grid;
 
+            Stats = definition.Stats.Clone();
+            Level = level;
+
             InitialPosition = position;
-            CurrentHealth = definition.Stats.MaxHealth;
+            CurrentHealth = Stats.MaxHealth;
             Position = position;
 
             grid.Occupy(position, this);
@@ -147,8 +156,22 @@ namespace HerOClock.Characters
         /// </summary>
         public void ResetForBattle()
         {
-            Position = InitialPosition;
             CurrentHealth = Stats.MaxHealth;
+            ReturnToStart();
+        }
+
+        /// <summary>
+        /// Puts the character back on its starting cell without touching its health.
+        ///
+        /// Used between waves of the same stage, where damage carries over. Fallen heroes come
+        /// back too, so the enemy area is clear for the next wave and so they sit in the right
+        /// place if they are ever revived.
+        ///
+        /// Like ResetForBattle, it must run only after everyone has left the board.
+        /// </summary>
+        public void ReturnToStart()
+        {
+            Position = InitialPosition;
             TauntedBy = null;
 
             grid.Occupy(Position, this);

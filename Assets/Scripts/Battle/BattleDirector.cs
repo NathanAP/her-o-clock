@@ -8,11 +8,13 @@ using UnityEngine;
 namespace HerOClock.Battle
 {
     /// <summary>
-    /// The single update loop of the battle.
+    /// The single update loop of one battle.
     ///
     /// Characters deliberately have no Update of their own. With one loop, in a fixed order,
     /// combat always plays out the same way for the same starting state, which is what will
     /// let us simulate offline progression later without rewriting anything.
+    ///
+    /// It runs a single fight and stops. What happens next belongs to the StageRunner.
     /// </summary>
     public class BattleDirector : MonoBehaviour
     {
@@ -22,27 +24,21 @@ namespace HerOClock.Battle
         private readonly List<CharacterMover> movers = new List<CharacterMover>();
         private readonly List<CharacterAttacker> attackers = new List<CharacterAttacker>();
 
-        private float restartDelay;
-        private float restartTimer;
         private bool running;
 
         /// <summary>Attacker, target and outcome. The view layer listens to this.</summary>
         public event Action<Character, Character, DamageResult> Attacked;
 
-        public IReadOnlyList<Character> Heroes
+        /// <summary>Raised once when a side runs out of living members. True means the heroes won.</summary>
+        public event Action<bool> BattleEnded;
+
+        public bool IsRunning
         {
-            get { return heroes; }
+            get { return running; }
         }
 
-        public IReadOnlyList<Character> Enemies
+        public void Begin(BattleGrid grid, IReadOnlyList<Character> characters, BattleRandom random)
         {
-            get { return enemies; }
-        }
-
-        public void Begin(BattleGrid grid, IReadOnlyList<Character> characters, BattleRandom random, float restartDelay)
-        {
-            this.restartDelay = restartDelay;
-
             heroes.Clear();
             enemies.Clear();
             all.Clear();
@@ -73,21 +69,19 @@ namespace HerOClock.Battle
             running = true;
         }
 
+        public void Stop()
+        {
+            running = false;
+        }
+
         private void Update()
         {
-            float deltaTime = Time.deltaTime;
-
             if (!running)
             {
-                restartTimer -= deltaTime;
-
-                if (restartTimer <= 0f)
-                {
-                    Restart();
-                }
-
                 return;
             }
+
+            float deltaTime = Time.deltaTime;
 
             for (int i = 0; i < all.Count; i++)
             {
@@ -111,34 +105,7 @@ namespace HerOClock.Battle
             }
 
             running = false;
-            restartTimer = restartDelay;
-
-            string winner = heroesAlive ? "heroes" : enemiesAlive ? "enemies" : "nobody";
-            Debug.Log("Battle over. Winner: " + winner + ". Restarting in " + restartDelay + "s.", this);
-        }
-
-        /// <summary>
-        /// Puts everyone back on their starting cells at full health. While stages do not
-        /// exist, this is what lets us watch the same battle several times to get a feel
-        /// for the balance.
-        /// </summary>
-        private void Restart()
-        {
-            for (int i = 0; i < all.Count; i++)
-            {
-                movers[i].Reset();
-                attackers[i].Reset();
-                all[i].ClearFromGrid();
-            }
-
-            // Characters are only placed back after everyone has left the board. Otherwise a
-            // character standing on someone else's starting cell would make both claim it.
-            for (int i = 0; i < all.Count; i++)
-            {
-                all[i].ResetForBattle();
-            }
-
-            running = true;
+            BattleEnded?.Invoke(heroesAlive);
         }
 
         private void RaiseAttacked(Character attacker, Character target, DamageResult result)

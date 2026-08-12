@@ -18,6 +18,32 @@ This is not fussiness: offline progression, which is the heart of the genre acco
 
 For the same reason, the target priority chain in `TargetSelector` compares integers only, with no floats involved.
 
+## Sheet and instance are separate
+
+`CharacterDefinition` is a shared asset: the immutable mould, holding story, design, colour and later skills. `Character` holds its own copy of the stats, created from the sheet on initialisation, plus its own level.
+
+Never read stats straight from the definition again. Doing so makes every character of the same type share one set of numbers, and in the editor it edits the asset on disk, so the change survives leaving Play.
+
+The player's six heroes are fixed designs; what varies is the instance the player builds. Levels, attributes and equipment belong to the instance.
+
+## ScriptableObjects must hold no runtime state
+
+This project runs with Domain Reload disabled, which makes entering Play Mode almost instant. The price is that nothing is cleared between sessions: static fields keep their values, and so do the fields of any ScriptableObject, because the asset stays loaded.
+
+A lazily built cache inside a ScriptableObject is therefore permanent. `CharacterDatabase` had one, built the first time it was asked for an id. It was built during a session where the sheets still had no ids, came out empty, and stayed empty across every later Play. Every stage then failed to resolve every character, and no amount of restarting Play fixed it.
+
+Treat a ScriptableObject as read-only data. Anything derived from it is built at startup and passed around, never stored back on the asset. If some cache really has to live there, it needs an explicit rebuild call, not a null check.
+
+## Content lives in JSON, assets live in ScriptableObjects
+
+Stages are `.json` files under `Assets/Stages/`. Character sheets stay ScriptableObjects.
+
+The split follows what each one needs. Sheets have to reference sprites, animations and skills, which only exist as Unity assets. Stages are bulk content: dozens of files that need to be authored quickly, diffed in git and mass-edited for balance.
+
+Because JSON cannot hold an asset reference, characters are named by a text `Id` and resolved through `CharacterDatabase`. Save games will need the same mechanism, since a save cannot store an object reference either.
+
+The cost of text references is that a typo would only surface at runtime. `StageValidator` is what pays that cost: it has no Unity dependency, is covered by the test suite, and reports every problem in a file at once instead of stopping at the first.
+
 ## The random source belongs to the battle
 
 `UnityEngine.Random` is not used anywhere in combat, and must not be. It is static and global, so any other system drawing a number would change the outcome of the fight by accident.

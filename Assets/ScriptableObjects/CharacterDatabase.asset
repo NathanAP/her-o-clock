@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84b747d86b2c6bb42bba47b828d420bd, type: 3}
+  m_Name: CharacterDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDatabase
+  Characters:
+  - {fileID: 11400000, guid: 53bb90ad68e0e0647b3764395839f1fb, type: 2}
+  - {fileID: 11400000, guid: fab6720aa0a2eb4448e746c4819cacf7, type: 2}
+  - {fileID: 11400000, guid: 2b10c4de3e9abff458883a68f18ca681, type: 2}
+  - {fileID: 11400000, guid: 8a929c9229c7e3246b54dea365f1b74a, type: 2}

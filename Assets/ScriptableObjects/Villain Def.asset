@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf44a08b4b6abc4a9c7c7dca3fbd4aa, type: 3}
   m_Name: Villain Def
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
+  Id: villain-boss
   DisplayName: Carlos
   Kind: 2
   Color: {r: 0.7607843, g: 0.16862746, b: 0.16862746, a: 1}
@@ -24,5 +25,9 @@ MonoBehaviour:
     Specialty: 15
     Constitution: 40
     Equipment: 2
-    BaseAttacksPerSecond: 0.7
     PhysicalArmor: 150
+    FireResistance: 0
+    WaterResistance: 0
+    ElectricResistance: 0
+    ThornsPercent: 0
+    LifeStealPercent: 0

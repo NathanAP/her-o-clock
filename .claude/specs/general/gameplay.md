@@ -77,6 +77,32 @@ Este é o fluxo principal do jogo.
     - Atacam os heróis com seu ataque básico.
     - Quando disponíveis usam suas habilidades automaticamente.
 
+## Fases
+
+- Uma fase é uma sequência de combates contra grupos de lacaios, terminando sempre em um combate contra um vilão.
+- Cada grupo de lacaios é chamado de onda.
+- Lacaios e vilões possuem o nível definido pela fase em que aparecem, e não pela ficha deles. É isso que permite reaproveitar o mesmo lacaio em atos diferentes com forças diferentes.
+- Cada fase possui a sua própria pequena história, contada ao jogador quando ela começa.
+
+### Desgaste
+
+- Os heróis **não** recuperam vida entre uma onda e outra. A vida perdida em uma onda segue para a próxima.
+- Um herói que cai permanece caído até o fim da fase, pois não existe forma de revivê-lo durante o combate a não ser por habilidade.
+- É o desgaste que dá sentido à regeneração de vida e ao roubo de vida. Sem ele os dois atributos seriam decorativos, pois cada combate começaria com todo mundo inteiro.
+- É também o desgaste que cria a necessidade de farmar. Chega um ponto em que a fase não é vencível com o time atual, e o jogador precisa subir de nível ou melhorar os itens antes de avançar.
+
+### Entre uma onda e outra
+
+- Todos os heróis voltam às suas posições iniciais, tanto os vivos quanto os caídos.
+    - Os caídos voltam junto para que a área dos inimigos fique livre para a próxima onda, e para que eles fiquem no lugar certo caso sejam revividos.
+- O cenário rola enquanto isso, representando o grupo avançando pela cidade até o próximo confronto.
+
+### Vitória e derrota
+
+- A fase é vencida quando o vilão é derrotado.
+- A fase é perdida quando todos os heróis caem.
+- Ao perder, a fase reinicia do começo, com todos os heróis vivos e com vida cheia.
+
 ## Combate
 
 - O combate sempre ocorre automaticamente e não pode ser manipulado pelo jogador.

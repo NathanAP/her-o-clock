@@ -416,9 +416,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Setup.BattleBootstrap
   gridConfig: {fileID: 11400000, guid: f12b5620c5dba3d4591a6e5003d5b729, type: 2}
+  characterDatabase: {fileID: 11400000, guid: 2335567b3029dfd4395b9186d02b81a4, type: 2}
+  stageDatabase: {fileID: 11400000, guid: ef83ceac8527cb149885a887303ac954, type: 2}
+  stageIndex: 0
   heroFormation: {fileID: 11400000, guid: bdcc6645e8ccf534f80b42b7c9b3f495, type: 2}
-  enemyFormation: {fileID: 11400000, guid: 205fbc8c52cb47d48b129fe6513ddcfc, type: 2}
-  characterScale: 0.8
+  viewSettings:
+    BodySize: {x: 0.5, y: 0.7}
+    BodyOffsetY: -0.1
+    HealthBarSize: {x: 0.8, y: 0.1}
+    HealthBarOffsetY: 0.4
+    HealthBarBackground: {r: 0.08, g: 0.08, b: 0.1, a: 0.9}
+    HealthBarFull: {r: 0.35, g: 0.85, b: 0.4, a: 1}
+    HealthBarEmpty: {r: 0.85, g: 0.25, b: 0.25, a: 1}
+    FlashColor: {r: 1, g: 1, b: 1, a: 1}
+    FlashDuration: 0.12
+  randomSeed: 0
   targetFrameRate: 30
 --- !u!4 &1530138092
 Transform:

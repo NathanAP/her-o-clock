@@ -42,6 +42,12 @@ Chosen for three concrete reasons:
 
 Both areas are the same size on purpose. If it becomes clear that heroes need more or less room, that is the first thing to adjust.
 
+## Damage carries across a stage
+
+Heroes do not heal between waves, and a fallen hero stays down until the stage ends. Only a full defeat restarts the stage at full health.
+
+This is what gives health regeneration and life steal a reason to exist as attributes: without attrition every fight would start with everyone intact and both would be decorative. It is also what creates the need to farm, since eventually a stage stops being winnable with the current team.
+
 ## Free movement, with no body blocking
 
 Characters cross the whole board chasing their target. The areas only define where the battle starts.

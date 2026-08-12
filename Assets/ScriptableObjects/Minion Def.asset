@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf44a08b4b6abc4a9c7c7dca3fbd4aa, type: 3}
   m_Name: Minion Def
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
+  Id: minion-standard
   DisplayName: Motorista
   Kind: 1
   Color: {r: 0.9098039, g: 0.43529412, b: 0.65882355, a: 1}
@@ -24,5 +25,9 @@ MonoBehaviour:
     Specialty: 0
     Constitution: 8
     Equipment: 0
-    BaseAttacksPerSecond: 1
     PhysicalArmor: 0
+    FireResistance: 0
+    WaterResistance: 0
+    ElectricResistance: 0
+    ThornsPercent: 0
+    LifeStealPercent: 0

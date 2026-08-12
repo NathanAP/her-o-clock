@@ -23,8 +23,11 @@ Componente que precisa ser adicionado na mão (`Add Component` → `Battle Boots
 ### Associações obrigatórias
 
 - Grid Config: o asset `BattleGridConfig`.
+- Character Database: o asset `CharacterDatabase`.
+- Stage Database: o asset `StageDatabase`.
 - Hero Formation: o asset `BattleFormation` dos heróis.
-- Enemy Formation: o asset `BattleFormation` dos inimigos.
+
+O campo `Stage Index` escolhe qual fase do banco será jogada, contando de 0. Seleção de fase pelo jogador ainda não existe.
 
 Sem esses três assets nada aparece. Os assets estão descritos em `assets-de-configuracao.md`.
 
@@ -51,23 +54,27 @@ Quando está tudo certo, ele escreve quantos heróis enfrentam quantos inimigos.
 **Combate**
 
 - Random Seed: `0` sorteia uma semente nova a cada Play. Qualquer outro valor reproduz sempre a mesma batalha, o que serve para investigar algo que aconteceu. A semente usada é escrita no Console ao iniciar.
-- Restart Delay: `2`. Segundos de espera antes de reiniciar a batalha depois que um lado é derrotado.
 
 **Desempenho**
 
 - Target Frame Rate: `30`. O jogo fica aberto o dia inteiro em um cantinho da tela, então não faz sentido gastar GPU à toa.
 
-## BattleDirector
+## BattleDirector e StageRunner
 
-Adicionado automaticamente pelo `BattleBootstrap` em tempo de execução. **Não deve ser adicionado na mão.**
+Ambos são adicionados automaticamente pelo `BattleBootstrap` em tempo de execução. **Nenhum dos dois deve ser adicionado na mão.**
 
-Ele é o único laço de atualização do combate. Os personagens não possuem `Update` próprio de propósito: com um laço só, em ordem fixa, o combate roda sempre igual para o mesmo estado inicial. Isso é o que vai permitir simular a progressão offline mais para frente sem reescrever nada.
+O `BattleDirector` é o único laço de atualização do combate. Os personagens não possuem `Update` próprio de propósito: com um laço só, em ordem fixa, o combate roda sempre igual para o mesmo estado inicial. Isso é o que vai permitir simular a progressão offline mais para frente sem reescrever nada. Ele roda **um** combate e para.
+
+O `StageRunner` manda no ciclo da fase: cria a onda, espera o combate acabar, faz a transição, cria a próxima onda, e trata vitória e derrota. Os heróis vivem a fase inteira e carregam o dano de uma onda para a outra; os inimigos são criados por onda e descartados.
+
+Os tempos de espera ficam expostos nele: `Advance Duration` (a caminhada até a próxima onda), `Celebration Duration` (a comemoração ao vencer a fase) e `Defeat Duration` (a pausa antes de recomeçar após a derrota).
 
 ## O que é criado em tempo de execução
 
 Ao entrar em Play, a hierarquia abaixo do `Battle` fica assim:
 
-- `Tabuleiro` — um filho por casa, cada um com um `SpriteRenderer` verde na sorting layer `Background`. Tons alternados deixam as casas visíveis e a área dos lacaios fica mais escura que a dos heróis.
+- `Board` — um filho por casa, cada um com um `SpriteRenderer` verde na sorting layer `Background`. É este objeto que desliza para baixo entre as ondas, representando o grupo avançando pela cidade. Ele desenha três fileiras além da área jogável em cada ponta, para que a rolagem nunca revele um vazio.
+- `AreaDivider` — a linha fina que marca onde termina a área dos heróis. É irmã do tabuleiro, e não filha, para ficar parada enquanto o chão desliza.
 - Um filho por personagem, nomeado com o `DisplayName` da ficha, com os componentes `Character` e `CharacterView`. Cada personagem tem três filhos próprios: `Corpo`, `BarraFundo` e `BarraVida`.
 - `Dano` — objetos temporários com os números que sobem e somem. São criados e destruídos durante o combate.
 

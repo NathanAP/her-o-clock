@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf44a08b4b6abc4a9c7c7dca3fbd4aa, type: 3}
   m_Name: Hero Tank Def
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
+  Id: hero-tank
   DisplayName: Tanque top
   Kind: 0
   Color: {r: 0.23137255, g: 0.43529412, b: 0.83137256, a: 1}
@@ -24,5 +25,9 @@ MonoBehaviour:
     Specialty: 0
     Constitution: 30
     Equipment: 2
-    BaseAttacksPerSecond: 0.8
     PhysicalArmor: 100
+    FireResistance: 0
+    WaterResistance: 0
+    ElectricResistance: 0
+    ThornsPercent: 0
+    LifeStealPercent: 0

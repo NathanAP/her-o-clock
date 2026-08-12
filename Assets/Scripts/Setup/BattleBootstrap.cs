@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
+using HerOClock.Stages;
 using HerOClock.View;
 using UnityEngine;
 
 namespace HerOClock.Setup
 {
     /// <summary>
-    /// Builds the whole battle at runtime from the configuration assets.
+    /// Builds everything at runtime from the configuration assets and starts a stage.
     ///
     /// The scene holds only this component. Everything else is created in code on purpose, so
     /// the .unity file stays small and almost never causes a git conflict.
@@ -17,10 +18,16 @@ namespace HerOClock.Setup
     {
         [Header("Configuration")]
         [SerializeField] private BattleGridConfig gridConfig;
+        [SerializeField] private CharacterDatabase characterDatabase;
+        [SerializeField] private StageDatabase stageDatabase;
 
-        [Header("Formations")]
+        [Header("Stage")]
+        [Tooltip("Which stage of the database to play. Stage selection does not exist yet.")]
+        [Min(0)]
+        [SerializeField] private int stageIndex;
+
+        [Tooltip("The player's team and where it starts on the board.")]
         [SerializeField] private BattleFormation heroFormation;
-        [SerializeField] private BattleFormation enemyFormation;
 
         [Header("Placeholder look")]
         [SerializeField] private CharacterViewSettings viewSettings = new CharacterViewSettings();
@@ -29,10 +36,6 @@ namespace HerOClock.Setup
         [Tooltip("Random seed. The same value always produces the same battle. Leave 0 to draw a new seed on every Play.")]
         [SerializeField] private int randomSeed;
 
-        [Tooltip("Seconds to wait before restarting the battle after one side is defeated.")]
-        [Min(0f)]
-        [SerializeField] private float restartDelay = 2f;
-
         [Header("Performance")]
         [Tooltip("The game sits open all day in a corner of the screen, so there is no point burning GPU.")]
         [Min(10)]
@@ -40,42 +43,103 @@ namespace HerOClock.Setup
 
         private BattleGrid grid;
         private BattleDirector director;
-        private readonly Dictionary<Character, CharacterView> views = new Dictionary<Character, CharacterView>();
 
         private void Start()
         {
             Application.targetFrameRate = targetFrameRate;
 
-            if (gridConfig == null)
+            if (!HasRequiredAssets())
             {
-                Debug.LogError("BattleBootstrap: the Grid Config reference is missing.", this);
+                return;
+            }
+
+            // Built once, here, and passed around. The database asset keeps no runtime state,
+            // because a ScriptableObject survives between Play sessions and a stale cache would
+            // survive with it.
+            Dictionary<string, CharacterDefinition> charactersById = characterDatabase.BuildIndex();
+            Debug.Log("BattleBootstrap: " + charactersById.Count + " character(s) loaded: "
+                + string.Join(", ", charactersById.Keys) + ".", this);
+
+            StageData stage = stageDatabase.Load(stageIndex);
+            if (stage == null || !IsStageValid(stage, charactersById))
+            {
                 return;
             }
 
             grid = new BattleGrid(gridConfig);
-            BoardRenderer.Build(grid, transform);
+            Transform board = BoardRenderer.Build(grid, transform);
 
-            List<Character> characters = new List<Character>();
-            SpawnFormation(heroFormation, characters);
-            SpawnFormation(enemyFormation, characters);
-
-            if (characters.Count == 0)
+            List<Character> heroes = SpawnHeroes();
+            if (heroes.Count == 0)
             {
-                Debug.LogWarning("BattleBootstrap: no character was created. Check the formations.", this);
-                return;
-            }
-
-            if (!IsBattleValid(characters))
-            {
+                Debug.LogError("BattleBootstrap: no hero was created, so the stage cannot be played. Check the hero formation.", this);
                 return;
             }
 
             int seed = randomSeed != 0 ? randomSeed : System.Environment.TickCount;
-            Debug.Log("BattleBootstrap: random seed " + seed + ". Put this value in the Random Seed field to replay this exact battle.", this);
+            Debug.Log("BattleBootstrap: random seed " + seed + ". Put this value in the Random Seed field to replay this exact run.", this);
+
+            BattleRandom random = new BattleRandom(seed);
 
             director = gameObject.AddComponent<BattleDirector>();
             director.Attacked += OnAttacked;
-            director.Begin(grid, characters, new BattleRandom(seed), restartDelay);
+
+            StageRunner runner = gameObject.AddComponent<StageRunner>();
+            runner.Configure(grid, director, charactersById, random, new BoardScroller(board, gridConfig.CellSize), heroes, CreateCharacter);
+            runner.StartStage(stage);
+        }
+
+        private bool HasRequiredAssets()
+        {
+            bool ok = true;
+
+            if (gridConfig == null)
+            {
+                Debug.LogError("BattleBootstrap: the Grid Config reference is missing.", this);
+                ok = false;
+            }
+
+            if (characterDatabase == null)
+            {
+                Debug.LogError("BattleBootstrap: the Character Database reference is missing.", this);
+                ok = false;
+            }
+
+            if (stageDatabase == null)
+            {
+                Debug.LogError("BattleBootstrap: the Stage Database reference is missing.", this);
+                ok = false;
+            }
+
+            if (heroFormation == null)
+            {
+                Debug.LogError("BattleBootstrap: the Hero Formation reference is missing.", this);
+                ok = false;
+            }
+
+            return ok;
+        }
+
+        /// <summary>
+        /// Reports every problem in the stage file at once, so a typo shows up as a readable
+        /// message instead of an empty battlefield.
+        /// </summary>
+        private bool IsStageValid(StageData stage, IReadOnlyDictionary<string, CharacterDefinition> charactersById)
+        {
+            List<string> problems = StageValidator.Validate(
+                stage, gridConfig.Columns, gridConfig.Rows, CharacterDatabase.KindsOf(charactersById));
+
+            if (problems.Count == 0)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < problems.Count; i++)
+            {
+                Debug.LogError("Stage '" + stage.id + "': " + problems[i], this);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -83,13 +147,9 @@ namespace HerOClock.Setup
         /// </summary>
         private void OnAttacked(Character attacker, Character target, DamageResult result)
         {
-            CharacterView view;
-            if (!views.TryGetValue(target, out view))
-            {
-                return;
-            }
+            CharacterView view = target.GetComponent<CharacterView>();
 
-            if (result.Damage > 0)
+            if (view != null && result.Damage > 0)
             {
                 view.Flash();
             }
@@ -98,73 +158,17 @@ namespace HerOClock.Setup
             DamageNumber.Spawn(transform, origin, result, gridConfig.CellSize);
         }
 
-        /// <summary>
-        /// Checks whether the battle can actually happen.
-        ///
-        /// Without this the two most common configuration mistakes produce no message at all:
-        /// a side with nobody on it leaves everyone standing still for lack of an enemy, and a
-        /// character with 0 maximum health is born dead and also never acts.
-        /// </summary>
-        private bool IsBattleValid(List<Character> characters)
+        private List<Character> SpawnHeroes()
         {
-            int heroCount = 0;
-            int enemyCount = 0;
-            bool valid = true;
+            List<Character> heroes = new List<Character>();
 
-            for (int i = 0; i < characters.Count; i++)
+            for (int i = 0; i < heroFormation.Placements.Count; i++)
             {
-                Character character = characters[i];
-
-                if (character.Team == Team.Heroes)
-                {
-                    heroCount++;
-                }
-                else
-                {
-                    enemyCount++;
-                }
-
-                if (character.Stats.MaxHealth <= 0)
-                {
-                    Debug.LogError("BattleBootstrap: " + character.Definition.DisplayName
-                        + " has 0 maximum health, so it is born dead and never acts. "
-                        + "Maximum health is Power x 5 plus Constitution x 10, and both are zero on the sheet.",
-                        character.Definition);
-                    valid = false;
-                }
-            }
-
-            if (heroCount == 0 || enemyCount == 0)
-            {
-                Debug.LogError("BattleBootstrap: the battle has " + heroCount + " hero(es) and " + enemyCount
-                    + " enemy(ies). Both sides need someone, otherwise nobody has a target and nobody moves. "
-                    + "Check the Team field on both formations: one must be Heroes and the other Enemies.", this);
-                valid = false;
-            }
-
-            if (valid)
-            {
-                Debug.Log("BattleBootstrap: battle started with " + heroCount + " hero(es) against " + enemyCount + " enemy(ies).", this);
-            }
-
-            return valid;
-        }
-
-        private void SpawnFormation(BattleFormation formation, List<Character> output)
-        {
-            if (formation == null)
-            {
-                Debug.LogWarning("BattleBootstrap: one of the formation references is missing.", this);
-                return;
-            }
-
-            for (int i = 0; i < formation.Placements.Count; i++)
-            {
-                BattleFormation.Placement placement = formation.Placements[i];
+                BattleFormation.Placement placement = heroFormation.Placements[i];
 
                 if (placement.Character == null)
                 {
-                    Debug.LogWarning("Formation " + formation.name + ": entry " + i + " has no character.", formation);
+                    Debug.LogWarning("Formation " + heroFormation.name + ": entry " + i + " has no character.", heroFormation);
                     continue;
                 }
 
@@ -172,35 +176,45 @@ namespace HerOClock.Setup
 
                 if (!grid.IsInside(position))
                 {
-                    Debug.LogWarning("Formation " + formation.name + ": " + placement.Character.DisplayName
-                        + " sits on cell " + position + ", which is outside the board.", formation);
+                    Debug.LogWarning("Formation " + heroFormation.name + ": " + placement.Character.DisplayName
+                        + " sits on cell " + position + ", which is outside the board.", heroFormation);
                     continue;
                 }
 
                 if (!grid.IsFree(position))
                 {
-                    Debug.LogWarning("Formation " + formation.name + ": " + placement.Character.DisplayName
-                        + " wants cell " + position + ", which is already taken.", formation);
+                    Debug.LogWarning("Formation " + heroFormation.name + ": " + placement.Character.DisplayName
+                        + " wants cell " + position + ", which is already taken.", heroFormation);
                     continue;
                 }
 
-                output.Add(CreateCharacter(placement.Character, formation.Team, position));
+                if (placement.Character.Stats.MaxHealth <= 0)
+                {
+                    Debug.LogError("BattleBootstrap: " + placement.Character.DisplayName
+                        + " has 0 maximum health, so it is born dead and never acts. "
+                        + "Maximum health is Power x 5 plus Constitution x 10, and both are zero on the sheet.",
+                        placement.Character);
+                    continue;
+                }
+
+                heroes.Add(CreateCharacter(placement.Character, Team.Heroes, position, placement.Character.Level));
             }
+
+            return heroes;
         }
 
-        private Character CreateCharacter(CharacterDefinition definition, Team team, GridPosition position)
+        private Character CreateCharacter(CharacterDefinition definition, Team team, GridPosition position, int level)
         {
             GameObject instance = new GameObject(definition.DisplayName);
             instance.transform.SetParent(transform, false);
 
             Character character = instance.AddComponent<Character>();
-            character.Initialize(definition, team, position, grid);
+            character.Initialize(definition, team, position, grid, level);
 
             // The body and the health bar are children of the character, so the scaling lives
             // on them and not on the object that travels across the board.
             CharacterView view = instance.AddComponent<CharacterView>();
             view.Build(character, viewSettings, definition.Color, gridConfig.CellSize);
-            views.Add(character, view);
 
             return character;
         }

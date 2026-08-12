@@ -1,0 +1,54 @@
+using System;
+
+namespace HerOClock.Stages
+{
+    /// <summary>
+    /// A stage, mirroring the shape of its JSON file.
+    ///
+    /// Field names are lowercase because JsonUtility matches them against the JSON keys
+    /// character for character. This class is a wire format, not a normal C# type.
+    /// </summary>
+    [Serializable]
+    public class StageData
+    {
+        /// <summary>Stable text id of the stage. Save games will refer to it.</summary>
+        public string id;
+
+        /// <summary>Name shown to the player.</summary>
+        public string name;
+
+        /// <summary>The stage's own short piece of fiction, shown when it starts.</summary>
+        public string lore;
+
+        /// <summary>
+        /// Level of every minion and villain in this stage, overriding whatever their sheets
+        /// say. It is what lets the same minion be reused across acts at different strengths.
+        /// </summary>
+        public int enemyLevel = 1;
+
+        /// <summary>Minion groups, fought in order.</summary>
+        public StageWave[] waves;
+
+        /// <summary>
+        /// The final fight. Kept as its own field rather than as the last entry of waves, so
+        /// the structure itself enforces the rule that a stage always ends against a villain.
+        /// </summary>
+        public StageWave villainWave;
+    }
+
+    [Serializable]
+    public class StageWave
+    {
+        public StagePlacement[] placements;
+    }
+
+    [Serializable]
+    public class StagePlacement
+    {
+        /// <summary>Id of the character sheet, resolved through the CharacterDatabase.</summary>
+        public string character;
+
+        public int column;
+        public int row;
+    }
+}

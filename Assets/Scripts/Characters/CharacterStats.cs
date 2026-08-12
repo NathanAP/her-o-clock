@@ -39,6 +39,17 @@ namespace HerOClock.Characters
         [Tooltip("Health recovered when dealing physical damage, from 0 to 100.")]
         [Range(0f, 100f)] public float LifeStealPercent;
 
+        /// <summary>
+        /// A copy of these stats, so a character instance can be levelled up and buffed
+        /// without touching the shared definition asset.
+        ///
+        /// Every field here is a value type, so a shallow copy is a complete copy.
+        /// </summary>
+        public CharacterStats Clone()
+        {
+            return (CharacterStats)MemberwiseClone();
+        }
+
         /// <summary>Base attack speed of every character, in attacks per second.</summary>
         public const float BaseAttacksPerSecond = 1f;
 
