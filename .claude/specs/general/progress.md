@@ -10,7 +10,7 @@ Especificar como funciona o progresso de Her-o-clock.
     - Investir na árvore de progresso para melhorar seu avanço.
     - Criar itens através do artesanato.
     - Quebrar itens para adquirir itens de artesanato.
-- O máximo de dinheiro que um jogador pode possuir é 100% em cima do nó mais caro na árvore de progresso. Por exemplo:
+- O máximo de dinheiro que um jogador pode possuir é 100% em cima do próximo nó na árvore de progresso. Por exemplo:
     - Se o nó mais caro na árvore de progresso custa $1000, o máximo de dinheiro que um jogador pode ter é $2000.
     - Se o nó mais caro na árvore de progresso custa $10000, o máximo de dinheiro que um jogador pode ter é $20000.
 
