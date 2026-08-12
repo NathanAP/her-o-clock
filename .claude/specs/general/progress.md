@@ -36,13 +36,13 @@ Especificar como funciona o progresso de Her-o-clock.
     - Lado superior esquerdo contém nós relacionados à quantidade de espaços no inventário.
     - Lado inferior esquerdo contém nós relacionados à quantidade de espaços e abas no baú.
     - Vertical inferior contém chance de adquirir melhores itens ao eliminar inimigos.
-    - Vertical superior contém chance de adquirir melhores itens de artenasato ao eliminar inimigos.
+    - Vertical superior contém chance de adquirir melhores itens de artesanato ao eliminar inimigos.
 - Cada "trecho" da árvore precisa ter pelo menos 50 nós cada.
 - Nós devem conceder um valor baixo para que ela não desande e não seja mais viável investir em um só lado antes dos outros. Por exemplo:
-    - "+$10 ao eliminar um inimigo."
-    - "+$1% ao eliminar um inimigo."
-    - "+1% de experiência ao eliminar um inimigo."
+    - "+10 de dinheiro ao eliminar um inimigo."
+    - "+1% de dinheiro ao eliminar um inimigo."
     - "+10 de experiência ao eliminar um inimigo."
+    - "+1% de experiência ao eliminar um inimigo."
     - "+0.2% máximo progressão enquanto offline."
 
 ## Árvore de habilidades
