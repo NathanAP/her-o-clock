@@ -1,0 +1,29 @@
+{
+    "info": {
+        "name": "Discarded Prototype",
+        "type": "Robot",
+        "summary": "Discarded prototypes are failed experimental robots that were exposed to the Catarsys.",
+        "lore": "Discarded prototypes are the result of failed experiments in the creation of advanced robotic beings. These robots were exposed to the Catarsys, became hostile and eventually were discarded. DR Carter uses them now as a weapon.",
+        "characteristics": {
+            "age": 1,
+            "gender": "Unknown",
+            "body": "Rusty robots that act mindlessly, attacking anything that moves. They are made of metal and have a humanoid shape, but their design is crude and unfinished.",
+            "height": "Between 150 cm and 200 cm",
+            "weight": "Between 50 kg and 100 kg"
+        },
+        "outfit": {
+            "description": "Discarded prototypes have no outfit, as they are unfinished robots. Their metal bodies are exposed and show signs of wear and tear.",
+            "colors": ["rusty brown", "grey", "black"]
+        }
+    },
+    "hidden": {
+        "realLore": "Discarded prototypes are actually dead people that were exposed to the Catarsys but were not able to resist or control the effects. Many attempts were done so there are a lot of them hidden in the government facilities. They are used as weapons by DR Carter, who is the only one that can control them."
+    },
+    "initialAttributes": {
+        "strength": 1,
+        "agility": 1,
+        "intelligence": 0,
+        "endurance": 2
+    },
+    "abilities": []
+}

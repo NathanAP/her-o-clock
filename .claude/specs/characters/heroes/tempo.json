@@ -1,0 +1,110 @@
+{
+    "info": {
+        "name": "Tempo",
+        "type": "Robot",
+        "summary": "Tempo is a hero character known for their ability to manipulate time and speed.",
+        "lore": "Tempo is the latest hero made in Unia designed with a new discovered technology. The time manipulation allowed Tempo to escape a surprise attacks from an unknown enemy. Now Tempo's mission is to find the others heroes and find out who is behind the attack.",
+        "characteristics": {
+            "age": 2,
+            "gender": "Non-binary",
+            "body": "Tempo's body is slim and helps her move quickly. Her chest contains a clockwork mechanism that indicates her time manipulation abilities. Her limbs are designed for agility and speed, with reinforced joints and lightweight materials.",
+            "height": "165 cm",
+            "weight": "55 kg"
+        },
+        "outfit": {
+            "description": "Tempo's costume helps her maintain her speed and agility, featuring a tight-fitting suit with aerodynamic designs and a visor that enhances her perception of time.",
+            "colors": ["blue", "silver", "yellow"]
+        }
+    },
+    "hidden": {
+        "realLore": "Tempo is a dead girl that was exposed to the Catarsys and had her brain recovered, but her body was already lost. The government used the technology to create a body for her and she discovered her abilities with it, but lost all other memories. Tempo now fights with a new purpose, knowing that she was given a new life.",
+        "realName": "Samantha Carter",
+        "realNickname": "Sam",
+        "realAge": 19,
+        "realGender": "Female",
+        "realFatherName": "Donovan Roads Carter"
+    },
+    "initialAttributes": {
+        "strength": 6,
+        "agility": 9,
+        "intelligence": 8,
+        "endurance": 7
+    },
+    "abilities": [
+        {
+            "name": "No time to waste!",
+            "description": "Tempo increases their own speed, granting increased attack speed, movement speed and cooldown reduction for X seconds.",
+            "cooldown": [30, 28, 25, 22, 20],
+            "duration": [5, 6, 7, 8, 9],
+            "type": "buff",
+            "target": "self",
+            "areaColumn": 0,
+            "areaRow": 0,
+            "effects": [
+                {
+                    "type": "buff_attack_speed_%",
+                    "value": [20, 20, 20, 20, 20]
+                },
+                {
+                    "type": "buff_movement_speed_%",
+                    "value": [20, 20, 20, 20, 20]
+                },
+                {
+                    "type": "buff_cooldown_reduction_%",
+                    "value": [15, 15, 15, 15, 15]
+                }
+            ]
+        },
+        {
+            "name": "Relax!",
+            "description": "Tempo decreases the speed of enemies in an area around them, decreasing their attack speed, movement speed and cooldown reduction for a duration.",
+            "cooldown": [30, 28, 25, 22, 20],
+            "duration": [5, 6, 7, 8, 9],
+            "type": "enemy_debuff",
+            "areaColumn": 2,
+            "areaRow": 2,
+            "effects": [
+                {
+                    "type": "debuff_attack_speed_%",
+                    "value": [10, 10, 10, 10, 10]
+                },
+                {
+                    "type": "debuff_movement_speed_%",
+                    "value": [10, 10, 10, 10, 10]
+                },
+                {
+                    "type": "debuff_cooldown_reduction_%",
+                    "value": [8, 8, 8, 8, 8]
+                }
+            ]
+        },
+        {
+            "name": "Fast and Furious!",
+            "description": "Tempo travels through enemies enemies close to each other, attacking each of them with increased damage and landing behind the last enemy attacked.",
+            "cooldown": [20, 18, 18, 18, 16],
+            "duration": null,
+            "type": "physical_attack",
+            "areaColumn": 1,
+            "areaRow": 1,
+            "effects": [
+                {
+                    "type": "physical_damage",
+                    "baseDamage": [50, 60, 70, 80, 90],
+                    "strengthScaling": 0.2
+                },
+                {
+                    "type": "intangible",
+                    "duration": [1, 1, 1, 1, 1]
+                },
+                {
+                    "type": "untargetable",
+                    "duration": [1, 1, 1, 1, 1]
+                },
+                {
+                    "type": "teleport",
+                    "target": "behind_last_enemy"
+                }
+            ]
+        }
+    ]
+}
