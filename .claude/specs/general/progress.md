@@ -1,4 +1,4 @@
-# Árvore de progresso
+# Progresso
 
 ## Objetivo
 
