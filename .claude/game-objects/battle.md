@@ -67,7 +67,16 @@ O `BattleDirector` é o único laço de atualização do combate. Os personagens
 
 O `StageRunner` manda no ciclo da fase: cria a onda, espera o combate acabar, faz a transição, cria a próxima onda, e trata vitória e derrota. Os heróis vivem a fase inteira e carregam o dano de uma onda para a outra; os inimigos são criados por onda e descartados.
 
-Os tempos de espera ficam expostos nele: `Advance Duration` (a caminhada até a próxima onda), `Celebration Duration` (a comemoração ao vencer a fase) e `Defeat Duration` (a pausa antes de recomeçar após a derrota).
+Os tempos de espera ficam expostos nele:
+
+- `Advance Duration` — quantos segundos o chão rola depois que o grupo se reagrupou. Padrão `3`.
+- `Max Regroup Duration` — limite de segurança para a caminhada de volta. Quem não chegou até lá é reposicionado. Padrão `6`.
+- `Celebration Duration` — a comemoração ao vencer a fase. Padrão `3`.
+- `Defeat Duration` — a pausa antes de recomeçar após a derrota. Padrão `2.5`.
+
+A transição entre ondas tem duas partes. Primeiro os heróis vivos **caminham** de volta às casas iniciais, o que leva o tempo que levar conforme a distância e a velocidade de movimento de cada um. Só quando todos chegam é que o chão começa a rolar, por `Advance Duration` segundos.
+
+O deslizamento do tabuleiro é de **6 fileiras**, definido em `BoardScroller.RowsPerTransition`. Precisa ser um número **par**, pois o xadrez se repete a cada duas fileiras e é isso que torna o salto de volta invisível. O `BoardRenderer` desenha fileiras decorativas suficientes para cobrir esse deslizamento, e as duas constantes estão amarradas no código justamente para não saírem de sincronia.
 
 ## O que é criado em tempo de execução
 

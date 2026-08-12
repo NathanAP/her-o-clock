@@ -1,5 +1,6 @@
 using HerOClock.Battle;
 using HerOClock.Common;
+using HerOClock.View;
 using UnityEngine;
 
 namespace HerOClock.Setup
@@ -20,8 +21,14 @@ namespace HerOClock.Setup
         private static readonly Color GroundDark = new Color(0.22f, 0.42f, 0.25f);
         private static readonly Color DividerColor = new Color(0.6f, 0.65f, 0.45f, 0.35f);
 
-        /// <summary>Rows drawn beyond each end of the board, hidden off screen.</summary>
-        private const int DecorativeRows = 3;
+        /// <summary>
+        /// Rows drawn beyond each end of the board, hidden off screen.
+        ///
+        /// It has to cover the whole slide of a transition plus the strip of board the camera
+        /// shows past the playable area. Anything less and the slide exposes an empty gap at
+        /// the top, so this value is tied to the scroller and must never fall behind it.
+        /// </summary>
+        private const int DecorativeRows = BoardScroller.RowsPerTransition + 3;
 
         /// <summary>The board object, which is the one that slides between waves.</summary>
         public static Transform Build(BattleGrid grid, Transform parent)

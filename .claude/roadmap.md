@@ -48,6 +48,10 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Ficha e instância passaram a ser coisas separadas, preparando a progressão.
 - O resumo completo está em `.claude/versions/20260811_0.3.0.0.md`.
 
+## 0.3.1.0 (feita)
+
+- Correção do reposicionamento.
+
 ## 0.4.0.0 (próxima)
 
 - Progressão.

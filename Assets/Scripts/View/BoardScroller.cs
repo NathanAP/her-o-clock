@@ -14,8 +14,16 @@ namespace HerOClock.View
     /// </summary>
     public class BoardScroller
     {
-        /// <summary>Rows travelled during one transition. Has to be even.</summary>
-        private const int RowsPerTransition = 2;
+        /// <summary>
+        /// Rows travelled during one transition.
+        ///
+        /// It has to be even: the checkerboard repeats every two rows, so an even slide is the
+        /// only kind that can snap back to the start without anyone noticing.
+        ///
+        /// Six rows over three seconds matches the base movement speed of two cells per second,
+        /// so the ground appears to move at walking pace.
+        /// </summary>
+        public const int RowsPerTransition = 6;
 
         private readonly Transform board;
         private readonly Vector3 origin;

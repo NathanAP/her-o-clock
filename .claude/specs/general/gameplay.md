@@ -93,9 +93,12 @@ Este é o fluxo principal do jogo.
 
 ### Entre uma onda e outra
 
-- Todos os heróis voltam às suas posições iniciais, tanto os vivos quanto os caídos.
-    - Os caídos voltam junto para que a área dos inimigos fique livre para a próxima onda, e para que eles fiquem no lugar certo caso sejam revividos.
-- O cenário rola enquanto isso, representando o grupo avançando pela cidade até o próximo confronto.
+- Os heróis vivos **caminham de volta** às suas posições iniciais, e só depois que todos chegam o grupo segue para o próximo confronto.
+    - Eles caminham em vez de simplesmente reaparecerem na formação porque a volta faz parte do combate terminando. O grupo se reagrupa, e aí avança.
+- Os heróis caídos são carregados de volta junto com o grupo.
+    - Eles voltam para que a área dos inimigos fique livre para a próxima onda, e para que fiquem no lugar certo caso sejam revividos.
+- Terminado o reagrupamento, o cenário rola por alguns segundos, representando o grupo avançando pela cidade até o próximo confronto.
+- A transição inteira é intencionalmente longa. Ela é o respiro entre dois combates, e um auto-scroller sem respiro vira uma sequência de brigas sem lugar nenhum.
 
 ### Vitória e derrota
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
+using HerOClock.Movement;
 using HerOClock.View;
 using UnityEngine;
 
@@ -24,6 +25,7 @@ namespace HerOClock.Stages
         private enum Phase
         {
             Fighting,
+            Regrouping,
             Advancing,
             Celebrating,
             Restarting
@@ -40,14 +42,20 @@ namespace HerOClock.Stages
         private readonly List<Character> heroes = new List<Character>();
         private readonly List<Character> enemies = new List<Character>();
 
+        private readonly List<CharacterMover> regroupMovers = new List<CharacterMover>();
+
         private int waveIndex;
         private Phase phase;
         private float timer;
         private float phaseDuration;
 
-        [Tooltip("Seconds spent walking to the next wave.")]
+        [Tooltip("Seconds the ground keeps rolling after the party has regrouped.")]
         [Min(0.1f)]
-        public float AdvanceDuration = 1.2f;
+        public float AdvanceDuration = 3f;
+
+        [Tooltip("Safety limit for the regrouping walk, in seconds. Whoever has not arrived by then is placed back.")]
+        [Min(0.5f)]
+        public float MaxRegroupDuration = 6f;
 
         [Tooltip("Seconds spent celebrating before the stage starts over.")]
         [Min(0.1f)]
@@ -76,6 +84,14 @@ namespace HerOClock.Stages
             this.heroes.Clear();
             this.heroes.AddRange(heroes);
 
+            // The heroes live for the whole stage, so one walking-back mover each, created
+            // once. It only runs between waves, never while the battle director is running.
+            regroupMovers.Clear();
+            for (int i = 0; i < this.heroes.Count; i++)
+            {
+                regroupMovers.Add(new CharacterMover(this.heroes[i], grid));
+            }
+
             director.BattleEnded += OnBattleEnded;
         }
 
@@ -94,6 +110,11 @@ namespace HerOClock.Stages
             Debug.Log("Stage '" + stage.name + "' started. " + stage.lore, this);
 
             DespawnEnemies();
+
+            for (int i = 0; i < regroupMovers.Count; i++)
+            {
+                regroupMovers[i].Reset();
+            }
 
             // Everyone leaves the board before anyone is placed back, otherwise a character
             // standing on someone else's starting cell would make both claim the same one.
@@ -120,7 +141,14 @@ namespace HerOClock.Stages
                 return;
             }
 
-            timer += Time.deltaTime;
+            float deltaTime = Time.deltaTime;
+            timer += deltaTime;
+
+            if (phase == Phase.Regrouping)
+            {
+                TickRegroup(deltaTime);
+                return;
+            }
 
             if (phase == Phase.Advancing)
             {
@@ -144,6 +172,37 @@ namespace HerOClock.Stages
                     StartStage(stage);
                     break;
             }
+        }
+
+        /// <summary>
+        /// The party walks back into formation. The ground only starts rolling once everybody
+        /// has arrived, so the transition reads as the group regrouping and then moving on.
+        /// </summary>
+        private void TickRegroup(float deltaTime)
+        {
+            bool everyoneArrived = true;
+
+            for (int i = 0; i < regroupMovers.Count; i++)
+            {
+                regroupMovers[i].TickWalkBack(deltaTime);
+
+                if (regroupMovers[i].IsWalkingBack)
+                {
+                    everyoneArrived = false;
+                }
+            }
+
+            // The time limit is a safety net. Someone boxed in by fallen allies could
+            // otherwise keep the stage waiting forever.
+            if (!everyoneArrived && timer < phaseDuration)
+            {
+                return;
+            }
+
+            // Fallen heroes are carried back, and anyone still short of their cell is placed
+            // there, so the next wave always starts from a clean formation.
+            ReturnHeroesToStart();
+            EnterPhase(Phase.Advancing, AdvanceDuration);
         }
 
         private void BeginWave()
@@ -177,17 +236,25 @@ namespace HerOClock.Stages
             bool wasVillain = IsVillainWave;
 
             DespawnEnemies();
-            ReturnHeroesToStart();
 
             if (wasVillain)
             {
+                ReturnHeroesToStart();
                 Debug.Log("Stage '" + stage.name + "' cleared.", this);
                 EnterPhase(Phase.Celebrating, CelebrationDuration);
                 return;
             }
 
             waveIndex++;
-            EnterPhase(Phase.Advancing, AdvanceDuration);
+
+            // The heroes walk back into formation instead of blinking there. The advance only
+            // begins once they arrive, which is what gives the transition a real length.
+            for (int i = 0; i < regroupMovers.Count; i++)
+            {
+                regroupMovers[i].BeginWalkBack(heroes[i].InitialPosition);
+            }
+
+            EnterPhase(Phase.Regrouping, MaxRegroupDuration);
         }
 
         private void EnterPhase(Phase next, float duration)

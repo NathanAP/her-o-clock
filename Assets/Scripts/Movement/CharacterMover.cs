@@ -27,6 +27,9 @@ namespace HerOClock.Movement
         private float stepDuration;
         private bool isStepping;
 
+        private GridPosition walkDestination;
+        private bool isWalkingBack;
+
         public CharacterMover(Character character, BattleGrid grid)
         {
             this.character = character;
@@ -43,6 +46,95 @@ namespace HerOClock.Movement
         {
             isStepping = false;
             stepProgress = 0f;
+            isWalkingBack = false;
+        }
+
+        /// <summary>True while the character still has ground to cover on its way back.</summary>
+        public bool IsWalkingBack
+        {
+            get { return isWalkingBack || isStepping; }
+        }
+
+        /// <summary>
+        /// Starts walking back to a given cell, used between waves so the party visibly
+        /// regroups instead of blinking back into formation.
+        /// </summary>
+        public void BeginWalkBack(GridPosition destination)
+        {
+            walkDestination = destination;
+            isWalkingBack = !character.Position.Equals(destination);
+            isStepping = false;
+            stepProgress = 0f;
+
+            // The battle may have ended mid step, leaving the body between two cells.
+            character.transform.position = grid.WorldPositionOf(character.Position);
+        }
+
+        /// <summary>
+        /// Advances the walk back. Called instead of Tick while the party is regrouping,
+        /// so nobody looks for enemies that are no longer there.
+        /// </summary>
+        public void TickWalkBack(float deltaTime)
+        {
+            if (!character.IsAlive)
+            {
+                isWalkingBack = false;
+                return;
+            }
+
+            if (isStepping)
+            {
+                ContinueStep(deltaTime);
+                return;
+            }
+
+            if (!isWalkingBack)
+            {
+                return;
+            }
+
+            if (character.Position.Equals(walkDestination))
+            {
+                isWalkingBack = false;
+                return;
+            }
+
+            StepTowards(walkDestination);
+        }
+
+        /// <summary>
+        /// One step in the direction of a cell. Unlike combat movement, a step that does not
+        /// get any closer is still accepted: two characters standing on each other's starting
+        /// cell would otherwise block each other forever.
+        /// </summary>
+        private void StepTowards(GridPosition destination)
+        {
+            GridPosition best = character.Position;
+            int bestDistance = int.MaxValue;
+            bool found = false;
+
+            foreach (GridPosition neighbour in grid.Neighbours(character.Position))
+            {
+                if (!grid.IsFree(neighbour))
+                {
+                    continue;
+                }
+
+                int distance = GridPosition.Distance(neighbour, destination);
+
+                if (!found || distance < bestDistance
+                    || (distance == bestDistance && IsLowerPosition(neighbour, best)))
+                {
+                    best = neighbour;
+                    bestDistance = distance;
+                    found = true;
+                }
+            }
+
+            if (found)
+            {
+                StartStep(best);
+            }
         }
 
         public void Tick(float deltaTime, IReadOnlyList<Character> enemies)
@@ -110,6 +202,11 @@ namespace HerOClock.Movement
                 return;
             }
 
+            StartStep(bestPosition);
+        }
+
+        private void StartStep(GridPosition destination)
+        {
             float cellsPerSecond = character.Stats.CellsPerSecond;
             if (cellsPerSecond <= 0f)
             {
@@ -118,7 +215,7 @@ namespace HerOClock.Movement
             }
 
             stepFrom = character.Position;
-            stepTo = bestPosition;
+            stepTo = destination;
             stepProgress = 0f;
             stepDuration = 1f / cellsPerSecond;
 
