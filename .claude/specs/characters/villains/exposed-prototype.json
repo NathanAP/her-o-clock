@@ -7,8 +7,8 @@
     "info": {
         "name": "Exposed Prototype",
         "type": "Robot",
-        "description": "Exposed prototypes are failed experimental robots that were exposed to the Catarsys in a high level of contamination. They now exhale a toxic gas that can affect the heroes and make them weaker.",
-        "lore": "Exposed prototypes are the result of failed experiments in the creation of advanced robotic beings. They were exposed to the Catarsys in a high level of contamination and became toxic for anyone who comes into contact with them.",
+        "description": "Exposed prototypes are failed experimental robots that were exposed to the Catarsis in a high level of contamination. They now exhale a toxic gas that can affect the heroes and make them weaker.",
+        "lore": "Exposed prototypes are the result of failed experiments in the creation of advanced robotic beings. They were exposed to the Catarsis in a high level of contamination and became toxic for anyone who comes into contact with them.",
         "characteristics": {
             "age": 1,
             "gender": "Unknown",
@@ -22,7 +22,7 @@
         }
     },
     "hidden": {
-        "realLore": "Just like the exposed prototypes, they are dead people that were exposed to the Catarsys in a high level. The contamination made them lose their minds instantly and became toxic."
+        "realLore": "Just like the exposed prototypes, they are dead people that were exposed to the Catarsis in a high level. The contamination made them lose their minds instantly and became toxic."
     },
     "baseAttributes": {
         "pow": 2,
