@@ -30,4 +30,4 @@ O jogo começa quando Tempo, um robô de origem desconhecida, acorda ao ouvir gr
 
 ## Ato 5
 
-## Prólogo
+## Epílogo
