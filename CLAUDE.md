@@ -89,6 +89,7 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 - Quando em modo de revisão, você deve ser o mais crítico possível, mesmo sabendo que há pontos cegos no seu critério de avaliação.
 - O modelo mínimo para operações de revisão é o Opus 4.8.
 - Siga o mesmo fluxo de desenvolvimento quando for aplicar um desenvolvimento de revisão.
+- Tudo faz parte da revisão, inclusive a pasta `.claude/game-objects` e `.claude/memory/`.
 
 # Pasta game-objects
 
