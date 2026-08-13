@@ -70,20 +70,24 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 ## 0.5.0.0 (próxima)
 
+- Revisão.
+
+## 0.6.0.0 (próxima)
+
 - Persistência.
 - Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
 
-## 0.6.0.0
+## 0.7.0.0
 
 - Habilidades.
 - Recarga, área, provocação e reposicionamento.
 
-## 0.7.0.0
+## 0.8.0.0
 
 - Projéteis.
 - Podemos fazer primeiro uns laserzinhos simples e coloridos, apenas para ver a coisa acontecer.
 
-## 0.8.0.0
+## 0.9.0.0
 
 - Lore do ato 1.
 - Equipe de 2 heróis.
@@ -93,35 +97,35 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - 12 lacaios.
 - Instâncias de todo mundo organizada na Unity.
 
-## 0.9.0.0
+## 0.10.0.0
 
 - Items.
 - Ataques básicos agora variam de acordo com o item.
 - Uma mesma seed ainda define como a batalha vai ocorrer.
 
-## 0.10.0.0
+## 0.11.0.0
 
 - Menus.
 
-## 0.11.0.0
+## 0.12.0.0
 
 - Inventário.
 - Baús.
 
-## 0.12.0.0
+## 0.13.0.0
 
 - Mapa dos atos.
 
-## 0.13.0.0
+## 0.14.0.0
 
 - Árvore de progressão.
 - Dinheiro.
 
-## 0.14.0.0
+## 0.15.0.0
 
 - Classes.
 
-## 0.15.0.0
+## 0.16.0.0
 
 - Árvore de habilidades
 
