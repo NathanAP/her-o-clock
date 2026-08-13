@@ -12,17 +12,17 @@
         "characteristics": {
             "age": 2,
             "gender": "Non-binary",
-            "body": "Tempo's body is slim and helps her move quickly. Her chest contains a clockwork mechanism that indicates her time manipulation abilities. Her limbs are designed for agility and speed, with reinforced joints and lightweight materials.",
+            "body": "Tempo's body is slim and helps their move quickly. Their chest contains a clockwork mechanism that indicates their time manipulation abilities. Their limbs are designed for agility and speed, with reinforced joints and lightweight materials.",
             "height": "165 cm",
             "weight": "55 kg"
         },
         "outfit": {
-            "description": "Tempo's costume helps her maintain her speed and agility, featuring a tight-fitting suit with aerodynamic designs and a visor that enhances her perception of time.",
+            "description": "Tempo's costume helps their maintain their speed and agility, featuring a tight-fitting suit with aerodynamic designs and a visor that enhances their perception of time.",
             "colors": ["blue", "silver", "yellow"]
         }
     },
     "hidden": {
-        "realLore": "Tempo is a dead girl that was exposed to the Catarsis and had her brain recovered, but her body was already lost. The government used the technology to create a body for her and she discovered her abilities with it, but lost all other memories. Tempo now fights with a new purpose, knowing that she was given a new life.",
+        "realLore": "Tempo is a dead girl that was exposed to the Catarsis and had their brain recovered, but their body was already lost. The government used the technology to create a body for their and she discovered their abilities with it, but lost all other memories. Tempo now fights with a new purpose, knowing that she was given a new life.",
         "realName": "Samantha Carter",
         "realNickname": "Sam",
         "realAge": 19,

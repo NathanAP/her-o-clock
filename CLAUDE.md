@@ -74,6 +74,8 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 # Bugs
 
 - Erros de gramática na documentação ou no jogo são considerados bugs.
+    - Neste jogo, robôs são todos não-binários. Isso significa que, ao falar seus pronomes, em inglês precisa ficar sempre em "they/their" ao invés de "he/him" ou "she/her".
+    - Para o português, não há pronomes neutros, então vamos manter em "ele/deles" ou "o robô/os robôs".
 - Detalhes mal escritos ou definidos em `.claude/specs/` são considerados bugs.
 
 # Refatorações
