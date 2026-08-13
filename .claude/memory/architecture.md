@@ -14,9 +14,16 @@ The reason is git: a `.unity` file is among the worst to resolve conflicts on, a
 
 No character has an `Update`. Everyone is updated by `BattleDirector`, always in the same order.
 
-This is not fussiness: offline progression, which is the heart of the genre according to `references.md`, needs to simulate a whole fight without rendering anything. With one loop in a fixed order, that is just calling the same code with a different delta time. With `Update` scattered around, it would mean rewriting everything.
+What this buys, concretely:
+
+- **A battle can be replayed.** Same seed and same starting state give the same fight, blow by blow, which is how a reported oddity gets investigated.
+- **A battle can run at any speed.** Feeding a different delta time is the whole change, which is what the developer speed control relies on.
 
 For the same reason, the target priority chain in `TargetSelector` compares integers only, with no floats involved.
+
+**This is not needed for offline progression.** Offline progression is arithmetic — the last hour's rate multiplied by the time away, then clamped. No fight is ever replayed. Earlier versions of this file claimed the loop existed to enable an offline simulator; that was wrong, and the reasons above are the real ones.
+
+The reason a simulator is never needed is that `progress.md` forbids the three things that would demand one: no item drops, no stage advancement, and at most one level gained while away. Allowing any of them offline would mean writing a combat simulator.
 
 ## Sheet and instance are separate
 

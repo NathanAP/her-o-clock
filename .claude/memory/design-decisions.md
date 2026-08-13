@@ -22,7 +22,7 @@ Adding them would be the wrong choice because it would allow reaching 100% and b
 
 Target selection is entirely positional. A taunt is a temporary effect coming from a skill, never a number that goes up and down.
 
-The reason is the game's pitch: it is tiny and lives in a corner of the screen, so the player has to be able to predict the fight at a glance. A hidden number shifting during combat destroys that readability. Numeric aggro would also be much harder to reproduce in the offline simulation.
+The reason is the game's pitch: it is tiny and lives in a corner of the screen, so the player has to be able to predict the fight at a glance. A hidden number shifting during combat destroys that readability. Numeric aggro would also make a battle much harder to replay from a seed, which is how odd behaviour gets investigated.
 
 ## Armour scales with the attacker's level
 

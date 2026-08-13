@@ -92,6 +92,29 @@ xpPorLacaio(nível do lacaio)  = 10 × nível^2
 - Para fazer esse cálculo, guardamos quanto de experiência e dinheiro o jogador fez na última hora online.
     - Essa referência se ajusta sozinha conforme o jogador fica mais forte, sem precisar de uma fórmula paralela para manter sincronizada.
 - Com esse valor em mãos, o jogador mantém **25% do seu ritmo online** enquanto estiver offline.
+
+### A progressão offline é um cálculo, nunca uma simulação
+
+- O jogo **não reproduz combates** para descobrir o que aconteceu enquanto o jogador esteve fora. Ele multiplica o ritmo da última hora pelo tempo de ausência e aplica os tetos.
+- As três proibições desta seção são justamente o que torna isso possível, e cada uma remove uma pergunta que só um combate de verdade saberia responder:
+    - Sem queda de itens, não é preciso sortear nada.
+    - Sem avanço de fase, não é preciso saber se o grupo venceria.
+    - Com teto de 1 nível, o ritmo não muda no meio do cálculo.
+- Permitir qualquer uma dessas três coisas offline significaria escrever um simulador de combate. É uma decisão bem maior do que parece, e por isso está registrada aqui.
+
+### Como a referência da última hora é medida
+
+- O jogo guarda o que foi ganho em **baldes de 10 minutos**, mantendo os seis últimos, que somam uma hora.
+- Cada balde guarda tudo que a progressão offline e as estatísticas precisam: experiência, dinheiro, inimigos derrotados, dano causado, dano recebido e cura.
+- A taxa é a soma dos baldes dividida pelo tempo que eles cobrem, e não por uma hora fixa.
+    - Se o jogador só tem dois baldes, a taxa é a soma deles dividida por 20 minutos. Assim uma sessão curta não é lida como uma hora fraca.
+- Os baldes são guardados no save.
+    - Sem isso, quem joga em sessões de poucos minutos ao longo do dia perderia a referência toda vez que fechasse o jogo, e seria punido justamente por jogar pouco.
+
+### Estatísticas do período offline
+
+- As estatísticas mostradas ao voltar saem dos mesmos baldes, multiplicadas do mesmo jeito que a experiência e o dinheiro.
+- Elas nunca podem ser calculadas por outro caminho. Se a tela disser que 1.432 inimigos foram derrotados mas a experiência creditada corresponder a 800, o jogador percebe a inconsistência.
 - A progressão offline possui três tetos, e todos podem ser aumentados na árvore de progresso:
     - **Ritmo:** os 25% podem subir até 40%.
     - **Experiência:** no máximo 1 nível completo de cada personagem por ausência.
