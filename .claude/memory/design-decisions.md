@@ -48,6 +48,19 @@ Heroes do not heal between waves, and a fallen hero stays down until the stage e
 
 This is what gives health regeneration and life steal a reason to exist as attributes: without attrition every fight would start with everyone intact and both would be decorative. It is also what creates the need to farm, since eventually a stage stops being winnable with the current team.
 
+## Player facing content is written in English, and lives outside the assets
+
+Decided during the 0.5.0.0 review, because the project had drifted into three answers at once: the sheets under `.claude/specs/` were in English, the `Display Name` of every asset was in Portuguese, and the stage files were in Portuguese without accents.
+
+The rule is the one `CLAUDE.md` already stated and nobody was following: **everything is in English**, from variables to the names the player reads.
+
+On top of that, the visible text does not belong in the asset. Names, stage titles and stage lore move to a strings file, keyed by the id the asset already has. Two reasons:
+
+- A `Display Name` inside a `.asset` is the same file as the balance numbers, so a translation pass and a balance pass fight over the same diff.
+- Localisation later becomes a new strings file rather than a second copy of every sheet.
+
+The move itself is 0.5.5.0. Until then, new content is written in English straight away, so the pile does not grow.
+
 ## Free movement, with no body blocking
 
 Characters cross the whole board chasing their target. The areas only define where the battle starts.

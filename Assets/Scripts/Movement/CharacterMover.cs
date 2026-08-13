@@ -25,6 +25,7 @@ namespace HerOClock.Movement
         private GridPosition stepTo;
         private float stepProgress;
         private float stepDuration;
+        private float stepCarry;
         private bool isStepping;
 
         private GridPosition walkDestination;
@@ -46,6 +47,7 @@ namespace HerOClock.Movement
         {
             isStepping = false;
             stepProgress = 0f;
+            stepCarry = 0f;
             isWalkingBack = false;
         }
 
@@ -65,6 +67,7 @@ namespace HerOClock.Movement
             isWalkingBack = !character.Position.Equals(destination);
             isStepping = false;
             stepProgress = 0f;
+            stepCarry = 0f;
 
             // The battle may have ended mid step, leaving the body between two cells.
             character.transform.position = grid.WorldPositionOf(character.Position);
@@ -74,7 +77,7 @@ namespace HerOClock.Movement
         /// Advances the walk back. Called instead of Tick while the party is regrouping,
         /// so nobody looks for enemies that are no longer there.
         /// </summary>
-        public void TickWalkBack(float deltaTime)
+        public void TickWalkBack(float step)
         {
             if (!character.IsAlive)
             {
@@ -84,22 +87,29 @@ namespace HerOClock.Movement
 
             if (isStepping)
             {
-                ContinueStep(deltaTime);
+                ContinueStep(step);
                 return;
             }
 
             if (!isWalkingBack)
             {
+                stepCarry = 0f;
                 return;
             }
 
             if (character.Position.Equals(walkDestination))
             {
                 isWalkingBack = false;
+                stepCarry = 0f;
                 return;
             }
 
             StepTowards(walkDestination);
+
+            if (!isStepping)
+            {
+                stepCarry = 0f;
+            }
         }
 
         /// <summary>
@@ -137,7 +147,7 @@ namespace HerOClock.Movement
             }
         }
 
-        public void Tick(float deltaTime, IReadOnlyList<Character> enemies)
+        public void Tick(float step, IReadOnlyList<Character> enemies)
         {
             if (!character.IsAlive)
             {
@@ -146,10 +156,24 @@ namespace HerOClock.Movement
 
             if (isStepping)
             {
-                ContinueStep(deltaTime);
+                ContinueStep(step);
                 return;
             }
 
+            Decide(enemies);
+
+            // The leftover from the previous step only belongs to the step that follows it
+            // immediately. A character that stopped to attack, found nobody left, or got
+            // cornered is not owed that time, and keeping it would hand out a free head start
+            // whenever it eventually walks again.
+            if (!isStepping)
+            {
+                stepCarry = 0f;
+            }
+        }
+
+        private void Decide(IReadOnlyList<Character> enemies)
+        {
             // Can it attack anyone from where it stands? Then it stays put.
             if (TargetSelector.Select(character, enemies, true) != null)
             {
@@ -216,8 +240,17 @@ namespace HerOClock.Movement
 
             stepFrom = character.Position;
             stepTo = destination;
-            stepProgress = 0f;
             stepDuration = 1f / cellsPerSecond;
+
+            // Time left over from the previous step is carried in, for the same reason the
+            // attack timer carries its overshoot: a step can only end on a simulation step, so
+            // discarding the remainder would round every crossing up to whole steps and make a
+            // character walk slower than its sheet says.
+            //
+            // Clamped below a full cell because a character crossing more than one cell per
+            // simulation step cannot be represented by a stepped simulation anyway.
+            stepProgress = stepCarry > 0f ? Mathf.Min(stepCarry / stepDuration, 1f) : 0f;
+            stepCarry = 0f;
 
             // The destination cell is claimed immediately, before the animation ends, so that
             // nobody else tries to enter it in the meantime.
@@ -225,12 +258,13 @@ namespace HerOClock.Movement
             isStepping = true;
         }
 
-        private void ContinueStep(float deltaTime)
+        private void ContinueStep(float step)
         {
-            stepProgress += deltaTime / stepDuration;
+            stepProgress += step / stepDuration;
 
             if (stepProgress >= 1f)
             {
+                stepCarry = (stepProgress - 1f) * stepDuration;
                 stepProgress = 1f;
                 isStepping = false;
             }

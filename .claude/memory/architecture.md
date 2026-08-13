@@ -10,16 +10,42 @@ Holds the code structure decisions that cannot be worked out by reading the file
 
 The reason is git: a `.unity` file is among the worst to resolve conflicts on, and a lean scene practically removes the problem. When adding something new, prefer creating it in code over dragging it into the hierarchy.
 
-## There is a single update loop
+## There is a single update loop, and it runs on a fixed step
 
-No character has an `Update`. Everyone is updated by `BattleDirector`, always in the same order.
+No character has an `Update`. Everyone is updated by `BattleDirector.Tick`, always in the same order, and always by exactly `BattleDirector.FixedStep` — one sixtieth of a second, never the frame's own delta.
 
-What this buys, concretely:
+What this buys:
 
-- **A battle can be replayed.** Same seed and same starting state give the same fight, blow by blow, which is how a reported oddity gets investigated.
-- **A battle can run at any speed.** Feeding a different delta time is the whole change, which is what the developer speed control relies on.
+- **A battle can be replayed.** Same seed and same starting state give the same fight, blow by blow, on any machine and at any frame rate.
+- **A battle can run headless.** A test drives a whole stage by calling `StageRunner.Advance` in a loop, with no scene and no rendering.
+- **A battle can run at any speed.** `Time.timeScale` just makes the accumulator ask for more steps.
 
 For the same reason, the target priority chain in `TargetSelector` compares integers only, with no floats involved.
+
+### The remainder is carried, never discarded
+
+This is the half that is easy to miss. A blow can only land on a step boundary, so if the overshoot is thrown away, every interval is rounded **up** to whole steps: a character at 4 attacks per second really makes 3.75 of them. It was measured before and after in 0.5.1.0, and the loss reached 6.25%, growing with speed — so it punished exactly the builds that pay for speed. Even values that divide evenly were affected, because one sixtieth is not exact in binary.
+
+So `CharacterAttacker` does `cooldown += AttackInterval` rather than `=`, and `CharacterMover` keeps how far past the end of a step it went and applies it as the next step's starting progress.
+
+Two rules survive on top of that, and both must be preserved:
+
+- **Nobody banks blows.** The cooldown is held at zero while the character is walking or has no target. Without it, stepping in and out of range would charge up several blows at once.
+- **A movement remainder only belongs to the step immediately after it.** It is dropped when the character stops to attack, runs out of targets, or gets cornered. Keeping it would hand out a free head start whenever it started walking again, possibly minutes later.
+
+### `StageRunner` owns the only clock
+
+It is the single place in the game that reads `Time.deltaTime`. Real time goes into its accumulator, and comes out as fixed steps that go either to the battle or to the transition between waves.
+
+Two accumulators — one for the fight, one for the transition — would lose the leftover on every phase change. With one, a battle ending mid step hands the next step straight to the transition.
+
+The accumulator is capped at `MaxStepsPerFrame`. Past it, time is dropped on purpose: a long hitch would otherwise ask for thousands of steps and freeze the game trying to catch up, making the next frame worse still.
+
+### The resolution order alternates
+
+Heroes used to be first in the list, so they won every exact tie: their blow landed and killed before the enemy whose own blow was due in the same step ever swung. Which side resolves first now flips every step, driven by the battle's own step counter so it stays reproducible.
+
+`Begin` builds the list in two passes, heroes then enemies, instead of trusting the caller's ordering. That is what keeps each side in a contiguous half, so swapping who goes first is swapping two loops.
 
 **This is not needed for offline progression.** Offline progression is arithmetic — the last hour's rate multiplied by the time away, then clamped. No fight is ever replayed. Earlier versions of this file claimed the loop existed to enable an offline simulator; that was wrong, and the reasons above are the real ones.
 
@@ -59,7 +85,9 @@ The split follows what each one needs. Sheets have to reference sprites, animati
 
 Because JSON cannot hold an asset reference, characters are named by a text `Id` and resolved through `CharacterDatabase`. Save games will need the same mechanism, since a save cannot store an object reference either.
 
-The cost of text references is that a typo would only surface at runtime. `StageValidator` is what pays that cost: it has no Unity dependency, is covered by the test suite, and reports every problem in a file at once instead of stopping at the first.
+The cost of text references is that a typo would only surface at runtime. `StageValidator` is what pays that cost: it has no Unity dependency, so it can be tested outside the editor, and it reports every problem in a file at once instead of stopping at the first.
+
+An earlier version of this file said the validator **was** covered by tests. It was not: no test file has ever existed in this repository. The coverage arrives in 0.5.2.0.
 
 ## The random source belongs to the battle
 
@@ -104,7 +132,14 @@ Changing one without recalculating the others misaligns the pixel art silently.
 
 ## Sorting layers used by code
 
-`BoardRenderer` uses `Background` and `BattleBootstrap` uses `Characters`, both by name. Renaming either one breaks rendering with no error in the Console.
+Four layers are referenced by name, and renaming any of them breaks rendering with no error in the Console:
+
+- `Background` — the board cells, in `BoardRenderer`.
+- `Ground` — the area divider, in `BoardRenderer`.
+- `Characters` — the body, the health bar and the level label, in `CharacterView`.
+- `VFX` — the floating damage numbers, in `DamageNumber`.
+
+The list matters because of the trap described in the next section: a layer that the global light does not target renders black, silently.
 
 ## The sorting layer trap with 2D lighting
 

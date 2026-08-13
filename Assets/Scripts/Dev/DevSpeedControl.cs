@@ -17,9 +17,12 @@ namespace HerOClock.Dev
         /// <summary>
         /// Highest speed allowed.
         ///
-        /// The limit is not arbitrary: the frame rate is raised by the same factor, so the
-        /// simulation keeps receiving time steps of exactly the same size as at normal speed.
-        /// Going past this would mean a frame rate that is expensive for no good reason.
+        /// Nothing about correctness depends on this number any more. The simulation advances in
+        /// fixed steps, so raising the time scale simply asks the StageRunner for more steps per
+        /// frame and the fight comes out identical to the one at normal speed.
+        ///
+        /// The cap exists because the frames still have to be drawn and the steps still have to
+        /// be paid for, and because past a certain speed nothing on screen is readable anyway.
         /// </summary>
         public const float MaxSpeed = 8f;
 
@@ -60,10 +63,11 @@ namespace HerOClock.Dev
             appliedSpeed = speed;
             Time.timeScale = speed;
 
-            // Raising the frame rate along with the speed is what keeps the simulation honest.
-            // The code lands at most one attack per frame, so speeding up time without adding
-            // frames would silently make fast characters attack less often than they should.
-            // Matching the two leaves the per frame time step identical to normal speed.
+            // The frame rate is raised only so the sped up fight stays watchable. It used to be
+            // load bearing: the simulation ran on the frame's own delta and landed at most one
+            // attack per frame, so speeding up time without adding frames really did make fast
+            // characters attack less often. With the fixed step that is no longer true, and a
+            // frame rate that fails to keep up now costs smoothness rather than correctness.
             Application.targetFrameRate = Mathf.Clamp(
                 Mathf.RoundToInt(baseFrameRate * speed), baseFrameRate, 240);
 

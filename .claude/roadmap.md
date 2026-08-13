@@ -68,24 +68,82 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Todo cálculo derivado passa por `TotalOf`, onde itens, árvores e buffs vão entrar depois sem mexer em mais nada.
 - O resumo completo está em `.claude/versions/20260812_0.4.0.0.md`.
 
-## 0.5.0.0 (próxima)
+## 0.5.0.0 (feita)
 
-- Revisão.
+- Revisão geral do projeto.
+- Nenhuma correção: a versão lê tudo, registra os problemas e transforma cada um em uma versão de correção com ordem definida.
+- Os três achados críticos foram a suíte de testes que nunca existiu, o combate que depende da taxa de quadros, e a armadura que não escala com nada.
+- O resumo completo, com os 14 achados e a evidência de cada um, está em `.claude/versions/20260813_0.5.0.0.md`.
+
+## 0.5.1.0 (feita)
+
+- Passo fixo no combate. A simulação anda sempre 1/60 de segundo, nunca o delta do quadro.
+- O `StageRunner` virou o único relógio do jogo, e o `BattleDirector` perdeu o `Update` em troca de um `Tick(float)` público. Uma fase inteira agora roda sem cena e sem renderizar, que é o que a 0.5.2.0 precisa.
+- A sobra de tempo passou a ser carregada em vez de descartada, no ataque e no movimento. Era isso que fazia a velocidade real ficar até 6.25% abaixo da ficha, punindo justamente quem investe em AGI.
+- A ordem de resolução alterna a cada passo, então os heróis pararam de vencer todo empate exato.
+- O `DevSpeedControl` deixou de depender da taxa de quadros para estar correto.
+- O resumo completo está em `.claude/versions/20260813_0.5.1.0.md`.
+
+## 0.5.2.0 (próxima)
+
+- Suíte de testes. É o pagamento da dívida deixada até a 0.4.0.6, e vem antes de qualquer mudança de regra para que as mudanças seguintes tenham como ser verificadas.
+- **Pré-requisito:** o código do jogo precisa ganhar um `Assets/Scripts/HerOClock.asmdef`. Hoje ele mora em `Assembly-CSharp`, e um assembly criado por `.asmdef` não consegue referenciar `Assembly-CSharp` — a dependência só existe no sentido contrário. Como o Test Framework exige `.asmdef` em todo assembly de teste, sem esse passo nenhum teste enxerga o jogo.
+- Estrutura: `Assets/Tests/EditMode` com asmdef próprio referenciando o do jogo.
+- As categorias, em ordem de valor:
+    - **A spec como teste executável.** Os exemplos numéricos literais de `attributes.md` (evasão por classe de equipamento, mitigação por nível do atacante, as reduções multiplicando) e a tabela de horas de `progress.md` viram assertivas. Este é o grupo mais importante: ele não confere que o código faz o que o código faz, confere que o código faz o que a spec prometeu.
+    - **Fórmulas puras.** `DamageCalculator`, `ExperienceTable`, `LevelProgress`, `AttributeGrowth`, `GridPosition`, `BattleRandom` e `CharacterStats`.
+    - **Conteúdo.** Todo `.json` de `Assets/Stages/` passado pelo `StageValidator`, e todo `CharacterDefinition` do banco conferido (id único e não vazio, crescimento somando 100, vida máxima acima de zero).
+    - **Simulação.** Uma batalha inteira e depois uma fase inteira, em memória, com semente fixa e sem renderizar. É o equivalente a um teste ponta a ponta neste jogo, já que não existe input do jogador.
+    - **Determinismo.** A mesma batalha rodada duas vezes com a mesma semente dá resultado idêntico, e continua idêntica quando alimentada com `deltaTime` irregular. É o teste que prova a 0.5.1.0 e impede o problema de voltar.
+    - **Caracterização de balanceamento.** A `act1-stage1` é vencível no nível 1, a `act1-stage2` não é, e uma sessão rende inimigos por minuto dentro de uma faixa. Não afirmam certo e errado, afirmam que o balanceamento não mudou sem querer.
+- Um único smoke test em PlayMode: entra em Play, o bootstrap monta a cena, Console limpo. Cobre referência faltando e sorting layer renomeada, que são os erros que a Unity não reporta.
+
+## 0.5.3.0
+
+- Escala de defesa e regeneração de vida.
+- Armadura e resistências são valores fixos da ficha: não passam por `TotalOf`, não crescem com o nível e não recebem o multiplicador da fase, enquanto a constante da curva cresce com o nível do atacante.
+- Precisa decidir de onde vem a defesa de um inimigo que só existe como ficha mais nível, antes de implementar.
+- A regeneração de vida entra junto porque é o mesmo buraco: `attributes.md` a define, o jogo não a tem, e `gameplay.md` usa a existência dela para justificar o desgaste entre ondas.
+
+## 0.5.4.0
+
+- Pontos de atributo dos heróis.
+- Hoje o gasto automático pela `Growth` da ficha e o acúmulo de `UnspentAttributePoints` coexistem, então os pontos são contados duas vezes.
+- Decidir se a `Growth` é só o padrão dos inimigos ou também a distribuição inicial dos heróis, e o que acontece quando o jogador redistribuir.
+
+## 0.5.5.0
+
+- Conteúdo em inglês e arquivo de strings.
+- Os `Display Name` dos assets e os textos das fases estão em português; o `CLAUDE.md` pede inglês.
+- Os textos visíveis saem dos assets e vão para um arquivo de strings, preparando localização.
+- Vem depois do código estabilizar, pois mexe em asset e em fase.
+
+## 0.5.6.0
+
+- Sincronizar a documentação e limpar o resto.
+- `.claude/specs/`, `.claude/game-objects/` e `.claude/memory/` conferidos linha a linha contra o projeto de verdade.
+- A ficha de fase e as três fichas de personagem da spec precisam virar o formato que o jogo realmente lê.
+- Leva junto os itens menores: área dos inimigos no validador, leitura direta da ficha no bootstrap, roubo de vida descartado nos espinhos, e um pool para os números de dano.
+- Vem por último porque as cinco versões anteriores mudam o que precisa ser documentado.
 
 ## 0.6.0.0
 
 - Persistência.
 - Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
+- Testes: ida e volta (salvar, carregar, estado idêntico), save de versão antiga carregando na versão nova, e os baldes de 10 minutos de `progress.md` com os três tetos da progressão offline. A ida e volta é uma categoria que só aparece nesta versão e é a que impede corromper o progresso de quem já joga.
 
 ## 0.7.0.0
 
 - Habilidades.
 - Recarga, área, provocação e reposicionamento.
+- Testes: é a maior superfície de regra do jogo inteiro, e quase tudo já está escrito como exemplo em `gameplay.md` e `characters.md`. A pontuação de posicionamento em área (o exemplo de 3 aliados e 2 inimigos pontuando 1), os formatos `chain`, `line` e `area`, os efeitos resolvidos na ordem em que aparecem, a habilidade pronta que segura a carga em vez de ser usada no vazio, e a provocação sobrescrevendo a cadeia de alvo.
+- Junto entra um validador de ficha, pois `characters.md` já avisa que um `array` menor que o `ranks` faria o último nível ler um valor inexistente **sem dar erro nenhum**. Uma spec que nomeia o próprio problema silencioso está pedindo um teste.
 
 ## 0.8.0.0
 
 - Projéteis.
 - Podemos fazer primeiro uns laserzinhos simples e coloridos, apenas para ver a coisa acontecer.
+- Testes: só se o projétil tiver tempo de voo capaz de mudar quando o dano é aplicado. Se for puramente visual, não precisa de nenhum.
 
 ## 0.9.0.0
 
@@ -96,21 +154,25 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - 5 vilões.
 - 12 lacaios.
 - Instâncias de todo mundo organizada na Unity.
+- Testes: nenhuma regra nova, mas muito conteúdo novo. Os testes de conteúdo da 0.5.2.0 passam a valer para as 5 fases e os 17 personagens, e cada fase ganha um teste de caracterização dizendo em que nível ela deveria ser vencível.
 
 ## 0.10.0.0
 
 - Items.
 - Ataques básicos agora variam de acordo com o item.
 - Uma mesma seed ainda define como a batalha vai ocorrer.
+- Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, e o teste de determinismo rodado de novo, já que o item passa a alterar o ataque básico. A própria linha "uma mesma seed ainda define como a batalha vai ocorrer" é uma assertiva.
 
 ## 0.11.0.0
 
 - Menus.
+- Testes: praticamente nenhum. Interface é a única parte do jogo em que o custo de testar não se paga.
 
 ## 0.12.0.0
 
 - Inventário.
 - Baús.
+- Testes: as regras de espaço e de empilhamento, que são aritmética e não interface.
 
 ## 0.13.0.0
 
@@ -120,17 +182,58 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 - Árvore de progressão.
 - Dinheiro.
+- Testes: a curva de custo dos nós, que por `progress.md` depende de quantos nós já foram comprados e não de qual nó é. E a projeção de espera de cada trecho da árvore, pelo mesmo motivo da tabela de horas: é um número publicado na spec.
 
 ## 0.15.0.0
 
 - Classes.
+- Testes: a classe entrando como mais uma fonte no `TotalOf`.
 
 ## 0.16.0.0
 
 - Árvore de habilidades
+- Testes: superfície de regra grande de novo, e ela multiplica com as habilidades da 0.7.0.0. É a versão em que a suíte existente mais paga o próprio custo.
 
 # Ordem escolhida
 
 - Cada versão depende apenas das anteriores.
+- O bloco 0.5.x é a revisão sendo aplicada, e a ordem dele é por dependência e não por gravidade: primeiro o passo fixo, que torna o combate verificável; depois os testes, que tornam as mudanças seguintes verificáveis; só então as mudanças de regra.
+
+# Onde os testes entram
+
+## A 0.5.2.0 é a única versão que existe só para testar
+
+Ela paga a dívida acumulada até a 0.4.0.6, e é a última vez que isso acontece. **Depois dela, teste nunca mais é uma versão própria: ele faz parte da versão que muda o comportamento.**
+
+A razão é direta. Uma versão de teste separada só pode existir olhando para trás, e olhar para trás é exatamente como a dívida se formou: cada versão foi entregue afirmando estar verificada, a verificação foi adiada, e a divergência entre spec e código só apareceu numa revisão geral, versões depois. Repetir o modelo recria o problema.
+
+## O momento exato dentro do fluxo
+
+O `CLAUDE.md` já tem o lugar certo: o passo 7 do fluxo de desenvolvimento, "garanta que tudo esteja funcionando corretamente". A partir da 0.5.2.0, esse passo significa **teste automatizado passando**, e não o jogo observado rodando.
+
+Na prática, dentro de uma versão a ordem é:
+
+1. A regra é escrita ou ajustada na spec, com exemplo numérico sempre que ela tiver número.
+2. O teste é escrito a partir do exemplo da spec.
+3. O código é escrito até o teste passar.
+
+O teste sair da spec, e não do código, é o que importa aqui. Um teste derivado do código só confirma que o código faz o que faz. Um teste derivado da spec é o que teria pego, meses antes, a armadura que não escala e a regeneração que nunca existiu.
+
+## Nem toda versão precisa de teste
+
+Distinguir isso é o que impede a suíte de virar peso morto:
+
+- **Versão que muda regra ou fórmula** entrega teste junto. Sem exceção. São 0.5.3.0, 0.5.4.0, 0.6.0.0, 0.7.0.0, 0.10.0.0, 0.12.0.0, 0.14.0.0, 0.15.0.0 e 0.16.0.0.
+- **Versão que muda apresentação** não entrega. Interface, projéteis puramente visuais, animação e som. O custo de testar aparência não se paga, e o teste quebra a cada ajuste estético.
+- **Versão que adiciona conteúdo** não escreve teste novo, mas o conteúdo novo tem que passar pelos testes de conteúdo que já existem.
+- **Correção de bug** entrega um teste que falha antes da correção e passa depois. É a única forma de garantir que aquele bug específico não volta, e é barato porque o caso reproduzível já está em mãos.
+
+## O que fazer quando um teste de balanceamento falha
+
+Os testes de caracterização — "a fase 1 é vencível no nível 1", "a fase 2 não é" — vão falhar com frequência, e na maior parte das vezes a resposta certa é **atualizar o teste**, não o código.
+
+Isso não os torna inúteis, é justamente a função deles. Eles não afirmam que um número está certo, afirmam que ninguém mudou aquele número sem perceber. Quando um falha, a pergunta é "eu queria que isso mudasse?". Se a resposta for sim, o valor novo entra no teste e a mudança fica registrada no diff.
+
+O que nunca pode acontecer é o teste ser afrouxado até parar de falhar. Uma faixa larga demais não afirma nada.
 - As habilidades ficam por último de propósito, pois são o sistema que mais mexe em todos os outros. Fazer habilidade antes do combate estar estável significa refazer habilidade.
 - Enquanto toda a funcionalidade básica não estiver pronta, o jogo continua em game objects lisos e coloridos.

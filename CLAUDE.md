@@ -60,12 +60,30 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 4 - Faça um planejamento para alcançar seu objetivo. Me avise se eu preciso fechar a Unity ou fazer alguma operação extra antes de começar.
 5 - Mostre seu planejamento e aguarde aprovação.
 6 - Faça suas alterações.
-7 - Garanta que tudo esteja funcionando corretamente.
+7 - Garanta que tudo esteja funcionando corretamente, conforme descrito em "# Testes".
 8 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".
 9 - Retorne um resumo do que foi feito.
 10 - Atualize os arquivos em `.claude/game-objects/`.
 11 - Atualize os arquivos em `.claude/memory/`.
 12 - Atualize o arquivo `.claude/roadmap.md`.
+
+# Testes
+
+A partir da versão 0.5.2.0, o passo 7 do fluxo de desenvolvimento significa **teste automatizado passando**, e não o jogo observado rodando. A localização de cada tipo de teste e o que cada versão futura precisa cobrir estão em `.claude/roadmap.md`, na seção "# Onde os testes entram".
+
+- O teste é escrito **dentro da versão que muda o comportamento**, nunca em uma versão posterior.
+    - Uma versão de teste separada só pode existir olhando para trás, e foi exatamente assim que a dívida encontrada na revisão 0.5.0.0 se formou.
+- O teste sai da **spec**, não do código.
+    - Sempre que uma regra tiver número, a spec precisa trazer o exemplo numérico, e é dele que a assertiva nasce.
+    - Um teste derivado do código só confirma que o código faz o que faz. Um teste derivado da spec é o que impede as duas coisas de divergirem em silêncio.
+- Nem toda versão precisa de teste:
+    - Versão que muda regra ou fórmula entrega teste junto, sem exceção.
+    - Versão que muda apenas apresentação não entrega. Interface, animação e som não pagam o custo de serem testados.
+    - Versão que adiciona conteúdo não escreve teste novo, mas o conteúdo precisa passar pelos testes de conteúdo que já existem.
+- Toda correção de bug entrega um teste que **falha antes da correção e passa depois**.
+- Testes de balanceamento afirmam faixas, não valores exatos. Quando um falha, a pergunta é "eu queria que isso mudasse?".
+    - Se a resposta for sim, o valor novo entra no teste e a mudança fica registrada no diff.
+    - O que nunca pode acontecer é afrouxar a faixa até o teste parar de falhar. Uma faixa larga demais não afirma nada.
 
 # Recomendações
 

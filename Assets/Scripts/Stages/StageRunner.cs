@@ -19,7 +19,12 @@ namespace HerOClock.Stages
     /// to full health. Enemies are created per wave and thrown away when the wave is over.
     ///
     /// The waiting between waves is driven by a timer rather than a coroutine, so the whole
-    /// stage stays inside the single update loop and can be simulated later without rendering.
+    /// stage stays inside the single update loop and can be run headless by a test.
+    ///
+    /// This is also the only place in the game that reads the clock. Real time comes in through
+    /// <see cref="Advance"/> and is handed to the simulation in fixed steps, never as the frame's
+    /// own delta. Everything downstream — the battle, the walk back, the ground rolling — sees
+    /// exactly the same step size regardless of the frame rate of the machine.
     /// </summary>
     public class StageRunner : MonoBehaviour
     {
@@ -50,6 +55,20 @@ namespace HerOClock.Stages
         private Phase phase;
         private float timer;
         private float phaseDuration;
+        private float accumulator;
+
+        /// <summary>
+        /// Most simulation steps allowed in a single frame.
+        ///
+        /// A long hitch, a breakpoint or a window left unfocused would otherwise ask for
+        /// thousands of steps at once and freeze the game trying to catch up, which only makes
+        /// the next frame worse. Past this limit the extra time is dropped: the simulation falls
+        /// behind the wall clock, which is the right trade when the alternative is not drawing.
+        ///
+        /// 300 steps is five seconds of simulation, comfortably above the 16 steps that the
+        /// highest developer speed asks for on a 30 frames per second budget.
+        /// </summary>
+        public const int MaxStepsPerFrame = 300;
 
         [Tooltip("Seconds the ground keeps rolling after the party has regrouped.")]
         [Min(0.1f)]
@@ -140,17 +159,58 @@ namespace HerOClock.Stages
 
         private void Update()
         {
-            if (phase == Phase.Fighting)
+            Advance(Time.deltaTime);
+        }
+
+        /// <summary>
+        /// Feeds real time into the stage, which only ever advances in steps of
+        /// <see cref="BattleDirector.FixedStep"/>.
+        ///
+        /// Public and separate from Update on purpose: a test drives a whole stage by calling
+        /// this with whatever deltas it likes, including deliberately irregular ones, and the
+        /// result has to come out identical either way.
+        /// </summary>
+        public void Advance(float deltaTime)
+        {
+            if (deltaTime <= 0f)
             {
                 return;
             }
 
-            float deltaTime = Time.deltaTime;
-            timer += deltaTime;
+            accumulator += deltaTime;
+
+            float limit = MaxStepsPerFrame * BattleDirector.FixedStep;
+            if (accumulator > limit)
+            {
+                accumulator = limit;
+            }
+
+            while (accumulator >= BattleDirector.FixedStep)
+            {
+                accumulator -= BattleDirector.FixedStep;
+                Step(BattleDirector.FixedStep);
+            }
+        }
+
+        /// <summary>
+        /// One simulation step of the stage. Either the battle is running, and the step goes to
+        /// the director, or the stage is between waves and the step advances the transition.
+        /// </summary>
+        private void Step(float step)
+        {
+            if (phase == Phase.Fighting)
+            {
+                // The battle can end inside this call, which changes the phase. The next step
+                // of the loop then picks up the transition, with no time lost in between.
+                director.Tick(step);
+                return;
+            }
+
+            timer += step;
 
             if (phase == Phase.Regrouping)
             {
-                TickRegroup(deltaTime);
+                TickRegroup(step);
                 return;
             }
 
@@ -182,13 +242,13 @@ namespace HerOClock.Stages
         /// The party walks back into formation. The ground only starts rolling once everybody
         /// has arrived, so the transition reads as the group regrouping and then moving on.
         /// </summary>
-        private void TickRegroup(float deltaTime)
+        private void TickRegroup(float step)
         {
             bool everyoneArrived = true;
 
             for (int i = 0; i < regroupMovers.Count; i++)
             {
-                regroupMovers[i].TickWalkBack(deltaTime);
+                regroupMovers[i].TickWalkBack(step);
 
                 if (regroupMovers[i].IsWalkingBack)
                 {

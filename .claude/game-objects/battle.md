@@ -63,9 +63,15 @@ Quando está tudo certo, ele escreve quantos heróis enfrentam quantos inimigos.
 
 Ambos são adicionados automaticamente pelo `BattleBootstrap` em tempo de execução. **Nenhum dos dois deve ser adicionado na mão.**
 
-O `BattleDirector` é o único laço de atualização do combate. Os personagens não possuem `Update` próprio de propósito: com um laço só, em ordem fixa, o combate roda sempre igual para o mesmo estado inicial. Isso é o que vai permitir simular a progressão offline mais para frente sem reescrever nada. Ele roda **um** combate e para.
+O `BattleDirector` é o único laço de atualização do combate. Os personagens não possuem `Update` próprio de propósito: com um laço só, em ordem fixa e em passo fixo, o combate roda sempre igual para o mesmo estado inicial e a mesma semente. Ele roda **um** combate e para.
+
+Desde a 0.5.1.0 o `BattleDirector` **não possui `Update`**. Ele expõe um `Tick(float)` que só é chamado de fora, e a simulação anda sempre `BattleDirector.FixedStep` de cada vez, que é 1/60 de segundo.
 
 O `StageRunner` manda no ciclo da fase: cria a onda, espera o combate acabar, faz a transição, cria a próxima onda, e trata vitória e derrota. Os heróis vivem a fase inteira e carregam o dano de uma onda para a outra; os inimigos são criados por onda e descartados.
+
+Ele é também **o único lugar do jogo que lê o relógio**. O tempo real entra pelo `Update`, vai para um acumulador, e sai em passos fixos que vão ou para a batalha ou para a transição. Ter um acumulador só, em vez de um para cada, é o que impede sobra de tempo se perder a cada troca de fase.
+
+O método `Advance(float)` é público justamente para que um teste consiga rodar uma fase inteira sem cena e sem renderizar, chamando ele num laço.
 
 Os tempos de espera ficam expostos nele:
 
@@ -94,7 +100,9 @@ Adicionado automaticamente pelo `BattleBootstrap`, **apenas no editor e em build
 - `Speed` — de `0.25x` a `8x`, arrastável com o jogo rodando.
 - Atalhos: `0` para 0.5x, `1` para 1x, `2` para 2x, `3` para 4x, `4` para 8x.
 
-A taxa de quadros sobe junto com a velocidade, então o passo de tempo que a simulação recebe por quadro continua idêntico ao de velocidade normal. É isso que faz o combate acelerado ser fiel ao normal, e é também o motivo do limite de 8x: ali a taxa de quadros já chega a 240.
+O combate acelerado é idêntico ao normal por construção, pois a simulação anda em passo fixo e o `Time.timeScale` apenas faz o acumulador pedir mais passos por quadro. A 8x em 30 quadros por segundo são 16 passos por quadro.
+
+A taxa de quadros continua subindo junto com a velocidade, mas **apenas para a coisa ficar assistível**. Antes da 0.5.1.0 ela era o motivo de o combate acelerado estar correto, o que era frágil: `Application.targetFrameRate` é um teto e não uma garantia. O limite de 8x hoje existe só porque acima disso nada na tela é legível.
 
 ## TextMeshPro
 

@@ -10,14 +10,31 @@ namespace HerOClock.Battle
     /// <summary>
     /// The single update loop of one battle.
     ///
-    /// Characters deliberately have no Update of their own. With one loop, in a fixed order,
-    /// combat always plays out the same way for the same starting state, which is what will
-    /// let us simulate offline progression later without rewriting anything.
+    /// Characters deliberately have no Update of their own. With one loop, in a fixed order and
+    /// on a fixed step, the same starting state and the same seed always produce the same fight,
+    /// blow by blow. That is what lets a reported oddity be replayed instead of guessed at.
+    ///
+    /// It does not read the clock. <see cref="Tick"/> is called by the StageRunner, which owns
+    /// the only accumulator in the game, so a whole battle can also be run headless by a test
+    /// simply by calling Tick in a loop.
     ///
     /// It runs a single fight and stops. What happens next belongs to the StageRunner.
     /// </summary>
     public class BattleDirector : MonoBehaviour
     {
+        /// <summary>
+        /// Size of one simulation step, in seconds.
+        ///
+        /// Everything in combat advances by exactly this amount, never by the frame's delta.
+        /// A variable delta would make the fight depend on the frame rate of the machine, which
+        /// breaks replaying a seed and makes the developer speed control distort the simulation.
+        ///
+        /// 60 steps per second is finer than the 30 frames the game renders, so the simulation
+        /// is never coarser than what the player sees, and it divides cleanly into the frame
+        /// rates that matter.
+        /// </summary>
+        public const float FixedStep = 1f / 60f;
+
         private readonly List<Character> heroes = new List<Character>();
         private readonly List<Character> enemies = new List<Character>();
         private readonly List<Character> all = new List<Character>();
@@ -25,6 +42,8 @@ namespace HerOClock.Battle
         private readonly List<CharacterAttacker> attackers = new List<CharacterAttacker>();
 
         private bool running;
+        private int heroCount;
+        private long stepCount;
 
         /// <summary>Attacker, target and outcome. The view layer listens to this.</summary>
         public event Action<Character, Character, DamageResult> Attacked;
@@ -45,28 +64,50 @@ namespace HerOClock.Battle
             movers.Clear();
             attackers.Clear();
 
+            // Heroes are added first and enemies second, so each side occupies a contiguous
+            // half of the list and the side that resolves first can be swapped by swapping the
+            // order of two loops. The caller's ordering is deliberately not trusted for this.
             for (int i = 0; i < characters.Count; i++)
             {
-                Character character = characters[i];
-
-                all.Add(character);
-                movers.Add(new CharacterMover(character, grid));
-
-                CharacterAttacker attacker = new CharacterAttacker(character, random);
-                attacker.Attacked += RaiseAttacked;
-                attackers.Add(attacker);
-
-                if (character.Team == Team.Heroes)
+                if (characters[i].Team == Team.Heroes)
                 {
-                    heroes.Add(character);
-                }
-                else
-                {
-                    enemies.Add(character);
+                    Enlist(characters[i], grid, random);
                 }
             }
 
+            heroCount = all.Count;
+
+            for (int i = 0; i < characters.Count; i++)
+            {
+                if (characters[i].Team != Team.Heroes)
+                {
+                    Enlist(characters[i], grid, random);
+                }
+            }
+
+            // The step counter belongs to the battle, so two identical battles alternate the
+            // resolution order identically.
+            stepCount = 0;
             running = true;
+        }
+
+        private void Enlist(Character character, BattleGrid grid, BattleRandom random)
+        {
+            all.Add(character);
+            movers.Add(new CharacterMover(character, grid));
+
+            CharacterAttacker attacker = new CharacterAttacker(character, random);
+            attacker.Attacked += RaiseAttacked;
+            attackers.Add(attacker);
+
+            if (character.Team == Team.Heroes)
+            {
+                heroes.Add(character);
+            }
+            else
+            {
+                enemies.Add(character);
+            }
         }
 
         public void Stop()
@@ -74,24 +115,49 @@ namespace HerOClock.Battle
             running = false;
         }
 
-        private void Update()
+        /// <summary>
+        /// Advances the battle by exactly one simulation step.
+        ///
+        /// Public and driven from outside on purpose: the StageRunner owns the clock, and a test
+        /// can run an entire fight by calling this in a loop with no scene and no rendering.
+        /// </summary>
+        public void Tick(float step)
         {
             if (!running)
             {
                 return;
             }
 
-            float deltaTime = Time.deltaTime;
+            // Which side resolves first alternates every step. Heroes are always first in the
+            // list, so without this they would win every exact tie: their blow would land and
+            // kill before the enemy whose own blow was due in the same step ever swung. The
+            // alternation is driven by the step counter, so it stays reproducible.
+            bool heroesFirst = (stepCount & 1L) == 0L;
+            stepCount++;
 
-            for (int i = 0; i < all.Count; i++)
+            if (heroesFirst)
             {
-                IReadOnlyList<Character> opponents = all[i].Team == Team.Heroes ? enemies : heroes;
-
-                movers[i].Tick(deltaTime, opponents);
-                attackers[i].Tick(deltaTime, opponents, movers[i].IsMoving);
+                TickRange(0, heroCount, step);
+                TickRange(heroCount, all.Count, step);
+            }
+            else
+            {
+                TickRange(heroCount, all.Count, step);
+                TickRange(0, heroCount, step);
             }
 
             CheckForEnd();
+        }
+
+        private void TickRange(int from, int to, float step)
+        {
+            for (int i = from; i < to; i++)
+            {
+                IReadOnlyList<Character> opponents = all[i].Team == Team.Heroes ? enemies : heroes;
+
+                movers[i].Tick(step, opponents);
+                attackers[i].Tick(step, opponents, movers[i].IsMoving);
+            }
         }
 
         private void CheckForEnd()

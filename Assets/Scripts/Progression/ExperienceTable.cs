@@ -69,8 +69,11 @@ namespace HerOClock.Progression
         }
 
         /// <summary>
-        /// Total experience needed to go from level 1 to the given level. Used by the tests that
-        /// keep the published pacing table in progress.md honest.
+        /// Total experience needed to go from level 1 to the given level.
+        ///
+        /// Nothing calls this yet. It exists for the test that recalculates the pacing table
+        /// published in progress.md, so a constant cannot be changed without the spec and the
+        /// code disagreeing out loud. That test arrives in 0.5.2.0.
         /// </summary>
         public static long TotalXpTo(int level)
         {

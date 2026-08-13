@@ -11,6 +11,12 @@ namespace HerOClock.Combat
     /// is ready, a target is in range and the character is not mid step. Since the timer stops
     /// at zero and never banks time, nobody can charge up an attack by stepping in and out of range.
     ///
+    /// When a blow does land, the time the timer overshot by is **carried into the next
+    /// interval**. That matters more than it looks: a blow can only land on a simulation step,
+    /// so throwing the overshoot away would round every interval up to whole steps, and a
+    /// character at 4 attacks per second would really make 3.75 of them. The faster the
+    /// character, the more it lost, which punished exactly the builds that pay for speed.
+    ///
     /// Not a MonoBehaviour on purpose, for the same reason as CharacterMover: the BattleDirector
     /// calls Tick, so there is a single update loop running in a predictable order.
     /// </summary>
@@ -46,7 +52,7 @@ namespace HerOClock.Combat
             cooldown = AttackInterval;
         }
 
-        public void Tick(float deltaTime, IReadOnlyList<Character> enemies, bool isMoving)
+        public void Tick(float step, IReadOnlyList<Character> enemies, bool isMoving)
         {
             if (!character.IsAlive)
             {
@@ -55,31 +61,42 @@ namespace HerOClock.Combat
 
             if (cooldown > 0f)
             {
-                cooldown -= deltaTime;
+                cooldown -= step;
 
                 if (cooldown > 0f)
                 {
                     return;
                 }
-
-                // The timer stops at zero instead of going negative. Otherwise a character that
-                // walked for a long time would bank several blows to land all at once.
-                cooldown = 0f;
             }
 
+            // The timer is ready. From here it is held at zero until a blow actually lands, so a
+            // character that walked for a long time cannot bank several blows to land at once.
             if (isMoving)
             {
+                cooldown = 0f;
                 return;
             }
 
             Character target = TargetSelector.Select(character, enemies, true);
             if (target == null)
             {
+                cooldown = 0f;
                 return;
             }
 
             Attack(target);
-            cooldown = AttackInterval;
+
+            // Adding the interval rather than assigning it is what carries the overshoot, so the
+            // real rate settles on the sheet's value instead of on whole simulation steps.
+            cooldown += AttackInterval;
+
+            if (cooldown <= 0f)
+            {
+                // Only reachable above one blow per simulation step, where the extra blows
+                // cannot be landed at all. Letting the debt pile up would leave the character
+                // attacking every step long after whatever made it that fast wore off.
+                cooldown = AttackInterval;
+            }
         }
 
         private void Attack(Character target)
