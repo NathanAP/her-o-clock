@@ -69,9 +69,44 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 ## 0.7.0.0
 
+- Lore do ato 1.
+- Equipe de 2 heróis.
+    - A ideia é terminar o ato 1 com 3 heróis.
+- 5 fases.
+- 5 vilões.
+- 12 lacaios.
+- Instâncias de todo mundo organizada na Unity.
+
+## 0.8.0.0
+
 - Items.
 - Ataques básicos agora variam de acordo com o item.
 - Uma mesma seed ainda define como a batalha vai ocorrer.
+
+## 0.9.0.0
+
+- Menus.
+
+## 0.10.0.0
+
+- Inventário.
+- Baús.
+
+## 0.11.0.0
+
+- Mapa dos atos.
+
+## 0.12.0.0
+
+- Árvore de progressão.
+
+## 0.13.0.0
+
+- Classes.
+
+## 0.14.0.0
+
+- Árvore de habilidades
 
 # Ordem escolhida
 
