@@ -72,7 +72,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 - Revisão.
 
-## 0.6.0.0 (próxima)
+## 0.6.0.0
 
 - Persistência.
 - Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
