@@ -87,6 +87,15 @@ Ao entrar em Play, a hierarquia abaixo do `Battle` fica assim:
 - Um filho por personagem, nomeado com o `DisplayName` da ficha, com os componentes `Character` e `CharacterView`. Cada personagem tem três filhos próprios: `Corpo`, `BarraFundo` e `BarraVida`.
 - `Dano` — objetos temporários com os números que sobem e somem. São criados e destruídos durante o combate.
 
+## DevSpeedControl
+
+Adicionado automaticamente pelo `BattleBootstrap`, **apenas no editor e em builds de desenvolvimento**. Não existe na build final.
+
+- `Speed` — de `0.25x` a `8x`, arrastável com o jogo rodando.
+- Atalhos: `0` para 0.5x, `1` para 1x, `2` para 2x, `3` para 4x, `4` para 8x.
+
+A taxa de quadros sobe junto com a velocidade, então o passo de tempo que a simulação recebe por quadro continua idêntico ao de velocidade normal. É isso que faz o combate acelerado ser fiel ao normal, e é também o motivo do limite de 8x: ali a taxa de quadros já chega a 240.
+
 ## TextMeshPro
 
 Os números de dano usam TextMeshPro, que vem junto com o pacote `com.unity.ugui`.

@@ -52,10 +52,18 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 - Correção do reposicionamento.
 
+## 0.3.2.0 (feita)
+
+- Controle de velocidade para desenvolvimento, de 0.25x a 8x.
+- A taxa de quadros sobe junto com a velocidade, então acelerar não distorce a simulação.
+- Não existe na build final.
+- O resumo completo está em `.claude/versions/20260812_0.3.2.0.md`.
+
 ## 0.4.0.0 (próxima)
 
 - Progressão.
 - Experiência, nível e distribuição de pontos de atributo.
+- A vida atual não sobe ao subir de nível, apenas a máxima.
 
 ## 0.5.0.0
 
@@ -69,6 +77,11 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 ## 0.7.0.0
 
+- Projéteis.
+- Podemos fazer primeiro uns laserzinhos simples e coloridos, apenas para ver a coisa acontecer.
+
+## 0.8.0.0
+
 - Lore do ato 1.
 - Equipe de 2 heróis.
     - A ideia é terminar o ato 1 com 3 heróis.
@@ -77,34 +90,34 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - 12 lacaios.
 - Instâncias de todo mundo organizada na Unity.
 
-## 0.8.0.0
+## 0.9.0.0
 
 - Items.
 - Ataques básicos agora variam de acordo com o item.
 - Uma mesma seed ainda define como a batalha vai ocorrer.
 
-## 0.9.0.0
+## 0.10.0.0
 
 - Menus.
 
-## 0.10.0.0
+## 0.11.0.0
 
 - Inventário.
 - Baús.
 
-## 0.11.0.0
+## 0.12.0.0
 
 - Mapa dos atos.
 
-## 0.12.0.0
+## 0.13.0.0
 
 - Árvore de progressão.
 
-## 0.13.0.0
+## 0.14.0.0
 
 - Classes.
 
-## 0.14.0.0
+## 0.15.0.0
 
 - Árvore de habilidades
 

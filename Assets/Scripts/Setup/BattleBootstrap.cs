@@ -84,6 +84,12 @@ namespace HerOClock.Setup
             director = gameObject.AddComponent<BattleDirector>();
             director.Attacked += OnAttacked;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Never present in a released build. A speed slider would defeat a game whose
+            // whole point is that time passes.
+            gameObject.AddComponent<HerOClock.Dev.DevSpeedControl>();
+#endif
+
             StageRunner runner = gameObject.AddComponent<StageRunner>();
             runner.Configure(grid, director, charactersById, random, new BoardScroller(board, gridConfig.CellSize), heroes, CreateCharacter);
             runner.StartStage(stage);
