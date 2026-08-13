@@ -25,6 +25,16 @@ For the same reason, the target priority chain in `TargetSelector` compares inte
 
 The reason a simulator is never needed is that `progress.md` forbids the three things that would demand one: no item drops, no stage advancement, and at most one level gained while away. Allowing any of them offline would mean writing a combat simulator.
 
+## Nothing reads a base attribute directly
+
+`CharacterStats` exposes `TotalOf(attribute)`, and everything derived from an attribute goes through it. The serialized fields are the sheet's **base** values and are not what the game plays with.
+
+Today the total is the base plus the points earned by levelling, scaled by the stage multiplier. Items, skill trees and buffs will become further sources **inside that method**, and no other file will have to change. That is the entire point of the seam.
+
+The level contribution is computed from the level, never accumulated level by level. That keeps it free of rounding drift and lets a level 40 minion be created without walking through 39 level ups.
+
+If you find yourself reading `BasePower` outside this class, something is being calculated in the wrong place.
+
 ## Sheet and instance are separate
 
 `CharacterDefinition` is a shared asset: the immutable mould, holding story, design, colour and later skills. `Character` holds its own copy of the stats, created from the sheet on initialisation, plus its own level.

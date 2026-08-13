@@ -24,8 +24,11 @@ xpParaSubir(nível do herói)   = 50 × nível^3.55
 xpPorLacaio(nível do lacaio)  = 10 × nível^2
 ```
 
-- Um vilão vale **10 lacaios** do mesmo nível.
+- Um vilão vale **10 lacaios** do mesmo nível, tanto em experiência quanto em dinheiro.
     - Com isso o vilão sozinho responde por quase metade da experiência de uma fase, e completar a fase paga muito melhor do que ficar repetindo as ondas.
+    - A mesma regra vale para os dois recursos de propósito, para não existirem duas regras a calibrar depois.
+- Cada lacaio concede **1 de dinheiro**, independente do nível.
+    - Esse valor é provisório. O número certo só existe quando a árvore de progresso existir, pois é a curva de custo dela que decide quanto dinheiro precisa entrar no jogo.
 - A experiência de um inimigo depende do **nível dele**, nunca do nível de quem o derrotou.
     - É isso que impede o jogador de farmar eternamente no ato 1 e o obriga a avançar para continuar evoluindo.
 

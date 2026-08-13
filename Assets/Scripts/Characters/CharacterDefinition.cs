@@ -20,8 +20,17 @@ namespace HerOClock.Characters
         public Color Color = Color.white;
 
         [Header("Level")]
-        [Tooltip("Used by the mitigation of whoever receives this character's attacks.")]
+        [Tooltip("Level a hero starts at. Minions and villains ignore it, since the stage decides theirs.")]
         [Min(1)] public int Level = 1;
+
+        [Tooltip("Highest level this character can reach.")]
+        [Min(1)] public int MaxLevel = 100;
+
+        [Tooltip("How the 5 points earned on every level are split, in percentages. Should add up to 100.")]
+        public AttributeGrowth Growth = new AttributeGrowth
+        {
+            Power = 25, Agility = 25, Specialty = 25, Constitution = 25
+        };
 
         [Header("Basic attack range")]
         [Tooltip("Shortest distance, in cells, the character can reach. 1 means there is no minimum range.")]
@@ -40,6 +49,19 @@ namespace HerOClock.Characters
             if (MinRange > MaxRange)
             {
                 MinRange = MaxRange;
+            }
+
+            if (Level > MaxLevel)
+            {
+                Level = MaxLevel;
+            }
+
+            // The shares are normalised when the points are handed out, so a total other than
+            // 100 still works. It is almost always a typo though, and worth saying out loud.
+            if (Growth.Total != 100)
+            {
+                Debug.LogWarning(DisplayName + ": the attribute growth adds up to " + Growth.Total
+                    + " instead of 100. It still works, but the percentages will not read as written.", this);
             }
         }
     }

@@ -4,6 +4,7 @@ using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
 using HerOClock.Movement;
+using HerOClock.Progression;
 using HerOClock.View;
 using UnityEngine;
 
@@ -34,9 +35,10 @@ namespace HerOClock.Stages
         private BattleGrid grid;
         private BattleDirector director;
         private IReadOnlyDictionary<string, CharacterDefinition> charactersById;
+        private PlayerWallet wallet;
         private BattleRandom random;
         private BoardScroller scroller;
-        private Func<CharacterDefinition, Team, GridPosition, int, Character> spawn;
+        private Func<CharacterDefinition, Team, GridPosition, int, float, Character> spawn;
 
         private StageData stage;
         private readonly List<Character> heroes = new List<Character>();
@@ -69,14 +71,16 @@ namespace HerOClock.Stages
             BattleGrid grid,
             BattleDirector director,
             IReadOnlyDictionary<string, CharacterDefinition> charactersById,
+            PlayerWallet wallet,
             BattleRandom random,
             BoardScroller scroller,
             IReadOnlyList<Character> heroes,
-            Func<CharacterDefinition, Team, GridPosition, int, Character> spawn)
+            Func<CharacterDefinition, Team, GridPosition, int, float, Character> spawn)
         {
             this.grid = grid;
             this.director = director;
             this.charactersById = charactersById;
+            this.wallet = wallet;
             this.random = random;
             this.scroller = scroller;
             this.spawn = spawn;
@@ -286,8 +290,38 @@ namespace HerOClock.Stages
                     continue;
                 }
 
-                enemies.Add(spawn(definition, Team.Enemies, position, stage.enemyLevel));
+                Character enemy = spawn(definition, Team.Enemies, position, stage.enemyLevel, placement.EffectiveMultiplier);
+                enemy.Died += OnEnemyDied;
+                enemies.Add(enemy);
             }
+        }
+
+        /// <summary>
+        /// Hands out the reward for an enemy that fell.
+        ///
+        /// Every hero of the group receives it, **including the fallen ones**. Without that rule
+        /// a weak hero carried by a strong group would gain almost nothing, since it would go
+        /// down early in every wave.
+        /// </summary>
+        private void OnEnemyDied(Character enemy)
+        {
+            bool isVillain = enemy.Kind == CharacterKind.Villain;
+            int level = enemy.Level;
+
+            long experience = isVillain
+                ? ExperienceTable.XpFromVillain(level)
+                : ExperienceTable.XpFromMinion(level);
+
+            int money = isVillain
+                ? ExperienceTable.MoneyFromVillain(level)
+                : ExperienceTable.MoneyFromMinion(level);
+
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                heroes[i].AwardExperience(experience);
+            }
+
+            wallet.Add(money);
         }
 
         private void DespawnEnemies()
@@ -301,6 +335,7 @@ namespace HerOClock.Stages
                     continue;
                 }
 
+                enemy.Died -= OnEnemyDied;
                 enemy.ClearFromGrid();
                 Destroy(enemy.gameObject);
             }

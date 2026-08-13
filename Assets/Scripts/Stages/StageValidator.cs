@@ -111,6 +111,12 @@ namespace HerOClock.Stages
                     hasVillain = true;
                 }
 
+                if (placement.multiplier < 0f)
+                {
+                    problems.Add(where + " has a negative multiplier (" + placement.multiplier
+                        + "). Leave it out for the normal strength.");
+                }
+
                 if (placement.column < 1 || placement.column > columns
                     || placement.row < 1 || placement.row > rows)
                 {

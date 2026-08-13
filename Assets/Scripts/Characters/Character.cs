@@ -1,4 +1,5 @@
 using HerOClock.Battle;
+using HerOClock.Progression;
 using UnityEngine;
 
 namespace HerOClock.Characters
@@ -9,6 +10,7 @@ namespace HerOClock.Characters
     public class Character : MonoBehaviour, IGridOccupant
     {
         private BattleGrid grid;
+        private float multiplier = 1f;
 
         public CharacterDefinition Definition { get; private set; }
         public Team Team { get; private set; }
@@ -31,11 +33,17 @@ namespace HerOClock.Characters
         /// </summary>
         public CharacterStats Stats { get; private set; }
 
+        /// <summary>Level and experience of this instance.</summary>
+        public LevelProgress Progress { get; private set; }
+
         /// <summary>
-        /// This instance's level. Heroes take it from the sheet for now, minions and villains
-        /// take it from the stage they appear in, as stated in characters.md.
+        /// This instance's level. Heroes take their starting level from the sheet, minions and
+        /// villains take it from the stage they appear in, as stated in characters.md.
         /// </summary>
-        public int Level { get; private set; }
+        public int Level
+        {
+            get { return Progress.Level; }
+        }
 
         public CharacterKind Kind
         {
@@ -60,17 +68,24 @@ namespace HerOClock.Characters
         /// <summary>Cell where the character started the battle, used when restarting.</summary>
         public GridPosition InitialPosition { get; private set; }
 
-        /// <summary>Raised on damage, healing or death, so the view can react.</summary>
+        /// <summary>Raised on damage, healing, death or a level gained, so the view can react.</summary>
         public event System.Action Changed;
 
-        public void Initialize(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid, int level)
+        /// <summary>Raised once when the character falls, so rewards can be handed out.</summary>
+        public event System.Action<Character> Died;
+
+        public void Initialize(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid, int level, float multiplier)
         {
             Definition = definition;
             Team = team;
             this.grid = grid;
+            this.multiplier = multiplier;
+
+            Progress = new LevelProgress(level, definition.MaxLevel);
+            Progress.LevelGained += OnLevelGained;
 
             Stats = definition.Stats.Clone();
-            Level = level;
+            Stats.ApplyInstance(Progress.Level, definition.Growth, multiplier);
 
             InitialPosition = position;
             CurrentHealth = Stats.MaxHealth;
@@ -78,6 +93,26 @@ namespace HerOClock.Characters
 
             grid.Occupy(position, this);
             transform.position = grid.WorldPositionOf(position);
+        }
+
+        /// <summary>Adds experience to this character, applying every level it earns.</summary>
+        public void AwardExperience(long amount)
+        {
+            Progress.Award(amount);
+        }
+
+        /// <summary>
+        /// Applies a level that was just gained.
+        ///
+        /// Maximum health goes up because it comes from POW and CON, but **current health is
+        /// left alone**. Levelling up in the middle of a stage must not work as a free potion,
+        /// otherwise it would undo the damage carried between waves, which is what makes the
+        /// player need to farm in the first place.
+        /// </summary>
+        private void OnLevelGained(int newLevel)
+        {
+            Stats.ApplyInstance(newLevel, Definition.Growth, multiplier);
+            Changed?.Invoke();
         }
 
         /// <summary>Current health over maximum health, from 0 to 1.</summary>
@@ -103,6 +138,9 @@ namespace HerOClock.Characters
             if (CurrentHealth == 0)
             {
                 Die();
+                Changed?.Invoke();
+                Died?.Invoke(this);
+                return;
             }
 
             Changed?.Invoke();

@@ -59,13 +59,16 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Não existe na build final.
 - O resumo completo está em `.claude/versions/20260812_0.3.2.0.md`.
 
-## 0.4.0.0 (próxima)
+## 0.4.0.0 (feita)
 
 - Progressão.
 - Experiência, nível e distribuição de pontos de atributo.
 - A vida atual não sobe ao subir de nível, apenas a máxima.
+- O `enemyLevel` da fase passou a realmente deixar o inimigo mais forte, e ganhou um multiplicador de ajuste fino por inimigo.
+- Todo cálculo derivado passa por `TotalOf`, onde itens, árvores e buffs vão entrar depois sem mexer em mais nada.
+- O resumo completo está em `.claude/versions/20260812_0.4.0.0.md`.
 
-## 0.5.0.0
+## 0.5.0.0 (próxima)
 
 - Persistência.
 - Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
@@ -112,6 +115,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 ## 0.13.0.0
 
 - Árvore de progressão.
+- Dinheiro.
 
 ## 0.14.0.0
 

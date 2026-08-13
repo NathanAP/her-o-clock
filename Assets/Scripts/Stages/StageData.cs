@@ -50,5 +50,21 @@ namespace HerOClock.Stages
 
         public int column;
         public int row;
+
+        /// <summary>
+        /// Fine tuning for this single enemy, multiplying its attributes.
+        ///
+        /// The sheet says who the character is and the stage says how strong this instance is.
+        /// It is what lets the same minion appear weakened as a summon in a late stage, or a
+        /// single stage be softened without touching any other.
+        ///
+        /// Left out of the file it reads as 1, since a missing number arrives as zero.
+        /// </summary>
+        public float multiplier;
+
+        public float EffectiveMultiplier
+        {
+            get { return multiplier <= 0f ? 1f : multiplier; }
+        }
     }
 }

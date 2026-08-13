@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
+using HerOClock.Progression;
 using HerOClock.Stages;
 using HerOClock.View;
 using UnityEngine;
@@ -43,6 +44,7 @@ namespace HerOClock.Setup
 
         private BattleGrid grid;
         private BattleDirector director;
+        private PlayerWallet wallet;
 
         private void Start()
         {
@@ -90,8 +92,11 @@ namespace HerOClock.Setup
             gameObject.AddComponent<HerOClock.Dev.DevSpeedControl>();
 #endif
 
+            wallet = new PlayerWallet();
+            wallet.Changed += () => Debug.Log("Money: " + wallet.Money + ".", this);
+
             StageRunner runner = gameObject.AddComponent<StageRunner>();
-            runner.Configure(grid, director, charactersById, random, new BoardScroller(board, gridConfig.CellSize), heroes, CreateCharacter);
+            runner.Configure(grid, director, charactersById, wallet, random, new BoardScroller(board, gridConfig.CellSize), heroes, CreateCharacter);
             runner.StartStage(stage);
         }
 
@@ -203,19 +208,19 @@ namespace HerOClock.Setup
                     continue;
                 }
 
-                heroes.Add(CreateCharacter(placement.Character, Team.Heroes, position, placement.Character.Level));
+                heroes.Add(CreateCharacter(placement.Character, Team.Heroes, position, placement.Character.Level, 1f));
             }
 
             return heroes;
         }
 
-        private Character CreateCharacter(CharacterDefinition definition, Team team, GridPosition position, int level)
+        private Character CreateCharacter(CharacterDefinition definition, Team team, GridPosition position, int level, float multiplier)
         {
             GameObject instance = new GameObject(definition.DisplayName);
             instance.transform.SetParent(transform, false);
 
             Character character = instance.AddComponent<Character>();
-            character.Initialize(definition, team, position, grid, level);
+            character.Initialize(definition, team, position, grid, level, multiplier);
 
             // The body and the health bar are children of the character, so the scaling lives
             // on them and not on the object that travels across the board.

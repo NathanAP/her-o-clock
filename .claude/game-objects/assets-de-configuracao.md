@@ -83,6 +83,25 @@ O campo `Level` da ficha é ignorado para lacaios e vilões: quem define o níve
 - Power: `25`, Agility: `10`, Specialty: `15`, Constitution: `40`
 - Physical Armor: `150`
 
+### Crescimento por nível
+
+Toda ficha precisa declarar como o personagem gasta os **5 pontos que recebe a cada nível**, em porcentagens que somam 100. O campo fica logo abaixo do nível.
+
+Para heróis é a distribuição padrão, que o jogador vai poder substituir quando existir interface. Para lacaios e vilões é a **única** forma que eles têm de ficar mais fortes, já que ninguém distribui pontos por eles.
+
+Sugestões para as fichas atuais:
+
+| Ficha | POW | AGI | SPE | CON |
+|---|---|---|---|---|
+| Heroi Tanque | 30 | 5 | 0 | 65 |
+| Heroi Arqueiro | 35 | 45 | 0 | 20 |
+| Lacaio | 40 | 20 | 0 | 40 |
+| Vilao | 35 | 15 | 15 | 35 |
+
+O campo `Max Level` fica em `100` para heróis. Para lacaios e vilões ele pode ser menor, se você quiser que aquele inimigo não exista acima de certo nível.
+
+O Console avisa se as porcentagens não somarem 100. Elas continuam funcionando (são normalizadas), mas quase sempre é erro de digitação.
+
 ### Campos de defesa e ofensiva
 
 Além dos acima, toda ficha possui campos que ainda não têm fonte no jogo, pois dependem de itens e habilidades. Podem ficar em zero, ou ser preenchidos na mão para experimentar:

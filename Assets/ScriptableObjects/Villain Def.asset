@@ -17,13 +17,19 @@ MonoBehaviour:
   Kind: 2
   Color: {r: 0.7607843, g: 0.16862746, b: 0.16862746, a: 1}
   Level: 1
+  MaxLevel: 100
+  Growth:
+    Power: 35
+    Agility: 15
+    Specialty: 15
+    Constitution: 35
   MinRange: 1
   MaxRange: 2
   Stats:
-    Power: 25
-    Agility: 10
-    Specialty: 15
-    Constitution: 40
+    BasePower: 3
+    BaseAgility: 2
+    BaseSpecialty: 0
+    BaseConstitution: 4
     Equipment: 2
     PhysicalArmor: 150
     FireResistance: 0
