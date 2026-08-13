@@ -2,7 +2,78 @@
 
 ## Objetivo
 
-Especificar como funciona o progresso de Her-o-clock.
+Especificar como funciona o progresso de Her-o-clock: experiência, nível, dinheiro, o que acontece enquanto o jogador está fora, e as árvores que ele compra com o que juntou.
+
+## As três passadas
+
+- O jogo é jogado três vezes, sempre pelos mesmos atos, com dificuldade crescente a cada volta.
+- Terminar a história uma vez não termina o jogo. É a segunda e a terceira volta que carregam a maior parte da progressão.
+- Os níveis aproximados em que cada passada termina são:
+    - **Primeira passada:** o jogador chega ao fim do último ato por volta do nível 35.
+    - **Segunda passada:** por volta do nível 85.
+    - **Terceira passada:** é onde o nível deixa de ser o que importa e a otimização de build e de itens assume.
+- A terceira passada sobrar pouco nível é intencional. Se ela ainda dependesse de subir de nível, competiria com o próprio conteúdo que ela deveria apresentar.
+- O que decide onde cada passada termina **não é a curva de experiência, é a quantidade de fases em cada ato**. Mais fases não deixam o jogo mais rápido, deixam o mesmo tempo mais variado. É esse o parâmetro a ajustar quando os atos existirem.
+
+## Experiência e nível
+
+### As duas fórmulas
+
+```
+xpParaSubir(nível do herói)   = 50 × nível^3.55
+xpPorLacaio(nível do lacaio)  = 10 × nível^2
+```
+
+- Um vilão vale **10 lacaios** do mesmo nível.
+    - Com isso o vilão sozinho responde por quase metade da experiência de uma fase, e completar a fase paga muito melhor do que ficar repetindo as ondas.
+- A experiência de um inimigo depende do **nível dele**, nunca do nível de quem o derrotou.
+    - É isso que impede o jogador de farmar eternamente no ato 1 e o obriga a avançar para continuar evoluindo.
+
+### Por que existe um expoente (e por que é 3.55)
+
+- O que controla o ritmo do jogo inteiro não são as constantes, é a **diferença entre os dois expoentes**. Ela define quantos inimigos do próprio nível são necessários para subir um nível, e essa quantidade cresce conforme o jogador avança.
+- O valor foi calibrado contra o Task Bar Hero numa progressão gratuita, que é a referência mais próxima do gênero: lá, 250 horas de jogo levam ao nível 70 de 80, ou seja **87% do máximo**. Com 3.55, as mesmas 250 horas levam ao nível 86 de 100.
+- Com esse expoente, os últimos 14 níveis custam mais de 100 horas sozinhos. O nível 100 existe, mas ninguém precisa alcançá-lo, que é o comportamento desejado.
+
+### Quem ganha experiência
+
+- Todos os heróis do grupo ativo ganham a experiência dos inimigos derrotados.
+- **Heróis caídos continuam ganhando experiência** até o fim da fase.
+    - Sem essa regra, um herói fraco carregado por um grupo forte não ganharia quase nada, pois morreria logo na primeira onda.
+- **Heróis fora do grupo não ganham experiência.**
+- Todo herói recém-liberado começa no **nível 1**, independente do nível dos demais.
+
+### O custo de trocar de herói, e o item que o resolve
+
+- As duas regras acima significam que colocar um herói novo no grupo custa caro. Subir do nível 1 ao 100 sendo carregado por um grupo que farma no nível máximo leva cerca de 200 horas, contra 366 horas no ritmo normal.
+    - Ser carregado só compensa quando o grupo farma perto do nível máximo. Em fases de nível intermediário, o herói novo recebe menos experiência por inimigo do que receberia subindo no próprio ritmo.
+- Esse custo é resolvido por **itens que concedem experiência ao banco**.
+- O item ocupa um espaço de equipamento em um **herói ativo** e concede experiência aos heróis fora do grupo.
+    - Se ele ficasse equipado no próprio herói do banco não disputaria espaço com nada, e a resposta certa seria sempre equipá-lo. Não haveria escolha.
+    - Ocupando um espaço ativo, ele troca poder de combate agora por variedade de time depois. Perto de uma parede o jogador tira o item, farmando confortável ele põe.
+
+## Atributos por nível
+
+- Ao subir de nível, todo personagem recebe **5 pontos de atributos principais** e **1 ponto para a árvore de habilidades**.
+- Cada ficha declara como aquele personagem distribui os 5 pontos, em porcentagens:
+
+```json
+"attributeGrowth": { "pow": 40, "agi": 20, "spe": 0, "con": 40 }
+```
+
+- Para **heróis**, essa é a distribuição padrão, que o jogador pode substituir pela dele.
+- Para **lacaios e vilões**, essa é a única forma que eles têm de ficar mais fortes, pois não existe ninguém distribuindo pontos por eles.
+- São quatro números por ficha, e não uma tabela de valores por nível. O nível faz o resto.
+
+### A ficha diz quem o personagem é, a fase diz quão forte ele está
+
+- A **ficha** define a identidade: os atributos base e a distribuição por nível. Se um lacaio é resistente e lento, ele é assim em todos os atos.
+- A **fase** define a instância: o nível daquele inimigo e, quando necessário, um multiplicador de ajuste fino.
+- Essa divisão é o que permite reaproveitar o mesmo personagem sem duplicar dados:
+    - Um vilão que invoca lacaios fracos do primeiro ato usa a mesma ficha com nível baixo.
+    - Vilões que voltam no ato final em dupla ou trio usam a mesma ficha com nível alto, posicionados mais de uma vez.
+    - Nerfar ou reforçar uma fase específica é mexer no multiplicador dela, sem afetar nenhuma outra.
+- Se a fase declarasse os atributos inteiros, o mesmo bloco de números estaria copiado em centenas de arquivos, e a identidade do personagem deixaria de existir em algum lugar.
 
 ## Dinheiro
 
@@ -86,3 +157,9 @@ Especificar como funciona o progresso de Her-o-clock.
 ## Árvore de habilidades
 
 - Falaremos sobre a árvore de habilidades futuramente.
+
+## Sobre os números desta spec
+
+- As horas citadas aqui foram calculadas em cima das fichas de teste que existem hoje, que rendem cerca de **11 inimigos por minuto** de jogo aberto.
+- Elas servem para comparar decisões entre si e para saber se um ritmo é de horas, de dias ou de meses. Não são promessas.
+- Quando existirem heróis, lacaios e vilões de verdade, o ritmo de combate muda e todas as estimativas precisam ser refeitas. As fórmulas continuam valendo, os prazos não.

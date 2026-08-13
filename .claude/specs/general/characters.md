@@ -27,6 +27,7 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - `hidden` — a verdade por trás do personagem, que o jogador só descobre jogando.
     - Este bloco existe **apenas como documento de design**. Ele nunca deve ir para o dado que o jogo lê, senão qualquer pessoa abre o arquivo do jogo e encontra a revelação antes de merecê-la.
 - `baseAttributes` — os atributos principais no nível inicial, antes de qualquer outra fonte.
+- `attributeGrowth` — como o personagem distribui os 5 pontos que recebe a cada nível, em porcentagens. Descrito em `progress.md`.
 - `abilities` — as habilidades do personagem, descritas abaixo.
 
 ## Heróis
@@ -64,10 +65,8 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
     - Mais habilidades ele irá possuir.
 - Para subir o nível de seus heróis, o jogador deve enfrentar lacaios e vilões.
     - Muitas vezes o jogador precisará repetir a mesma fase inúmeras vezes para conseguir ficar mais forte e enfrentar a próxima fase.
-- Lacaios e vilões possuem níveis de acordo com a fase em que estão presentes.
-- Ao subir de nível, o jogador recebe os seguintes benefícios:
-    - 5 pontos de atributos principais.
-    - 1 ponto para a árvore de habilidades.
+- Lacaios e vilões possuem níveis de acordo com a fase em que estão presentes, e não de acordo com a ficha deles.
+- Tudo que diz respeito a ganhar experiência, subir de nível e distribuir os pontos recebidos está descrito em `progress.md`.
 
 ## Habilidades
 
