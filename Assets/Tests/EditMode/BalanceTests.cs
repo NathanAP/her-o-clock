@@ -153,16 +153,15 @@ namespace HerOClock.Tests
             page.AppendLine();
             page.AppendLine("Valores no nível inicial da ficha, sem itens.");
             page.AppendLine();
-            page.AppendLine("| Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão | Mit. vs nv1 | Mit. vs nv12 | Mit. vs nv50 |");
-            page.AppendLine("|---|---|---|---|---|---|---|---|---|");
+            page.AppendLine("| Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão | Armadura | Regen/s |");
+            page.AppendLine("|---|---|---|---|---|---|---|---|");
 
             CharacterDatabase database = Load<CharacterDatabase>();
 
             for (int i = 0; i < database.Characters.Count; i++)
             {
                 CharacterDefinition definition = database.Characters[i];
-                CharacterStats stats = definition.Stats.Clone();
-                stats.ApplyInstance(definition.Level, definition.Growth, 1f);
+                CharacterStats stats = AtLevel(definition, definition.Level);
 
                 page.AppendLine("| " + definition.DisplayName
                     + " | " + stats.MaxHealth
@@ -170,13 +169,68 @@ namespace HerOClock.Tests
                     + " | " + Number(stats.AttacksPerSecond, 2)
                     + " | " + Number(stats.CellsPerSecond, 2)
                     + " | " + Number(stats.EvasionChance, 1) + "%"
-                    + " | " + Number(stats.PhysicalMitigationAgainst(1), 1) + "%"
-                    + " | " + Number(stats.PhysicalMitigationAgainst(12), 1) + "%"
-                    + " | " + Number(stats.PhysicalMitigationAgainst(50), 1) + "%"
+                    + " | " + stats.PhysicalArmor
+                    + " | " + Number(stats.HealthPerSecond, 2)
                     + " |");
             }
 
             page.AppendLine();
+            AppendMitigation(page, database);
+        }
+
+        /// <summary>
+        /// Mitigation is reported against an attacker of the character's own level, because that
+        /// is the number the growth rule exists to hold still. Reading it at a fixed level against
+        /// varying attackers, which is what this table used to do, hides the whole property.
+        /// </summary>
+        private static void AppendMitigation(StringBuilder page, CharacterDatabase database)
+        {
+            int[] levels = { 1, 12, 30, 50, 100 };
+
+            page.AppendLine("### Mitigação física contra um atacante do mesmo nível");
+            page.AppendLine();
+            page.AppendLine("Uma linha parada significa que a armadura acompanha a curva. Uma linha que cai");
+            page.AppendLine("significa que aquela ficha perde defesa conforme o jogo avança.");
+            page.AppendLine();
+
+            page.Append("| Ficha |");
+            for (int i = 0; i < levels.Length; i++)
+            {
+                page.Append(" Nível ").Append(levels[i]).Append(" |");
+            }
+            page.AppendLine();
+
+            page.Append("|---|");
+            for (int i = 0; i < levels.Length; i++)
+            {
+                page.Append("---|");
+            }
+            page.AppendLine();
+
+            for (int i = 0; i < database.Characters.Count; i++)
+            {
+                CharacterDefinition definition = database.Characters[i];
+                page.Append("| ").Append(definition.DisplayName).Append(" |");
+
+                for (int l = 0; l < levels.Length; l++)
+                {
+                    int level = Mathf.Min(levels[l], definition.MaxLevel);
+                    CharacterStats stats = AtLevel(definition, level);
+
+                    page.Append(' ').Append(Number(stats.PhysicalMitigationAgainst(level), 1)).Append("% |");
+                }
+
+                page.AppendLine();
+            }
+
+            page.AppendLine();
+        }
+
+        private static CharacterStats AtLevel(CharacterDefinition definition, int level)
+        {
+            CharacterStats stats = definition.Stats.Clone();
+            stats.ApplyInstance(level, definition.Growth, 1f);
+            return stats;
         }
 
         private static void AppendStages(StringBuilder page)

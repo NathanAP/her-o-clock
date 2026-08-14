@@ -1,6 +1,7 @@
 using System;
 using HerOClock.Progression;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace HerOClock.Characters
 {
@@ -26,25 +27,44 @@ namespace HerOClock.Characters
         [Header("Equipment")]
         public EquipmentClass Equipment = EquipmentClass.Light;
 
-        [Header("Defence")]
-        [Tooltip("Physical armour granted by equipment. Items do not exist yet, so it is filled by hand.")]
-        [Min(0)] public int PhysicalArmor;
+        [Header("Defence (base values of the sheet)")]
+        [Tooltip("Physical armour at the character's starting level.")]
+        [FormerlySerializedAs("PhysicalArmor")]
+        [Min(0)] public int BasePhysicalArmor;
 
-        [Tooltip("Resistance points against fire. Uses the same curve as physical armour.")]
-        [Min(0)] public int FireResistance;
+        [Tooltip("Physical armour gained on every level. Setting it equal to the base keeps mitigation "
+            + "against a same level attacker constant for the whole game.")]
+        [Min(0)] public int PhysicalArmorPerLevel;
 
-        [Tooltip("Resistance points against water. Uses the same curve as physical armour.")]
-        [Min(0)] public int WaterResistance;
+        [Tooltip("Resistance points against fire at the starting level. Same curve as physical armour.")]
+        [FormerlySerializedAs("FireResistance")]
+        [Min(0)] public int BaseFireResistance;
 
-        [Tooltip("Resistance points against electricity. Uses the same curve as physical armour.")]
-        [Min(0)] public int ElectricResistance;
+        [Min(0)] public int FireResistancePerLevel;
 
-        [Tooltip("Physical damage reflected back at the attacker, from 0 to 100.")]
+        [Tooltip("Resistance points against water at the starting level. Same curve as physical armour.")]
+        [FormerlySerializedAs("WaterResistance")]
+        [Min(0)] public int BaseWaterResistance;
+
+        [Min(0)] public int WaterResistancePerLevel;
+
+        [Tooltip("Resistance points against electricity at the starting level. Same curve as physical armour.")]
+        [FormerlySerializedAs("ElectricResistance")]
+        [Min(0)] public int BaseElectricResistance;
+
+        [Min(0)] public int ElectricResistancePerLevel;
+
+        [Tooltip("Physical damage reflected back at the attacker, from 0 to 100. A share of the damage, "
+            + "so it does not decay with level and needs no growth of its own.")]
         [Range(0f, 100f)] public float ThornsPercent;
 
         [Header("Offence")]
         [Tooltip("Health recovered when dealing physical damage, from 0 to 100.")]
         [Range(0f, 100f)] public float LifeStealPercent;
+
+        [Tooltip("Health recovered per second before POW. Zero on every sheet today: regeneration is "
+            + "meant to arrive with items and skills. POW multiplies whatever ends up here.")]
+        [Min(0f)] public float BaseHealthRegen;
 
         // --- Per instance state, never part of the sheet ---
 
@@ -122,12 +142,75 @@ namespace HerOClock.Characters
             }
         }
 
+        // --- Defence ---
+
+        /// <summary>
+        /// A defensive value counting every source, the same way <see cref="TotalOf"/> does for the
+        /// primary attributes. Nothing outside this class reads the base fields.
+        ///
+        /// Defence has to grow with the level because the mitigation curve's constant grows with
+        /// the attacker's level. Left flat, the same armour is worth less every level, and a
+        /// character with no source of new armour simply rots: the villain used to fall from 56%
+        /// mitigation at level 1 to 4% at level 50 without anything being done to it.
+        ///
+        /// Growth equal to the base is the shape that holds mitigation still, because both the
+        /// armour and the curve's constant then scale with the level and cancel out.
+        /// </summary>
+        private int DefenceOf(int baseValue, int perLevel)
+        {
+            int total = baseValue + perLevel * (level - 1);
+
+            if (Mathf.Approximately(multiplier, 1f))
+            {
+                return Mathf.Max(0, total);
+            }
+
+            return Mathf.Max(0, Mathf.RoundToInt(total * multiplier));
+        }
+
+        public int PhysicalArmor
+        {
+            get { return DefenceOf(BasePhysicalArmor, PhysicalArmorPerLevel); }
+        }
+
+        public int FireResistance
+        {
+            get { return DefenceOf(BaseFireResistance, FireResistancePerLevel); }
+        }
+
+        public int WaterResistance
+        {
+            get { return DefenceOf(BaseWaterResistance, WaterResistancePerLevel); }
+        }
+
+        public int ElectricResistance
+        {
+            get { return DefenceOf(BaseElectricResistance, ElectricResistancePerLevel); }
+        }
+
         // --- Linear secondary attributes ---
 
         public int MaxHealth
         {
             get { return Power * 5 + Constitution * 10; }
         }
+
+        /// <summary>
+        /// Health recovered per second.
+        ///
+        /// POW does not grant regeneration, it multiplies it, which is what "0.5% of regeneration
+        /// speed per point" in attributes.md means. With nothing granting a base, this is zero for
+        /// everyone today, exactly like thorns and life steal. It becomes real when items arrive.
+        ///
+        /// It still scales with the level, because POW does.
+        /// </summary>
+        public float HealthPerSecond
+        {
+            get { return BaseHealthRegen * (1f + Power * HealthRegenPerPower); }
+        }
+
+        /// <summary>Share of regeneration speed granted by each point of POW.</summary>
+        public const float HealthRegenPerPower = 0.005f;
 
         public int PhysicalDamage
         {

@@ -208,6 +208,16 @@ namespace HerOClock.Stages
 
             timer += step;
 
+            // Regeneration keeps running between waves. It is measured per second, and the walk
+            // back plus the ground rolling is the better part of ten seconds, which is exactly
+            // where an item that regenerates health is supposed to pay off. This does not undo
+            // the attrition rule: nobody is topped up, they only recover what their own rate
+            // earns them.
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                heroes[i].Regenerate(step);
+            }
+
             if (phase == Phase.Regrouping)
             {
                 TickRegroup(step);

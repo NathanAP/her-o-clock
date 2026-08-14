@@ -11,6 +11,7 @@ namespace HerOClock.Characters
     {
         private BattleGrid grid;
         private float multiplier = 1f;
+        private float regenerationCarry;
 
         public CharacterDefinition Definition { get; private set; }
         public Team Team { get; private set; }
@@ -156,6 +157,51 @@ namespace HerOClock.Characters
             // Current health can never exceed maximum health.
             CurrentHealth = Mathf.Min(Stats.MaxHealth, CurrentHealth + amount);
             Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Applies one simulation step of health regeneration.
+        ///
+        /// Regeneration is measured in health per second and health is a whole number, so the
+        /// fraction has to be carried between steps. Rounding each step on its own would floor
+        /// every realistic rate to nothing: half a point per second at a sixtieth of a second is
+        /// 0.008, and a hundred of those would still be zero.
+        ///
+        /// The carry is dropped at full health, so nobody banks a burst of healing by standing
+        /// intact for a while and then taking a hit.
+        /// </summary>
+        public void Regenerate(float step)
+        {
+            if (!IsAlive)
+            {
+                regenerationCarry = 0f;
+                return;
+            }
+
+            if (CurrentHealth >= Stats.MaxHealth)
+            {
+                regenerationCarry = 0f;
+                return;
+            }
+
+            float perSecond = Stats.HealthPerSecond;
+
+            if (perSecond <= 0f)
+            {
+                return;
+            }
+
+            regenerationCarry += perSecond * step;
+
+            int whole = (int)regenerationCarry;
+
+            if (whole <= 0)
+            {
+                return;
+            }
+
+            regenerationCarry -= whole;
+            Heal(whole);
         }
 
         /// <summary>

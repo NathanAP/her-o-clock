@@ -80,6 +80,25 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Os atributos secundários estão presentes em alguns personagens, mas não necessariamente em todos eles.
 - Os atributos secundários não podem ser aumentados diretamente com pontos de atributos, apenas através de outros meios (itens, árvore de habilidades, entre outros).
 
+### De onde eles vêm depende do tipo de personagem
+
+- Para heróis, os secundários chegam passivamente: parte deles é convertida dos atributos principais, e o resto vem do equipamento, da árvore de habilidades e dos buffs. O jogador nunca digita "armadura", ele veste uma armadura.
+- Para lacaios e vilões, os secundários são escritos na ficha, um por um. Eles não carregam equipamento, então não existe de onde a armadura deles aparecer sozinha.
+    - É por isso que a ficha de um inimigo costuma declarar valores defensivos e a de um herói costuma deixá-los em zero.
+    - Um lacaio blindado é blindado porque a ficha dele diz isso, e não porque ele achou uma armadura.
+
+### Atributos limitados crescem com o nível
+
+- Os atributos defensivos que passam pela curva de rendimento decrescente (armadura física e resistência elemental) precisam crescer conforme o personagem sobe de nível.
+- O motivo é que a constante da curva é `50 × nível do atacante`. Um valor parado vale cada vez menos, e um personagem sem fonte nova de armadura simplesmente apodrece.
+- Por isso a ficha declara, além do valor inicial, quanto aquele atributo ganha por nível:
+    - `Valor = (Valor inicial + Ganho por nível × (nível − 1)) × Multiplicador da fase`
+- Quando o ganho por nível é igual ao valor inicial, a mitigação contra um atacante do mesmo nível fica constante durante o jogo inteiro. É o caso mais comum, porque a armadura e a constante da curva passam a crescer juntas e se cancelam.
+    - Por exemplo, um personagem com 100 de armadura inicial e 100 por nível mitiga 50% no nível 1, 50% no nível 12 e 50% no nível 50.
+    - Um valor inicial de 150 com ganho de 150 por nível mitiga 56.25% em qualquer nível.
+- Ganhos por nível menores que o valor inicial fazem a defesa perder força devagar, e maiores fazem ela ganhar. As duas coisas são escolhas válidas de ficha.
+- Atributos secundários que são porcentagens do dano, como espinhos e roubo de vida, não precisam de ganho por nível. Eles não decaem, pois acompanham o dano por definição.
+
 ### Dano físico
 
 - É o dano causado através de ataques físicos e através do elemento terra.
@@ -94,6 +113,15 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - É a quantidade de pontos de vida que um personagem regenera por segundo.
 - Regeneração de vida não é considerada uma cura.
 - Qualquer valor de regeneração de vida abaixo de 0 é considerado como sendo 0.
+- O valor base é 0 para todo personagem. Nenhum personagem regenera vida por existir.
+    - A regeneração chega por outros meios: itens, árvore de habilidades e buffs. Para lacaios e vilões, ela é escrita na ficha, como todo secundário deles.
+- POW não concede regeneração, ele multiplica a que existir. É isso que os 0.5% por ponto significam:
+    - `Regeneração por segundo = Regeneração base × (1 + POW × 0.005)`
+    - Um personagem com 0 de regeneração base continua com 0, por mais POW que tenha.
+    - Um personagem com 10 de regeneração base e 40 de POW regenera 12 pontos por segundo.
+- A regeneração continua correndo entre uma onda e outra, pois é medida por segundo e a transição leva vários segundos.
+    - Isso não contradiz o desgaste descrito em `gameplay.md`. Ninguém volta com a vida cheia: cada personagem recupera apenas o que a própria taxa render naquele tempo.
+    - É exatamente aí que um item de regeneração se paga, e é o que dá sentido ao atributo existir.
 
 ### Evasão
 

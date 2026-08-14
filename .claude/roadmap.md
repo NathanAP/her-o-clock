@@ -98,14 +98,17 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - O primeiro `.claude/balance/snapshot.md` foi gerado. Ele mediu pela primeira vez o que `fases.md` afirmava: a `act1-stage1` é vencível no nível 1 em 26,2 segundos, e a `act1-stage2` exige nível 20.
 - O resumo completo está em `.claude/versions/20260813_0.5.2.0.md`.
 
-## 0.5.3.0 (próxima)
+## 0.5.3.0 (feita)
 
-- Escala de defesa e regeneração de vida.
-- Armadura e resistências são valores fixos da ficha: não passam por `TotalOf`, não crescem com o nível e não recebem o multiplicador da fase, enquanto a constante da curva cresce com o nível do atacante.
-- Precisa decidir de onde vem a defesa de um inimigo que só existe como ficha mais nível, antes de implementar.
-- A regeneração de vida entra junto porque é o mesmo buraco: `attributes.md` a define, o jogo não a tem, e `gameplay.md` usa a existência dela para justificar o desgaste entre ondas.
+- Escala de defesa e regeneração de vida. 235 verificações passando, contra 209 antes.
+- A ficha passou a declarar quanto cada atributo defensivo ganha por nível. Ganho igual à base mantém a mitigação parada para sempre, porque o nível cancela contra a constante da curva — foi assim que os valores de nível 1 de hoje ficaram preservados exatamente.
+- A defesa passou a atravessar a costura, como os primários já faziam, e o multiplicador da fase passou a alcançá-la.
+- Regeneração definida: base 0 para todo mundo e POW multiplicando o que existir, com acúmulo fracionário e correndo também entre as ondas.
+- `attributes.md` ganhou de onde vem cada secundário: passivamente para heróis, escrito na ficha para lacaios e vilões, que não carregam equipamento.
+- O snapshot mostrou o efeito: a fase 1 não se moveu nada, e a fase 2 caiu de nível 20 para 15 ficando mais longa, porque os heróis ganharam mais sobrevivência do que os inimigos ganharam dureza.
+- O resumo completo está em `.claude/versions/20260814_0.5.3.0.md`.
 
-## 0.5.4.0
+## 0.5.4.0 (próxima)
 
 - Pontos de atributo dos heróis.
 - Hoje o gasto automático pela `Growth` da ficha e o acúmulo de `UnspentAttributePoints` coexistem, então os pontos são contados duas vezes.
@@ -125,6 +128,14 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - A ficha de fase e as três fichas de personagem da spec precisam virar o formato que o jogo realmente lê.
 - Leva junto os itens menores: área dos inimigos no validador, leitura direta da ficha no bootstrap, roubo de vida descartado nos espinhos, e um pool para os números de dano.
 - Vem por último porque as cinco versões anteriores mudam o que precisa ser documentado.
+
+## 0.5.7.0
+
+- Modelo de atributos de lacaios e vilões.
+- Inimigos não têm itens, então autorar um lacaio dizendo "POW 24, CON 25" para chegar em "370 de vida, 24 de dano" é indireto, e vai doer na 0.9.0.0, quando forem 12 lacaios e 5 vilões escritos de uma vez.
+- A pergunta é se lacaios e vilões deveriam ter atributos primários. Tirar os primários quebra duas coisas que ainda não existem: as habilidades escalam por atributo (`tempo.json` já traz `scaling: { pow: 0.2 }`) e os `modify_stat` de buff e debuff precisam de um atributo em que morder.
+- O caminho provável é o meio: manter os primários e permitir que a ficha sobrescreva um secundário diretamente.
+- Precisa vir antes da 0.7.0.0, porque vilões vão ter habilidades, e obrigatoriamente antes da 0.9.0.0, que é quando o conteúdo em massa é escrito.
 
 ## 0.6.0.0
 

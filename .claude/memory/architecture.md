@@ -57,6 +57,8 @@ The reason a simulator is never needed is that `progress.md` forbids the three t
 
 Today the total is the base plus the points earned by levelling, scaled by the stage multiplier. Items, skill trees and buffs will become further sources **inside that method**, and no other file will have to change. That is the entire point of the seam.
 
+The defensive values go through the same seam as of 0.5.3.0. `BasePhysicalArmor` and the three resistances are sheet values with a gain per level beside them, and everything else reads the computed `PhysicalArmor`, `FireResistance` and so on. `CharacterAttacker` and the fifth rule of `TargetSelector` used to read the fields raw; if that pattern reappears, the seam has been broken again.
+
 The level contribution is computed from the level, never accumulated level by level. That keeps it free of rounding drift and lets a level 40 minion be created without walking through 39 level ups.
 
 If you find yourself reading `BasePower` outside this class, something is being calculated in the wrong place.

@@ -31,6 +31,22 @@ namespace HerOClock.Tests
             return stats;
         }
 
+        /// <summary>
+        /// A level 1 sheet carrying armour and nothing else. No growth is declared, so the armour
+        /// stays exactly at the given value and the mitigation examples read straight from it.
+        /// </summary>
+        private static CharacterStats Armoured(int armor)
+        {
+            CharacterStats stats = new CharacterStats
+            {
+                Equipment = EquipmentClass.Heavy,
+                BasePhysicalArmor = armor
+            };
+
+            stats.ApplyInstance(1, new AttributeGrowth(), 1f);
+            return stats;
+        }
+
         // --- Maximum health: 5 per POW and 10 per CON ---
 
         [TestCase(0, 0, 0)]
@@ -167,8 +183,7 @@ namespace HerOClock.Tests
         [TestCase(2500, 50, 37.5f)]
         public void PhysicalMitigation_MatchesTheExamplesInTheSpec(int armor, int attackerLevel, float expected)
         {
-            CharacterStats stats = Sheet(0, 0, 0, 0, EquipmentClass.Heavy);
-            stats.PhysicalArmor = armor;
+            CharacterStats stats = Armoured(armor);
 
             Assert.AreEqual(expected, stats.PhysicalMitigationAgainst(attackerLevel), Tolerance);
         }
@@ -176,10 +191,7 @@ namespace HerOClock.Tests
         [Test]
         public void PhysicalMitigation_NeverReachesSeventyFive()
         {
-            CharacterStats stats = Sheet(0, 0, 0, 0, EquipmentClass.Heavy);
-            stats.PhysicalArmor = 100000000;
-
-            Assert.Less(stats.PhysicalMitigationAgainst(1), 75f);
+            Assert.Less(Armoured(100000000).PhysicalMitigationAgainst(1), 75f);
         }
 
         // --- The curve itself ---

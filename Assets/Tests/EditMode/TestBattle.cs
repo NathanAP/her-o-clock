@@ -68,7 +68,7 @@ namespace HerOClock.Tests
                 BaseSpecialty = specialty,
                 BaseConstitution = constitution,
                 Equipment = equipment,
-                PhysicalArmor = physicalArmor
+                BasePhysicalArmor = physicalArmor
             };
 
             owned.Add(definition);

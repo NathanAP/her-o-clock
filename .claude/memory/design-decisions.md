@@ -24,9 +24,25 @@ Target selection is entirely positional. A taunt is a temporary effect coming fr
 
 The reason is the game's pitch: it is tiny and lives in a corner of the screen, so the player has to be able to predict the fight at a glance. A hidden number shifting during combat destroys that readability. Numeric aggro would also make a battle much harder to replay from a seed, which is how odd behaviour gets investigated.
 
-## Armour scales with the attacker's level
+## Armour scales with the attacker's level, and so does armour itself
 
 The mitigation constant is `50 x attacker level`. Without it, a fixed amount of armour would grant the same percentage forever, and tanking would be a solved problem far too early in a game built on endless farming.
+
+The half that was missing until 0.5.3.0 is that **defence has to grow too**. With the constant rising and the armour standing still, there was no difficulty curve at all — just decay. The villain fell from 56% mitigation at level 1 to 4% at level 50 with nobody touching it, which is the opposite of what the rising constant was for.
+
+So a sheet declares a gain per level alongside the starting value. The calibration falls out of the algebra rather than being guessed: when the gain equals the base, armour becomes `base x level`, the level cancels against the constant, and mitigation holds still forever at `75b / (b + 50)`. Every current sheet uses that shape, which preserved the level 1 balance exactly.
+
+A gain below the base means a character that slowly loses ground, and above it one that gains. Both are deliberate options, not mistakes.
+
+For heroes this is a **stand-in for equipment**. When items arrive, the armour on a hero sheet should drop to zero and the gear should take over, otherwise a defensive item competes with a base that already solved the problem.
+
+## Regeneration is multiplied by POW, never granted by it
+
+The base is zero for everyone. POW's "0.5% of regeneration speed per point" multiplies whatever other sources provide, so a character with no source still regenerates nothing.
+
+The alternative, a flat rate everyone gets, was rejected because it heals the party for free between waves early on and becomes irrelevant later, and attrition between waves is what `gameplay.md` leans on to make farming necessary.
+
+Regeneration does run during the transition between waves. Nobody is topped up; each character recovers only what its own rate earns in those seconds. That is precisely where a regeneration item is supposed to pay for itself.
 
 ## Elemental resistance above 100% is a build goal
 

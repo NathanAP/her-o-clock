@@ -135,6 +135,13 @@ namespace HerOClock.Battle
             bool heroesFirst = (stepCount & 1L) == 0L;
             stepCount++;
 
+            // Regeneration is not an action against an opponent, so it is applied to everyone in
+            // one pass and is deliberately left out of the alternation above.
+            for (int i = 0; i < all.Count; i++)
+            {
+                all[i].Regenerate(step);
+            }
+
             if (heroesFirst)
             {
                 TickRange(0, heroCount, step);

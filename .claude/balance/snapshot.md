@@ -25,12 +25,24 @@ Farmando inimigos do próprio nível, a 11 inimigos por minuto de jogo aberto.
 
 Valores no nível inicial da ficha, sem itens.
 
-| Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão | Mit. vs nv1 | Mit. vs nv12 | Mit. vs nv50 |
-|---|---|---|---|---|---|---|---|---|
-| Tanque top | 65 | 5 | 1.00 | 2.02 | 0.4% | 50.0% | 10.7% | 2.9% |
-| Arqueiro foda | 40 | 4 | 1.05 | 2.10 | 4.8% | 12.5% | 1.2% | 0.3% |
-| Motorista | 40 | 2 | 1.01 | 2.02 | 1.0% | 0.0% | 0.0% | 0.0% |
-| Carlos | 55 | 3 | 1.00 | 2.02 | 0.4% | 56.3% | 15.0% | 4.2% |
+| Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão | Armadura | Regen/s |
+|---|---|---|---|---|---|---|---|
+| Tanque top | 65 | 5 | 1.00 | 2.02 | 0.4% | 100 | 0.00 |
+| Arqueiro foda | 40 | 4 | 1.05 | 2.10 | 4.8% | 10 | 0.00 |
+| Motorista | 40 | 2 | 1.01 | 2.02 | 1.0% | 0 | 0.00 |
+| Carlos | 55 | 3 | 1.00 | 2.02 | 0.4% | 150 | 0.00 |
+
+### Mitigação física contra um atacante do mesmo nível
+
+Uma linha parada significa que a armadura acompanha a curva. Uma linha que cai
+significa que aquela ficha perde defesa conforme o jogo avança.
+
+| Ficha | Nível 1 | Nível 12 | Nível 30 | Nível 50 | Nível 100 |
+|---|---|---|---|---|---|
+| Tanque top | 50.0% | 50.0% | 50.0% | 50.0% | 50.0% |
+| Arqueiro foda | 12.5% | 12.5% | 12.5% | 12.5% | 12.5% |
+| Motorista | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| Carlos | 56.3% | 56.3% | 56.3% | 56.3% | 56.3% |
 
 ## Fases
 
@@ -40,5 +52,5 @@ A formação de heróis é a do asset. O tempo é só de combate, sem as transi�
 | Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |
 |---|---|---|---|---|---|
 | Avenida das Turbinas | 1 | 1 | 26.2 s | 210 | 21 |
-| Subestacao Norte | 12 | 20 | 46.6 s | 34560 | 24 |
+| Subestacao Norte | 12 | 15 | 64.5 s | 34560 | 24 |
 
