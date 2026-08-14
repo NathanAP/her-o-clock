@@ -60,32 +60,41 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 4 - Faça um planejamento para alcançar seu objetivo. Me avise se eu preciso fechar a Unity ou fazer alguma operação extra antes de começar.
 5 - Mostre seu planejamento e aguarde aprovação.
 6 - Faça suas alterações.
-7 - Garanta que tudo esteja funcionando corretamente, conforme descrito em "# Testes".
-8 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".
-9 - Retorne um resumo do que foi feito.
-10 - Atualize os arquivos em `.claude/game-objects/`.
-11 - Atualize os arquivos em `.claude/memory/`.
-12 - Atualize o arquivo `.claude/roadmap.md`.
+7 - Caso necessário, crie e/ou atualize os testes automatizados.
+8 - Garanta que todos os testes automatizados ainda funcionam.
+9 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".
+10 - Retorne um resumo do que foi feito.
+11 - Atualize os arquivos em `.claude/game-objects/`.
+12 - Atualize os arquivos em `.claude/memory/`.
+13 - Atualize o arquivo `.claude/roadmap.md`.
 
-# Testes
+# Testes automatizados
 
-A partir da versão 0.5.2.0, o passo 7 do fluxo de desenvolvimento significa **teste automatizado passando**, e não o jogo observado rodando. A localização de cada tipo de teste e o que cada versão futura precisa cobrir estão em `.claude/roadmap.md`, na seção "# Onde os testes entram".
+Aqui estão alguns detalhes sobre testes automatizados:
 
-- O teste é escrito **dentro da versão que muda o comportamento**, nunca em uma versão posterior.
-    - Uma versão de teste separada só pode existir olhando para trás, e foi exatamente assim que a dívida encontrada na revisão 0.5.0.0 se formou.
-- O teste sai da **spec**, não do código.
-    - Sempre que uma regra tiver número, a spec precisa trazer o exemplo numérico, e é dele que a assertiva nasce.
-    - Um teste derivado do código só confirma que o código faz o que faz. Um teste derivado da spec é o que impede as duas coisas de divergirem em silêncio.
-- Nem toda versão precisa de teste:
-    - Versão que muda regra ou fórmula entrega teste junto, sem exceção.
-    - Versão que muda apenas apresentação não entrega. Interface, animação e som não pagam o custo de serem testados.
-    - Versão que adiciona conteúdo não escreve teste novo, mas o conteúdo precisa passar pelos testes de conteúdo que já existem.
-- Toda correção de bug entrega um teste que **falha antes da correção e passa depois**.
-- Testes de balanceamento afirmam faixas, não valores exatos. Quando um falha, a pergunta é "eu queria que isso mudasse?".
+- Utilize a pasta `test/` para armazenar seus testes automatizados.
+- Utilize as regras de desenvolvimento ao fazer códigos de testes.
+- Utilize o arquivo `.claude/roadmap.md` para planejar os testes automatizados de uma versão.
+- A ideia geral dos testes automatizados é ajudar a garantir que o que está sendo planejado no jogo realmente bata com a realidade. Por exemplo:
+    - O número de ataques quando o jogo rodar em 2x, 4x ou 8x.
+    - Tempo de jogo para atingir determinados níveis.
+    - Combinação entre itens x habilidades.
+    - Dificuldade de uma fase.
+    - Drop rate de itens.
+    - Como tornar uma build viável.
+- Nem toda versão precisa de testes, mas todos os testes precisam continuar funcionando ao final de uma versão.
+- Versões que mudam regras, fórmulas ou filosofia precisam de atenção especial com os testes.
+- Interface, animação e som não pagam o custo de teste. É melhor você me orientar sobre uma alteração específica ou me avisar para ter um cuidado extra do que criar algo demorado e custoso para testar um detalhe impreciso.
+- Versões que alteram documentação ou specs não precisam ser testadas cada vez, mas perceba que testes futuros podem ser afetados, tenha atenção a isso.
+- Você pode demonstrar correções de bugs entregando um teste que falha antes da correção e passam depois.
+- Testes de balanceamento afirmam faixas, não valores exatos. Quando um teste desses falhar, a pergunta a ser feita precisa ser "eu queria que isso mudasse?".
     - Se a resposta for sim, o valor novo entra no teste e a mudança fica registrada no diff.
     - O que nunca pode acontecer é afrouxar a faixa até o teste parar de falhar. Uma faixa larga demais não afirma nada.
+- Testes de balanceamento são importantíssimos para nós, principalmente para garantir que o jogo seja equilibrado e não dependa de uma única build ou formação para que a coisa funcione.
+    - Um dos pontos fortes do Task Bar Hero e até mesmo do Path of Exile é a flexibilidade. Mesmo que você tenha uma build fora do meta (ou que você só quer testar), ela pode se tornar divertida. No fim das contas é isso que queremos. Por exemplo:
+        - Em Path of Exile 2, atualmente uma build de espinhos é completamente inviável, mas ainda assim é possível você criar ela para garantir sua própria diversão.
 
-# Recomendações
+# Recomendações gerais
 
 - Você tem total liberdade e incentivo extra para dar recomendações em cima de ideias que possam ser problemáticas imediatamente ou futuramente.
 
