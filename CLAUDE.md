@@ -60,19 +60,20 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 4 - Faça um planejamento para alcançar seu objetivo. Me avise se eu preciso fechar a Unity ou fazer alguma operação extra antes de começar.
 5 - Mostre seu planejamento e aguarde aprovação.
 6 - Faça suas alterações.
-7 - Caso necessário, crie e/ou atualize os testes automatizados.
-8 - Garanta que todos os testes automatizados ainda funcionam.
-9 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".
-10 - Retorne um resumo do que foi feito.
-11 - Atualize os arquivos em `.claude/game-objects/`.
-12 - Atualize os arquivos em `.claude/memory/`.
-13 - Atualize o arquivo `.claude/roadmap.md`.
+7 - Faça a atualização nos testes automatizados já existentes caso necessário.
+8 - Crie novos testes automatizados caso necessário.
+9 - Garanta que todos os testes automatizados funcionam.
+10 - Crie um resumo do que foi feito na pasta `.claude/versions/` seguindo a convenção descrita em "## Pasta versions".
+11 - Retorne um resumo do que foi feito.
+12 - Atualize os arquivos em `.claude/game-objects/`.
+13 - Atualize os arquivos em `.claude/memory/`.
+14 - Atualize o arquivo `.claude/roadmap.md`.
 
 # Testes automatizados
 
 Aqui estão alguns detalhes sobre testes automatizados:
 
-- Utilize a pasta `test/` para armazenar seus testes automatizados.
+- Utilize a pasta `Assets/Tests/` para armazenar seus testes automatizados.
 - Utilize as regras de desenvolvimento ao fazer códigos de testes.
 - Utilize o arquivo `.claude/roadmap.md` para planejar os testes automatizados de uma versão.
 - A ideia geral dos testes automatizados é ajudar a garantir que o que está sendo planejado no jogo realmente bata com a realidade. Por exemplo:
@@ -83,7 +84,8 @@ Aqui estão alguns detalhes sobre testes automatizados:
     - Drop rate de itens.
     - Como tornar uma build viável.
 - Nem toda versão precisa de testes, mas todos os testes precisam continuar funcionando ao final de uma versão.
-- Versões que mudam regras, fórmulas ou filosofia precisam de atenção especial com os testes.
+- Versões que mudam regras, fórmulas ou filosofia precisam entregar o teste dentro dela mesma, mesmo que uma versão posterior também fará novas alterações.
+    - Ou seja, não adie criação, atualização ou execução de testes automatizados. Garanta que o esperado pela atual versão bate com os testes automatizados.
 - Interface, animação e som não pagam o custo de teste. É melhor você me orientar sobre uma alteração específica ou me avisar para ter um cuidado extra do que criar algo demorado e custoso para testar um detalhe impreciso.
 - Versões que alteram documentação ou specs não precisam ser testadas cada vez, mas perceba que testes futuros podem ser afetados, tenha atenção a isso.
 - Você pode demonstrar correções de bugs entregando um teste que falha antes da correção e passam depois.
