@@ -162,6 +162,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Equipe de 2 heróis.
     - A ideia é terminar o ato 1 com 3 heróis.
 - 5 fases.
+    - Precisam constar o nível mínimo esperado para avançar, assim fica mais fácil balancear o ato.
 - 5 vilões.
 - 12 lacaios.
 - Instâncias de todo mundo organizada na Unity.
