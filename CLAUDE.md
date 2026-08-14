@@ -74,6 +74,8 @@ Sempre siga esse fluxo ao desenvolver versões no projeto:
 Aqui estão alguns detalhes sobre testes automatizados:
 
 - Utilize a pasta `Assets/Tests/` para armazenar seus testes automatizados.
+    - Precisa ficar dentro de `Assets/`, pois a Unity só compila C# que esteja ali ou em `Packages/`. Uma pasta de testes fora disso seria simplesmente ignorada, sem erro nenhum.
+    - Todo assembly de teste exige um `.asmdef` próprio, e um `.asmdef` não consegue referenciar `Assembly-CSharp`. Por isso o código do jogo também precisa do seu.
 - Utilize as regras de desenvolvimento ao fazer códigos de testes.
 - Utilize o arquivo `.claude/roadmap.md` para planejar os testes automatizados de uma versão.
 - A ideia geral dos testes automatizados é ajudar a garantir que o que está sendo planejado no jogo realmente bata com a realidade. Por exemplo:
@@ -84,17 +86,50 @@ Aqui estão alguns detalhes sobre testes automatizados:
     - Drop rate de itens.
     - Como tornar uma build viável.
 - Nem toda versão precisa de testes, mas todos os testes precisam continuar funcionando ao final de uma versão.
-- Versões que mudam regras, fórmulas ou filosofia precisam entregar o teste dentro dela mesma, mesmo que uma versão posterior também fará novas alterações.
+- Versões que mudam regras, fórmulas ou filosofia precisam entregar o teste dentro dela mesma, mesmo que uma versão posterior venha a fazer novas alterações.
     - Ou seja, não adie criação, atualização ou execução de testes automatizados. Garanta que o esperado pela atual versão bate com os testes automatizados.
+- O valor esperado de um teste sai da spec e nunca do código.
+    - Escrever o teste rodando o código e anotando o que saiu apenas registra que o código faz o que faz. Se ele estiver errado, o teste passa a proteger o erro, e quem tentar consertar depois vai achar que quebrou alguma coisa.
+    - O jeito certo é abrir a spec, achar o exemplo numérico e copiar aquele número para dentro da assertiva. Os dois testes ficam idênticos na tela. O que muda é de onde o número veio, e é só isso que decide se ele pega uma divergência ou não.
+- Se uma regra tem número e a spec não traz um exemplo dela, a spec está incompleta e isso é um bug.
+    - Um teste que não pode ser escrito por falta de informação na spec é o melhor detector de regra mal definida que temos. Corrija a spec primeiro, depois escreva o teste.
 - Interface, animação e som não pagam o custo de teste. É melhor você me orientar sobre uma alteração específica ou me avisar para ter um cuidado extra do que criar algo demorado e custoso para testar um detalhe impreciso.
 - Versões que alteram documentação ou specs não precisam ser testadas cada vez, mas perceba que testes futuros podem ser afetados, tenha atenção a isso.
-- Você pode demonstrar correções de bugs demonstrando como o teste falhava antes e como ele começou a ser aprovado de forma correta.
+- Toda correção de bug entrega um teste que falha antes da correção e passa depois. É a única forma de garantir que aquele bug específico não volte, e sai barato porque o caso que reproduz o problema já está em mãos.
 - Testes de balanceamento afirmam faixas, não valores exatos. Quando um teste desses falhar, a pergunta a ser feita precisa ser "eu queria que isso mudasse?".
     - Se a resposta for sim, o valor novo entra no teste e a mudança fica registrada no diff.
     - O que nunca pode acontecer é afrouxar a faixa até o teste parar de falhar. Uma faixa larga demais não afirma nada.
 - Testes de balanceamento são importantíssimos para nós, principalmente para garantir que o jogo seja equilibrado e não dependa de uma única build ou formação para que a coisa funcione.
     - Um dos pontos fortes do Task Bar Hero e até mesmo do Path of Exile é a flexibilidade. Mesmo que você tenha uma build fora do meta (ou que você só quer testar), ela pode se tornar divertida. No fim das contas é isso que queremos. Por exemplo:
         - Em Path of Exile 2, atualmente uma build de espinhos é completamente inviável, mas ainda assim é possível você criar ela para garantir sua própria diversão.
+
+## Onde cada número mora
+
+Existem dois tipos de número no projeto, e eles seguem regras opostas.
+
+### Números de entrada
+
+- São as decisões de design. Por exemplo: "X de AGI dá Y% de evasão", "o expoente da experiência é X", "um vilão vale X lacaios".
+- Moram na pasta `.claude/specs/`, e o teste repete eles.
+- A duplicação entre spec e teste é proposital. São duas afirmações independentes do mesmo número, e é a discordância entre as duas que queremos que apareça.
+    - Se o teste lesse o valor direto do arquivo da spec, ele estaria conferindo o código contra o código de novo.
+- São poucos, mudam devagar, e cada um deles é discutível por uma pessoa.
+
+### Números de saída
+
+- São as consequências. Por exemplo: "X horas até o nível 100", "X inimigos por minuto", "a fase 1 é vencida em X segundos", "esta build causa tanto de dano por segundo".
+- Se mexem toda vez que qualquer número de entrada se mexe, mesmo que ninguém tenha tocado neles de propósito.
+- Nunca podem ser escritos em prosa. Nem em spec, nem em resumo de versão, nem em `game-objects`. Um número derivado dentro de um `.md` envelhece em silêncio e ninguém percebe.
+    - Isso já aconteceu antes: o resumo da 0.4.0.0 dizia que um lacaio de nível 12 ia de 25 para 355 de vida, quando os assets de verdade davam 40 para 370.
+- Moram em `.claude/balance/snapshot.md`, que é gerado por teste e commitado junto com a alteração.
+
+### O snapshot de balanceamento
+
+- Um teste gera o arquivo com as tabelas atuais do jogo, e ele entra no commit junto com a alteração que o mudou.
+- Isso dá duas camadas de proteção, e a segunda é a que mais serve no dia a dia:
+    - A assertiva pega a mudança catastrófica, do tipo "a fase 1 deixou de ser vencível no nível 1".
+    - O diff do snapshot mostra a onda inteira do patch, inclusive tudo que ninguém pensou em afirmar.
+- É assim que respondemos "o que essa alteração fez com o resto do jogo" sem precisar adivinhar nem conferir na mão.
 
 # Recomendações gerais
 

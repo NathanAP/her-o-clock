@@ -84,6 +84,12 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - O `DevSpeedControl` deixou de depender da taxa de quadros para estar correto.
 - O resumo completo está em `.claude/versions/20260813_0.5.1.0.md`.
 
+## 0.5.1.1 (feita)
+
+- Documentação de testes fechada antes de escrever o primeiro teste, já que a 0.5.2.0 vai ser executada contra o que o `CLAUDE.md` disser.
+- Entraram a regra de que o valor esperado sai da spec e não do código, e a decisão de onde cada número mora: entrada na spec e repetida no teste, saída só no snapshot e nunca em prosa.
+- O resumo completo está em `.claude/versions/20260813_0.5.1.1.md`.
+
 ## 0.5.2.0 (próxima)
 
 - Suíte de testes. É o pagamento da dívida deixada até a 0.4.0.6, e vem antes de qualquer mudança de regra para que as mudanças seguintes tenham como ser verificadas.
@@ -96,6 +102,8 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
     - **Simulação.** Uma batalha inteira e depois uma fase inteira, em memória, com semente fixa e sem renderizar. É o equivalente a um teste ponta a ponta neste jogo, já que não existe input do jogador.
     - **Determinismo.** A mesma batalha rodada duas vezes com a mesma semente dá resultado idêntico, e continua idêntica quando alimentada com `deltaTime` irregular. É o teste que prova a 0.5.1.0 e impede o problema de voltar.
     - **Caracterização de balanceamento.** A `act1-stage1` é vencível no nível 1, a `act1-stage2` não é, e uma sessão rende inimigos por minuto dentro de uma faixa. Não afirmam certo e errado, afirmam que o balanceamento não mudou sem querer.
+- O primeiro `.claude/balance/snapshot.md`, gerado por teste, conforme "## Onde cada número mora" no `CLAUDE.md`. O conteúdo inicial: horas até os níveis 10, 25, 50, 75 e 100; por ficha, vida, dano, ataques por segundo, evasão e mitigação contra atacantes de nível 1, 12 e 50; por fase, em que nível ela vira vencível, quanto tempo leva e quanto paga; e inimigos por minuto.
+- A tabela de cadência medida à mão na 0.5.1.0 vira assertiva aqui, junto com o teste de determinismo. É a dívida que aquela versão deixou registrada.
 - Um único smoke test em PlayMode: entra em Play, o bootstrap monta a cena, Console limpo. Cobre referência faltando e sorting layer renomeada, que são os erros que a Unity não reporta.
 
 ## 0.5.3.0
@@ -193,3 +201,11 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 - Árvore de habilidades
 - Testes: superfície de regra grande de novo, e ela multiplica com as habilidades da 0.7.0.0. É a versão em que a suíte existente mais paga o próprio custo.
+
+# Ordem escolhida
+
+- Cada versão depende apenas das anteriores.
+- As habilidades ficam por último de propósito, pois são o sistema que mais mexe em todos os outros. Fazer habilidade antes do combate estar estável significa refazer habilidade.
+- Enquanto toda a funcionalidade básica não estiver pronta, o jogo continua em game objects lisos e coloridos.
+- O bloco 0.5.x é a revisão sendo aplicada, e a ordem dele é por dependência e não por gravidade: primeiro o passo fixo, que torna o combate verificável; depois os testes, que tornam as mudanças seguintes verificáveis; só então as mudanças de regra.
+- A 0.5.2.0 é a única versão que existe só para testar, e é a última vez que isso acontece. Ela paga a dívida acumulada até a 0.4.0.6. Dali em diante o teste faz parte da versão que muda o comportamento, conforme "# Testes automatizados" no `CLAUDE.md`.
