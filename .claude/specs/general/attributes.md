@@ -275,6 +275,9 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - O dano devolvido é sempre físico e é mitigado normalmente pela armadura física do atacante.
 - Espinhos nunca reage a um dano vindo de outro espinhos, para evitar devoluções infinitas entre dois personagens.
 - O total devolvido não pode ser abaixo de 0.
+- **O dano devolvido concede roubo de vida a quem devolveu**, calculado sobre o dano final da devolução, como em qualquer outro dano físico.
+    - É o que torna possível o personagem que se cura apanhando, combinando espinhos com roubo de vida.
+    - Sem isso, as duas fontes de cura defensiva do jogo nunca conversariam entre si, e a build de espinhos seria estritamente pior que a de roubo de vida comum.
 
 ### Ocupação
 

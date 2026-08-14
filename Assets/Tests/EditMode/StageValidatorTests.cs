@@ -16,6 +16,7 @@ namespace HerOClock.Tests
     {
         private const int Columns = 6;
         private const int Rows = 8;
+        private const int HeroRows = 4;
 
         private static readonly Dictionary<string, CharacterKind> Known = new Dictionary<string, CharacterKind>
         {
@@ -54,7 +55,7 @@ namespace HerOClock.Tests
 
         private static List<string> Validate(StageData stage)
         {
-            return StageValidator.Validate(stage, Columns, Rows, Known);
+            return StageValidator.Validate(stage, Columns, Rows, HeroRows, Known);
         }
 
         private static void AssertRejected(StageData stage, string because)
@@ -185,6 +186,30 @@ namespace HerOClock.Tests
             AssertRejected(stage, "Cell " + column + ", " + row + " is off the board.");
         }
 
+        /// <summary>
+        /// Minions and villains belong in their own half of the board. A stage that breaks this
+        /// still runs, which is exactly why it needs catching here: the wave would simply start
+        /// tangled up in the hero formation, with nothing reported.
+        /// </summary>
+        [TestCase(1)]
+        [TestCase(4)]
+        public void AnEnemyPlacedInTheHeroAreaIsRejected(int row)
+        {
+            StageData stage = ValidStage();
+            stage.waves = new[] { Wave(Place("minion-standard", 3, row)) };
+
+            AssertRejected(stage, "Row " + row + " belongs to the heroes.");
+        }
+
+        [Test]
+        public void TheFirstRowOfTheEnemyAreaIsAllowed()
+        {
+            StageData stage = ValidStage();
+            stage.waves = new[] { Wave(Place("minion-standard", 3, HeroRows + 1)) };
+
+            CollectionAssert.IsEmpty(Validate(stage));
+        }
+
         [Test]
         public void TwoPlacementsOnTheSameCellOfOneWaveIsRejected()
         {
@@ -219,7 +244,7 @@ namespace HerOClock.Tests
         public void ColumnsAndRowsAreCheckedAgainstTheirOwnLimits()
         {
             StageData wide = ValidStage();
-            wide.waves = new[] { Wave(Place("minion-standard", 8, 3)) };
+            wide.waves = new[] { Wave(Place("minion-standard", 8, 6)) };
             AssertRejected(wide, "Column 8 does not exist on a 6 column board.");
 
             StageData tall = ValidStage();

@@ -1,0 +1,13 @@
+{
+    "language": "en",
+    "entries": [
+        {
+            "key": "stage.act1-stage1.name",
+            "value": "Center of Arcterra"
+        },
+        {
+            "key": "stage.act1-stage1.lore",
+            "value": "The Center of Arcterra is a large, open area in the middle of the city. It is a place where people gather to socialize, trade, and take part in all sorts of activities. Tall buildings surround it, and a large fountain sits at its heart."
+        }
+    ]
+}

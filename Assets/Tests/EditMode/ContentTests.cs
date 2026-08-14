@@ -135,7 +135,7 @@ namespace HerOClock.Tests
 
                 Assert.IsNotNull(stage, "Stage at position " + i + " could not be read.");
 
-                List<string> problems = StageValidator.Validate(stage, 6, 8, kinds);
+                List<string> problems = StageValidator.Validate(stage, 6, 8, 4, kinds);
 
                 CollectionAssert.IsEmpty(problems,
                     "Stage '" + stage.id + "' has problems: " + string.Join(" | ", problems));

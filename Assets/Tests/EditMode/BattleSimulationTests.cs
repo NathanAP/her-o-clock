@@ -111,6 +111,62 @@ namespace HerOClock.Tests
             Assert.AreEqual(1, blows, "Exactly one blow was owed, not ten.");
         }
 
+        // --- Thorns ---
+
+        /// <summary>
+        /// attributes.md: the damage thorns sends back is physical, and life steal reacts to
+        /// physical damage, so whoever reflected it heals from it.
+        ///
+        /// It is the rule that lets somebody build a tank who recovers by being hit. Without it,
+        /// the two defensive sources of healing in the game would never talk to each other and a
+        /// thorns build would be strictly worse than plain life steal.
+        /// </summary>
+        [Test]
+        public void ReflectedDamageHealsTheOneWhoReflectedIt()
+        {
+            CharacterDefinition attackerSheet = battle.Sheet("attacker", CharacterKind.Minion, power: 100, constitution: 500);
+
+            CharacterDefinition thornySheet = battle.Sheet("thorny", CharacterKind.Hero, power: 0, constitution: 500);
+            thornySheet.Stats.ThornsPercent = 50f;
+            thornySheet.Stats.LifeStealPercent = 50f;
+
+            Character thorny = battle.Spawn(thornySheet, Team.Heroes, 3, 4);
+            Character attacker = battle.Spawn(attackerSheet, Team.Enemies, 3, 5);
+
+            // Wounded first, so there is room to be healed into.
+            thorny.TakeDamage(2000);
+            int wounded = thorny.CurrentHealth;
+
+            BattleDirector director = battle.Direct(new BattleRandom(1), thorny, attacker);
+
+            // One blow lands after the attacker's wind up, and its reflection with it.
+            TestBattle.RunUntilOver(director, 1.5f);
+
+            Assert.Less(thorny.CurrentHealth, thorny.Stats.MaxHealth, "The setup should leave it wounded.");
+            Assert.Greater(thorny.CurrentHealth, wounded - 100,
+                "Taking 100 and reflecting 50 with half of that stolen back should have healed some of it.");
+        }
+
+        [Test]
+        public void ReflectingWithoutLifeStealHealsNothing()
+        {
+            CharacterDefinition attackerSheet = battle.Sheet("attacker", CharacterKind.Minion, power: 100, constitution: 500);
+
+            CharacterDefinition thornySheet = battle.Sheet("thorny", CharacterKind.Hero, power: 0, constitution: 500);
+            thornySheet.Stats.ThornsPercent = 50f;
+
+            Character thorny = battle.Spawn(thornySheet, Team.Heroes, 3, 4);
+            Character attacker = battle.Spawn(attackerSheet, Team.Enemies, 3, 5);
+
+            thorny.TakeDamage(2000);
+            int wounded = thorny.CurrentHealth;
+
+            BattleDirector director = battle.Direct(new BattleRandom(1), thorny, attacker);
+            TestBattle.RunUntilOver(director, 1.5f);
+
+            Assert.LessOrEqual(thorny.CurrentHealth, wounded, "Nothing should have healed it.");
+        }
+
         // --- Reproducibility ---
 
         /// <summary>

@@ -114,7 +114,17 @@ namespace HerOClock.Combat
                 // The reflection is an independent physical attack against the attacker, and it
                 // goes through the attacker's own mitigation. Thorns never react to thorns.
                 DamageResult thorns = Resolve(target, character, result.Thorns, DamageType.Physical, false);
+
                 character.TakeDamage(thorns.Damage);
+
+                // Thorns is physical damage, and life steal reacts to physical damage, so the one
+                // reflecting heals from it. That is what makes a tank who heals by being hit a
+                // build somebody can actually put together.
+                //
+                // The healing field is not read here, and cannot be: it only appears when
+                // resistance climbs past 100%, which is elemental only. Physical mitigation is
+                // capped at 75% by the curve.
+                target.Heal(thorns.LifeStolen);
 
                 Attacked?.Invoke(target, character, thorns);
             }

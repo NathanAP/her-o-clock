@@ -1,94 +1,34 @@
 {
-    "name": "Center of Arcterra",
-    "description": "The Center of Arcterra is a large, open area in the middle of the city. It is a place where people gather to socialize, trade, and participate in various activities. The area is surrounded by tall buildings and has a large fountain in the center.",
+    "id": "act1-stage1",
+    "enemyLevel": 1,
     "waves": [
         {
             "placements": [
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 3,
-                    "row": 6
-                },
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 4,
-                    "row": 6
-                }
+                { "character": "discarded-prototype", "column": 3, "row": 6 },
+                { "character": "discarded-prototype", "column": 4, "row": 6 }
             ]
         },
         {
             "placements": [
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 2,
-                    "row": 6
-                },
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 4,
-                    "row": 6
-                },
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 5,
-                    "row": 7
-                }
+                { "character": "discarded-prototype", "column": 2, "row": 6 },
+                { "character": "discarded-prototype", "column": 4, "row": 6 },
+                { "character": "discarded-prototype", "column": 5, "row": 7 }
             ]
         },
         {
             "placements": [
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 2,
-                    "row": 5
-                },
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 3,
-                    "row": 6
-                },
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 4,
-                    "row": 6
-                },
-                {
-                    "character": "discarded-prototype",
-                    "kind": "minion",
-                    "column": 5,
-                    "row": 5
-                }
+                { "character": "discarded-prototype", "column": 2, "row": 5 },
+                { "character": "discarded-prototype", "column": 3, "row": 6 },
+                { "character": "discarded-prototype", "column": 4, "row": 6 },
+                { "character": "discarded-prototype", "column": 5, "row": 5 }
             ]
         }
     ],
     "villainWave": {
         "placements": [
-            {
-                "character": "discarded-prototype",
-                "kind": "minion",
-                "column": 2,
-                "row": 6
-            },
-            {
-                "character": "discarded-prototype",
-                "kind": "minion",
-                "column": 5,
-                "row": 6
-            },
-            {
-                "character": "exposed-prototype",
-                "kind": "villain",
-                "column": 4,
-                "row": 8
-            }
+            { "character": "discarded-prototype", "column": 2, "row": 6 },
+            { "character": "discarded-prototype", "column": 5, "row": 6 },
+            { "character": "exposed-prototype", "column": 4, "row": 8 }
         ]
     }
 }

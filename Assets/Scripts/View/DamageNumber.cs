@@ -9,6 +9,8 @@ namespace HerOClock.View
     ///
     /// Besides giving the fight a rhythm, it is how we check on screen that the mitigation and
     /// evasion formulas are coming out as expected, without having to read the Console.
+    ///
+    /// It is built once and reused. See <see cref="DamageNumberPool"/> for why.
     /// </summary>
     public class DamageNumber : MonoBehaviour
     {
@@ -20,56 +22,52 @@ namespace HerOClock.View
         private const float RiseDistance = 0.7f;
         private const float Lifetime = 0.7f;
 
+        private DamageNumberPool pool;
         private TextMeshPro label;
         private Vector3 origin;
         private float elapsed;
 
-        public static void Spawn(Transform parent, Vector3 worldPosition, DamageResult result, float cellSize)
+        /// <summary>Creates the label. Called once, by the pool.</summary>
+        public void Build(DamageNumberPool pool, float cellSize)
         {
-            string content;
-            Color color;
+            this.pool = pool;
 
-            if (result.Healing > 0)
-            {
-                content = "+" + result.Healing;
-                color = HealingColor;
-            }
-            else if (result.Damage > 0)
-            {
-                content = result.Damage.ToString();
-                color = result.PerfectEvasion ? PerfectEvasionColor : result.Evaded ? EvadedColor : DamageColor;
-            }
-            else
-            {
-                // A fully absorbed blow still has to show up, otherwise it looks like the
-                // attack never happened at all.
-                content = "0";
-                color = EvadedColor;
-            }
-
-            GameObject instance = new GameObject("DamageNumber");
-            instance.transform.SetParent(parent, false);
-            instance.transform.position = worldPosition;
-
-            DamageNumber number = instance.AddComponent<DamageNumber>();
-            number.Setup(content, color, cellSize);
-        }
-
-        private void Setup(string content, Color color, float cellSize)
-        {
             label = gameObject.AddComponent<TextMeshPro>();
-            label.text = content;
-            label.color = color;
             label.alignment = TextAlignmentOptions.Center;
             label.fontSize = 3f * cellSize;
             label.textWrappingMode = TextWrappingModes.NoWrap;
             label.sortingLayerID = SortingLayer.NameToID("VFX");
             label.sortingOrder = 10;
 
-            RectTransform rect = label.rectTransform;
-            rect.sizeDelta = new Vector2(2f * cellSize, 0.5f * cellSize);
+            label.rectTransform.sizeDelta = new Vector2(2f * cellSize, 0.5f * cellSize);
+        }
 
-            origin = transform.position;
+        /// <summary>Sends the number up from a position, showing what the blow did.</summary>
+        public void Show(Vector3 worldPosition, DamageResult result)
+        {
+            if (result.Healing > 0)
+            {
+                label.text = "+" + result.Healing;
+                label.color = HealingColor;
+            }
+            else if (result.Damage > 0)
+            {
+                label.text = result.Damage.ToString();
+                label.color = result.PerfectEvasion ? PerfectEvasionColor : result.Evaded ? EvadedColor : DamageColor;
+            }
+            else
+            {
+                // A fully absorbed blow still has to show up, otherwise it looks like the
+                // attack never happened at all.
+                label.text = "0";
+                label.color = EvadedColor;
+            }
+
+            origin = worldPosition;
+            elapsed = 0f;
+
+            transform.position = worldPosition;
+            gameObject.SetActive(true);
         }
 
         private void Update()
@@ -80,7 +78,7 @@ namespace HerOClock.View
 
             if (progress >= 1f)
             {
-                Destroy(gameObject);
+                pool.Return(this);
                 return;
             }
 

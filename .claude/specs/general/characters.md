@@ -8,6 +8,15 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 
 - As fichas de cada personagem do jogo estão presentes na pasta `.claude/specs/characters`.
 - O desenvolvimento do jogo deve espelhar as fichas dos personagens.
+
+### Estas fichas são documento de design, não dado do jogo
+
+- O jogo não lê estes arquivos. Ele lê os `CharacterDefinition` em `Assets/ScriptableObjects/`, e os arquivos daqui são a **fonte da intenção** que aqueles assets espelham.
+- É por isso que eles guardam coisas que um asset não guarda: história, características físicas, o bloco `hidden` e as habilidades, que ainda nem existem no código.
+- O texto que o jogador lê **não fica na ficha nem no asset**. Ele mora em `Assets/Strings/`, na chave `character.{id}.name`, conforme descrito em `attributes.md`.
+- As quatro fichas que existem hoje em `Assets/ScriptableObjects/` são de teste e não correspondem a nenhuma ficha desta pasta. Os personagens de verdade do ato 1 chegam na 0.9.0.0.
+
+**A estrutura completa da ficha ainda não está fechada.** Ela não declara alcance, classe de equipamento nem crescimento de defesa, que são coisas que o motor exige. Isso é resolvido na 0.5.7.0, junto com a decisão de como lacaios e vilões declaram os atributos deles, pois as duas coisas mudam o mesmo arquivo.
 - As fichas também indicam valores de dano, redução de recarga, escala para buffs e debuffs, entre outros.
 - As habilidades descritas nas fichas possuem níveis, então certos valores podem acabar mudando (o valor do dano pode aumentar a cada nível investido na habilidade). Nesses casos:
     - Valores descritos em `arrays` indicam a escalabilidade conforme o nível (index 0 = nível 1, index 1 = nível 2 e assim por diante).

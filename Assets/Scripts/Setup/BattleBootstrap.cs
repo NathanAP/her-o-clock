@@ -49,6 +49,7 @@ namespace HerOClock.Setup
         private BattleGrid grid;
         private BattleDirector director;
         private PlayerWallet wallet;
+        private DamageNumberPool damageNumbers;
 
         private void Start()
         {
@@ -80,6 +81,7 @@ namespace HerOClock.Setup
 
             grid = new BattleGrid(gridConfig);
             Transform board = BoardRenderer.Build(grid, transform);
+            damageNumbers = new DamageNumberPool(transform, gridConfig.CellSize);
 
             List<Character> heroes = SpawnHeroes();
             if (heroes.Count == 0)
@@ -213,7 +215,8 @@ namespace HerOClock.Setup
         private bool IsStageValid(StageData stage, IReadOnlyDictionary<string, CharacterDefinition> charactersById)
         {
             List<string> problems = StageValidator.Validate(
-                stage, gridConfig.Columns, gridConfig.Rows, CharacterDatabase.KindsOf(charactersById));
+                stage, gridConfig.Columns, gridConfig.Rows, gridConfig.HeroRows,
+                CharacterDatabase.KindsOf(charactersById));
 
             if (problems.Count == 0)
             {
@@ -241,7 +244,7 @@ namespace HerOClock.Setup
             }
 
             Vector3 origin = target.transform.position + new Vector3(0f, gridConfig.CellSize * 0.5f, 0f);
-            DamageNumber.Spawn(transform, origin, result, gridConfig.CellSize);
+            damageNumbers.Show(origin, result);
         }
 
         private List<Character> SpawnHeroes()
@@ -274,16 +277,27 @@ namespace HerOClock.Setup
                     continue;
                 }
 
-                if (placement.Character.Stats.MaxHealth <= 0)
+                Character hero = CreateCharacter(placement.Character, Team.Heroes, position, placement.Character.Level, 1f);
+
+                // Checked after the fact, on the instance, rather than by reading the sheet.
+                // Deriving anything from the shared definition is what architecture.md forbids,
+                // and the old check got it wrong anyway: it assumed level 1 and so misjudged any
+                // hero whose sheet starts higher. A character born with no health never acts,
+                // and Unity reports nothing about it.
+                if (!hero.IsAlive)
                 {
                     Debug.LogError("BattleBootstrap: " + placement.Character.Id
-                        + " has 0 maximum health, so it is born dead and never acts. "
-                        + "Maximum health is Power x 5 plus Constitution x 10, and both are zero on the sheet.",
+                        + " has 0 maximum health at level " + hero.Level
+                        + ", so it is born dead and never acts. "
+                        + "Maximum health is Power x 5 plus Constitution x 10.",
                         placement.Character);
+
+                    hero.ClearFromGrid();
+                    Destroy(hero.gameObject);
                     continue;
                 }
 
-                heroes.Add(CreateCharacter(placement.Character, Team.Heroes, position, placement.Character.Level, 1f));
+                heroes.Add(hero);
             }
 
             return heroes;

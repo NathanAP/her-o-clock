@@ -115,7 +115,7 @@
         {
             "id": "fast-and-furious",
             "name": "Fast and Furious!",
-            "description": "Tempo blinks through nearby enemies, striking each one of them, and lands behind the last enemy hit. She cannot be touched while moving between them.",
+            "description": "Tempo blinks through nearby enemies, striking each one of them, and lands behind the last enemy hit. They cannot be touched while moving between them.",
             "ranks": 5,
             "cooldown": [20, 18, 18, 18, 16],
             "targeting": {

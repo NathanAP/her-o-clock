@@ -128,15 +128,16 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - O snapshot passou a rotular as linhas por id, então ele deixou de conter texto traduzível e uma tradução não suja mais o diff dos números.
 - O resumo completo está em `.claude/versions/20260814_0.5.5.0.md`.
 
-## 0.5.6.0 (próxima)
+## 0.5.6.0 (feita)
 
-- Sincronizar a documentação e limpar o resto.
-- `.claude/specs/`, `.claude/game-objects/` e `.claude/memory/` conferidos linha a linha contra o projeto de verdade.
-- A ficha de fase e as três fichas de personagem da spec precisam virar o formato que o jogo realmente lê.
-- Leva junto os itens menores: área dos inimigos no validador, leitura direta da ficha no bootstrap, roubo de vida descartado nos espinhos, e um pool para os números de dano.
-- Vem por último porque as cinco versões anteriores mudam o que precisa ser documentado.
+- Fechamento do bloco de revisão. **Os 14 achados da 0.5.0.0 estão resolvidos.** 278 verificações no EditMode e 2 no PlayMode.
+- Espinhos passou a conceder roubo de vida a quem devolveu, o que torna possível o tanque que se cura apanhando.
+- O validador confere a área dos inimigos, o bootstrap parou de ler a ficha compartilhada, e os números de dano são reaproveitados em vez de recriados a cada golpe.
+- `game-objects/` conferido linha a linha contra os assets reais, e a ficha de fase da spec passou para o formato que o jogo lê.
+- `characters.md` deixou registrado que as fichas de `specs/` são documento de design, e não dado que o jogo lê.
+- O resumo completo está em `.claude/versions/20260814_0.5.6.0.md`.
 
-## 0.5.7.0
+## 0.5.7.0 (próxima)
 
 - Modelo de atributos de lacaios e vilões.
 - Inimigos não têm itens, então autorar um lacaio dizendo "POW 24, CON 25" para chegar em "370 de vida, 24 de dano" é indireto, e vai doer na 0.9.0.0, quando forem 12 lacaios e 5 vilões escritos de uma vez.
@@ -148,6 +149,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 - Persistência.
 - Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
+- **Leva junto a duplicação do laço de fase.** O `StageSimulation` dos testes repete o laço do `StageRunner`, porque o runner destrói os inimigos entre as ondas e o `Destroy` adiado não roda fora do Play Mode. Se o laço mudar e a cópia não, os testes de balanceamento passam a medir o laço antigo em silêncio. Esta versão mexe no `StageRunner` de qualquer forma, então é o momento de dar a ele um destruidor injetável e deixar a simulação dirigir o runner de verdade.
 - Testes: ida e volta (salvar, carregar, estado idêntico), save de versão antiga carregando na versão nova, e os baldes de 10 minutos de `progress.md` com os três tetos da progressão offline. A ida e volta é uma categoria que só aparece nesta versão e é a que impede corromper o progresso de quem já joga.
 
 ## 0.7.0.0

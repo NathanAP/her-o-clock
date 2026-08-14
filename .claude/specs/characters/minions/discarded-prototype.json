@@ -3,7 +3,7 @@
     "displayName": "Discarded Prototype",
     "kind": "minion",
     "initialLevel": 1,
-    "maxLevel": 10,
+    "maxLevel": 100,
     "info": {
         "name": "Discarded Prototype",
         "type": "Robot",

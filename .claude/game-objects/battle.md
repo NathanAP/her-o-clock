@@ -30,19 +30,21 @@ Componente que precisa ser adicionado na mão (`Add Component` → `Battle Boots
 
 O campo `Stage Index` escolhe qual fase do banco será jogada, contando de 0. Seleção de fase pelo jogador ainda não existe.
 
-Sem esses três assets nada aparece. Os assets estão descritos em `assets-de-configuracao.md`.
+Sem essas referências nada aparece. Os assets estão descritos em `assets-de-configuracao.md`.
 
 ### Mensagens de validação
 
 O componente confere a configuração ao iniciar e escreve no Console quando encontra problema:
 
-- Falta um dos três assets.
-- Uma formação aponta para uma casa fora do tabuleiro.
-- Dois personagens disputam a mesma casa.
-- Um dos lados ficou sem ninguém, quase sempre porque as duas formações ficaram com `Team` igual a `Heroes`.
-- Algum personagem tem vida máxima 0, ou seja, nasce morto e nunca age.
+- Falta alguma das referências obrigatórias.
+- A formação aponta para uma casa fora do tabuleiro, ou para uma casa já ocupada.
+- Algum herói nasce com vida máxima 0, ou seja, nunca age.
+- O arquivo de fase tem qualquer problema que o `StageValidator` pegue.
+- O arquivo de strings tem chave faltando, ou texto que ninguém pede.
 
-Quando está tudo certo, ele escreve quantos heróis enfrentam quantos inimigos. Essas validações existem porque os dois últimos casos não geram erro nenhum da Unity: o jogo simplesmente fica parado com o Console limpo.
+Quando está tudo certo, ele escreve no Console quantas fichas e quantas strings carregou, e qual semente sorteou.
+
+Essas validações existem porque quase nenhum desses casos gera erro da Unity. O jogo simplesmente fica parado, ou mostra a coisa errada, com o Console limpo.
 
 ### Valores recomendados
 
@@ -89,10 +91,10 @@ O deslizamento do tabuleiro é de **6 fileiras**, definido em `BoardScroller.Row
 
 Ao entrar em Play, a hierarquia abaixo do `Battle` fica assim:
 
-- `Board` — um filho por casa, cada um com um `SpriteRenderer` verde na sorting layer `Background`. É este objeto que desliza para baixo entre as ondas, representando o grupo avançando pela cidade. Ele desenha três fileiras além da área jogável em cada ponta, para que a rolagem nunca revele um vazio.
+- `Board` — um filho por casa, cada um com um `SpriteRenderer` verde na sorting layer `Background`. É este objeto que desliza para baixo entre as ondas, representando o grupo avançando pela cidade. Ele desenha nove fileiras além da área jogável em cada ponta (`BoardScroller.RowsPerTransition + 3`), para que a rolagem nunca revele um vazio.
 - `AreaDivider` — a linha fina que marca onde termina a área dos heróis. É irmã do tabuleiro, e não filha, para ficar parada enquanto o chão desliza.
-- Um filho por personagem, nomeado com o `DisplayName` da ficha, com os componentes `Character` e `CharacterView`. Cada personagem tem três filhos próprios: `Corpo`, `BarraFundo` e `BarraVida`.
-- `Dano` — objetos temporários com os números que sobem e somem. São criados e destruídos durante o combate.
+- Um filho por personagem, nomeado com o `Id` da ficha, com os componentes `Character` e `CharacterView`. Cada personagem tem quatro filhos próprios: `Body`, `HealthBarBackground`, `HealthBarFill` e `LevelLabel`.
+- `DamageNumber` — os números que sobem e somem. São criados sob demanda e **reaproveitados**, não destruídos: num jogo que fica aberto o dia inteiro, criar um TextMeshPro por golpe seria alocação contínua.
 
 ## DevSpeedControl
 
@@ -135,4 +137,4 @@ O arquivo da cena nunca corre risco: em Play Mode a Unity não grava alteração
 
 Já configuradas em `ProjectSettings/TagManager.asset`: `Default`, `Background`, `Ground`, `Characters`, `Projectiles`, `VFX`, `UI`.
 
-O código usa `Background` e `Characters` pelo nome. Renomear qualquer uma dessas duas quebra a renderização em silêncio.
+O código usa quatro delas pelo nome: `Background` para as casas, `Ground` para a linha divisória, `Characters` para os personagens e `VFX` para os números de dano. Renomear qualquer uma quebra a renderização em silêncio.

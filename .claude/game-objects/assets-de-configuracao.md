@@ -36,24 +36,22 @@ A ficha **não guarda nenhum texto que o jogador leia**. O nome mostrado vem do 
 - Id: `hero-tank`
 - Kind: `Hero`
 - Color: `#3B6FD4`
-- Level: `1`
-- Min Range: `1`
-- Max Range: `1`
+- Level: `1`, Max Level: `100`
+- Min Range: `1`, Max Range: `1`
 - Equipment: `Heavy`
-- Power: `20`, Agility: `5`, Specialty: `0`, Constitution: `30`
-- Physical Armor: `100`
+- Base Power: `5`, Base Agility: `2`, Base Specialty: `1`, Base Constitution: `4`
+- Base Physical Armor: `100`, Physical Armor Per Level: `100`
 
 ### Heroi Arqueiro
 
 - Id: `hero-archer`
 - Kind: `Hero`
 - Color: `#6FA8F0`
-- Level: `1`
-- Min Range: `2`
-- Max Range: `4`
+- Level: `1`, Max Level: `100`
+- Min Range: `2`, Max Range: `4`
 - Equipment: `Light`
-- Power: `10`, Agility: `25`, Specialty: `0`, Constitution: `10`
-- Physical Armor: `10`
+- Base Power: `4`, Base Agility: `5`, Base Specialty: `1`, Base Constitution: `2`
+- Base Physical Armor: `10`, Physical Armor Per Level: `10`
 
 O alcance mínimo `2` é o que faz este personagem recuar quando um inimigo encosta nele. É o melhor jeito de ver a regra de recuo funcionando.
 
@@ -62,11 +60,11 @@ O alcance mínimo `2` é o que faz este personagem recuar quando um inimigo enco
 - Id: `minion-standard`
 - Kind: `Minion`
 - Color: `#E86FA8`
-- Min Range: `1`
-- Max Range: `1`
+- Level: `1`, Max Level: `100`
+- Min Range: `1`, Max Range: `1`
 - Equipment: `Light`
-- Power: `8`, Agility: `5`, Specialty: `0`, Constitution: `8`
-- Physical Armor: `0`
+- Base Power: `2`, Base Agility: `1`, Base Specialty: `0`, Base Constitution: `3`
+- Sem armadura nenhuma. É um civil sob controle de alguém, não um soldado.
 
 O campo `Level` da ficha é ignorado para lacaios e vilões: quem define o nível deles é a fase em que aparecem.
 
@@ -75,11 +73,28 @@ O campo `Level` da ficha é ignorado para lacaios e vilões: quem define o níve
 - Id: `villain-boss`
 - Kind: `Villain`
 - Color: `#C22B2B`
-- Min Range: `1`
-- Max Range: `2`
+- Level: `1`, Max Level: `100`
+- Min Range: `1`, Max Range: `2`
 - Equipment: `Heavy`
-- Power: `25`, Agility: `10`, Specialty: `15`, Constitution: `40`
-- Physical Armor: `150`
+- Base Power: `3`, Base Agility: `2`, Base Specialty: `0`, Base Constitution: `4`
+- Base Physical Armor: `150`, Physical Armor Per Level: `150`
+
+### Crescimento de defesa por nível
+
+Toda ficha declara, ao lado do valor inicial de armadura e de cada resistência, **quanto aquele atributo ganha por nível**. Sem isso a defesa apodrece sozinha, porque a constante da curva de mitigação cresce com o nível do atacante.
+
+**Ganho igual ao valor inicial mantém a mitigação parada para sempre**, pois a armadura e a constante passam a crescer juntas e se cancelam. É o que as quatro fichas usam, e é por isso que os números de nível 1 delas continuam valendo em qualquer nível:
+
+| Ficha | Armadura inicial | Ganho por nível | Mitigação em qualquer nível |
+|---|---|---|---|
+| Heroi Tanque | 100 | 100 | 50,0% |
+| Heroi Arqueiro | 10 | 10 | 12,5% |
+| Lacaio | 0 | 0 | 0% |
+| Vilao | 150 | 150 | 56,3% |
+
+Ganhos menores que a base fazem a defesa perder força devagar, e maiores fazem ganhar. As duas coisas são escolhas válidas.
+
+A armadura nas fichas de **herói** é um substituto de equipamento, já que itens ainda não existem. Quando existirem, ela deve ir a zero e o equipamento assumir.
 
 ### Crescimento por nível
 
@@ -116,7 +131,7 @@ Um único asset chamado `CharacterDatabase`, com a lista de todas as fichas.
 
 Existe porque os arquivos de fase são JSON e não conseguem guardar referência de asset. Eles nomeiam o personagem por `Id` e este banco resolve. Os saves vão precisar exatamente da mesma coisa.
 
-Arraste as quatro fichas para a lista `Characters`. O banco reclama no Console se alguma ficha estiver sem `Id` ou se dois `Id` forem iguais.
+Arraste as quatro fichas para a lista `Characters`. O teste `ContentTests` reprova se alguma ficha do projeto ficar de fora. O banco reclama no Console se alguma ficha estiver sem `Id` ou se dois `Id` forem iguais.
 
 ## StageDatabase
 
@@ -132,10 +147,12 @@ O time do jogador e onde ele começa no tabuleiro. Agora existe **apenas a forma
 
 - Team: `Heroes`
 - Placements:
-    - `Heroi Tanque`, Column `3`, Row `1`
-    - `Heroi Tanque`, Column `4`, Row `1`
-    - `Heroi Arqueiro`, Column `2`, Row `2`
-    - `Heroi Arqueiro`, Column `5`, Row `2`
+    - `Heroi Tanque`, Column `3`, Row `2`
+    - `Heroi Tanque`, Column `4`, Row `2`
+    - `Heroi Arqueiro`, Column `2`, Row `1`
+    - `Heroi Arqueiro`, Column `5`, Row `1`
+
+A fileira 1 é a mais recuada, então os tanques na fileira 2 ficam **à frente** dos arqueiros.
 
 A mesma ficha pode aparecer várias vezes. Cada linha cria um personagem separado, com atributos próprios.
 

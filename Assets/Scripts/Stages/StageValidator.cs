@@ -19,6 +19,7 @@ namespace HerOClock.Stages
             StageData stage,
             int columns,
             int rows,
+            int heroRows,
             IReadOnlyDictionary<string, CharacterKind> knownCharacters)
         {
             List<string> problems = new List<string>();
@@ -47,7 +48,7 @@ namespace HerOClock.Stages
             {
                 for (int i = 0; i < stage.waves.Length; i++)
                 {
-                    ValidateWave(stage.waves[i], "wave " + (i + 1), columns, rows, knownCharacters, false, problems);
+                    ValidateWave(stage.waves[i], "wave " + (i + 1), columns, rows, heroRows, knownCharacters, false, problems);
                 }
             }
 
@@ -57,7 +58,7 @@ namespace HerOClock.Stages
             }
             else
             {
-                ValidateWave(stage.villainWave, "the villain wave", columns, rows, knownCharacters, true, problems);
+                ValidateWave(stage.villainWave, "the villain wave", columns, rows, heroRows, knownCharacters, true, problems);
             }
 
             return problems;
@@ -68,6 +69,7 @@ namespace HerOClock.Stages
             string label,
             int columns,
             int rows,
+            int heroRows,
             IReadOnlyDictionary<string, CharacterKind> knownCharacters,
             bool requiresVillain,
             List<string> problems)
@@ -123,6 +125,16 @@ namespace HerOClock.Stages
                     problems.Add(where + " sits on column " + placement.column + ", row " + placement.row
                         + ", which is outside a board of " + columns + " by " + rows + ".");
                     continue;
+                }
+
+                // Minions and villains belong in their own half of the board. A stage that
+                // breaks this still runs, but the wave would start already tangled up in the
+                // hero formation, which is never what anybody meant to write.
+                if (placement.row <= heroRows)
+                {
+                    problems.Add(where + " starts on row " + placement.row
+                        + ", which is the hero area. Enemies belong on rows " + (heroRows + 1)
+                        + " to " + rows + ".");
                 }
 
                 long cell = (long)placement.column * 10000 + placement.row;
