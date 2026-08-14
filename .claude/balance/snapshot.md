@@ -27,10 +27,10 @@ Valores no nível inicial da ficha, sem itens.
 
 | Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão | Armadura | Regen/s |
 |---|---|---|---|---|---|---|---|
-| Tanque top | 65 | 5 | 1.00 | 2.02 | 0.4% | 100 | 0.00 |
-| Arqueiro foda | 40 | 4 | 1.05 | 2.10 | 4.8% | 10 | 0.00 |
-| Motorista | 40 | 2 | 1.01 | 2.02 | 1.0% | 0 | 0.00 |
-| Carlos | 55 | 3 | 1.00 | 2.02 | 0.4% | 150 | 0.00 |
+| hero-tank | 65 | 5 | 1.00 | 2.02 | 0.4% | 100 | 0.00 |
+| hero-archer | 40 | 4 | 1.05 | 2.10 | 4.8% | 10 | 0.00 |
+| minion-standard | 40 | 2 | 1.01 | 2.02 | 1.0% | 0 | 0.00 |
+| villain-boss | 55 | 3 | 1.00 | 2.02 | 0.4% | 150 | 0.00 |
 
 ### Mitigação física contra um atacante do mesmo nível
 
@@ -39,10 +39,10 @@ significa que aquela ficha perde defesa conforme o jogo avança.
 
 | Ficha | Nível 1 | Nível 12 | Nível 30 | Nível 50 | Nível 100 |
 |---|---|---|---|---|---|
-| Tanque top | 50.0% | 50.0% | 50.0% | 50.0% | 50.0% |
-| Arqueiro foda | 12.5% | 12.5% | 12.5% | 12.5% | 12.5% |
-| Motorista | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
-| Carlos | 56.3% | 56.3% | 56.3% | 56.3% | 56.3% |
+| hero-tank | 50.0% | 50.0% | 50.0% | 50.0% | 50.0% |
+| hero-archer | 12.5% | 12.5% | 12.5% | 12.5% | 12.5% |
+| minion-standard | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| villain-boss | 56.3% | 56.3% | 56.3% | 56.3% | 56.3% |
 
 ## Fases
 
@@ -51,8 +51,8 @@ A formação de heróis é a do asset. O tempo é só de combate, sem as transi�
 
 | Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |
 |---|---|---|---|---|---|
-| Avenida das Turbinas | 1 | 1 | 26.2 s | 210 | 21 |
-| Subestacao Norte | 12 | 15 | 64.5 s | 34560 | 24 |
+| act1-stage1 | 1 | 1 | 26.2 s | 210 | 21 |
+| act1-stage2 | 12 | 15 | 64.5 s | 34560 | 24 |
 
 ### Paredes
 
@@ -62,8 +62,8 @@ exigido passa o de chegada, o jogador é obrigado a parar e farmar.
 
 | Fase | Chega com | Exige | Parede | Custo |
 |---|---|---|---|---|
-| Avenida das Turbinas | 1 | 1 | não | - |
-| Subestacao Norte | 2 | 15 | sim | 10037x a fase anterior, 3986.9 min de combate |
+| act1-stage1 | 1 | 1 | não | - |
+| act1-stage2 | 2 | 15 | sim | 10037x a fase anterior, 3986.9 min de combate |
 
 O custo conta só o tempo de combate, e despreza a experiência parcial que sobra
 de um nível para o outro. As transições entre ondas somam vários segundos por

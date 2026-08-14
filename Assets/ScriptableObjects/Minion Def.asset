@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Minion Def
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
   Id: minion-standard
-  DisplayName: Motorista
   Kind: 1
   Color: {r: 0.9098039, g: 0.43529412, b: 0.65882355, a: 1}
   Level: 1

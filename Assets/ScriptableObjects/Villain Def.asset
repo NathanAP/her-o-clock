@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Villain Def
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
   Id: villain-boss
-  DisplayName: Carlos
   Kind: 2
   Color: {r: 0.7607843, g: 0.16862746, b: 0.16862746, a: 1}
   Level: 1

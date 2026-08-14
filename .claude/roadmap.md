@@ -119,14 +119,16 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - O snapshot não se moveu com a mudança de atributos, o que é a prova de que o refactor preservou o comportamento.
 - O resumo completo está em `.claude/versions/20260814_0.5.4.0.md`.
 
-## 0.5.5.0 (próxima)
+## 0.5.5.0 (feita)
 
-- Conteúdo em inglês e arquivo de strings.
-- Os `Display Name` dos assets e os textos das fases estão em português; o `CLAUDE.md` pede inglês.
-- Os textos visíveis saem dos assets e vão para um arquivo de strings, preparando localização.
-- Vem depois do código estabilizar, pois mexe em asset e em fase.
+- Conteúdo em inglês e arquivo de strings. 273 verificações no EditMode, contra 257, e 2 no PlayMode.
+- Todo texto que o jogador lê saiu dos assets e das fases e foi para `Assets/Strings/en.json`. `CharacterDefinition` perdeu o `DisplayName` e `StageData` perdeu `name` e `lore`.
+- As chaves são derivadas do `Id` que o conteúdo já carrega, então não existe nada para manter em sincronia: renomear um id é o mesmo ato que renomear o texto dele.
+- Chave faltando volta como `#chave#` e não como vazio, e o validador reclama tanto de chave faltando quanto de texto sobrando de conteúdo apagado.
+- O snapshot passou a rotular as linhas por id, então ele deixou de conter texto traduzível e uma tradução não suja mais o diff dos números.
+- O resumo completo está em `.claude/versions/20260814_0.5.5.0.md`.
 
-## 0.5.6.0
+## 0.5.6.0 (próxima)
 
 - Sincronizar a documentação e limpar o resto.
 - `.claude/specs/`, `.claude/game-objects/` e `.claude/memory/` conferidos linha a linha contra o projeto de verdade.

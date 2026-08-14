@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using HerOClock.Characters;
 using HerOClock.Stages;
+using HerOClock.Text;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -58,7 +59,7 @@ namespace HerOClock.Tests
 
                 Assert.IsNotNull(definition, "Entry " + i + " of the CharacterDatabase is empty.");
                 Assert.IsFalse(string.IsNullOrWhiteSpace(definition.Id),
-                    definition.DisplayName + " has no id, so nothing can refer to it.");
+                    "The sheet at position " + i + " has no id, so nothing can refer to it.");
                 Assert.IsTrue(seen.Add(definition.Id), "The id '" + definition.Id + "' is used more than once.");
             }
         }
@@ -78,7 +79,7 @@ namespace HerOClock.Tests
                 CharacterStats stats = definition.Stats.Clone();
                 stats.ApplyInstance(definition.Level, definition.Growth, 1f);
 
-                Assert.Greater(stats.MaxHealth, 0, definition.DisplayName + " has no health at its starting level.");
+                Assert.Greater(stats.MaxHealth, 0, definition.Id + " has no health at its starting level.");
             }
         }
 
@@ -97,7 +98,7 @@ namespace HerOClock.Tests
                 CharacterDefinition definition = database.Characters[i];
 
                 Assert.AreEqual(100, definition.Growth.Total,
-                    definition.DisplayName + " splits " + definition.Growth.Total + " points instead of 100.");
+                    definition.Id + " splits " + definition.Growth.Total + " points instead of 100.");
             }
         }
 
@@ -111,7 +112,7 @@ namespace HerOClock.Tests
                 CharacterDefinition definition = database.Characters[i];
 
                 Assert.LessOrEqual(definition.MinRange, definition.MaxRange,
-                    definition.DisplayName + " can never reach any distance at all.");
+                    definition.Id + " can never reach any distance at all.");
             }
         }
 
@@ -188,6 +189,68 @@ namespace HerOClock.Tests
                     "Stage '" + stage.id + "', " + label + ": " + placement.character
                     + " starts on row " + placement.row + ", which is the hero area.");
             }
+        }
+
+        // --- Text ---
+
+        /// <summary>
+        /// The real strings file, checked against the real content: every character and every
+        /// stage in the project has its text, and there is no text left over from something that
+        /// was deleted.
+        /// </summary>
+        [Test]
+        public void TheStringsFileMatchesTheContent()
+        {
+            List<string> problems = new List<string>();
+
+            StringTable strings = StringTable.From(
+                JsonUtility.FromJson<StringTableData>(StringsFile().text), problems);
+
+            CharacterDatabase characters = Load<CharacterDatabase>();
+            StageDatabase stages = Load<StageDatabase>();
+
+            List<string> characterIds = new List<string>();
+            for (int i = 0; i < characters.Characters.Count; i++)
+            {
+                characterIds.Add(characters.Characters[i].Id);
+            }
+
+            List<string> stageIds = new List<string>();
+            for (int i = 0; i < stages.Stages.Count; i++)
+            {
+                stageIds.Add(stages.Load(i).id);
+            }
+
+            StringTableValidator.Validate(strings, characterIds, stageIds, problems);
+
+            CollectionAssert.IsEmpty(problems, string.Join(" | ", problems));
+        }
+
+        /// <summary>
+        /// No player facing text may be left inside an asset or a stage file. Catching a stray one
+        /// here is what stops the strings file quietly becoming half the truth.
+        /// </summary>
+        [Test]
+        public void NoPlayerFacingTextIsLeftInTheContentFiles()
+        {
+            string[] stageFiles = AssetDatabase.FindAssets("t:TextAsset", new[] { "Assets/Stages" });
+
+            for (int i = 0; i < stageFiles.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(stageFiles[i]);
+                string text = AssetDatabase.LoadAssetAtPath<TextAsset>(path).text;
+
+                Assert.IsFalse(text.Contains("\"name\""), path + " still carries a name. Text belongs in the strings file.");
+                Assert.IsFalse(text.Contains("\"lore\""), path + " still carries lore. Text belongs in the strings file.");
+            }
+        }
+
+        private static TextAsset StringsFile()
+        {
+            TextAsset file = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Strings/en.json");
+
+            Assert.IsNotNull(file, "Assets/Strings/en.json is missing.");
+            return file;
         }
 
         /// <summary>

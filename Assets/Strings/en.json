@@ -1,0 +1,37 @@
+{
+    "language": "en",
+    "entries": [
+        {
+            "key": "character.hero-tank.name",
+            "value": "Tank Hero"
+        },
+        {
+            "key": "character.hero-archer.name",
+            "value": "Archer Hero"
+        },
+        {
+            "key": "character.minion-standard.name",
+            "value": "Driver"
+        },
+        {
+            "key": "character.villain-boss.name",
+            "value": "Carlos"
+        },
+        {
+            "key": "stage.act1-stage1.name",
+            "value": "Turbine Avenue"
+        },
+        {
+            "key": "stage.act1-stage1.lore",
+            "value": "The first reports came in before dawn: delivery drivers standing still in the middle of the avenue, red eyed, taking orders from someone nobody saw. The government sent the nearest team. Nobody thought it would amount to anything."
+        },
+        {
+            "key": "stage.act1-stage2.name",
+            "value": "North Substation"
+        },
+        {
+            "key": "stage.act1-stage2.lore",
+            "value": "Whoever was controlling the drivers was not alone, and was not improvising. The substation feeds half the district, and now it feeds something else as well. The reports ask for backup. There is no backup."
+        }
+    ]
+}

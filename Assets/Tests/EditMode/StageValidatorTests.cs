@@ -46,8 +46,6 @@ namespace HerOClock.Tests
             return new StageData
             {
                 id = "act1-stage1",
-                name = "A stage",
-                lore = "Something happened.",
                 enemyLevel = 1,
                 waves = new[] { Wave(Place("minion-standard", 3, 6)) },
                 villainWave = Wave(Place("villain-boss", 4, 8))

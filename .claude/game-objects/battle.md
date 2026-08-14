@@ -25,6 +25,7 @@ Componente que precisa ser adicionado na mão (`Add Component` → `Battle Boots
 - Grid Config: o asset `BattleGridConfig`.
 - Character Database: o asset `CharacterDatabase`.
 - Stage Database: o asset `StageDatabase`.
+- Strings File: o arquivo `Assets/Strings/en.json`.
 - Hero Formation: o asset `BattleFormation` dos heróis.
 
 O campo `Stage Index` escolhe qual fase do banco será jogada, contando de 0. Seleção de fase pelo jogador ainda não existe.

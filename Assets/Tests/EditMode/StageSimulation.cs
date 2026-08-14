@@ -247,7 +247,7 @@ namespace HerOClock.Tests
             int level,
             float multiplier)
         {
-            GameObject instance = new GameObject(definition.DisplayName);
+            GameObject instance = new GameObject(definition.Id);
             Character character = instance.AddComponent<Character>();
             character.Initialize(definition, team, position, grid, level, multiplier);
 

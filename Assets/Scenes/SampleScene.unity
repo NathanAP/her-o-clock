@@ -418,6 +418,7 @@ MonoBehaviour:
   gridConfig: {fileID: 11400000, guid: f12b5620c5dba3d4591a6e5003d5b729, type: 2}
   characterDatabase: {fileID: 11400000, guid: 2335567b3029dfd4395b9186d02b81a4, type: 2}
   stageDatabase: {fileID: 11400000, guid: ef83ceac8527cb149885a887303ac954, type: 2}
+  stringsFile: {fileID: 4900000, guid: 3bef2dc8670f443d8c07047d0c803a7c, type: 3}
   stageIndex: 0
   heroFormation: {fileID: 11400000, guid: bdcc6645e8ccf534f80b42b7c9b3f495, type: 2}
   viewSettings:

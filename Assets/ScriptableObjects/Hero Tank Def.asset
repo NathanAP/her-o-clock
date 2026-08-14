@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Hero Tank Def
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
   Id: hero-tank
-  DisplayName: Tanque top
   Kind: 0
   Color: {r: 0.23137255, g: 0.43529412, b: 0.83137256, a: 1}
   Level: 1

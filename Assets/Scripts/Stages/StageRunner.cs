@@ -5,6 +5,7 @@ using HerOClock.Characters;
 using HerOClock.Combat;
 using HerOClock.Movement;
 using HerOClock.Progression;
+using HerOClock.Text;
 using HerOClock.View;
 using UnityEngine;
 
@@ -41,6 +42,7 @@ namespace HerOClock.Stages
         private BattleDirector director;
         private IReadOnlyDictionary<string, CharacterDefinition> charactersById;
         private PlayerWallet wallet;
+        private StringTable strings;
         private BattleRandom random;
         private BoardScroller scroller;
         private Func<CharacterDefinition, Team, GridPosition, int, float, Character> spawn;
@@ -91,6 +93,7 @@ namespace HerOClock.Stages
             BattleDirector director,
             IReadOnlyDictionary<string, CharacterDefinition> charactersById,
             PlayerWallet wallet,
+            StringTable strings,
             BattleRandom random,
             BoardScroller scroller,
             IReadOnlyList<Character> heroes,
@@ -100,6 +103,7 @@ namespace HerOClock.Stages
             this.director = director;
             this.charactersById = charactersById;
             this.wallet = wallet;
+            this.strings = strings;
             this.random = random;
             this.scroller = scroller;
             this.spawn = spawn;
@@ -130,7 +134,8 @@ namespace HerOClock.Stages
         {
             this.stage = stage;
 
-            Debug.Log("Stage '" + stage.name + "' started. " + stage.lore, this);
+            Debug.Log("Stage '" + strings.Get(StringTable.StageName(stage.id)) + "' started. "
+                + strings.Get(StringTable.StageLore(stage.id)), this);
 
             DespawnEnemies();
 
@@ -301,7 +306,7 @@ namespace HerOClock.Stages
         {
             if (!heroesWon)
             {
-                Debug.Log("The heroes fell on wave " + (waveIndex + 1) + " of '" + stage.name
+                Debug.Log("The heroes fell on wave " + (waveIndex + 1) + " of '" + stage.id
                     + "'. Starting the stage over.", this);
                 EnterPhase(Phase.Restarting, DefeatDuration);
                 return;
@@ -314,7 +319,7 @@ namespace HerOClock.Stages
             if (wasVillain)
             {
                 ReturnHeroesToStart();
-                Debug.Log("Stage '" + stage.name + "' cleared.", this);
+                Debug.Log("Stage '" + stage.id + "' cleared.", this);
                 EnterPhase(Phase.Celebrating, CelebrationDuration);
                 return;
             }
@@ -355,7 +360,7 @@ namespace HerOClock.Stages
 
                 if (!grid.IsFree(position))
                 {
-                    Debug.LogWarning("Stage '" + stage.name + "': " + placement.character
+                    Debug.LogWarning("Stage '" + stage.id + "': " + placement.character
                         + " cannot take cell " + position + " because it is occupied.", this);
                     continue;
                 }

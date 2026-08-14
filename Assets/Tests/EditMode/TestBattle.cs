@@ -53,7 +53,6 @@ namespace HerOClock.Tests
         {
             CharacterDefinition definition = ScriptableObject.CreateInstance<CharacterDefinition>();
             definition.Id = id;
-            definition.DisplayName = id;
             definition.Kind = kind;
             definition.Level = 1;
             definition.MaxLevel = 100;
@@ -77,7 +76,7 @@ namespace HerOClock.Tests
 
         public Character Spawn(CharacterDefinition definition, Team team, int column, int row, int level = 1, float multiplier = 1f)
         {
-            GameObject instance = new GameObject(definition.DisplayName);
+            GameObject instance = new GameObject(definition.Id);
             Character character = instance.AddComponent<Character>();
             character.Initialize(definition, team, new GridPosition(column, row), Grid, level, multiplier);
 

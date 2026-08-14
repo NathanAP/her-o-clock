@@ -10,10 +10,10 @@ namespace HerOClock.Characters
     public class CharacterDefinition : ScriptableObject
     {
         [Header("Identity")]
-        [Tooltip("Stable text id used by stage files and, later, by save games. Never change it once content refers to it.")]
+        [Tooltip("Stable text id used by stage files, save games and the strings file. "
+            + "Never change it once content refers to it.")]
         public string Id = "";
 
-        public string DisplayName = "Unnamed";
         public CharacterKind Kind = CharacterKind.Hero;
 
         [Tooltip("Placeholder colour. Blue for heroes, pink for minions, red for villains.")]
@@ -60,7 +60,7 @@ namespace HerOClock.Characters
             // 100 still works. It is almost always a typo though, and worth saying out loud.
             if (Growth.Total != 100)
             {
-                Debug.LogWarning(DisplayName + ": the attribute growth adds up to " + Growth.Total
+                Debug.LogWarning(Id + ": the attribute growth adds up to " + Growth.Total
                     + " instead of 100. It still works, but the percentages will not read as written.", this);
             }
         }

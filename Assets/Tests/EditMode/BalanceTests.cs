@@ -163,7 +163,7 @@ namespace HerOClock.Tests
                 CharacterDefinition definition = database.Characters[i];
                 CharacterStats stats = AtLevel(definition, definition.Level);
 
-                page.AppendLine("| " + definition.DisplayName
+                page.AppendLine("| " + definition.Id
                     + " | " + stats.MaxHealth
                     + " | " + stats.PhysicalDamage
                     + " | " + Number(stats.AttacksPerSecond, 2)
@@ -210,7 +210,7 @@ namespace HerOClock.Tests
             for (int i = 0; i < database.Characters.Count; i++)
             {
                 CharacterDefinition definition = database.Characters[i];
-                page.Append("| ").Append(definition.DisplayName).Append(" |");
+                page.Append("| ").Append(definition.Id).Append(" |");
 
                 for (int l = 0; l < levels.Length; l++)
                 {
@@ -291,7 +291,7 @@ namespace HerOClock.Tests
                     ? Play(index, minimum)
                     : new StageSimulation.Outcome();
 
-                page.AppendLine("| " + stage.name
+                page.AppendLine("| " + stage.id
                     + " | " + stage.enemyLevel
                     + " | " + (minimum > 0 ? minimum.ToString(CultureInfo.InvariantCulture) : "acima de " + HighestLevelSearched)
                     + " | " + (outcome.Cleared ? Number(outcome.Seconds, 1) + " s" : "-")
@@ -354,7 +354,7 @@ namespace HerOClock.Tests
                     level = required;
                 }
 
-                page.AppendLine("| " + stage.name
+                page.AppendLine("| " + stage.id
                     + " | " + arrival
                     + " | " + (required > 0 ? required.ToString(CultureInfo.InvariantCulture) : "?")
                     + " | " + wall

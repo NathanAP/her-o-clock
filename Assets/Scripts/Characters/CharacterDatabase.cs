@@ -42,7 +42,7 @@ namespace HerOClock.Characters
 
                 if (id.Length == 0)
                 {
-                    Debug.LogError("CharacterDatabase: " + definition.DisplayName
+                    Debug.LogError("CharacterDatabase: the sheet at position " + i
                         + " has no Id, so no stage file can refer to it.", definition);
                     continue;
                 }

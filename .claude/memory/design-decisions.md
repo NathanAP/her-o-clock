@@ -75,7 +75,14 @@ On top of that, the visible text does not belong in the asset. Names, stage titl
 - A `Display Name` inside a `.asset` is the same file as the balance numbers, so a translation pass and a balance pass fight over the same diff.
 - Localisation later becomes a new strings file rather than a second copy of every sheet.
 
-The move itself is 0.5.5.0. Until then, new content is written in English straight away, so the pile does not grow.
+Done in 0.5.5.0. `Assets/Strings/en.json` holds every line the player reads, keyed off the id the content already carries: `character.{id}.name`, `stage.{id}.name`, `stage.{id}.lore`. Deriving the key rather than adding a field is what makes the pair impossible to desynchronise — renaming an id is the same act as renaming its text.
+
+Two things fell out of it that are worth keeping:
+
+- **A missing key comes back as `#the.key#`, never as an empty string.** Empty text is simply not drawn, and a label that vanishes without a trace is far harder to notice than a visibly broken one.
+- **The balance snapshot lost its translatable text**, because the tables now label rows by id. A translation pass can no longer dirty the diff of the numbers.
+
+Nothing displays the table yet beyond the stage announcement in the Console, because there is no interface. Doing it at 4 sheets and 2 stages rather than at dozens was the whole point.
 
 ## Free movement, with no body blocking
 

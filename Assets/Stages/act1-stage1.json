@@ -1,36 +1,82 @@
 {
     "id": "act1-stage1",
-    "name": "Avenida das Turbinas",
-    "lore": "Os primeiros relatos chegaram pela madrugada: entregadores parados no meio da avenida, olhos vermelhos, obedecendo a alguem que ninguem viu. O governo mandou o time mais proximo. Ninguem achou que fosse virar caso.",
     "enemyLevel": 1,
     "waves": [
         {
             "placements": [
-                { "character": "minion-standard", "column": 3, "row": 6 },
-                { "character": "minion-standard", "column": 4, "row": 6 }
+                {
+                    "character": "minion-standard",
+                    "column": 3,
+                    "row": 6
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 4,
+                    "row": 6
+                }
             ]
         },
         {
             "placements": [
-                { "character": "minion-standard", "column": 2, "row": 6 },
-                { "character": "minion-standard", "column": 4, "row": 6 },
-                { "character": "minion-standard", "column": 5, "row": 7 }
+                {
+                    "character": "minion-standard",
+                    "column": 2,
+                    "row": 6
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 4,
+                    "row": 6
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 5,
+                    "row": 7
+                }
             ]
         },
         {
             "placements": [
-                { "character": "minion-standard", "column": 2, "row": 5 },
-                { "character": "minion-standard", "column": 3, "row": 6 },
-                { "character": "minion-standard", "column": 4, "row": 6 },
-                { "character": "minion-standard", "column": 5, "row": 5 }
+                {
+                    "character": "minion-standard",
+                    "column": 2,
+                    "row": 5
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 3,
+                    "row": 6
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 4,
+                    "row": 6
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 5,
+                    "row": 5
+                }
             ]
         }
     ],
     "villainWave": {
         "placements": [
-            { "character": "minion-standard", "column": 2, "row": 6 },
-            { "character": "minion-standard", "column": 5, "row": 6 },
-            { "character": "villain-boss", "column": 4, "row": 8 }
+            {
+                "character": "minion-standard",
+                "column": 2,
+                "row": 6
+            },
+            {
+                "character": "minion-standard",
+                "column": 5,
+                "row": 6
+            },
+            {
+                "character": "villain-boss",
+                "column": 4,
+                "row": 8
+            }
         ]
     }
 }

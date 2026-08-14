@@ -4,6 +4,7 @@ using HerOClock.Characters;
 using HerOClock.Combat;
 using HerOClock.Progression;
 using HerOClock.Stages;
+using HerOClock.Text;
 using HerOClock.View;
 using UnityEngine;
 
@@ -21,6 +22,9 @@ namespace HerOClock.Setup
         [SerializeField] private BattleGridConfig gridConfig;
         [SerializeField] private CharacterDatabase characterDatabase;
         [SerializeField] private StageDatabase stageDatabase;
+
+        [Tooltip("The .json file holding every piece of text the player reads.")]
+        [SerializeField] private TextAsset stringsFile;
 
         [Header("Stage")]
         [Tooltip("Which stage of the database to play. Stage selection does not exist yet.")]
@@ -62,6 +66,12 @@ namespace HerOClock.Setup
             Debug.Log("BattleBootstrap: " + charactersById.Count + " character(s) loaded: "
                 + string.Join(", ", charactersById.Keys) + ".", this);
 
+            StringTable strings = BuildStrings(charactersById);
+            if (strings == null)
+            {
+                return;
+            }
+
             StageData stage = stageDatabase.Load(stageIndex);
             if (stage == null || !IsStageValid(stage, charactersById))
             {
@@ -96,7 +106,7 @@ namespace HerOClock.Setup
             wallet.Changed += () => Debug.Log("Money: " + wallet.Money + ".", this);
 
             StageRunner runner = gameObject.AddComponent<StageRunner>();
-            runner.Configure(grid, director, charactersById, wallet, random, new BoardScroller(board, gridConfig.CellSize), heroes, CreateCharacter);
+            runner.Configure(grid, director, charactersById, wallet, strings, random, new BoardScroller(board, gridConfig.CellSize), heroes, CreateCharacter);
             runner.StartStage(stage);
         }
 
@@ -122,6 +132,12 @@ namespace HerOClock.Setup
                 ok = false;
             }
 
+            if (stringsFile == null)
+            {
+                Debug.LogError("BattleBootstrap: the Strings File reference is missing.", this);
+                ok = false;
+            }
+
             if (heroFormation == null)
             {
                 Debug.LogError("BattleBootstrap: the Hero Formation reference is missing.", this);
@@ -129,6 +145,65 @@ namespace HerOClock.Setup
             }
 
             return ok;
+        }
+
+        /// <summary>
+        /// Reads the strings file and checks that everything the game will ask for is in it.
+        ///
+        /// A missing key is the same class of problem as a typo in a stage file: nothing crashes,
+        /// the game simply shows the wrong thing. Checking at startup turns it into a readable
+        /// message, and returns null so the run stops rather than carrying on with broken text.
+        /// </summary>
+        private StringTable BuildStrings(IReadOnlyDictionary<string, CharacterDefinition> charactersById)
+        {
+            List<string> problems = new List<string>();
+
+            StringTableData data;
+
+            try
+            {
+                data = JsonUtility.FromJson<StringTableData>(stringsFile.text);
+            }
+            catch (System.Exception exception)
+            {
+                Debug.LogError("BattleBootstrap: " + stringsFile.name + " is not valid JSON. " + exception.Message, this);
+                return null;
+            }
+
+            StringTable strings = StringTable.From(data, problems);
+
+            StringTableValidator.Validate(strings, charactersById.Keys, StageIds(), problems);
+
+            if (problems.Count == 0)
+            {
+                Debug.Log("BattleBootstrap: " + strings.Count + " string(s) loaded for '" + strings.Language + "'.", this);
+                return strings;
+            }
+
+            for (int i = 0; i < problems.Count; i++)
+            {
+                Debug.LogError("Strings: " + problems[i], this);
+            }
+
+            return null;
+        }
+
+        /// <summary>Ids of every stage in the database, for checking their text exists.</summary>
+        private List<string> StageIds()
+        {
+            List<string> ids = new List<string>();
+
+            for (int i = 0; i < stageDatabase.Stages.Count; i++)
+            {
+                StageData stage = stageDatabase.Load(i);
+
+                if (stage != null && !string.IsNullOrWhiteSpace(stage.id))
+                {
+                    ids.Add(stage.id);
+                }
+            }
+
+            return ids;
         }
 
         /// <summary>
@@ -187,21 +262,21 @@ namespace HerOClock.Setup
 
                 if (!grid.IsInside(position))
                 {
-                    Debug.LogWarning("Formation " + heroFormation.name + ": " + placement.Character.DisplayName
+                    Debug.LogWarning("Formation " + heroFormation.name + ": " + placement.Character.Id
                         + " sits on cell " + position + ", which is outside the board.", heroFormation);
                     continue;
                 }
 
                 if (!grid.IsFree(position))
                 {
-                    Debug.LogWarning("Formation " + heroFormation.name + ": " + placement.Character.DisplayName
+                    Debug.LogWarning("Formation " + heroFormation.name + ": " + placement.Character.Id
                         + " wants cell " + position + ", which is already taken.", heroFormation);
                     continue;
                 }
 
                 if (placement.Character.Stats.MaxHealth <= 0)
                 {
-                    Debug.LogError("BattleBootstrap: " + placement.Character.DisplayName
+                    Debug.LogError("BattleBootstrap: " + placement.Character.Id
                         + " has 0 maximum health, so it is born dead and never acts. "
                         + "Maximum health is Power x 5 plus Constitution x 10, and both are zero on the sheet.",
                         placement.Character);
@@ -216,7 +291,8 @@ namespace HerOClock.Setup
 
         private Character CreateCharacter(CharacterDefinition definition, Team team, GridPosition position, int level, float multiplier)
         {
-            GameObject instance = new GameObject(definition.DisplayName);
+            // Named by id: the Hierarchy is a developer tool, and the id is stable and not translated.
+            GameObject instance = new GameObject(definition.Id);
             instance.transform.SetParent(transform, false);
 
             Character character = instance.AddComponent<Character>();

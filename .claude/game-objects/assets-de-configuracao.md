@@ -29,10 +29,11 @@ O campo `Id` é obrigatório e é por ele que os arquivos de fase e, no futuro, 
 
 As cores seguem o roadmap: azul para heróis, rosa para lacaios, vermelho para vilões.
 
+A ficha **não guarda nenhum texto que o jogador leia**. O nome mostrado vem do arquivo de strings, na chave `character.{id}.name`. Ver "## Arquivo de strings" no fim deste arquivo.
+
 ### Heroi Tanque
 
 - Id: `hero-tank`
-- Display Name: `Heroi Tanque`
 - Kind: `Hero`
 - Color: `#3B6FD4`
 - Level: `1`
@@ -45,7 +46,6 @@ As cores seguem o roadmap: azul para heróis, rosa para lacaios, vermelho para v
 ### Heroi Arqueiro
 
 - Id: `hero-archer`
-- Display Name: `Heroi Arqueiro`
 - Kind: `Hero`
 - Color: `#6FA8F0`
 - Level: `1`
@@ -60,7 +60,6 @@ O alcance mínimo `2` é o que faz este personagem recuar quando um inimigo enco
 ### Lacaio
 
 - Id: `minion-standard`
-- Display Name: `Lacaio`
 - Kind: `Minion`
 - Color: `#E86FA8`
 - Min Range: `1`
@@ -74,7 +73,6 @@ O campo `Level` da ficha é ignorado para lacaios e vilões: quem define o níve
 ### Vilao
 
 - Id: `villain-boss`
-- Display Name: `Vilao`
 - Kind: `Villain`
 - Color: `#C22B2B`
 - Min Range: `1`
@@ -142,3 +140,16 @@ O time do jogador e onde ele começa no tabuleiro. Agora existe **apenas a forma
 A mesma ficha pode aparecer várias vezes. Cada linha cria um personagem separado, com atributos próprios.
 
 A antiga `Formacao Inimigos` deixou de ser usada e pode ser apagada. O conteúdo dela virou a primeira onda de `act1-stage1.json`.
+
+## Arquivo de strings
+
+`Assets/Strings/en.json`, apontado pelo campo `Strings File` do `BattleBootstrap`.
+
+Ele guarda **todo** texto que o jogador lê, e as chaves são montadas a partir do `Id` que o conteúdo já carrega:
+
+- `character.{id}.name` — o nome mostrado de uma ficha.
+- `stage.{id}.name` e `stage.{id}.lore` — o nome e a pequena história de uma fase.
+
+Não existe nada para manter em sincronia: renomear um `Id` é o mesmo ato que renomear o texto dele.
+
+O `BattleBootstrap` confere o arquivo ao iniciar e reclama no Console de chave faltando **e** de texto sobrando, que é o de conteúdo apagado. Uma chave que não existe aparece na tela como `#chave#`, e não como vazio, porque um rótulo que some sem deixar rastro é muito mais difícil de notar.

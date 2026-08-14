@@ -11,14 +11,15 @@ namespace HerOClock.Stages
     [Serializable]
     public class StageData
     {
-        /// <summary>Stable text id of the stage. Save games will refer to it.</summary>
+        /// <summary>
+        /// Stable text id of the stage. Save games refer to it, and so does the strings file:
+        /// the name and the short piece of fiction shown when the stage starts are read from
+        /// <c>stage.{id}.name</c> and <c>stage.{id}.lore</c>.
+        ///
+        /// No text the player reads lives in this file, so a translation pass and a balance pass
+        /// never touch the same lines.
+        /// </summary>
         public string id;
-
-        /// <summary>Name shown to the player.</summary>
-        public string name;
-
-        /// <summary>The stage's own short piece of fiction, shown when it starts.</summary>
-        public string lore;
 
         /// <summary>
         /// Level of every minion and villain in this stage, overriding whatever their sheets

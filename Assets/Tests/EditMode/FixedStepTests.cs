@@ -5,6 +5,7 @@ using HerOClock.Characters;
 using HerOClock.Combat;
 using HerOClock.Progression;
 using HerOClock.Stages;
+using HerOClock.Text;
 using HerOClock.View;
 using NUnit.Framework;
 using UnityEngine;
@@ -179,6 +180,7 @@ namespace HerOClock.Tests
                     director,
                     byId,
                     new PlayerWallet(),
+                    Strings(minionSheet.Id),
                     new BattleRandom(31337),
                     new BoardScroller(board.transform, battle.Config.CellSize),
                     heroes,
@@ -215,8 +217,6 @@ namespace HerOClock.Tests
             return new StageData
             {
                 id = "fixed-step",
-                name = "Fixed step",
-                lore = "",
                 enemyLevel = 1,
                 waves = new[]
                 {
@@ -239,6 +239,27 @@ namespace HerOClock.Tests
         private static StagePlacement Place(string id, int column, int row)
         {
             return new StagePlacement { character = id, column = column, row = row };
+        }
+
+        /// <summary>
+        /// Just enough text for the stage to announce itself. The StageRunner logs the stage's
+        /// name and lore when it starts, and a missing key would come back as a visible marker
+        /// rather than throwing, but there is no reason to make the log unreadable.
+        /// </summary>
+        private static StringTable Strings(string minionId)
+        {
+            StringTableData data = new StringTableData
+            {
+                language = "en",
+                entries = new[]
+                {
+                    new StringEntry { key = StringTable.StageName("fixed-step"), value = "Fixed step" },
+                    new StringEntry { key = StringTable.StageLore("fixed-step"), value = "A stage that never ends." },
+                    new StringEntry { key = StringTable.CharacterName(minionId), value = "Minion" }
+                }
+            };
+
+            return StringTable.From(data, new List<string>());
         }
     }
 }

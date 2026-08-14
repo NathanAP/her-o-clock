@@ -1,35 +1,93 @@
 {
-  "id": "act1-stage2",
-  "name": "Subestacao Norte",
-  "lore": "Quem controlava os entregadores nao estava sozinho, e nao estava improvisando. A subestacao alimenta metade do distrito, e agora alimenta outra coisa tambem. Os relatorios pedem reforco. Nao ha reforco.",
-  "enemyLevel": 12,
-  "waves": [
-    {
-      "placements": [
-        { "character": "minion-standard", "column": 2, "row": 6 },
-        { "character": "minion-standard", "column": 3, "row": 6 },
-        { "character": "minion-standard", "column": 4, "row": 6 },
-        { "character": "minion-standard", "column": 5, "row": 6 }
-      ]
-    },
-    {
-      "placements": [
-        { "character": "minion-standard", "column": 1, "row": 5 },
-        { "character": "minion-standard", "column": 3, "row": 5 },
-        { "character": "minion-standard", "column": 4, "row": 5 },
-        { "character": "minion-standard", "column": 6, "row": 5 },
-        { "character": "minion-standard", "column": 3, "row": 7 },
-        { "character": "minion-standard", "column": 4, "row": 7 }
-      ]
+    "id": "act1-stage2",
+    "enemyLevel": 12,
+    "waves": [
+        {
+            "placements": [
+                {
+                    "character": "minion-standard",
+                    "column": 2,
+                    "row": 6
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 3,
+                    "row": 6
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 4,
+                    "row": 6
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 5,
+                    "row": 6
+                }
+            ]
+        },
+        {
+            "placements": [
+                {
+                    "character": "minion-standard",
+                    "column": 1,
+                    "row": 5
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 3,
+                    "row": 5
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 4,
+                    "row": 5
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 6,
+                    "row": 5
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 3,
+                    "row": 7
+                },
+                {
+                    "character": "minion-standard",
+                    "column": 4,
+                    "row": 7
+                }
+            ]
+        }
+    ],
+    "villainWave": {
+        "placements": [
+            {
+                "character": "minion-standard",
+                "column": 2,
+                "row": 5
+            },
+            {
+                "character": "minion-standard",
+                "column": 3,
+                "row": 5
+            },
+            {
+                "character": "minion-standard",
+                "column": 4,
+                "row": 5
+            },
+            {
+                "character": "minion-standard",
+                "column": 5,
+                "row": 5
+            },
+            {
+                "character": "villain-boss",
+                "column": 4,
+                "row": 8
+            }
+        ]
     }
-  ],
-  "villainWave": {
-    "placements": [
-      { "character": "minion-standard", "column": 2, "row": 5 },
-      { "character": "minion-standard", "column": 3, "row": 5 },
-      { "character": "minion-standard", "column": 4, "row": 5 },
-      { "character": "minion-standard", "column": 5, "row": 5 },
-      { "character": "villain-boss", "column": 4, "row": 8 }
-    ]
-  }
 }
