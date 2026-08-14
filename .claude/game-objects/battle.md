@@ -122,6 +122,14 @@ Quase tudo está em EditMode, que não precisa de cena e roda a suíte inteira e
 
 O teste `BalanceTests.WriteTheBalanceSnapshot` não confere nada: ele **gera** o arquivo `.claude/balance/snapshot.md`, que entra no commit junto com a alteração que o mudou.
 
+### Rodar o PlayMode esvazia a Hierarchy, e está tudo bem
+
+Ao terminar a aba PlayMode você provavelmente vai cair em uma cena vazia sem nome. **Nada foi perdido.** Basta abrir `Assets/Scenes/SampleScene.unity` de novo.
+
+O que acontece é o Test Framework guardando a cena aberta em `Temp/__Backupscenes/`, criando uma cena temporária para hospedar os testes, e restaurando no fim. O smoke test ainda carrega a `SampleScene` por cima disso em modo `Single`, que descarrega tudo antes — é o único jeito de conferir que a cena real se monta sozinha. No fim, o que a Unity restaura é a cena temporária que estava aberta quando a corrida começou, e não a sua.
+
+O arquivo da cena nunca corre risco: em Play Mode a Unity não grava alteração de cena no disco. Se a dúvida bater de novo, `git status Assets/Scenes/` responde na hora.
+
 ## Sorting layers necessárias
 
 Já configuradas em `ProjectSettings/TagManager.asset`: `Default`, `Background`, `Ground`, `Characters`, `Projectiles`, `VFX`, `UI`.
