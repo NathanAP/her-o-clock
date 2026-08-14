@@ -1,3 +1,6 @@
 ﻿<Solution>
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="HerOClock.csproj" />
+  <Project Path="HerOClock.Tests.EditMode.csproj" />
+  <Project Path="HerOClock.Tests.PlayMode.csproj" />
 </Solution>

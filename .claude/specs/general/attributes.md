@@ -138,7 +138,8 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Atributo que indica o quão rápido um personagem se movimenta pelo campo de batalha.
 - É medido em casas por segundo, da mesma forma que a velocidade de ataque é medida em ataques por segundo.
 - Todo personagem possui 2 casas por segundo de velocidade de movimento base, e os ganhos vindos de AGI e de outras fontes são somados por cima desse valor.
-    - Com esse valor, atravessar o campo de batalha inteiro leva 6 segundos e reposicionar uma casa leva meio segundo.
+    - Com esse valor, atravessar o campo de batalha inteiro leva 3.5 segundos e reposicionar uma casa leva meio segundo.
+    - A travessia mais longa do tabuleiro de 8 fileiras é de 7 casas, da fileira 1 até a fileira 8.
 - Um personagem só se movimenta quando não possui nenhum alvo válido dentro do seu alcance, conforme descrito em `gameplay.md`.
 - O valor mínimo de velocidade de movimento é 0, que indicaria que o personagem perdeu a habilidade de se movimentar.
 

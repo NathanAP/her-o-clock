@@ -110,6 +110,18 @@ Os números de dano usam TextMeshPro, que vem junto com o pacote `com.unity.ugui
 
 Na primeira vez a Unity abre um diálogo pedindo para importar o **TMP Essential Resources**. É preciso aceitar, senão os números não aparecem. É uma vez só por projeto.
 
+## Testes
+
+O código do jogo fica no assembly `HerOClock`, definido por `Assets/Scripts/HerOClock.asmdef`. Os testes ficam em `Assets/Tests/EditMode` e `Assets/Tests/PlayMode`, cada um com o seu.
+
+O assembly do jogo existe por uma regra da Unity fácil de esbarrar: um assembly criado por `.asmdef` **não consegue** referenciar o `Assembly-CSharp`, só o contrário. Como todo assembly de teste precisa ser um `.asmdef`, sem esse arquivo nenhum teste enxergaria o jogo.
+
+Para rodar: `Window > General > Test Runner`, e as abas `EditMode` e `PlayMode`.
+
+Quase tudo está em EditMode, que não precisa de cena e roda a suíte inteira em poucos segundos. O PlayMode tem apenas o smoke test, que é a única coisa que realmente precisa do motor rodando: ele carrega a `SampleScene`, confere que os heróis e a primeira onda existem e que o tabuleiro foi desenhado nas sorting layers certas.
+
+O teste `BalanceTests.WriteTheBalanceSnapshot` não confere nada: ele **gera** o arquivo `.claude/balance/snapshot.md`, que entra no commit junto com a alteração que o mudou.
+
 ## Sorting layers necessárias
 
 Já configuradas em `ProjectSettings/TagManager.asset`: `Default`, `Background`, `Ground`, `Characters`, `Projectiles`, `VFX`, `UI`.

@@ -154,13 +154,13 @@ namespace HerOClock.Characters
         /// <summary>Evasion chance, from 0 to 100. Never reaches 100.</summary>
         public float EvasionChance
         {
-            get { return DiminishingReturns(100f, Agility, EvasionConstant); }
+            get { return (float)DiminishingReturns(100.0, Agility, EvasionConstant); }
         }
 
         /// <summary>Cooldown reduction, from 0 to 60. Never reaches 60.</summary>
         public float CooldownReduction
         {
-            get { return DiminishingReturns(60f, Specialty, CooldownConstant); }
+            get { return (float)DiminishingReturns(60.0, Specialty, CooldownConstant); }
         }
 
         /// <summary>
@@ -169,18 +169,22 @@ namespace HerOClock.Characters
         /// </summary>
         public float PhysicalMitigationAgainst(int attackerLevel)
         {
-            return DiminishingReturns(75f, PhysicalArmor, 50f * Mathf.Max(1, attackerLevel));
+            return (float)DiminishingReturns(75.0, PhysicalArmor, 50.0 * Mathf.Max(1, attackerLevel));
         }
 
         /// <summary>
         /// The diminishing returns curve from the spec: Cap x Points / (Points + Constant).
         /// The cap is never reached, only approached, so no manual clamp is needed anywhere.
+        ///
+        /// It computes in double so the damage calculation can use it without going back through
+        /// float, where the runtime is free to round intermediates differently and change a
+        /// result that lands on a half. This is the only place the curve is written down.
         /// </summary>
-        public static float DiminishingReturns(float cap, float points, float constant)
+        public static double DiminishingReturns(double cap, double points, double constant)
         {
-            if (points <= 0f || constant <= 0f)
+            if (points <= 0.0 || constant <= 0.0)
             {
-                return 0f;
+                return 0.0;
             }
 
             return cap * points / (points + constant);

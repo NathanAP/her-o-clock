@@ -18,8 +18,38 @@ namespace HerOClock.Combat
         public BattleRandom(int seed)
         {
             Seed = seed;
-            // Xorshift gets stuck on zero, so a seed of 0 becomes an arbitrary fixed value.
-            state = seed == 0 ? 2463534242u : unchecked((uint)seed);
+            state = Scramble(seed);
+        }
+
+        /// <summary>
+        /// Turns a seed into a starting state, spreading it across all 32 bits first.
+        ///
+        /// Feeding the seed straight in does not work. Xorshift diffuses slowly, so small seeds
+        /// produce first draws that are almost a straight line: seeds 1 to 16 all came out below
+        /// 0.0161 x seed, which meant every one of them rolled a perfect evasion on the first
+        /// try. Small seeds are exactly what a developer types by hand to reproduce a fight, so
+        /// the one case that had to be trustworthy was the broken one.
+        ///
+        /// The mixer below is the usual 32 bit avalanche: multiply, shift, xor, repeat. It is
+        /// plain unchecked integer arithmetic, so the sequence stays identical on every platform,
+        /// which is the reason this generator exists in the first place.
+        /// </summary>
+        private static uint Scramble(int seed)
+        {
+            unchecked
+            {
+                uint value = (uint)seed;
+
+                value ^= 2747636419u;
+                value *= 2654435769u;
+                value ^= value >> 16;
+                value *= 2654435769u;
+                value ^= value >> 16;
+                value *= 2654435769u;
+
+                // Xorshift gets stuck on zero, so that one state becomes an arbitrary fixed value.
+                return value == 0u ? 2463534242u : value;
+            }
         }
 
         public int Seed { get; }

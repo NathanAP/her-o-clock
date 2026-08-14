@@ -13,7 +13,8 @@
             "Read(Assets/**)",
             "Read(Packages/**)",
             "Read(ProjectSettings/**)",
-            "Read(.claude/**)"
+            "Read(.claude/**)",
+            "Read(Logs/Editor.log)"
         ],
         "ask": [
             "Bash(git commit:*)",
@@ -24,7 +25,9 @@
         "deny": [
             "Read(Library/**)",
             "Read(Temp/**)",
-            "Read(Logs/**)",
+            "Read(Logs/AssetImportWorker*)",
+            "Read(Logs/shadercompiler*)",
+            "Read(Logs/Packages-Update.log)",
             "Read(obj/**)",
             "Read(Build/**)",
             "Read(Builds/**)",

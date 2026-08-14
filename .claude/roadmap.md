@@ -90,23 +90,15 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Entraram a regra de que o valor esperado sai da spec e não do código, e a decisão de onde cada número mora: entrada na spec e repetida no teste, saída só no snapshot e nunca em prosa.
 - O resumo completo está em `.claude/versions/20260813_0.5.1.1.md`.
 
-## 0.5.2.0 (próxima)
+## 0.5.2.0 (feita)
 
-- Suíte de testes. É o pagamento da dívida deixada até a 0.4.0.6, e vem antes de qualquer mudança de regra para que as mudanças seguintes tenham como ser verificadas.
-- **Pré-requisito:** o código do jogo precisa ganhar um `Assets/Scripts/HerOClock.asmdef`. Hoje ele mora em `Assembly-CSharp`, e um assembly criado por `.asmdef` não consegue referenciar `Assembly-CSharp` — a dependência só existe no sentido contrário. Como o Test Framework exige `.asmdef` em todo assembly de teste, sem esse passo nenhum teste enxerga o jogo.
-- Estrutura: `Assets/Tests/EditMode` com asmdef próprio referenciando o do jogo.
-- As categorias, em ordem de valor:
-    - **A spec como teste executável.** Os exemplos numéricos literais de `attributes.md` (evasão por classe de equipamento, mitigação por nível do atacante, as reduções multiplicando) e a tabela de horas de `progress.md` viram assertivas. Este é o grupo mais importante: ele não confere que o código faz o que o código faz, confere que o código faz o que a spec prometeu.
-    - **Fórmulas puras.** `DamageCalculator`, `ExperienceTable`, `LevelProgress`, `AttributeGrowth`, `GridPosition`, `BattleRandom` e `CharacterStats`.
-    - **Conteúdo.** Todo `.json` de `Assets/Stages/` passado pelo `StageValidator`, e todo `CharacterDefinition` do banco conferido (id único e não vazio, crescimento somando 100, vida máxima acima de zero).
-    - **Simulação.** Uma batalha inteira e depois uma fase inteira, em memória, com semente fixa e sem renderizar. É o equivalente a um teste ponta a ponta neste jogo, já que não existe input do jogador.
-    - **Determinismo.** A mesma batalha rodada duas vezes com a mesma semente dá resultado idêntico, e continua idêntica quando alimentada com `deltaTime` irregular. É o teste que prova a 0.5.1.0 e impede o problema de voltar.
-    - **Caracterização de balanceamento.** A `act1-stage1` é vencível no nível 1, a `act1-stage2` não é, e uma sessão rende inimigos por minuto dentro de uma faixa. Não afirmam certo e errado, afirmam que o balanceamento não mudou sem querer.
-- O primeiro `.claude/balance/snapshot.md`, gerado por teste, conforme "## Onde cada número mora" no `CLAUDE.md`. O conteúdo inicial: horas até os níveis 10, 25, 50, 75 e 100; por ficha, vida, dano, ataques por segundo, evasão e mitigação contra atacantes de nível 1, 12 e 50; por fase, em que nível ela vira vencível, quanto tempo leva e quanto paga; e inimigos por minuto.
-- A tabela de cadência medida à mão na 0.5.1.0 vira assertiva aqui, junto com o teste de determinismo. É a dívida que aquela versão deixou registrada.
-- Um único smoke test em PlayMode: entra em Play, o bootstrap monta a cena, Console limpo. Cobre referência faltando e sorting layer renomeada, que são os erros que a Unity não reporta.
+- A suíte de testes. 209 verificações em EditMode e 2 em PlayMode, todas passando.
+- O código do jogo ganhou `Assets/Scripts/HerOClock.asmdef`, sem o qual nenhum teste o enxergaria.
+- Três bugs achados pelos próprios testes: o cálculo de dano dava resultados diferentes dentro e fora da Unity, porque estava em `float` e o C# deixa o runtime escolher a precisão dos intermediários; o gerador aleatório era quase linear nas sementes pequenas, então toda semente digitada à mão sorteava evasão perfeita no primeiro teste; e `attributes.md` guardava a travessia do tabuleiro 6x12 que foi recusado, dizendo 6 segundos onde são 3.5.
+- O primeiro `.claude/balance/snapshot.md` foi gerado. Ele mediu pela primeira vez o que `fases.md` afirmava: a `act1-stage1` é vencível no nível 1 em 26,2 segundos, e a `act1-stage2` exige nível 20.
+- O resumo completo está em `.claude/versions/20260813_0.5.2.0.md`.
 
-## 0.5.3.0
+## 0.5.3.0 (próxima)
 
 - Escala de defesa e regeneração de vida.
 - Armadura e resistências são valores fixos da ficha: não passam por `TotalOf`, não crescem com o nível e não recebem o multiplicador da fase, enquanto a constante da curva cresce com o nível do atacante.

@@ -89,6 +89,18 @@ The cost of text references is that a typo would only surface at runtime. `Stage
 
 An earlier version of this file said the validator **was** covered by tests. It was not: no test file has ever existed in this repository. The coverage arrives in 0.5.2.0.
 
+## Assemblies
+
+The game code lives in `Assets/Scripts/HerOClock.asmdef`, and the tests in
+`Assets/Tests/EditMode` and `Assets/Tests/PlayMode`, each with its own.
+
+The game needs one because of a rule that is easy to trip over: a `.asmdef` assembly **cannot
+reference `Assembly-CSharp`**, only the other way round. The Test Framework requires every test
+assembly to be a `.asmdef`, so without one on the game itself no test can see any of it.
+
+Almost everything lives in Edit Mode, because it needs no scene and runs in milliseconds. Play
+Mode holds only the smoke test, which is the one thing that genuinely needs the engine running.
+
 ## The random source belongs to the battle
 
 `UnityEngine.Random` is not used anywhere in combat, and must not be. It is static and global, so any other system drawing a number would change the outcome of the fight by accident.
@@ -97,6 +109,16 @@ An earlier version of this file said the validator **was** covered by tests. It 
 
 The seed in use is written to the Console on start. Putting that number into the `Random Seed` field of `BattleBootstrap` replays the entire battle, blow by blow.
 
+**The seed is scrambled before it becomes the state, and that is not optional.** Xorshift diffuses
+slowly, so feeding the raw seed in made the first draw almost exactly `0.0161 x seed`: the first
+sixteen seeds produced sixteen rising values, every one of them below 0.30. Since 30% of evasion
+becomes perfect evasion, every hand typed seed rolled a perfect evasion on its first try — and a
+hand typed seed is precisely what a developer uses to investigate something. The one case that had
+to be trustworthy was the broken one.
+
+Found by `BattleRandomTests`, which is the clearest argument for the suite that exists: no amount
+of reading the code would have shown it.
+
 ## The damage calculation knows nothing about Unity
 
 `DamageCalculator` takes a `DamageInput` made only of numbers and returns a `DamageResult` made only of numbers. It never touches `Character`, `MonoBehaviour` or `Transform`.
@@ -104,6 +126,10 @@ The seed in use is written to the Console on start. Putting that number into the
 That is what allows the whole calculation to be tested outside the editor against the examples written in `attributes.md`. If it ever becomes necessary to pass a character into it, that is a sign the separation is being broken.
 
 For the same reason, it is `CharacterAttacker` that builds the `DamageInput` from the characters, not the calculator.
+
+**The arithmetic is done in double, and must stay that way.** The inputs are floats because that is what the sheets hold, but C# lets a runtime evaluate float operations at a higher precision and decide for itself whether to round intermediates back. That is enough to move a result across a rounding boundary: the same attack of exactly 262.5 came out 262 outside Unity and 263 inside it, because `40f / 100f` landed either side of 0.4. `DiminishingReturns` therefore computes in double as well, and the percentage properties only narrow at the very end.
+
+It matters more than the size of the error suggests. `BattleRandom` goes out of its way to produce the same sequence on every platform; a damage calculation that does not undoes the whole guarantee, and the editor and a build could disagree.
 
 ## Rounding
 
