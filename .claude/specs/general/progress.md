@@ -64,9 +64,12 @@ xpPorLacaio(nível do lacaio)  = 10 × nível^2
 "attributeGrowth": { "pow": 40, "agi": 20, "spe": 0, "con": 40 }
 ```
 
-- Para **heróis**, essa é a distribuição padrão, que o jogador pode substituir pela dele.
-- Para **lacaios e vilões**, essa é a única forma que eles têm de ficar mais fortes, pois não existe ninguém distribuindo pontos por eles.
+- Para **heróis**, essa é a distribuição padrão. Ela é aplicada sozinha enquanto o herói estiver com a distribuição automática ligada, e o jogador pode desligá-la para colocar os pontos à mão. Os controles estão descritos em `attributes.md`.
+- Para **lacaios e vilões**, essa é a única forma que eles têm de ficar mais fortes, pois não existe ninguém distribuindo pontos por eles. Eles são personagens com o automático permanentemente ligado.
 - São quatro números por ficha, e não uma tabela de valores por nível. O nível faz o resto.
+- A parte automática é sempre recalculada a partir do total, e nunca somada de cinco em cinco.
+    - O arredondamento das porcentagens é resolvido por maior resto, então distribuir 5 pontos trinta e nove vezes não dá o mesmo resultado que distribuir 195 de uma vez.
+    - É isso que garante que um lacaio criado direto no nível 40 tenha exatamente os mesmos atributos de um que subiu do 1 até lá, o que a reprodutibilidade das batalhas depende.
 
 ### A ficha diz quem o personagem é, a fase diz quão forte ele está
 

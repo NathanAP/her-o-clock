@@ -47,10 +47,30 @@ significa que aquela ficha perde defesa conforme o jogo avança.
 ## Fases
 
 A formação de heróis é a do asset. O tempo é só de combate, sem as transições.
-"Nível mínimo" é o menor nível de herói testado que limpa a fase.
+"Nível mínimo" é o menor nível de herói que limpa a fase.
 
 | Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |
 |---|---|---|---|---|---|
 | Avenida das Turbinas | 1 | 1 | 26.2 s | 210 | 21 |
 | Subestacao Norte | 12 | 15 | 64.5 s | 34560 | 24 |
+
+### Paredes
+
+Jogando as fases em ordem e limpando cada uma uma vez. "Chega com" é o nível
+que o time tem ao encostar na fase; "exige" é o nível que ela pede. Quando o
+exigido passa o de chegada, o jogador é obrigado a parar e farmar.
+
+| Fase | Chega com | Exige | Parede | Custo |
+|---|---|---|---|---|
+| Avenida das Turbinas | 1 | 1 | não | - |
+| Subestacao Norte | 2 | 15 | sim | 10037x a fase anterior, 3986.9 min de combate |
+
+O custo conta só o tempo de combate, e despreza a experiência parcial que sobra
+de um nível para o outro. As transições entre ondas somam vários segundos por
+repetição, então o tempo real de relógio é maior que o mostrado.
+
+**As fases que existem hoje são casos de teste, não conteúdo.** A segunda tem
+inimigos de nível 12 de propósito, para exercitar herói caindo em combate e avanço
+bloqueado. A parede gigante entre as duas é o resultado esperado desse par, e não
+um problema de balanceamento. Ver `game-objects/fases.md`.
 

@@ -233,48 +233,177 @@ namespace HerOClock.Tests
             return stats;
         }
 
+        /// <summary>Highest hero level the search will consider before giving up on a stage.</summary>
+        private const int HighestLevelSearched = 80;
+
+        /// <summary>
+        /// The lowest hero level that clears the stage, found by halving the range.
+        ///
+        /// Halving is safe here because a higher level is strictly better in every way that
+        /// decides a fight: more health, more damage and more armour. Returns zero when even the
+        /// highest level searched cannot do it.
+        /// </summary>
+        private static int MinimumLevelToClear(int stageIndex)
+        {
+            if (!Play(stageIndex, HighestLevelSearched).Cleared)
+            {
+                return 0;
+            }
+
+            int low = 1;
+            int high = HighestLevelSearched;
+
+            while (low < high)
+            {
+                int middle = (low + high) / 2;
+
+                if (Play(stageIndex, middle).Cleared)
+                {
+                    high = middle;
+                }
+                else
+                {
+                    low = middle + 1;
+                }
+            }
+
+            return low;
+        }
+
         private static void AppendStages(StringBuilder page)
         {
             page.AppendLine("## Fases");
             page.AppendLine();
             page.AppendLine("A formação de heróis é a do asset. O tempo é só de combate, sem as transições.");
-            page.AppendLine("\"Nível mínimo\" é o menor nível de herói testado que limpa a fase.");
+            page.AppendLine("\"Nível mínimo\" é o menor nível de herói que limpa a fase.");
             page.AppendLine();
             page.AppendLine("| Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |");
             page.AppendLine("|---|---|---|---|---|---|");
 
             StageDatabase stages = Load<StageDatabase>();
-            int[] candidates = { 1, 5, 10, 15, 20, 30, 45, 60 };
 
             for (int index = 0; index < stages.Stages.Count; index++)
             {
                 StageData stage = stages.Load(index);
+                int minimum = MinimumLevelToClear(index);
 
-                string minimum = "acima de " + candidates[candidates.Length - 1];
-                StageSimulation.Outcome best = new StageSimulation.Outcome();
-
-                for (int c = 0; c < candidates.Length; c++)
-                {
-                    StageSimulation.Outcome outcome = Play(index, candidates[c]);
-
-                    if (outcome.Cleared)
-                    {
-                        minimum = candidates[c].ToString(CultureInfo.InvariantCulture);
-                        best = outcome;
-                        break;
-                    }
-                }
+                StageSimulation.Outcome outcome = minimum > 0
+                    ? Play(index, minimum)
+                    : new StageSimulation.Outcome();
 
                 page.AppendLine("| " + stage.name
                     + " | " + stage.enemyLevel
-                    + " | " + minimum
-                    + " | " + (best.Cleared ? Number(best.Seconds, 1) + " s" : "-")
-                    + " | " + (best.Cleared ? best.ExperienceAwarded.ToString(CultureInfo.InvariantCulture) : "-")
-                    + " | " + (best.Cleared ? best.MoneyAwarded.ToString(CultureInfo.InvariantCulture) : "-")
+                    + " | " + (minimum > 0 ? minimum.ToString(CultureInfo.InvariantCulture) : "acima de " + HighestLevelSearched)
+                    + " | " + (outcome.Cleared ? Number(outcome.Seconds, 1) + " s" : "-")
+                    + " | " + (outcome.Cleared ? outcome.ExperienceAwarded.ToString(CultureInfo.InvariantCulture) : "-")
+                    + " | " + (outcome.Cleared ? outcome.MoneyAwarded.ToString(CultureInfo.InvariantCulture) : "-")
                     + " |");
             }
 
             page.AppendLine();
+            AppendWalls(page, stages);
+        }
+
+        /// <summary>
+        /// Where the player is forced to stop and farm.
+        ///
+        /// The table above answers "what level clears this stage". This one answers the question
+        /// that actually matters: **with what level does the player arrive there**. A stage that
+        /// needs level 15 is only a wall if you reach it at level 3, and how big a wall depends on
+        /// how much the stage before it pays.
+        ///
+        /// The walk is the honest one: start at the level the sheets begin at, clear each stage
+        /// once, carry the experience forward. When the next stage asks for more than you have,
+        /// that is a wall, and the cost of it is measured in repeats of the stage before.
+        /// </summary>
+        private static void AppendWalls(StringBuilder page, StageDatabase stages)
+        {
+            page.AppendLine("### Paredes");
+            page.AppendLine();
+            page.AppendLine("Jogando as fases em ordem e limpando cada uma uma vez. \"Chega com\" é o nível");
+            page.AppendLine("que o time tem ao encostar na fase; \"exige\" é o nível que ela pede. Quando o");
+            page.AppendLine("exigido passa o de chegada, o jogador é obrigado a parar e farmar.");
+            page.AppendLine();
+            page.AppendLine("| Fase | Chega com | Exige | Parede | Custo |");
+            page.AppendLine("|---|---|---|---|---|");
+
+            int level = HeroLevelFromFormation();
+
+            for (int index = 0; index < stages.Stages.Count; index++)
+            {
+                StageData stage = stages.Load(index);
+                int required = MinimumLevelToClear(index);
+                int arrival = level;
+
+                string wall = "não";
+                string cost = "-";
+
+                if (required <= 0)
+                {
+                    wall = "sim";
+                    cost = "não vencível até o nível " + HighestLevelSearched;
+                }
+                else if (arrival < required)
+                {
+                    wall = "sim";
+                    cost = index == 0
+                        ? "a primeira fase já é uma parede"
+                        : CostOfFarming(index - 1, arrival, required);
+
+                    // Past the wall, the player farmed their way to the level it asked for.
+                    level = required;
+                }
+
+                page.AppendLine("| " + stage.name
+                    + " | " + arrival
+                    + " | " + (required > 0 ? required.ToString(CultureInfo.InvariantCulture) : "?")
+                    + " | " + wall
+                    + " | " + cost + " |");
+
+                if (required <= 0)
+                {
+                    break;
+                }
+
+                level = Play(index, level).FirstHeroLevel;
+            }
+
+            page.AppendLine();
+            page.AppendLine("O custo conta só o tempo de combate, e despreza a experiência parcial que sobra");
+            page.AppendLine("de um nível para o outro. As transições entre ondas somam vários segundos por");
+            page.AppendLine("repetição, então o tempo real de relógio é maior que o mostrado.");
+            page.AppendLine();
+            page.AppendLine("**As fases que existem hoje são casos de teste, não conteúdo.** A segunda tem");
+            page.AppendLine("inimigos de nível 12 de propósito, para exercitar herói caindo em combate e avanço");
+            page.AppendLine("bloqueado. A parede gigante entre as duas é o resultado esperado desse par, e não");
+            page.AppendLine("um problema de balanceamento. Ver `game-objects/fases.md`.");
+            page.AppendLine();
+        }
+
+        /// <summary>
+        /// How many clears of the given stage it takes to go from the current level to the one
+        /// the next stage asks for, and how long that is in fighting time.
+        /// </summary>
+        private static string CostOfFarming(int farmStageIndex, int fromLevel, int targetLevel)
+        {
+            StageSimulation.Outcome run = Play(farmStageIndex, fromLevel);
+
+            if (!run.Cleared || run.ExperienceAwarded <= 0)
+            {
+                return "a fase anterior não paga nada";
+            }
+
+            long needed = ExperienceTable.TotalXpTo(targetLevel) - ExperienceTable.TotalXpTo(fromLevel);
+
+            if (needed <= 0)
+            {
+                return "-";
+            }
+
+            int repeats = (int)((needed + run.ExperienceAwarded - 1) / run.ExperienceAwarded);
+            double minutes = repeats * run.Seconds / 60.0;
+
+            return repeats + "x a fase anterior, " + Number(minutes, 1) + " min de combate";
         }
 
         // --- Plumbing ---

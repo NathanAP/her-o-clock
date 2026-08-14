@@ -38,6 +38,14 @@ namespace HerOClock.Characters
         public LevelProgress Progress { get; private set; }
 
         /// <summary>
+        /// Where this instance's level points went.
+        ///
+        /// Heroes can place them by hand, leave the sheet's distribution doing it, or take them
+        /// all back. Minions and villains are left on automatic and never touch it.
+        /// </summary>
+        public AttributeAllocation Attributes { get; private set; }
+
+        /// <summary>
         /// This instance's level. Heroes take their starting level from the sheet, minions and
         /// villains take it from the stage they appear in, as stated in characters.md.
         /// </summary>
@@ -85,8 +93,14 @@ namespace HerOClock.Characters
             Progress = new LevelProgress(level, definition.MaxLevel);
             Progress.LevelGained += OnLevelGained;
 
+            // Granted before subscribing, because the stats do not exist yet to be rebuilt.
+            Attributes = new AttributeAllocation(definition.Growth);
+            Attributes.GrantFor(Progress.Level);
+
             Stats = definition.Stats.Clone();
-            Stats.ApplyInstance(Progress.Level, definition.Growth, multiplier);
+            Stats.ApplyInstance(Progress.Level, Attributes, multiplier);
+
+            Attributes.Changed += OnAttributesChanged;
 
             InitialPosition = position;
             CurrentHealth = Stats.MaxHealth;
@@ -112,7 +126,18 @@ namespace HerOClock.Characters
         /// </summary>
         private void OnLevelGained(int newLevel)
         {
-            Stats.ApplyInstance(newLevel, Definition.Growth, multiplier);
+            // Granting raises Changed, which rebuilds the stats through OnAttributesChanged.
+            Attributes.GrantFor(newLevel);
+            Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Rebuilds the stats after the level points moved, whether that was a level arriving, the
+        /// player placing a point, the automatic distribution being toggled, or a reset.
+        /// </summary>
+        private void OnAttributesChanged()
+        {
+            Stats.ApplyInstance(Level, Attributes, multiplier);
             Changed?.Invoke();
         }
 

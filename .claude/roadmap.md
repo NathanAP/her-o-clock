@@ -108,13 +108,18 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - O snapshot mostrou o efeito: a fase 1 não se moveu nada, e a fase 2 caiu de nível 20 para 15 ficando mais longa, porque os heróis ganharam mais sobrevivência do que os inimigos ganharam dureza.
 - O resumo completo está em `.claude/versions/20260814_0.5.3.0.md`.
 
-## 0.5.4.0 (próxima)
+## 0.5.4.0 (feita)
 
-- Pontos de atributo dos heróis.
-- Hoje o gasto automático pela `Growth` da ficha e o acúmulo de `UnspentAttributePoints` coexistem, então os pontos são contados duas vezes.
-- Decidir se a `Growth` é só o padrão dos inimigos ou também a distribuição inicial dos heróis, e o que acontece quando o jogador redistribuir.
+- Pontos de atributo dos heróis. 257 verificações passando, contra 235 antes.
+- A contagem dupla acabou: `UnspentAttributePoints` saiu do `LevelProgress` e a nova `AttributeAllocation` passou a ser dona dos dois lados.
+- O modelo: pontos à mão, um interruptor de automático por herói e um botão de resetar. Automático é o estado inicial, ligar o automático não desfaz o que foi colocado à mão, e resetar com ele ligado volta para a build da ficha.
+- A parte automática guarda a **contagem** de pontos e é redistribuída inteira, nunca somada de cinco em cinco. É o que mantém a regra de um lacaio criado direto no nível 40 ser idêntico a um que subiu até lá.
+- `attributes.md` e `progress.md` discordavam sobre o modelo e agora descrevem o mesmo.
+- Entrou a medição de paredes no snapshot: com que nível o time chega em cada fase, o que ela exige, e quantas repetições da anterior fecham o buraco. As duas fases de hoje são fixtures, então a parede gigante entre elas é o resultado esperado; o instrumento é que passa a valer quando o ato 1 for escrito.
+- O snapshot não se moveu com a mudança de atributos, o que é a prova de que o refactor preservou o comportamento.
+- O resumo completo está em `.claude/versions/20260814_0.5.4.0.md`.
 
-## 0.5.5.0
+## 0.5.5.0 (próxima)
 
 - Conteúdo em inglês e arquivo de strings.
 - Os `Display Name` dos assets e os textos das fases estão em português; o `CLAUDE.md` pede inglês.

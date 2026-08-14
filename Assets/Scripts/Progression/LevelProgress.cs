@@ -22,10 +22,13 @@ namespace HerOClock.Progression
         /// <summary>Experience accumulated towards the next level.</summary>
         public long CurrentXp { get; private set; }
 
-        /// <summary>Attribute points earned and not yet spent.</summary>
-        public int UnspentAttributePoints { get; private set; }
-
-        /// <summary>Skill tree points earned. Nothing spends them yet.</summary>
+        /// <summary>
+        /// Skill tree points earned. Nothing spends them yet, and that is fine: the skill tree
+        /// does not exist. Attribute points used to sit here in the same shape, but they were
+        /// not the same case — they were also being spent automatically at the same time, so the
+        /// counter and the spending were two answers to the same question. They now live in the
+        /// character's <see cref="Characters.AttributeAllocation"/>, which owns both sides.
+        /// </summary>
         public int SkillPoints { get; private set; }
 
         public bool IsMaxLevel
@@ -63,7 +66,6 @@ namespace HerOClock.Progression
                 CurrentXp -= needed;
                 Level++;
 
-                UnspentAttributePoints += PointsPerLevel;
                 SkillPoints += SkillPointsPerLevel;
 
                 LevelGained?.Invoke(Level);

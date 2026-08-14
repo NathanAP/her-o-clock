@@ -69,7 +69,6 @@ namespace HerOClock.Characters
         // --- Per instance state, never part of the sheet ---
 
         [NonSerialized] private int level = 1;
-        [NonSerialized] private AttributeGrowth growth;
         [NonSerialized] private float multiplier = 1f;
         [NonSerialized] private int[] levelPoints = new int[4];
 
@@ -95,19 +94,35 @@ namespace HerOClock.Characters
         }
 
         /// <summary>
-        /// Sets everything that belongs to this instance rather than to the sheet.
+        /// Sets everything that belongs to this instance rather than to the sheet, with every
+        /// level point spent by the given distribution.
         ///
-        /// The points earned by levelling are computed straight from the level instead of being
-        /// accumulated one level at a time. That keeps the result free of rounding drift and lets
-        /// a level 40 minion be created without walking through 39 level ups.
+        /// The points are computed straight from the level instead of being accumulated one level
+        /// at a time. That keeps the result free of rounding drift and lets a level 40 minion be
+        /// created without walking through 39 level ups.
         /// </summary>
         public void ApplyInstance(int level, AttributeGrowth growth, float multiplier)
         {
-            this.level = Mathf.Max(1, level);
-            this.growth = growth;
-            this.multiplier = Mathf.Max(0f, multiplier);
+            ApplyLevel(level, multiplier);
 
             AttributeGrowth.Distribute(LevelProgress.PointsAtLevel(this.level), growth, levelPoints);
+        }
+
+        /// <summary>
+        /// The same, but taking the split from a character's own allocation, which may mix points
+        /// the player placed by hand with points spent automatically.
+        /// </summary>
+        public void ApplyInstance(int level, AttributeAllocation allocation, float multiplier)
+        {
+            ApplyLevel(level, multiplier);
+
+            allocation.WriteTo(levelPoints);
+        }
+
+        private void ApplyLevel(int level, float multiplier)
+        {
+            this.level = Mathf.Max(1, level);
+            this.multiplier = Mathf.Max(0f, multiplier);
         }
 
         /// <summary>

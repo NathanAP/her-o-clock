@@ -61,6 +61,8 @@ The defensive values go through the same seam as of 0.5.3.0. `BasePhysicalArmor`
 
 The level contribution is computed from the level, never accumulated level by level. That keeps it free of rounding drift and lets a level 40 minion be created without walking through 39 level ups.
 
+`AttributeAllocation` had to preserve that while also letting a player place points by hand, and the trick is what it stores: the automatic share is kept as a **count of points**, not as a distributed result, and redistributed whole every time it is read. Handing out five points thirty-nine times does not give the same split as handing out 195 once, because the percentages are resolved by largest remainder. Store the result and a minion created at level 40 stops matching one that climbed there, which quietly breaks replaying a battle from a seed.
+
 If you find yourself reading `BasePower` outside this class, something is being calculated in the wrong place.
 
 ## Sheet and instance are separate

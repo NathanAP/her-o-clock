@@ -87,13 +87,17 @@ namespace HerOClock.Tests
 
         // --- Points earned ---
 
+        /// <summary>
+        /// The attribute points a level is worth are counted by
+        /// <see cref="LevelProgress.PointsAtLevel"/> and owned by the character's allocation, not
+        /// by a counter here. Only the skill points still accumulate, because nothing spends them.
+        /// </summary>
         [Test]
-        public void EveryLevelGrantsFiveAttributePointsAndOneSkillPoint()
+        public void EveryLevelGrantsOneSkillPoint()
         {
             LevelProgress progress = Fresh();
             progress.Award(ExperienceTable.TotalXpTo(6));
 
-            Assert.AreEqual(25, progress.UnspentAttributePoints);
             Assert.AreEqual(5, progress.SkillPoints);
         }
 

@@ -18,10 +18,23 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 - Os atributos principais estão presentes em todos os personagens.
 - Cada herói possui uma base de atributos principais.
-- Os jogadores escolhem quais atributos principais desejam aumentar cada vez que um herói sobe de nível.
-    - Cabe ao jogador decidir como ele prefere fazer a distribuição.
-    - Os pontos de atributos ganhos nos níveis podem ser redefinidos a qualquer momento.
 - Os jogadores podem aumentar os atributos principais através de outros meios (itens, árvore de habilidades, árvore de progresso).
+
+### Distribuição dos pontos de nível
+
+- Todo personagem recebe 5 pontos de atributos principais a cada nível, conforme `progress.md`.
+- No perfil de cada herói o jogador vê os atributos principais e secundários, e tem três controles:
+    - **Colocar pontos à mão**, um a um, nos atributos que quiser.
+    - **Um interruptor de distribuição automática**, por herói.
+    - **Um botão de resetar**, que devolve todos os pontos daquele herói.
+- Com o automático **ligado**, os pontos entram sozinhos seguindo a distribuição declarada na ficha, no instante em que o nível sobe. Nunca sobra ponto parado.
+    - É o estado inicial de todo herói. Em um jogo idle, voltar de uma ausência longa e encontrar o time do mesmo tamanho de antes seria o oposto do que a progressão offline promete.
+- Com o automático **desligado**, os pontos se acumulam como disponíveis e esperam o jogador.
+- **Ligar o automático gasta apenas os pontos que estavam disponíveis.** Ele não redistribui o que o jogador colocou à mão, pois desfazer uma build inteira deve exigir o botão de resetar, e não um clique em um interruptor.
+- **Resetar devolve todos os pontos.** Com o automático ligado eles voltam na mesma hora pela distribuição da ficha, o que equivale a voltar para a build recomendada. Com ele desligado, tudo fica disponível para ser redistribuído.
+- Redefinir os pontos é livre e pode ser feito a qualquer momento, sem custo.
+- Lacaios e vilões são personagens com o automático permanentemente ligado. Não existe ninguém distribuindo pontos por eles.
+- Em qualquer momento vale a regra: **pontos colocados à mão + pontos colocados automaticamente + pontos disponíveis = 5 × (nível − 1)**.
 
 ### Poder (POW)
 
