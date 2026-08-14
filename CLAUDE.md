@@ -88,7 +88,7 @@ Aqui estão alguns detalhes sobre testes automatizados:
     - Ou seja, não adie criação, atualização ou execução de testes automatizados. Garanta que o esperado pela atual versão bate com os testes automatizados.
 - Interface, animação e som não pagam o custo de teste. É melhor você me orientar sobre uma alteração específica ou me avisar para ter um cuidado extra do que criar algo demorado e custoso para testar um detalhe impreciso.
 - Versões que alteram documentação ou specs não precisam ser testadas cada vez, mas perceba que testes futuros podem ser afetados, tenha atenção a isso.
-- Você pode demonstrar correções de bugs entregando um teste que falha antes da correção e passam depois.
+- Você pode demonstrar correções de bugs demonstrando como o teste falhava antes e como ele começou a ser aprovado de forma correta.
 - Testes de balanceamento afirmam faixas, não valores exatos. Quando um teste desses falhar, a pergunta a ser feita precisa ser "eu queria que isso mudasse?".
     - Se a resposta for sim, o valor novo entra no teste e a mudança fica registrada no diff.
     - O que nunca pode acontecer é afrouxar a faixa até o teste parar de falhar. Uma faixa larga demais não afirma nada.
