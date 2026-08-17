@@ -28,7 +28,7 @@ Componente que precisa ser adicionado na mão (`Add Component` → `Battle Boots
 - Strings File: o arquivo `Assets/Strings/en.json`.
 - Hero Formation: o asset `BattleFormation` dos heróis.
 
-O campo `Stage Index` escolhe qual fase do banco será jogada, contando de 0. Seleção de fase pelo jogador ainda não existe.
+O campo `Stage Index` escolhe qual fase do banco será jogada, contando de 0, **quando não existe save**. Havendo save, quem manda é a fase gravada nele. Seleção de fase pelo jogador ainda não existe.
 
 Sem essas referências nada aparece. Os assets estão descritos em `assets-de-configuracao.md`.
 
@@ -62,6 +62,10 @@ Essas validações existem porque quase nenhum desses casos gera erro da Unity. 
 
 - Target Frame Rate: `30`. O jogo fica aberto o dia inteiro em um cantinho da tela, então não faz sentido gastar GPU à toa.
 
+**Desenvolvimento**, presente apenas no editor e em builds de desenvolvimento.
+
+- Ignore Save: desligado. Ligando, o jogo não lê o save existente e a fase volta a sair do `Stage Index`. Serve para quem está montando uma fase, pois assim que existe um save aquele campo deixa de fazer efeito. O save existente **não é apagado**, e a partida ainda grava por cima da pilha normalmente.
+
 ## BattleDirector e StageRunner
 
 Ambos são adicionados automaticamente pelo `BattleBootstrap` em tempo de execução. **Nenhum dos dois deve ser adicionado na mão.**
@@ -74,7 +78,16 @@ O `StageRunner` manda no ciclo da fase: cria a onda, espera o combate acabar, fa
 
 Ele é também **o único lugar do jogo que lê o relógio**. O tempo real entra pelo `Update`, vai para um acumulador, e sai em passos fixos que vão ou para a batalha ou para a transição. Ter um acumulador só, em vez de um para cada, é o que impede sobra de tempo se perder a cada troca de fase.
 
-O método `Advance(float)` é público justamente para que um teste consiga rodar uma fase inteira sem cena e sem renderizar, chamando ele num laço.
+O método `Advance(float)` é público justamente para que um teste consiga rodar uma fase inteira sem cena e sem renderizar, chamando ele num laço. Desde a 0.6.0.0 é isso que os testes de balanceamento fazem: eles dirigem o `StageRunner` de verdade, e não uma cópia do laço dele.
+
+Tudo que ele precisa chega em um `StageContext`, e não em uma lista de nove parâmetros posicionais. Dois campos de lá existem só para a fase poder rodar sem cena:
+
+- `Spawn` — cria um inimigo.
+- `Destroy` — descarta um inimigo quando a onda acaba. O jogo deixa em branco e ganha o `Destroy` da Unity; um teste passa `DestroyImmediate`, pois fora do Play Mode o `Destroy` adiado nunca roda e cada inimigo de cada onda ficaria no tabuleiro segurando a casa.
+
+Ele avisa o resto do jogo pelos eventos `Stepped`, `WaveCleared`, `StageStarted`, `StageEnded` e `EnemyDefeated`. Os dois do meio são os momentos em que o save acontece.
+
+`StartStage` é a **única** entrada de uma fase, e é usada igualmente pela primeira tentativa, pelo reinício após a derrota e pelo jogo sendo reaberto. Sempre da primeira onda e com todo mundo inteiro. É isso que faz "em que ponto da fase eu estava" ser uma pergunta que o save nunca precisa responder.
 
 Os tempos de espera ficam expostos nele:
 
@@ -95,6 +108,14 @@ Ao entrar em Play, a hierarquia abaixo do `Battle` fica assim:
 - `AreaDivider` — a linha fina que marca onde termina a área dos heróis. É irmã do tabuleiro, e não filha, para ficar parada enquanto o chão desliza.
 - Um filho por personagem, nomeado com o `Id` da ficha, com os componentes `Character` e `CharacterView`. Cada personagem tem quatro filhos próprios: `Body`, `HealthBarBackground`, `HealthBarFill` e `LevelLabel`.
 - `DamageNumber` — os números que sobem e somem. São criados sob demanda e **reaproveitados**, não destruídos: num jogo que fica aberto o dia inteiro, criar um TextMeshPro por golpe seria alocação contínua.
+
+## SaveService
+
+Adicionado automaticamente pelo `BattleBootstrap`, depois que a fase já está de pé. **Não deve ser adicionado na mão.**
+
+Ele não tem campo nenhum para configurar. O que faz é decidir quando gravar, e são só três momentos: quando uma onda é limpa, quando uma fase começa, e ao fechar a janela. Não existe save periódico, e o motivo está em `specs/general/save.md`.
+
+Os arquivos ficam na pasta de dados persistentes do sistema operacional, **fora do projeto**, em `Saves/`. Um detalhe que atrapalha o desenvolvimento: rodar a aba PlayMode joga o jogo de verdade, então o smoke test grava um save real e a corrida seguinte retoma dele. Se algum teste futuro precisar começar do zero, ele vai precisar apontar o `SaveStore` para outra pasta.
 
 ## DevSpeedControl
 

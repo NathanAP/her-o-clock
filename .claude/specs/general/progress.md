@@ -98,6 +98,9 @@ xpPorLacaio(nível do lacaio)  = 10 × nível^2
 - Para fazer esse cálculo, guardamos quanto de experiência e dinheiro o jogador fez na última hora online.
     - Essa referência se ajusta sozinha conforme o jogador fica mais forte, sem precisar de uma fórmula paralela para manter sincronizada.
 - Com esse valor em mãos, o jogador mantém **25% do seu ritmo online** enquanto estiver offline.
+- O tempo ausente é contado a partir do **último save gravado**, e nunca de um horário de saída.
+    - É o único instante em que se pode confiar. Um processo morto não avisa que está fechando, então um horário de saída simplesmente não existiria nesse caso.
+    - Isso liga a frequência do save à precisão do cálculo: o jogador perde no máximo o intervalo entre dois saves. Os momentos em que o jogo grava estão em `save.md`.
 
 ### A progressão offline é um cálculo, nunca uma simulação
 
@@ -116,24 +119,43 @@ xpPorLacaio(nível do lacaio)  = 10 × nível^2
     - Se o jogador só tem dois baldes, a taxa é a soma deles dividida por 20 minutos. Assim uma sessão curta não é lida como uma hora fraca.
 - Os baldes são guardados no save.
     - Sem isso, quem joga em sessões de poucos minutos ao longo do dia perderia a referência toda vez que fechasse o jogo, e seria punido justamente por jogar pouco.
+- **O ganho offline não entra nos baldes.** Eles medem apenas jogo aberto.
+    - Se o crédito de uma ausência alimentasse a referência, ela passaria a se medir por si mesma, e cada ausência inflaria a próxima.
+- **Voltar não limpa os baldes.** Eles ficam velhos, mas continuam descrevendo o mesmo time, que não enfraqueceu enquanto o jogo estava fechado.
+    - Limpar faria os primeiros minutos depois da volta serem lidos como uma hora fraca, punindo justamente quem faz uma segunda ausência curta em seguida.
+
+### Os tetos
+
+A progressão offline possui três tetos, e todos podem ser aumentados na árvore de progresso:
+
+- **Ritmo:** os 25% podem subir até 40%.
+- **Experiência:** cada personagem sobe **no máximo 1 nível** por ausência, mantendo a fração de progresso que tinha dentro do nível.
+    - Quem saiu com 95% do caminho para o nível 10 volta no nível 10 com 95% do caminho para o 11, não importa quanto tempo ficou fora.
+    - Preservar a fração, em vez de creditar uma quantidade fixa de experiência, é o que faz o teto valer exatamente um nível em qualquer ponto do jogo. Creditar "o custo de um nível" renderia menos de um nível, porque o nível seguinte sempre custa mais que o atual.
+- **Dinheiro:** no máximo o equivalente a **12 horas** do ganho da última hora online.
+    - O teto é calculado sobre o ritmo **online**, e não sobre os 25% do ritmo offline. Um jogador que fazia $1.000 por hora leva no máximo 12 × $1.000, e não 12 × $250.
+
+São os tetos, e não o ritmo, que limitam de verdade uma ausência longa.
+
+- Aumentar apenas o ritmo faz o jogador chegar mais cedo no mesmo teto, sem levar nada a mais. Por isso o caminho da árvore vende principalmente teto, e o ritmo é o complemento.
+- Os tetos são também a única defesa que existe contra o jogador adiantar o relógio do sistema, conforme "## O relógio" em `save.md`. Um mês de ausência rende o mesmo que 12 horas, então adiantar o relógio não leva a lugar nenhum. Quem mexer nos tetos mexe nas duas coisas ao mesmo tempo.
+
+Além dos tetos:
+
+- Não é possível adquirir itens enquanto offline.
+- Não é possível passar de fase enquanto offline.
 
 ### Estatísticas do período offline
 
 - As estatísticas mostradas ao voltar saem dos mesmos baldes, multiplicadas do mesmo jeito que a experiência e o dinheiro.
 - Elas nunca podem ser calculadas por outro caminho. Se a tela disser que 1.432 inimigos foram derrotados mas a experiência creditada corresponder a 800, o jogador percebe a inconsistência.
-- A progressão offline possui três tetos, e todos podem ser aumentados na árvore de progresso:
-    - **Ritmo:** os 25% podem subir até 40%.
-    - **Experiência:** no máximo 1 nível completo de cada personagem por ausência.
-    - **Dinheiro:** no máximo o equivalente a 12 horas do ganho da última hora online.
-- São os tetos, e não o ritmo, que limitam de verdade uma ausência longa.
-    - Aumentar apenas o ritmo faz o jogador chegar mais cedo no mesmo teto, sem levar nada a mais. Por isso o caminho da árvore vende principalmente teto, e o ritmo é o complemento.
-- Não é possível adquirir itens enquanto offline.
-- Não é possível passar de fase enquanto offline.
 
 ### Exemplos
 
 - Se o jogador saiu faltando 5% para seus personagens subirem ao nível 10 e permaneceu 1 mês fora, ao voltar seus personagens estarão no nível 10 com 95% de progresso.
 - Se o jogador ganhava $1.000 por hora e permaneceu 1 mês fora, ao voltar ele terá recebido no máximo $12.000.
+- Se o jogador ganhava $600 por hora e permaneceu 2 horas fora, ele recebe **$300**, pois `600 × 2 × 25% = 300`. O teto daquele save é $7.200, e nem chega perto de ser alcançado.
+- Se o jogador tem apenas 2 baldes preenchidos, somando $100, o ritmo dele é de **$300 por hora**, pois os dois baldes cobrem 20 minutos.
 
 ## Árvore de progresso
 

@@ -175,17 +175,19 @@ namespace HerOClock.Tests
                 GameObject board = new GameObject("Board");
                 board.transform.SetParent(host.transform, false);
 
-                runner.Configure(
-                    battle.Grid,
-                    director,
-                    byId,
-                    new PlayerWallet(),
-                    Strings(minionSheet.Id),
-                    new BattleRandom(31337),
-                    new BoardScroller(board.transform, battle.Config.CellSize),
-                    heroes,
-                    (definition, team, position, level, multiplier) =>
-                        battle.Spawn(definition, team, position.Column, position.Row, level, multiplier));
+                runner.Configure(new StageContext
+                {
+                    Grid = battle.Grid,
+                    Director = director,
+                    CharactersById = byId,
+                    Wallet = new PlayerWallet(),
+                    Strings = Strings(minionSheet.Id),
+                    Random = new BattleRandom(31337),
+                    Scroller = new BoardScroller(board.transform, battle.Config.CellSize),
+                    Spawn = (definition, team, position, level, multiplier) =>
+                        battle.Spawn(definition, team, position.Column, position.Row, level, multiplier),
+                    Destroy = target => UnityEngine.Object.DestroyImmediate(target)
+                }, heroes);
 
                 runner.StartStage(Stage(minionSheet.Id));
 

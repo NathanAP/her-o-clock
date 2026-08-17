@@ -27,5 +27,18 @@ namespace HerOClock.Progression
             Money += amount;
             Changed?.Invoke();
         }
+
+        /// <summary>
+        /// Sets the money to what a save held, rather than adding to it.
+        ///
+        /// Separate from <see cref="Add"/> on purpose. Loading is not earning: adding would double
+        /// whatever the wallet already had, and a negative value in a file that somebody edited
+        /// would leave the player in debt.
+        /// </summary>
+        public void Restore(long amount)
+        {
+            Money = Math.Max(0L, amount);
+            Changed?.Invoke();
+        }
     }
 }

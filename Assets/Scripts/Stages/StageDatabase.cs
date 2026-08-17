@@ -16,6 +16,33 @@ namespace HerOClock.Stages
         public List<TextAsset> Stages = new List<TextAsset>();
 
         /// <summary>
+        /// Position of the stage with the given id, or -1 when there is none.
+        ///
+        /// A save records the stage by id rather than by position, because inserting a stage in the
+        /// middle of an act would otherwise move every player who was past it. Finding it means
+        /// reading the files, which only happens once at startup.
+        /// </summary>
+        public int IndexOf(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return -1;
+            }
+
+            for (int i = 0; i < Stages.Count; i++)
+            {
+                StageData stage = Load(i);
+
+                if (stage != null && stage.id == id)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         /// Reads a stage file into memory. Returns null and logs the reason when it cannot.
         /// </summary>
         public StageData Load(int index)

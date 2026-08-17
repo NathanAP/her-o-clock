@@ -171,12 +171,17 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Nasceu `.claude/specs/general/window.md`, reunindo o comportamento da janela que estava espalhado entre resumos de versão.
 - O resumo completo está em `.claude/versions/20260817_0.5.9.1.md`.
 
-## 0.6.0.0
+## 0.6.0.0 (feita)
 
-- Persistência.
-- Save e load. É pré-requisito da progressão offline e entra antes de existir muito dado para migrar depois.
-- **Leva junto a duplicação do laço de fase.** O `StageSimulation` dos testes repete o laço do `StageRunner`, porque o runner destrói os inimigos entre as ondas e o `Destroy` adiado não roda fora do Play Mode. Se o laço mudar e a cópia não, os testes de balanceamento passam a medir o laço antigo em silêncio. Esta versão mexe no `StageRunner` de qualquer forma, então é o momento de dar a ele um destruidor injetável e deixar a simulação dirigir o runner de verdade.
-- Testes: ida e volta (salvar, carregar, estado idêntico), save de versão antiga carregando na versão nova, e os baldes de 10 minutos de `progress.md` com os três tetos da progressão offline. A ida e volta é uma categoria que só aparece nesta versão e é a que impede corromper o progresso de quem já joga.
+- Persistência. 419 verificações no EditMode, contra 313, e 2 no PlayMode.
+- Cada save é um arquivo novo com o instante no nome, assinado por HMAC sobre o **texto**, que é o que faz um save antigo continuar válido quando o formato ganha um campo. Os saves anteriores são o backup, guardados por uma escada: os 5 mais novos e o mais novo de cada um dos 3 últimos dias com jogo.
+- Um save adulterado carrega mesmo assim e fica marcado para sempre. Recusar puniria quem teve falha de disco, que é o caso que acontece de verdade. Não dá para impedir que alguém edite o próprio save, e `save.md` diz isso em voz alta em vez de fingir o contrário.
+- **O save guarda em que fase o jogador está, e nunca em que ponto dela.** Carregar recomeça a fase do início com todo mundo inteiro, que é o mesmo que uma derrota já faz. Não existe estado de meio de fase para gravar, migrar ou errar.
+- O jogo grava no fim de cada onda e no início de cada fase. Não existe save periódico: como nenhuma posição é gravada, um save no meio de uma onda não teria nada que o da fronteira já não tenha.
+- A gravação da abertura é o que **consome a ausência**. Sem ela, fechar o jogo na hora errada pagaria a mesma ausência duas vezes.
+- **O laço duplicado acabou.** Um campo `Destroy` no novo `StageContext` bastou para o `StageSimulation` dirigir o `StageRunner` de verdade. O snapshot não se moveu um dígito.
+- Dois bugs achados pelos testes, nenhum no código novo: vida atual acima da máxima ao refazer a build, e dois heróis da mesma ficha compartilhando progresso ao carregar — a formação de hoje tem dois de cada.
+- O resumo completo está em `.claude/versions/20260817_0.6.0.0.md`.
 
 ## 0.7.0.0
 
@@ -219,6 +224,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
     - O atalho para esconder ou minimizar a janela.
     - O arrastar distinguindo fundo de interface. Hoje qualquer clique arrasta, o que é inofensivo só porque não há nada clicável.
     - O controle de zoom saindo do atalho e virando um item da tela de opções.
+- **Leva junto a tela de volta ao jogo**, que a 0.6.0.0 deixou pendente. Os números da ausência já são calculados e escritos no Console; falta mostrá-los. Eles saem inteiros do `OfflineCredit`, então é só apresentação.
 - Testes: praticamente nenhum. Interface é a única parte do jogo em que o custo de testar não se paga.
 
 ## 0.12.0.0

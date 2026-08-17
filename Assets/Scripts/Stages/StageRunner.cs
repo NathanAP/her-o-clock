@@ -38,14 +38,8 @@ namespace HerOClock.Stages
             Restarting
         }
 
-        private BattleGrid grid;
-        private BattleDirector director;
-        private IReadOnlyDictionary<string, CharacterDefinition> charactersById;
-        private PlayerWallet wallet;
-        private StringTable strings;
-        private BattleRandom random;
-        private BoardScroller scroller;
-        private Func<CharacterDefinition, Team, GridPosition, int, float, Character> spawn;
+        private StageContext context;
+        private Action<GameObject> destroy;
 
         private StageData stage;
         private readonly List<Character> heroes = new List<Character>();
@@ -88,25 +82,58 @@ namespace HerOClock.Stages
         [Min(0.1f)]
         public float DefeatDuration = 2.5f;
 
-        public void Configure(
-            BattleGrid grid,
-            BattleDirector director,
-            IReadOnlyDictionary<string, CharacterDefinition> charactersById,
-            PlayerWallet wallet,
-            StringTable strings,
-            BattleRandom random,
-            BoardScroller scroller,
-            IReadOnlyList<Character> heroes,
-            Func<CharacterDefinition, Team, GridPosition, int, float, Character> spawn)
+        /// <summary>Raised on every simulation step, with the size of that step.</summary>
+        public event Action<float> Stepped;
+
+        /// <summary>
+        /// Raised when a wave is beaten and the index has already moved to the next one.
+        ///
+        /// This is a save point, not because of where the party is — a save holds no position
+        /// inside a stage — but because of what the wave paid: experience, money and the buckets of
+        /// the last hour. The party then spends several seconds walking back and the ground rolls,
+        /// so the write lands in a moment that is already a pause.
+        /// </summary>
+        public event Action WaveCleared;
+
+        /// <summary>
+        /// Raised whenever a stage begins, including the restart that follows a victory or a defeat.
+        ///
+        /// The end of a stage is deliberately not a save point. A defeat is followed by the stage
+        /// starting over, so saving on the defeat itself would record the moment of losing rather
+        /// than the state the player carries forward.
+        /// </summary>
+        public event Action StageStarted;
+
+        /// <summary>Raised when the villain falls (true) or the party is wiped (false).</summary>
+        public event Action<bool> StageEnded;
+
+        /// <summary>Raised for each enemy that falls, with the experience and money it was worth.</summary>
+        public event Action<Character, long, long> EnemyDefeated;
+
+        /// <summary>True while a battle is being fought, false during the walking and the rolling.</summary>
+        public bool IsFighting
         {
-            this.grid = grid;
-            this.director = director;
-            this.charactersById = charactersById;
-            this.wallet = wallet;
-            this.strings = strings;
-            this.random = random;
-            this.scroller = scroller;
-            this.spawn = spawn;
+            get { return phase == Phase.Fighting; }
+        }
+
+        /// <summary>Which wave is being fought. Equal to the wave count it means the villain.</summary>
+        public int WaveIndex
+        {
+            get { return waveIndex; }
+        }
+
+        public StageData Stage
+        {
+            get { return stage; }
+        }
+
+        public void Configure(StageContext context, IReadOnlyList<Character> heroes)
+        {
+            this.context = context;
+
+            // The game leaves this alone and gets Unity's deferred Destroy. A test outside Play
+            // Mode has to pass DestroyImmediate, because the deferred one never runs there.
+            destroy = context.Destroy ?? (target => Destroy(target));
 
             this.heroes.Clear();
             this.heroes.AddRange(heroes);
@@ -116,26 +143,33 @@ namespace HerOClock.Stages
             regroupMovers.Clear();
             for (int i = 0; i < this.heroes.Count; i++)
             {
-                regroupMovers.Add(new CharacterMover(this.heroes[i], grid));
+                regroupMovers.Add(new CharacterMover(this.heroes[i], context.Grid));
             }
 
-            director.BattleEnded += OnBattleEnded;
+            context.Director.BattleEnded += OnBattleEnded;
         }
 
         private void OnDestroy()
         {
-            if (director != null)
+            if (context != null && context.Director != null)
             {
-                director.BattleEnded -= OnBattleEnded;
+                context.Director.BattleEnded -= OnBattleEnded;
             }
         }
 
+        /// <summary>
+        /// Starts a stage from the first wave, with everybody back at full health.
+        ///
+        /// The only way in, and that is the point: a stage is entered from the top whether it is the
+        /// first attempt, the restart after a defeat, or the game being reopened. There is no
+        /// halfway state to resume into, so there is none to write down or get wrong.
+        /// </summary>
         public void StartStage(StageData stage)
         {
             this.stage = stage;
 
-            Debug.Log("Stage '" + strings.Get(StringTable.StageName(stage.id)) + "' started. "
-                + strings.Get(StringTable.StageLore(stage.id)), this);
+            Debug.Log("Stage '" + context.Strings.Get(StringTable.StageName(stage.id)) + "' started. "
+                + context.Strings.Get(StringTable.StageLore(stage.id)), this);
 
             DespawnEnemies();
 
@@ -156,10 +190,12 @@ namespace HerOClock.Stages
                 heroes[i].ResetForBattle();
             }
 
-            scroller.ResetPosition();
+            context.Scroller.ResetPosition();
 
             waveIndex = 0;
             BeginWave();
+
+            StageStarted?.Invoke();
         }
 
         private void Update()
@@ -203,11 +239,13 @@ namespace HerOClock.Stages
         /// </summary>
         private void Step(float step)
         {
+            Stepped?.Invoke(step);
+
             if (phase == Phase.Fighting)
             {
                 // The battle can end inside this call, which changes the phase. The next step
                 // of the loop then picks up the transition, with no time lost in between.
-                director.Tick(step);
+                context.Director.Tick(step);
                 return;
             }
 
@@ -231,7 +269,7 @@ namespace HerOClock.Stages
 
             if (phase == Phase.Advancing)
             {
-                scroller.SetProgress(timer / phaseDuration);
+                context.Scroller.SetProgress(timer / phaseDuration);
             }
 
             if (timer < phaseDuration)
@@ -242,7 +280,7 @@ namespace HerOClock.Stages
             switch (phase)
             {
                 case Phase.Advancing:
-                    scroller.ResetPosition();
+                    context.Scroller.ResetPosition();
                     BeginWave();
                     break;
 
@@ -294,7 +332,7 @@ namespace HerOClock.Stages
             everyone.AddRange(enemies);
 
             phase = Phase.Fighting;
-            director.Begin(grid, everyone, random);
+            context.Director.Begin(context.Grid, everyone, context.Random);
         }
 
         private bool IsVillainWave
@@ -309,6 +347,7 @@ namespace HerOClock.Stages
                 Debug.Log("The heroes fell on wave " + (waveIndex + 1) + " of '" + stage.id
                     + "'. Starting the stage over.", this);
                 EnterPhase(Phase.Restarting, DefeatDuration);
+                StageEnded?.Invoke(false);
                 return;
             }
 
@@ -321,6 +360,7 @@ namespace HerOClock.Stages
                 ReturnHeroesToStart();
                 Debug.Log("Stage '" + stage.id + "' cleared.", this);
                 EnterPhase(Phase.Celebrating, CelebrationDuration);
+                StageEnded?.Invoke(true);
                 return;
             }
 
@@ -334,6 +374,9 @@ namespace HerOClock.Stages
             }
 
             EnterPhase(Phase.Regrouping, MaxRegroupDuration);
+
+            // After the index moved, so whoever saves records the wave that comes next.
+            WaveCleared?.Invoke();
         }
 
         private void EnterPhase(Phase next, float duration)
@@ -350,7 +393,7 @@ namespace HerOClock.Stages
                 StagePlacement placement = wave.placements[i];
 
                 CharacterDefinition definition;
-                if (!charactersById.TryGetValue(placement.character, out definition))
+                if (!context.CharactersById.TryGetValue(placement.character, out definition))
                 {
                     // Validation already reported this when the stage was loaded.
                     continue;
@@ -358,14 +401,14 @@ namespace HerOClock.Stages
 
                 GridPosition position = new GridPosition(placement.column, placement.row);
 
-                if (!grid.IsFree(position))
+                if (!context.Grid.IsFree(position))
                 {
                     Debug.LogWarning("Stage '" + stage.id + "': " + placement.character
                         + " cannot take cell " + position + " because it is occupied.", this);
                     continue;
                 }
 
-                Character enemy = spawn(definition, Team.Enemies, position, stage.enemyLevel, placement.EffectiveMultiplier);
+                Character enemy = context.Spawn(definition, Team.Enemies, position, stage.enemyLevel, placement.EffectiveMultiplier);
                 enemy.Died += OnEnemyDied;
                 enemies.Add(enemy);
             }
@@ -396,7 +439,9 @@ namespace HerOClock.Stages
                 heroes[i].AwardExperience(experience);
             }
 
-            wallet.Add(money);
+            context.Wallet.Add(money);
+
+            EnemyDefeated?.Invoke(enemy, experience, money);
         }
 
         private void DespawnEnemies()
@@ -412,7 +457,7 @@ namespace HerOClock.Stages
 
                 enemy.Died -= OnEnemyDied;
                 enemy.ClearFromGrid();
-                Destroy(enemy.gameObject);
+                destroy(enemy.gameObject);
             }
 
             enemies.Clear();

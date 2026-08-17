@@ -90,6 +90,7 @@ Este é o fluxo principal do jogo.
 - Um herói que cai permanece caído até o fim da fase, pois não existe forma de revivê-lo durante o combate a não ser por habilidade.
 - É o desgaste que dá sentido à regeneração de vida e ao roubo de vida. Sem ele os dois atributos seriam decorativos, pois cada combate começaria com todo mundo inteiro.
 - É também o desgaste que cria a necessidade de farmar. Chega um ponto em que a fase não é vencível com o time atual, e o jogador precisa subir de nível ou melhorar os itens antes de avançar.
+- O desgaste vale **dentro de uma fase**, e não além dela. Uma fase recomeçada, seja por derrota ou por fechar e reabrir o jogo, começa com todo mundo inteiro. O save guarda em que fase o jogador está, e nunca em que ponto dela — o porquê está em `save.md`.
 
 ### Entre uma onda e outra
 

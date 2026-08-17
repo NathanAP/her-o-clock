@@ -138,6 +138,15 @@ namespace HerOClock.Characters
         private void OnAttributesChanged()
         {
             Stats.ApplyInstance(Level, Attributes, multiplier);
+
+            // "A vida atual nunca pode ultrapassar a vida máxima", in attributes.md. Points only
+            // ever arrive while levelling, so the maximum only ever goes up and this does nothing —
+            // until the player takes their points back to rebuild, which drops the maximum with the
+            // current health still sitting above it. The health bar then draws past its own end.
+            //
+            // Only ever downwards: a rebuild must not hand out health either.
+            CurrentHealth = Mathf.Min(CurrentHealth, Stats.MaxHealth);
+
             Changed?.Invoke();
         }
 

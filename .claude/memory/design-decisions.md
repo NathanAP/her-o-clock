@@ -84,6 +84,59 @@ Two things fell out of it that are worth keeping:
 
 Nothing displays the table yet beyond the stage announcement in the Console, because there is no interface. Doing it at 4 sheets and 2 stages rather than at dozens was the whole point.
 
+## A save cannot be protected, so it is not pretended otherwise
+
+The game runs on the player's machine and the process has to read the numbers to play. Any key the binary uses, the binary carries. The only design that would genuinely stop tampering is an authoritative server, and that was rejected: it demands internet and contradicts a light game sitting open in a corner of the screen all day.
+
+What was chosen instead is a distance, not a defence. An HMAC over the payload text kills the person who opens the file in a text editor and changes `"money": 1500`, which costs ten seconds and no knowledge and is practically everyone who does this. It gives the person with a save editor some work. Against the person who opens the binary and recomputes the hash, nothing local works, and `save.md` says so out loud rather than hiding behind the word "encrypted".
+
+It matters less than it sounds: there is no advertising, no external shop, no pay-to-win, no leaderboard and no play between players. Somebody who edits their own save spoils their own toy and takes nothing from anyone. The real risk to a real player is a corrupted file and a version migration, which is where the effort went.
+
+### A save that fails its signature is loaded anyway, and marked
+
+Refusing would punish the player whose disk dropped a byte, which is the case that actually happens; deleting and starting over would be worse, because it is irreversible. So it loads, the file is left untouched as evidence, and the save carries `integrity: broken` from then on — into every save written afterwards, since it is a fact about that save's history rather than a state it recovers from.
+
+The mark limits nothing inside the game. It exists for a bug report, and as a door for anything that one day points outward, like an achievement or a leaderboard.
+
+## Every save is a new file, and the old ones are the backup
+
+Rather than rewriting one file and keeping a `.bak` beside it, each save is a new file named for the instant it was written. Two things fall out of it:
+
+- **No good save is ever overwritten**, so a write interrupted halfway cannot destroy anything that already existed.
+- The previous generations are the backup by construction, with no second mechanism to maintain.
+
+What is left is a retention rule, and it has two rungs because there are two different accidents. The **5 newest** cover a disk that dropped a write moments ago. The **newest of each of the 3 most recent days with saves** cover the one that really costs a player their progress: a bug writing a save that is valid but wrong. A save lands every few seconds, so keeping only the newest would cover under a minute, and somebody who noticed the next day would have nothing to go back to.
+
+Days that have saves, not days of the calendar, so a player who opens the game once a month still keeps three sessions.
+
+## A save holds which stage, never where inside it
+
+Loading starts the recorded stage from its first wave, with everybody at full health. No wave index, no health, no battle frame.
+
+The first design saved the wave and the health and resumed exactly there, to protect the attrition rule of `gameplay.md`. That was more machinery than the rule needed. **Attrition was only ever a rule about the inside of a stage**: damage carries from wave to wave, and a stage that starts over starts whole. A defeat already restarts a stage at full health, and it is free, so a player who closes the game gains nothing they could not have by dying.
+
+What it buys is that there is no halfway state to write down, to migrate, or to get subtly wrong — and `StageRunner` went back to having exactly one way in, used by the first attempt, the restart after a defeat, and the game being reopened alike.
+
+### There is no periodic save either
+
+The save points are the wave boundary and the beginning of a stage, and that is all.
+
+A wave boundary is a save point because of what the wave **paid** — experience, money, the buckets of the last hour — and not because of where anyone is standing. Since no position is recorded, a write in the middle of a wave would hold nothing the boundary write does not already have.
+
+The end of a stage is **not** a save point, and the beginning is. A victory and a defeat both restart the stage, so saving on the defeat itself would record the moment of losing rather than what the player carries forward.
+
+The cost is stated rather than hidden: redistributing attribute points and having the process killed within the next few seconds loses the redistribution. The wave boundary comes round every few seconds, so the window is small.
+
+## The offline experience ceiling keeps the fraction
+
+"At most one level per absence" was ambiguous until the spec's own example pinned it down: somebody who left 95% of the way to level 10 comes back at level 10, 95% of the way to 11.
+
+That reading — one level with the fraction of progress preserved — is the only one that produces 95%, and it is also the only one worth exactly one level anywhere in the game. Granting "the cost of a level" instead would pay less than a level as the player advances, because the next level always costs more than the current one.
+
+The money ceiling turned out to be simpler than it looked. Written as twelve hours of the **online** rate, it is really a ceiling on how many hours of open game an absence is worth. So the whole absence collapses to one number, `EffectiveHours`, and every statistic is that number times the same buckets. `progress.md` forbids the statistics on the welcome-back screen from being reached by a second path, and this makes a contradiction impossible to write rather than merely discouraged.
+
+The ceilings are also the only defence against the player winding the system clock forward, and that is now written down. A month away pays the same as twelve hours, so winding the clock leads nowhere. Anyone who later tunes those ceilings is tuning two things at once.
+
 ## Free movement, with no body blocking
 
 Characters cross the whole board chasing their target. The areas only define where the battle starts.

@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
+using HerOClock.Persistence;
 using HerOClock.Progression;
 using HerOClock.Stages;
 using HerOClock.Text;
@@ -29,7 +32,7 @@ namespace HerOClock.Setup
         [SerializeField] private TextAsset stringsFile;
 
         [Header("Stage")]
-        [Tooltip("Which stage of the database to play. Stage selection does not exist yet.")]
+        [Tooltip("Which stage to play when there is no save. A save says where the player was, and overrides this.")]
         [Min(0)]
         [SerializeField] private int stageIndex;
 
@@ -43,6 +46,12 @@ namespace HerOClock.Setup
         [Tooltip("Random seed. The same value always produces the same battle. Leave 0 to draw a new seed on every Play.")]
         [SerializeField] private int randomSeed;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        [Header("Development")]
+        [Tooltip("Starts from the Stage Index above instead of from the save. Never present in a released build.")]
+        [SerializeField] private bool ignoreSave;
+#endif
+
         [Header("Performance")]
         [Tooltip("The game sits open all day in a corner of the screen, so there is no point burning GPU.")]
         [Min(10)]
@@ -51,6 +60,7 @@ namespace HerOClock.Setup
         private BattleGrid grid;
         private BattleDirector director;
         private PlayerWallet wallet;
+        private ActivityLog activity;
         private DamageNumberPool damageNumbers;
 
         private void Start()
@@ -76,7 +86,20 @@ namespace HerOClock.Setup
                 return;
             }
 
-            StageData stage = stageDatabase.Load(stageIndex);
+            // Read before anything else is decided, because the save is what says which stage the
+            // player is on. Nothing readable in the folder is somebody's first game, not a failure.
+            SaveStore store = new SaveStore(SaveStore.DefaultFolder());
+            SaveReadResult save = IgnoringSave() ? new SaveReadResult() : store.Load();
+
+            int index = stageIndex;
+
+            if (save.Found)
+            {
+                Debug.Log("BattleBootstrap: save '" + save.FileName + "' loaded.", this);
+                index = StageFor(save.Payload, index);
+            }
+
+            StageData stage = stageDatabase.Load(index);
             if (stage == null || !IsStageValid(stage, charactersById))
             {
                 return;
@@ -93,7 +116,24 @@ namespace HerOClock.Setup
                 return;
             }
 
-            int seed = randomSeed != 0 ? randomSeed : System.Environment.TickCount;
+            wallet = new PlayerWallet();
+            wallet.Changed += () => Debug.Log("Money: " + wallet.Money + ".", this);
+
+            activity = new ActivityLog();
+
+            string integrity = SavePayload.IntegrityOk;
+
+            if (save.Found)
+            {
+                SaveMapper.ApplyHeroes(save.Payload, heroes);
+                SaveMapper.ApplyActivity(save.Payload, activity);
+                wallet.Restore(save.Payload.money);
+                integrity = save.Payload.integrity;
+
+                CreditTimeAway(save.Payload, heroes);
+            }
+
+            int seed = randomSeed != 0 ? randomSeed : Environment.TickCount;
             Debug.Log("BattleBootstrap: random seed " + seed + ". Put this value in the Random Seed field to replay this exact run.", this);
 
             BattleRandom random = new BattleRandom(seed);
@@ -107,12 +147,145 @@ namespace HerOClock.Setup
             gameObject.AddComponent<HerOClock.Dev.DevSpeedControl>();
 #endif
 
-            wallet = new PlayerWallet();
-            wallet.Changed += () => Debug.Log("Money: " + wallet.Money + ".", this);
-
             StageRunner runner = gameObject.AddComponent<StageRunner>();
-            runner.Configure(grid, director, charactersById, wallet, strings, random, new BoardScroller(board, gridConfig.CellSize), heroes, CreateCharacter);
+
+            runner.Configure(new StageContext
+            {
+                Grid = grid,
+                Director = director,
+                CharactersById = charactersById,
+                Wallet = wallet,
+                Strings = strings,
+                Random = random,
+                Scroller = new BoardScroller(board, gridConfig.CellSize),
+                Spawn = CreateCharacter
+            }, heroes);
+
+            // The buckets measure simulation time, not the wall clock. A game the operating system
+            // stopped drawing has earned nothing during that stretch, and it is the fighting the
+            // rate is meant to describe.
+            runner.Stepped += activity.Advance;
+            runner.EnemyDefeated += OnEnemyDefeated;
+
+            // Always from the top. A save says which stage the player is on and never where inside
+            // it, so being loaded is the same entry a defeat uses.
             runner.StartStage(stage);
+
+            // Subscribed only now, so the write below is the first one and already carries the
+            // loaded state and whatever the absence was worth.
+            SaveService saves = gameObject.AddComponent<SaveService>();
+            saves.Configure(store, runner, heroes, wallet, activity, integrity);
+
+            // **This write is what consumes the absence.** The time away is measured from the
+            // instant in the file that was loaded, so crediting it and then falling over before
+            // writing would let the next launch read the same instant and pay for it again.
+            saves.Save();
+        }
+
+        /// <summary>
+        /// Whether the existing progress should be left unread.
+        ///
+        /// Without this, the Stage Index above stops doing anything the moment a save exists, which
+        /// is correct for a player and infuriating for whoever is building a stage. The game still
+        /// writes saves while it is on, so the run is a real one and only the reading is skipped.
+        /// </summary>
+        private bool IgnoringSave()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (ignoreSave)
+            {
+                Debug.LogWarning("BattleBootstrap: Ignore Save is on, so the existing progress was not"
+                    + " read. It is still on disk, and this run will save alongside it.", this);
+                return true;
+            }
+#endif
+            return false;
+        }
+
+        /// <summary>
+        /// Which stage the save says the player is on.
+        ///
+        /// Found by id, so a stage inserted into the middle of an act does not move anyone. A stage
+        /// that no longer exists sends the player back to the first one and keeps everything else,
+        /// which happens while the game is being built and is not their fault.
+        /// </summary>
+        private int StageFor(SavePayload payload, int fallback)
+        {
+            if (payload.stage == null || string.IsNullOrEmpty(payload.stage.id))
+            {
+                return fallback;
+            }
+
+            int found = stageDatabase.IndexOf(payload.stage.id);
+
+            if (found < 0)
+            {
+                Debug.LogWarning("Save: the stage '" + payload.stage.id + "' no longer exists, so the"
+                    + " game starts from the first one. Nothing else was lost.", this);
+                return 0;
+            }
+
+            return found;
+        }
+
+        /// <summary>
+        /// Pays the player for the time the game was closed.
+        ///
+        /// It is arithmetic and never a simulation: the rate of the last hour multiplied by the time
+        /// away, then the ceilings. See "A progressão offline é um cálculo, nunca uma simulação" in
+        /// progress.md, and note that the credit deliberately never goes back into the buckets.
+        /// </summary>
+        private void CreditTimeAway(SavePayload payload, IReadOnlyList<Character> heroes)
+        {
+            DateTime savedAt;
+
+            if (!DateTime.TryParse(payload.savedAtUtc, CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind, out savedAt))
+            {
+                Debug.LogWarning("Save: '" + payload.savedAtUtc + "' is not a readable instant, so no"
+                    + " time away was credited.", this);
+                return;
+            }
+
+            double hours = OfflineProgress.ElapsedHours(savedAt.ToUniversalTime(), DateTime.UtcNow);
+            OfflineCredit credit = OfflineProgress.Credit(activity, hours, OfflineProgress.DefaultRateShare);
+
+            if (credit.EffectiveHours <= 0.0)
+            {
+                return;
+            }
+
+            wallet.Add(credit.Money);
+
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                Character hero = heroes[i];
+
+                hero.AwardExperience(OfflineProgress.ExperienceFor(
+                    credit.ExperienceOffered,
+                    hero.Progress.Level,
+                    hero.Progress.CurrentXp,
+                    hero.Definition.MaxLevel));
+            }
+
+            Debug.Log("BattleBootstrap: away for " + hours.ToString("F1", CultureInfo.InvariantCulture)
+                + " h, paid as " + credit.EffectiveHours.ToString("F2", CultureInfo.InvariantCulture)
+                + " h of open game: " + credit.Money + " money, " + credit.ExperienceOffered
+                + " experience offered per hero, " + credit.EnemiesDefeated + " enemies.", this);
+        }
+
+        /// <summary>
+        /// Records a defeated enemy in the buckets of the last hour.
+        ///
+        /// The experience recorded is **one hero's**, not the party's total. The offline credit is
+        /// applied per hero, so the rate has to describe what a single hero earns, or a bigger party
+        /// would be paid several times over for being away.
+        /// </summary>
+        private void OnEnemyDefeated(Character enemy, long experience, long money)
+        {
+            activity.RecordEnemyDefeated();
+            activity.RecordExperience(experience);
+            activity.RecordMoney(money);
         }
 
         /// <summary>
@@ -278,6 +451,32 @@ namespace HerOClock.Setup
 
             Vector3 origin = target.transform.position + new Vector3(0f, gridConfig.CellSize * 0.5f, 0f);
             damageNumbers.Show(origin, result);
+
+            RecordBlow(attacker, target, result);
+        }
+
+        /// <summary>
+        /// Feeds one blow into the buckets of the last hour, from the party's point of view.
+        ///
+        /// Damage and healing are recorded here rather than counted somewhere else because these are
+        /// the same numbers the player is shown, and progress.md forbids the statistics of an absence
+        /// from having a second source. Thorns count as damage the party dealt, since the party is
+        /// what caused them.
+        /// </summary>
+        private void RecordBlow(Character attacker, Character target, DamageResult result)
+        {
+            if (attacker.Team == Team.Heroes)
+            {
+                activity.RecordDamageDealt(result.Damage);
+                activity.RecordHealing(result.LifeStolen);
+            }
+
+            if (target.Team == Team.Heroes)
+            {
+                activity.RecordDamageTaken(result.Damage);
+                activity.RecordDamageDealt(result.Thorns);
+                activity.RecordHealing(result.Healing);
+            }
         }
 
         private List<Character> SpawnHeroes()

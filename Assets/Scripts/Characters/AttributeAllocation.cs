@@ -65,6 +65,26 @@ namespace HerOClock.Characters
             return manual[(int)attribute] + automatic[(int)attribute];
         }
 
+        /// <summary>How many points the player placed on an attribute by hand.</summary>
+        public int ManualOn(Attribute attribute)
+        {
+            return manual[(int)attribute];
+        }
+
+        /// <summary>
+        /// How many points the sheet's distribution has spent.
+        ///
+        /// This is the number a save records, and recording the **count** rather than the split it
+        /// produces is not a detail. The split is resolved by largest remainder, so handing out five
+        /// points thirty-nine times does not give what handing out 195 once gives. Write the split
+        /// down and a restored character stops matching one that climbed to the same level while
+        /// playing, which quietly breaks replaying a battle from a seed.
+        /// </summary>
+        public int AutomaticPoints
+        {
+            get { return automaticTotal; }
+        }
+
         /// <summary>
         /// Brings the allocation up to the given level.
         ///
@@ -161,6 +181,38 @@ namespace HerOClock.Characters
             {
                 automaticTotal = 0;
                 unspent = total;
+            }
+
+            Raise();
+        }
+
+        /// <summary>
+        /// Puts back an allocation a save held.
+        ///
+        /// It restores the two origins separately, exactly as they were stored, and never a
+        /// finished split. Nothing is validated against a level here, because this class has never
+        /// known what level the character is: whoever loads calls <see cref="GrantFor"/> straight
+        /// after, and that is what tops up any points a save is short of.
+        /// </summary>
+        public void Restore(bool automatic, int automaticPoints, int unspentPoints, int[] manualPoints)
+        {
+            isAutomatic = automatic;
+            automaticTotal = Math.Max(0, automaticPoints);
+            unspent = Math.Max(0, unspentPoints);
+
+            for (int i = 0; i < 4; i++)
+            {
+                manual[i] = manualPoints != null && i < manualPoints.Length
+                    ? Math.Max(0, manualPoints[i])
+                    : 0;
+            }
+
+            // On automatic there is nothing waiting to be placed, by definition. A file claiming
+            // both would otherwise leave the character permanently owing itself points.
+            if (isAutomatic && unspent > 0)
+            {
+                automaticTotal += unspent;
+                unspent = 0;
             }
 
             Raise();

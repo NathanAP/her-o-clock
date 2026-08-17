@@ -78,6 +78,32 @@ namespace HerOClock.Progression
             }
         }
 
+        /// <summary>
+        /// Puts back the level and experience a save held.
+        ///
+        /// It deliberately does **not** raise <see cref="LevelGained"/>. Loading is not levelling
+        /// up: the event exists so a character can react to earning a level, and firing it dozens of
+        /// times on startup would hand out the same points the save already recorded.
+        ///
+        /// Whoever restores is responsible for bringing the attribute allocation up to this level
+        /// afterwards, which is what reconciles a save whose numbers do not add up.
+        /// </summary>
+        public void Restore(int level, long currentXp, int skillPoints)
+        {
+            Level = Math.Min(Math.Max(1, level), maxLevel);
+            SkillPoints = Math.Max(0, skillPoints);
+
+            if (IsMaxLevel)
+            {
+                // Same rule as earning it: experience past the last level has nowhere to go.
+                CurrentXp = 0;
+                return;
+            }
+
+            long needed = ExperienceTable.XpToNextLevel(Level);
+            CurrentXp = Math.Min(Math.Max(0L, currentXp), Math.Max(0L, needed - 1));
+        }
+
         /// <summary>Attribute points granted on every level, as stated in progress.md.</summary>
         public const int PointsPerLevel = 5;
 

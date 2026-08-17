@@ -65,6 +65,8 @@ The level contribution is computed from the level, never accumulated level by le
 
 If you find yourself reading `BasePower` outside this class, something is being calculated in the wrong place.
 
+Rebuilding the stats also clamps current health down to the new maximum. Points only arrive while levelling, so the maximum only ever rises and the clamp does nothing — until a player takes their points back to rebuild, which drops the maximum with the current health still above it. `attributes.md` has always said current health can never exceed maximum; nothing enforced it until 0.6.0.0, and it was the save round trip that noticed, because restoring a hero clamped it and the hero it was restored from never had been.
+
 ## Sheet and instance are separate
 
 `CharacterDefinition` is a shared asset: the immutable mould, holding story, design, colour and later skills. `Character` holds its own copy of the stats, created from the sheet on initialisation, plus its own level.
@@ -92,6 +94,32 @@ Because JSON cannot hold an asset reference, characters are named by a text `Id`
 The cost of text references is that a typo would only surface at runtime. `StageValidator` is what pays that cost: it has no Unity dependency, so it can be tested outside the editor, and it reports every problem in a file at once instead of stopping at the first.
 
 An earlier version of this file said the validator **was** covered by tests. It was not: no test file has ever existed in this repository. The coverage arrives in 0.5.2.0.
+
+## The save signs text, never an object
+
+`SaveEnvelope` splits a file into a signature and the payload text it covers, and the payload is taken out **verbatim** — the stretch between `"payload":` and the envelope's closing brace. Nothing is parsed and rebuilt on the way.
+
+That is not a style choice, it is the only shape that survives a version bump. A save written by a later build holds fields this one has never heard of; reserialising to verify would drop them, and the signature would never match again. Signing the text means an unknown field travels through untouched and is covered like everything else.
+
+The same reasoning runs through `SaveMigration`: a missing section becomes what a game that never had it would hold, never an invented value. Between the two, adding a field to the format costs no conversion step at all.
+
+A file from a **newer** format is refused outright, which is a stronger reaction than a failed signature. A bad signature says the numbers may have been edited; a version from the future says we cannot tell which number is which.
+
+### Only `SaveStore` touches a disk
+
+The format, the signature, the naming and the retention rule are pure code with no `UnityEngine` in them, and each is tested by being handed strings. `SaveRetention` in particular is a pure function from file names to file names, so the rule that decides whether a player can go back to yesterday is checked without a single file existing.
+
+`SaveStore` takes its folder as a parameter rather than looking it up, which is what lets a test point it at a throwaway directory and exercise the real reading and writing.
+
+## The tests drive the real stage runner
+
+`StageSimulation` used to repeat the `StageRunner` loop instead of driving it, because the runner destroys its enemies between waves and Unity's deferred `Destroy` never runs outside Play Mode. The balance numbers were therefore measured against the copy, so a change to the real loop that nobody mirrored would have been reported as "nothing moved".
+
+The fix was one field: `StageContext.Destroy`. The game leaves it alone and gets Unity's deferred `Destroy`; a test passes `DestroyImmediate`. The copy is gone.
+
+`StageContext` itself replaced a `Configure` with nine positional parameters, which had reached the point where two of them could be swapped and still compile.
+
+**The snapshot did not move by a single digit when this landed**, which is the evidence the refactor preserved behaviour — including the parts that are now genuinely exercised for the first time, since the simulation runs the real transitions between waves.
 
 ## Assemblies
 

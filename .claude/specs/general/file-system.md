@@ -27,3 +27,8 @@ Utilize este arquivo para visualizar e manter a estrutura geral do projeto organ
     - Settings (configurações de render pipeline e input)
 - Packages (dependências da Unity)
 - ProjectSettings (configurações do projeto Unity)
+
+## O que não fica na pasta do projeto
+
+- O **save** do jogador mora na pasta de dados persistentes que o sistema operacional oferece ao jogo, e nunca aqui dentro. Uma pasta do projeto viaja no git e é apagada por uma reinstalação, então nenhuma das duas serve para guardar progresso. O formato e a organização dos arquivos estão em `save.md`.
+- As **preferências** de tela ficam nas preferências do jogador oferecidas pelo motor, conforme `window.md`.

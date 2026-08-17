@@ -4,6 +4,8 @@ using HerOClock.Characters;
 using HerOClock.Combat;
 using HerOClock.Progression;
 using HerOClock.Stages;
+using HerOClock.Text;
+using HerOClock.View;
 using UnityEngine;
 
 namespace HerOClock.Tests
@@ -11,13 +13,16 @@ namespace HerOClock.Tests
     /// <summary>
     /// Plays a whole stage in memory: wave after wave, damage carrying across them, villain last.
     ///
-    /// It repeats the StageRunner's loop rather than driving it, for one reason: the runner
-    /// destroys its enemies between waves, and the deferred Destroy never runs outside Play Mode.
-    /// Everything else follows the same rules, and the parts that decide the outcome — the
-    /// director, the attackers, the movers, the damage — are the real ones.
+    /// It drives the **real** <see cref="StageRunner"/>. It used to repeat the runner's loop
+    /// instead, because the runner destroys its enemies between waves and Unity's deferred
+    /// <c>Destroy</c> never runs outside Play Mode. That copy was a liability: the balance numbers
+    /// were measured against it, so a change to the real loop that nobody mirrored here would have
+    /// been reported as "nothing moved". The runner now takes its destroyer as a parameter, which
+    /// is all it took to delete the copy.
     ///
-    /// The transitions are skipped, since the ground rolling and the party walking back change
-    /// nothing about who wins. The reported time is fighting time only.
+    /// What it still does not do is render, and it holds no scene. The transitions between waves do
+    /// run, since the runner owns them, but the reported time counts only the fighting, which is
+    /// what the balance tables have always compared.
     /// </summary>
     public static class StageSimulation
     {
@@ -50,7 +55,11 @@ namespace HerOClock.Tests
         }
 
         /// <summary>
-        /// Runs the stage and reports what happened.
+        /// Runs the stage once and reports what happened.
+        ///
+        /// It stops at the first outcome. The real runner starts the stage over after a victory or
+        /// a defeat, since stage selection does not exist yet, and a measurement of "how long does
+        /// this stage take" must not include the second attempt.
         ///
         /// The time limit is a safety net: two sides that cannot hurt each other would otherwise
         /// keep the loop going forever.
@@ -82,37 +91,64 @@ namespace HerOClock.Tests
                         new GridPosition(placement.Column, placement.Row), heroLevel, 1f));
                 }
 
-                int waveCount = stage.waves.Length + 1;
+                GameObject host = new GameObject("Stage");
+                spawned.Add(host);
 
-                for (int index = 0; index < waveCount; index++)
+                BattleDirector director = host.AddComponent<BattleDirector>();
+                StageRunner runner = host.AddComponent<StageRunner>();
+
+                long experience = 0;
+                bool? cleared = null;
+                int wavesCleared = 0;
+
+                runner.EnemyDefeated += (enemy, xp, money) => experience += xp;
+                runner.WaveCleared += () => wavesCleared++;
+                runner.StageEnded += won => cleared = won;
+
+                runner.Configure(new StageContext
                 {
-                    bool isVillainWave = index == stage.waves.Length;
-                    StageWave wave = isVillainWave ? stage.villainWave : stage.waves[index];
+                    Grid = grid,
+                    Director = director,
+                    CharactersById = charactersById,
+                    Wallet = wallet,
+                    Strings = TextFor(stage),
+                    Random = random,
+                    Scroller = new BoardScroller(host.transform, config.CellSize),
+                    Spawn = (definition, team, position, level, multiplier) =>
+                        Spawn(spawned, grid, definition, team, position, level, multiplier),
 
-                    List<Character> enemies = SpawnWave(spawned, grid, wave, stage, charactersById);
+                    // The whole reason this can drive the real runner. Outside Play Mode the
+                    // deferred Destroy never runs, so every enemy of every wave would stay on the
+                    // board holding its cell.
+                    Destroy = target => Object.DestroyImmediate(target)
+                }, heroes);
 
-                    bool heroesWon = FightWave(grid, heroes, enemies, random, secondsPerWave, ref outcome, wallet);
+                runner.StartStage(stage);
 
-                    ReleaseEnemies(enemies);
+                // One budget per wave, so a stage with more waves is not given less room each.
+                int limit = Mathf.RoundToInt(secondsPerWave * (stage.waves.Length + 1) / BattleDirector.FixedStep);
+                int fightingSteps = 0;
 
-                    if (!heroesWon)
+                for (int step = 0; step < limit && !cleared.HasValue; step++)
+                {
+                    // Read before the step, because the blow that ends a wave lands inside it and
+                    // that step is part of the fight.
+                    if (runner.IsFighting)
                     {
-                        outcome.MoneyAwarded = wallet.Money;
-                        outcome.FirstHeroLevel = heroes[0].Level;
-                        return outcome;
+                        fightingSteps++;
                     }
 
-                    if (!isVillainWave)
-                    {
-                        outcome.WavesCleared++;
-                    }
-
-                    ReturnHeroesToStart(heroes);
+                    runner.Advance(BattleDirector.FixedStep);
                 }
 
-                outcome.Cleared = true;
+                outcome.Seconds = fightingSteps * BattleDirector.FixedStep;
+                outcome.ExperienceAwarded = experience;
                 outcome.MoneyAwarded = wallet.Money;
+                outcome.WavesCleared = wavesCleared;
                 outcome.FirstHeroLevel = heroes[0].Level;
+                outcome.TimedOut = !cleared.HasValue;
+                outcome.Cleared = cleared.HasValue && cleared.Value;
+
                 return outcome;
             }
             finally
@@ -127,115 +163,24 @@ namespace HerOClock.Tests
             }
         }
 
-        private static bool FightWave(
-            BattleGrid grid,
-            List<Character> heroes,
-            List<Character> enemies,
-            BattleRandom random,
-            float secondsPerWave,
-            ref Outcome outcome,
-            PlayerWallet wallet)
+        /// <summary>
+        /// A strings table holding what the runner announces, so a headless run does not fill the
+        /// Console with missing keys. A missing key comes back readable rather than empty, but there
+        /// is no reason to make the noise.
+        /// </summary>
+        private static StringTable TextFor(StageData stage)
         {
-            List<Character> everyone = new List<Character>(heroes);
-            everyone.AddRange(enemies);
-
-            GameObject host = new GameObject("Director");
-
-            try
+            StringTableData data = new StringTableData
             {
-                BattleDirector director = host.AddComponent<BattleDirector>();
-
-                long experience = 0;
-                long money = 0;
-
-                for (int i = 0; i < enemies.Count; i++)
+                language = "en",
+                entries = new[]
                 {
-                    Character enemy = enemies[i];
-                    enemy.Died += fallen =>
-                    {
-                        bool villain = fallen.Kind == CharacterKind.Villain;
-                        int level = fallen.Level;
-
-                        experience += villain
-                            ? ExperienceTable.XpFromVillain(level)
-                            : ExperienceTable.XpFromMinion(level);
-
-                        money += villain
-                            ? ExperienceTable.MoneyFromVillain(level)
-                            : ExperienceTable.MoneyFromMinion(level);
-
-                        for (int h = 0; h < heroes.Count; h++)
-                        {
-                            heroes[h].AwardExperience(villain
-                                ? ExperienceTable.XpFromVillain(level)
-                                : ExperienceTable.XpFromMinion(level));
-                        }
-                    };
+                    new StringEntry { key = StringTable.StageName(stage.id), value = stage.id },
+                    new StringEntry { key = StringTable.StageLore(stage.id), value = "Simulated." }
                 }
+            };
 
-                bool? heroesWon = null;
-                director.BattleEnded += won => heroesWon = won;
-
-                director.Begin(grid, everyone, random);
-
-                int limit = Mathf.RoundToInt(secondsPerWave / BattleDirector.FixedStep);
-                int step = 0;
-
-                while (step < limit && director.IsRunning)
-                {
-                    director.Tick(BattleDirector.FixedStep);
-                    step++;
-                }
-
-                outcome.Seconds += step * BattleDirector.FixedStep;
-                outcome.ExperienceAwarded += experience;
-                wallet.Add(money);
-
-                if (!heroesWon.HasValue)
-                {
-                    outcome.TimedOut = true;
-                    return false;
-                }
-
-                return heroesWon.Value;
-            }
-            finally
-            {
-                Object.DestroyImmediate(host);
-            }
-        }
-
-        private static List<Character> SpawnWave(
-            List<GameObject> spawned,
-            BattleGrid grid,
-            StageWave wave,
-            StageData stage,
-            IReadOnlyDictionary<string, CharacterDefinition> charactersById)
-        {
-            List<Character> enemies = new List<Character>();
-
-            for (int i = 0; i < wave.placements.Length; i++)
-            {
-                StagePlacement placement = wave.placements[i];
-
-                CharacterDefinition definition;
-                if (!charactersById.TryGetValue(placement.character, out definition))
-                {
-                    continue;
-                }
-
-                GridPosition position = new GridPosition(placement.column, placement.row);
-
-                if (!grid.IsFree(position))
-                {
-                    continue;
-                }
-
-                enemies.Add(Spawn(spawned, grid, definition, Team.Enemies, position,
-                    stage.enemyLevel, placement.EffectiveMultiplier));
-            }
-
-            return enemies;
+            return StringTable.From(data, new List<string>());
         }
 
         private static Character Spawn(
@@ -253,32 +198,6 @@ namespace HerOClock.Tests
 
             spawned.Add(instance);
             return character;
-        }
-
-        private static void ReleaseEnemies(List<Character> enemies)
-        {
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                enemies[i].ClearFromGrid();
-                Object.DestroyImmediate(enemies[i].gameObject);
-            }
-        }
-
-        /// <summary>
-        /// Everyone leaves the board before anyone is placed back, otherwise a hero standing on
-        /// another hero's starting cell would make both claim the same one.
-        /// </summary>
-        private static void ReturnHeroesToStart(List<Character> heroes)
-        {
-            for (int i = 0; i < heroes.Count; i++)
-            {
-                heroes[i].ClearFromGrid();
-            }
-
-            for (int i = 0; i < heroes.Count; i++)
-            {
-                heroes[i].ReturnToStart();
-            }
         }
     }
 }
