@@ -34,6 +34,7 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - `equipment` — a classe de equipamento (`light`, `magic` ou `heavy`), que decide como os atributos principais viram secundários, conforme `items.md`.
     - Lacaios e vilões não carregam equipamento de verdade, mas declaram uma classe assim mesmo, pois é ela que define as constantes de evasão, velocidade e recarga deles.
 - `minRange` e `maxRange` — a faixa de alcance do ataque básico, em casas. Corpo a corpo é `1` e `1`. Um alcance mínimo acima de 1 faz o personagem recuar quando um inimigo encosta.
+- `autoAttacks` — como o ataque básico se apresenta. Hoje só carrega `type`, que é `melee` ou `ranged`, e serve ao visual: um ataque `ranged` dispara um projétil. Ele não muda regra nenhuma de combate, pois quem decide alcance são os dois campos acima.
 - `defence` — os atributos defensivos, cada um com o valor inicial e **quanto ganha por nível**, conforme "Atributos limitados crescem com o nível" em `attributes.md`.
     - `physicalArmor`, `fireResistance`, `waterResistance` e `electricResistance`.
     - Ganho igual ao valor inicial mantém a mitigação parada durante o jogo inteiro, e é o caso mais comum.

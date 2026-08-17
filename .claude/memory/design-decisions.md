@@ -137,6 +137,26 @@ The money ceiling turned out to be simpler than it looked. Written as twelve hou
 
 The ceilings are also the only defence against the player winding the system clock forward, and that is now written down. A month away pays the same as twelve hours, so winding the clock leads nowhere. Anyone who later tunes those ceilings is tuning two things at once.
 
+## An area skill is centred on whoever used it
+
+There is no search for the best spot on the board. An earlier version of `gameplay.md` described a scoring pass that placed an area wherever it would catch the most of the right people; it was removed in 0.6.0.3 along with the `bestPlacement` anchor that selected it.
+
+The reason is the same one that rules out an aggro attribute: the game is tiny and lives in a corner of the screen, so the player has to be able to predict the fight at a glance. An area landing wherever an invisible sum decided destroys that. It also removes a scan of the board running per skill per step, and it makes where a hero stands part of the decision rather than something the game quietly optimises away.
+
+## The same buff arriving twice refreshes, it never stacks
+
+The strongest value wins and the duration restarts.
+
+Stacking was rejected because it would need a ceiling **per buff**: with six heroes carrying the same slow, an enemy would otherwise sit at zero. That is one more constant to calibrate in every buff in the game, and not one of them would be arguable on its own. The price is that accumulation builds do not exist, which is cheap next to a system where the player's arithmetic depends on how many allies happen to carry the same piece.
+
+Different effects on the same attribute still add up. The rule is about one source arriving again, not about the attribute.
+
+## A skill never fails whole because one effect did not fit
+
+`move_to` with `lastTargetAnySide` looks at the four cells around the last target and takes the first free one on the board, ordered by lowest row then lowest column. If none of them serves, the character simply stays where it is and the rest of the skill resolves normally.
+
+Two things are load-bearing there. The order has to be **fixed** rather than "nearest" or "most convenient", or the same battle from the same seed can end differently. And effects are independent: they resolve in the order they are written, and one that cannot happen does not cancel the others.
+
 ## Free movement, with no body blocking
 
 Characters cross the whole board chasing their target. The areas only define where the battle starts.

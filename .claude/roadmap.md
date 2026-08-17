@@ -183,12 +183,32 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Dois bugs achados pelos testes, nenhum no código novo: vida atual acima da máxima ao refazer a build, e dois heróis da mesma ficha compartilhando progresso ao carregar — a formação de hoje tem dois de cada.
 - O resumo completo está em `.claude/versions/20260817_0.6.0.0.md`.
 
+## 0.6.0.1 e 0.6.0.2 (feitas)
+
+- A spec de habilidades, escrita por inteiro antes de existir código. Nasceram `.claude/specs/general/abilities.md` e `.claude/specs/general/buffs-and-debuffs.md`, e as habilidades saíram de `characters.md`.
+- As quatro fases de uma habilidade — preparo, tempo de uso, recuo e recarga — com um personagem cobaia e contas concretas.
+- A âncora `bestPlacement` foi removida em favor de área sempre centrada em quem usa, e o `behindLastTarget` virou `lastTargetAnySide`.
+- A `tempo.json` virou a ficha de referência: três habilidades reais exercitando `self`, `area`, `chain`, os quatro tipos de efeito e a escala por `rank`.
+
+## 0.6.0.3 (feita)
+
+- Conferência da spec de habilidades contra o critério de "isto dá para testar?". Só documentação, nenhuma linha de código.
+- Um erro de conta corrigido, uma contradição deixada pela remoção do `bestPlacement` resolvida, e os dois furos que faltavam fechados: empilhamento de buff e o `move_to` sem casa livre.
+- `Intangível` e `Inalvejável` ganharam definição mecânica, e ficou registrado que prioridade de alvo alternativa **não existe** — em vez de ficar subentendido, virou coisa que o validador recusa.
+- O plano de testes da 0.7.0.0 ficou escrito abaixo.
+- O resumo completo está em `.claude/versions/20260817_0.6.0.3.md`.
+
 ## 0.7.0.0
 
 - Habilidades.
-- Recarga, área, provocação e reposicionamento.
-- Testes: é a maior superfície de regra do jogo inteiro, e quase tudo já está escrito como exemplo em `gameplay.md` e `characters.md`. A pontuação de posicionamento em área (o exemplo de 3 aliados e 2 inimigos pontuando 1), os formatos `chain`, `line` e `area`, os efeitos resolvidos na ordem em que aparecem, a habilidade pronta que segura a carga em vez de ser usada no vazio, e a provocação sobrescrevendo a cadeia de alvo.
-- Junto entra um validador de ficha, pois `characters.md` já avisa que um `array` menor que o `ranks` faria o último nível ler um valor inexistente **sem dar erro nenhum**. Uma spec que nomeia o próprio problema silencioso está pedindo um teste.
+- As quatro fases de `abilities.md` — preparo, tempo de uso, recuo e recarga —, os formatos de alvo, os efeitos, a provocação e o reposicionamento.
+- A superfície de regra é a maior do jogo inteiro, mas o trabalho é **grande e não complicado**, porque `characters.md` já decidiu o que importa: uma habilidade nunca é comportamento exclusivo, é combinação de peças reaproveitáveis. Depois que a gramática existir, cada habilidade é dado.
+- As costuras já estão prontas: `modify_stat` entra pelo `TotalOf`, o `TauntedBy` já é respeitado pelo `TargetSelector`, o `DamageCalculator` recebe só números e o `deal_damage` reaproveita ele inteiro, e o passo fixo faz um teste de habilidade rodar sem cena.
+- Testes, em três camadas, e a divisão importa:
+    - **Por peça**, que é onde está o valor: cada formato (`self`, `single`, `area`, `chain`, `line`), a ordem dos efeitos, as contas de recarga do personagem cobaia, a habilidade pronta que segura a carga em vez de ser usada no vazio, o preparo interrompido indo para metade da recarga, a provocação sobrescrevendo a cadeia de alvo, e o buff repetido renovando em vez de somar.
+    - **Por habilidade, como validador de autoria**: os `arrays` batem com `ranks`, o atributo citado existe, uma `chain` declara `jumpRange`, uma `area` declara as dimensões, e nenhuma ficha declara prioridade de alvo, que ainda não existe. Essa é a bateria por habilidade, custa pouco e **nunca envelhece**.
+    - **Por combinação**, poucos cenários escritos à mão. É a camada que mais paga, porque é onde se verifica que uma build fora do meta continua funcionando.
+- O que **não** fazer: um teste por habilidade afirmando dano. Isso é caracterização em cima de conteúdo, protege o número que existe hoje e quebra em toda passada de balanceamento.
 
 ## 0.8.0.0
 

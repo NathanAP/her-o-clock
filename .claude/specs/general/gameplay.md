@@ -214,17 +214,12 @@ Este é o fluxo principal do jogo.
     - Se a habilidade descrever que ela "ataca TODOS em uma área 3x3" e for usada em um local com aliados, os aliados também sofrerão aquele ataque.
     - Se a habilidade descrever que ela "cura TODOS em uma área 3x3" e for usada em um local com inimigos, os inimigos também sofrerão aquela cura.
 
-### Escolhendo o local de uma habilidade em área
+### Onde uma habilidade em área acontece
 
-- Uma habilidade em área é sempre posicionada no local que gerar a melhor pontuação, calculada assim:
-    - Cada personagem que a habilidade deveria afetar soma 1 ponto.
-    - Cada personagem que a habilidade não deveria afetar diminui 1 ponto.
-- O local escolhido é o de maior pontuação. Por exemplo, para uma habilidade de cura:
-    - Um local que alcança 3 aliados e 2 inimigos pontua 1.
-    - Um local que alcança 2 aliados e nenhum inimigo pontua 2.
-    - O segundo local é escolhido, pois possui a maior pontuação.
-- Em caso de empate na pontuação, vence o local que contém a casa de menor fileira e, persistindo o empate, de menor coluna.
-- Habilidades específicas podem alterar o peso dessa conta quando fizer sentido para elas, mas o padrão é sempre 1 ponto para cada lado.
+- Uma habilidade em área é **sempre centrada em quem a usou**. Ela não procura o melhor lugar do tabuleiro.
+- Isso é uma escolha, e o motivo é a proposta do jogo: ele é minúsculo e vive num cantinho da tela, então o jogador precisa conseguir prever a briga olhando de relance. Uma área que aparece em um lugar escolhido por uma conta invisível destrói essa leitura, pelo mesmo motivo que não existe atributo de aggro.
+- O efeito colateral é que posicionar o herói vira parte da decisão, e não uma otimização que o jogo faz sozinho por trás.
+- Uma versão anterior desta página descrevia uma pontuação que procurava o melhor local do tabuleiro. Ela foi removida na 0.6.0.3, junto com a âncora `bestPlacement` que a selecionava.
 
 ### Morte no campo de batalha
 

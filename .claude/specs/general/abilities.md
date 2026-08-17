@@ -27,6 +27,8 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
     - Toda habilidade declara quantos níveis ela possui no campo `ranks`, e todo `array` dentro dela precisa ter exatamente esse tamanho.
         - Sem essa regra, um `array` com um valor a menos faria o último nível da habilidade ler um valor que não existe, e isso não daria erro nenhum. Seria um problema silencioso.
 - Tudo relacionado a tempo na ficha (tempo de duração, tempo de recarga, etc) está indicado em segundos.
+- Enquanto a árvore de habilidades não existir, **toda habilidade é usada no rank 1**. Os demais ranks já ficam escritos na ficha, e é a árvore que vai destravá-los.
+    - Escrever os cinco ranks desde já não é trabalho perdido: é o que faz o validador ter o que conferir, e é onde a intenção de escala da habilidade fica registrada enquanto ela é desenhada.
 
 ## Fases de uma habilidade
 
@@ -57,31 +59,38 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
     - A que for lançada por último deverá esperar o **preparo**, **tempo de uso** e **recuo** da anterior. Ou seja:
         - Se o personagem lançar a habilidade A primeiro, após 1 segundo (1 pelo preparo + 0 pelo tempo de uso + 0 pelo tempo de recuo) ele poderá lançar a próxima habilidade.
         - Se o personagem lançar a habilidade B primeiro, após 4 segundos (2 pelo preparo + 2 pelo tempo de uso + 0 pelo tempo de recuo) ele poderá lançar a próxima habilidade.
-        - Se o personagem lançar a habilidade C primeiro, após 2 segundo (0 pelo preparo + 1 pelo tempo de uso + 1 pelo tempo de recuo) ele poderá lançar a próxima habilidade.
+        - Se o personagem lançar a habilidade C primeiro, após 2 segundos (0 pelo preparo + 1 pelo tempo de uso + 1 pelo tempo de recuo) ele poderá lançar a próxima habilidade.
     - Se em qualquer situação o ataque básico está ou ficou disponível, **o ataque básico ganha prioridade**.
         - Se o personagem estava preparando uma habilidade e o ataque básico ficou disponível nesse tempo, o ataque básico é lançado antes da próxima habilidade.
+        - Ele nunca interrompe o que já está em andamento. Ele entra na primeira brecha, ou seja, depois que o preparo, o tempo de uso e o recuo da habilidade atual terminarem.
 - A recarga de uma habilidade é acionada a partir do momento que **seu tempo de uso terminou**. Por exemplo:
     - Se a habilidade A for usada, ela entra em recarga após 1 segundo (1 pelo preparo + 0 pelo tempo de uso).
     - Se a habilidade B for usada, ela entra em recarga após 4 segundos (2 pelo preparo + 2 pelo tempo de uso).
-    - Se a habilidade C for usada, ela entra em recarga após 1 segundos (0 pelo preparo + 1 pelo tempo de uso).
+    - Se a habilidade C for usada, ela entra em recarga após 1 segundo (0 pelo preparo + 1 pelo tempo de uso).
+    - Repare que o recuo fica de fora desta conta, e é só isso que separa esta lista da anterior. A habilidade C libera a próxima habilidade em 2 segundos, mas já começou a recarregar em 1.
 - O tempo que uma habilidade demora para chegar ao inimigo **não interfere** na recarga da habilidade.
 - Parar o preparo de uma habilidade coloca ela em recarga **pela metade do tempo**.
+    - Um preparo é parado pelo debuff `Silenciado` ou pela morte de quem estava preparando, e por nada além disso.
+    - O alvo morrer durante o preparo não para nada. A habilidade sai normalmente e escolhe alvo de novo no instante em que sai, conforme as regras dela.
 
 ### Escolha de alvo
 
 - O bloco `targeting` responde **quem** a habilidade quer atingir e **em que formato**, e é separado dos efeitos de propósito: o alvo decide onde a habilidade acontece, os efeitos decidem o que acontece ali.
 - `who` indica o destinatário pretendido: `self`, `allies` ou `enemies`.
-    - É este campo que a pontuação de posicionamento descrita em `gameplay.md` usa para saber quem soma e quem diminui ponto.
+    - É ele que decide quem a habilidade procura e quem ela ignora ao escolher alvo.
+    - Ele **não** protege quem está por perto. Uma área pega todo mundo que estiver dentro dela, conforme "### Habilidades" em `gameplay.md`.
 - `shape` indica o formato:
     - `self` — apenas quem usou.
-    - `single` — um único alvo, escolhido pela ordem de prioridade padrão.
+    - `single` — um único alvo, escolhido pela ordem de prioridade padrão descrita em `gameplay.md`.
     - `area` — todos dentro de um retângulo de `areaColumns` por `areaRows`.
     - `chain` — uma sequência de alvos, cada um próximo do anterior.
     - `line` — todos em linha reta a partir de quem usou.
 - `anchor` indica onde a forma é posicionada:
     - `self` — centrada em quem usou a habilidade.
-    - `lastTargetAnySide` — em uma posição ao lado do último alvo da habilidade.
 - `range` é a distância máxima, em casas, entre quem usa e o alvo. Ele não tem relação nenhuma com o alcance do ataque básico do personagem.
+- **Ainda não existe como declarar uma prioridade de alvo diferente da padrão.** `gameplay.md` cita habilidades que atacam "o inimigo mais distante" ou "o de menor porcentagem de vida atual", e elas são desejáveis, mas nenhum campo desta página as expressa.
+    - Enquanto esse campo não existir, `single` usa sempre a cadeia de prioridade padrão, e **nenhuma ficha pode declarar outra coisa**. O validador recusa o que não estiver aqui.
+    - Está escrito em vez de ficar subentendido porque o silêncio aqui é do tipo caro: uma ficha declarando `"priority": "lowestHealth"` seria lida sem erro nenhum e simplesmente ignorada.
 - A forma `chain` possui dois campos próprios:
     - `maxTargets` — quantos alvos a sequência alcança no máximo. Ela atinge menos do que isso quando não existem inimigos suficientes.
     - `jumpRange` — a distância máxima entre um alvo e o próximo.
@@ -99,5 +108,13 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
         - Buff e debuff são o mesmo efeito. O que separa os dois é o sinal do valor.
     - `deal_damage` — causa dano. Recebe `damageType`, `base` e `scaling`, que é a fração de cada atributo que entra no cálculo.
     - `apply_status` — aplica um estado nomeado, como `untargetable` ou `intangible`.
-    - `move_to` — reposiciona alguém. Recebe `anchor`, como `behindLastTarget`.
+    - `move_to` — reposiciona alguém. Recebe `anchor`, que hoje só tem um valor: `lastTargetAnySide`, uma das casas vizinhas ao último alvo da habilidade.
 - Um estado nomeado só existe quando ele faz algo que o jogo ainda não sabe fazer. Estados que são apenas números não precisam existir, pois `modify_stat` já dá conta deles.
+
+#### Para onde o `move_to` leva
+
+- `lastTargetAnySide` considera as casas imediatamente acima, abaixo, à esquerda e à direita do último alvo.
+- Vale a primeira casa **livre e dentro do tabuleiro**, na ordem de menor fileira e, persistindo o empate, menor coluna. É a mesma ordem de desempate que o resto do jogo já usa.
+    - Precisa ser uma ordem fixa, e não a mais próxima ou a mais conveniente, senão a mesma batalha com a mesma semente pode terminar diferente.
+- Se nenhuma das quatro servir, **o personagem simplesmente não sai do lugar** e o resto da habilidade acontece normalmente.
+    - Uma habilidade nunca falha inteira por causa de um efeito que não coube. Os efeitos são independentes e resolvidos em ordem, conforme esta mesma seção.
