@@ -235,7 +235,13 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - 5 vilões.
 - 12 lacaios.
 - Instâncias de todo mundo organizada na Unity.
+    - Hoje existem quatro fichas na Unity (`hero-tank`, `hero-archer`, `minion-standard`, `villain-boss`) e três documentos de design em `.claude/specs/characters/` (`tempo`, `discarded-prototype`, `exposed-prototype`). É esta versão que faz os dois lados se encontrarem.
+    - As fichas de teste saem de cena quando os personagens de verdade entrarem. Elas não viram conteúdo.
+- **Uma decisão que esta versão precisa tomar:** quando a Tempo virar asset, os números dela vão existir em dois lugares — o documento de design e o `ScriptableObject`.
+    - Pela regra de "onde cada número mora", os números de entrada moram na spec e o teste os repete. Então o caminho coerente é um teste conferindo que o asset bate com o documento de design, do mesmo jeito que os testes de dano conferem o código contra `attributes.md`.
+    - Sem isso, os dois envelhecem separados em silêncio, que é exatamente o problema que a pasta `balance/` existe para evitar.
 - Testes: nenhuma regra nova, mas muito conteúdo novo. Os testes de conteúdo da 0.5.2.0 passam a valer para as 5 fases e os 17 personagens, e cada fase ganha um teste de caracterização dizendo em que nível ela deveria ser vencível.
+- Aqui também é onde a bateria de validação de habilidade da 0.7.0.0 começa a pagar de verdade: ela passa a rodar contra 17 fichas escritas à mão, em vez de contra fichas de laboratório.
 
 ## 0.10.0.0
 
