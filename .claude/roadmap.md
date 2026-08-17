@@ -188,7 +188,6 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Habilidades.
 - Recarga, área, provocação e reposicionamento.
 - Testes: é a maior superfície de regra do jogo inteiro, e quase tudo já está escrito como exemplo em `gameplay.md` e `characters.md`. A pontuação de posicionamento em área (o exemplo de 3 aliados e 2 inimigos pontuando 1), os formatos `chain`, `line` e `area`, os efeitos resolvidos na ordem em que aparecem, a habilidade pronta que segura a carga em vez de ser usada no vazio, e a provocação sobrescrevendo a cadeia de alvo.
-    - Uma dúvida: a gente consegue fazer uma bateria de teste para cada habilidade? Acho que seria a melhor forma de garantir que cada habilidade funciona, principalmente em combinações né?
 - Junto entra um validador de ficha, pois `characters.md` já avisa que um `array` menor que o `ranks` faria o último nível ler um valor inexistente **sem dar erro nenhum**. Uma spec que nomeia o próprio problema silencioso está pedindo um teste.
 
 ## 0.8.0.0

@@ -24,14 +24,6 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - Tirar os primários dos inimigos exigiria construir um segundo caminho, só para eles, nos dois sistemas.
 - A dificuldade real que isso cria é de autoria: escrever "POW 24, CON 25" para chegar em "370 de vida, 24 de dano" é indireto. Isso é resolvido no Inspector, que mostra ao vivo o que a ficha produz em qualquer nível, e não no modelo.
 - As fichas também indicam valores de dano, redução de recarga, escala para buffs e debuffs, entre outros.
-- As habilidades descritas nas fichas possuem níveis, então certos valores podem acabar mudando (o valor do dano pode aumentar a cada nível investido na habilidade). Nesses casos:
-    - Valores descritos em `arrays` indicam a escalabilidade conforme o nível (index 0 = nível 1, index 1 = nível 2 e assim por diante).
-        - Por exemplo: `{ ..., "duration": [10, 20, 30, 40, 50] }` indica que aquela habilidade possui uma escala conforme seu atual nível.
-    - Valores descritos diretamente em numéricos indicam a escalabilidade constante, ou seja, todos os níveis daquela habilidade usam o mesmo valor.
-        - Por exemplo: `{ ..., "duration": 20 }` indica que aquela habilidade possui a mesma duração em todos os níveis.
-    - Toda habilidade declara quantos níveis ela possui no campo `ranks`, e todo `array` dentro dela precisa ter exatamente esse tamanho.
-        - Sem essa regra, um `array` com um valor a menos faria o último nível da habilidade ler um valor que não existe, e isso não daria erro nenhum. Seria um problema silencioso.
-- Tudo relacionado a tempo na ficha (tempo de duração, tempo de recarga, etc) está indicado em segundos.
 
 ### Estrutura de uma ficha
 
