@@ -30,6 +30,19 @@ namespace HerOClock.Setup
         /// </summary>
         private const int DecorativeRows = BoardScroller.RowsPerTransition + 3;
 
+        /// <summary>
+        /// Columns drawn beyond each side of the board.
+        ///
+        /// The board is exactly as wide as the camera's reference resolution, so it has no margin
+        /// at all: a window a couple of pixels wider than intended shows the ground simply stop,
+        /// with the camera's background behind it. That is not supposed to happen, and the window
+        /// holds itself to an exact size to make sure it does not, but a hair of margin costs
+        /// nothing and turns a visible black band into nothing at all.
+        ///
+        /// They are only decoration. Nobody can walk there, exactly like the rows above and below.
+        /// </summary>
+        private const int DecorativeColumns = 2;
+
         /// <summary>The board object, which is the one that slides between waves.</summary>
         public static Transform Build(BattleGrid grid, Transform parent)
         {
@@ -40,7 +53,7 @@ namespace HerOClock.Setup
 
             for (int row = 1 - DecorativeRows; row <= config.Rows + DecorativeRows; row++)
             {
-                for (int column = 1; column <= config.Columns; column++)
+                for (int column = 1 - DecorativeColumns; column <= config.Columns + DecorativeColumns; column++)
                 {
                     GridPosition position = new GridPosition(column, row);
 
@@ -75,7 +88,9 @@ namespace HerOClock.Setup
             // Sits on the seam between the last hero row and the first enemy row.
             float y = (config.HeroRows - (config.Rows - 1) * 0.5f) * config.CellSize - config.CellSize * 0.5f;
             divider.transform.localPosition = new Vector3(0f, y, 0f);
-            divider.transform.localScale = new Vector3(config.Columns * config.CellSize, config.CellSize * 0.05f, 1f);
+            // Spans the decorative columns too, so it does not stop short of the visible ground.
+            divider.transform.localScale = new Vector3(
+                (config.Columns + DecorativeColumns * 2) * config.CellSize, config.CellSize * 0.05f, 1f);
 
             SpriteRenderer renderer = divider.AddComponent<SpriteRenderer>();
             renderer.sprite = SquareSprite.Get();

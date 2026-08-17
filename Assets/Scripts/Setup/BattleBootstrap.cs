@@ -138,6 +138,11 @@ namespace HerOClock.Setup
 
             WindowScale scale = gameObject.AddComponent<WindowScale>();
             scale.Configure(pixelPerfect.refResolutionX, pixelPerfect.refResolutionY);
+
+            // Takes the frame off, keeps the window above everything, and lets it be dragged by
+            // the game itself. It disables itself outside a Windows build, so the editor is never
+            // touched: the handle it would find there is the editor's own window.
+            gameObject.AddComponent<WindowDrag>();
         }
 
         private bool HasRequiredAssets()

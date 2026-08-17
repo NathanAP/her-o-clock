@@ -154,6 +154,23 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Não existe 0.5×: abaixo de 1× o Pixel Perfect precisaria reduzir, e reduzir pixel art quebra a grade.
 - O resumo completo está em `.claude/versions/20260817_0.5.8.0.md`.
 
+## 0.5.9.0 (feita)
+
+- A janela virou um widget de desktop. 313 verificações, contra 300.
+- Sem moldura, acima de qualquer programa e da barra de tarefas, arrastada clicando no próprio jogo, e magnética às bordas do monitor.
+- As três vieram juntas porque tirar a barra de título obriga o resto: sem ela o Windows não oferece jeito de mover a janela, e arrastar sem magnetismo torna o canto um trabalho de precisão.
+- Não é confiável acima de um jogo em tela cheia **exclusiva**, que assume o controle do vídeo. Acima de tela cheia sem borda, que é o comum hoje, funciona.
+- Custou o botão de fechar: sem barra de título, fechar é Alt+F4 até a tela de opções existir.
+- O resumo completo está em `.claude/versions/20260817_0.5.9.0.md`.
+
+## 0.5.9.1 (feita)
+
+- As faixas pretas nas laterais. Ao tirar a moldura, a área útil da janela cresceu alguns pixels, e o tabuleiro tem exatamente 180 de largura, sem folga nenhuma.
+- Corrigido nas duas pontas: a janela força o próprio tamanho pelo sistema operacional a cada quadro, e o tabuleiro ganhou duas colunas decorativas de cada lado, como já tinha fileiras.
+- A moldura e o tamanho saíram do `WindowDrag` e foram para o `WindowScale`, que é quem sabe de que tamanho a janela deve ser.
+- Nasceu `.claude/specs/general/window.md`, reunindo o comportamento da janela que estava espalhado entre resumos de versão.
+- O resumo completo está em `.claude/versions/20260817_0.5.9.1.md`.
+
 ## 0.6.0.0
 
 - Persistência.
@@ -197,7 +214,11 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 ## 0.11.0.0
 
 - Menus.
-- **Leva junto a janela sem borda e o arrastar.** Clicar na tela e arrastar para mover a janela exige tirar a borda do sistema, o que é código nativo do Windows e torna o arrastar obrigatório, já que sem barra de título a janela ficaria presa. O controle de zoom sai do atalho e vira um item da tela de opções.
+- **Leva junto o que a janela sem borda deixou pendente**, já que ela chegou na 0.5.9.0:
+    - Um jeito de fechar que não seja Alt+F4, porque não existe mais botão de fechar.
+    - O atalho para esconder ou minimizar a janela.
+    - O arrastar distinguindo fundo de interface. Hoje qualquer clique arrasta, o que é inofensivo só porque não há nada clicável.
+    - O controle de zoom saindo do atalho e virando um item da tela de opções.
 - Testes: praticamente nenhum. Interface é a única parte do jogo em que o custo de testar não se paga.
 
 ## 0.12.0.0

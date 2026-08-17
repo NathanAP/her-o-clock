@@ -61,6 +61,8 @@ namespace HerOClock.Window
 
         private void Update()
         {
+            HoldTheSize();
+
             Keyboard keyboard = Keyboard.current;
 
             if (keyboard == null)
@@ -93,6 +95,40 @@ namespace HerOClock.Window
             // Only does anything in a built player. In the editor the Game view is sized by the
             // editor itself, so this is one of the few things that has to be seen in a build.
             Screen.SetResolution(referenceWidth * scale, referenceHeight * scale, FullScreenMode.Windowed);
+        }
+
+        /// <summary>
+        /// Keeps the window at exactly the size it is supposed to be, and keeps the frame off.
+        ///
+        /// Both are checked every frame rather than set once, because both come undone on their
+        /// own. Unity applies a resolution change at the end of a frame rather than when asked,
+        /// and changing the size can bring the frame back with it.
+        ///
+        /// The size is then forced through Windows instead of being left to Unity.
+        /// <c>Screen.SetResolution</c> asks for a client size and lets Windows size the frame
+        /// around it, so once the frame is gone the two disagree by a handful of pixels. That is
+        /// enough to show the ground run out at the sides, because the board is exactly as wide
+        /// as the reference resolution and has no margin at all to spare.
+        /// </summary>
+        private void HoldTheSize()
+        {
+            if (!DesktopWindow.IsSupported)
+            {
+                return;
+            }
+
+            int wanted = referenceWidth * Scale;
+            int wantedHeight = referenceHeight * Scale;
+
+            DesktopWindow.Rect window = DesktopWindow.Bounds();
+
+            if (window.Width == wanted && window.Height == wantedHeight)
+            {
+                return;
+            }
+
+            DesktopWindow.RemoveFrame();
+            DesktopWindow.Resize(wanted, wantedHeight);
         }
     }
 }
