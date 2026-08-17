@@ -58,14 +58,14 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
         - Se o personagem lançar a habilidade A primeiro, após 1 segundo (1 pelo preparo + 0 pelo tempo de uso + 0 pelo tempo de recuo) ele poderá lançar a próxima habilidade.
         - Se o personagem lançar a habilidade B primeiro, após 4 segundos (2 pelo preparo + 2 pelo tempo de uso + 0 pelo tempo de recuo) ele poderá lançar a próxima habilidade.
         - Se o personagem lançar a habilidade C primeiro, após 2 segundo (0 pelo preparo + 1 pelo tempo de uso + 1 pelo tempo de recuo) ele poderá lançar a próxima habilidade.
-    - Se em qualquer situação o ataque básico está ou ficou disponível, **o ataque básico pode ganhar prioridade**.
+    - Se em qualquer situação o ataque básico está ou ficou disponível, **o ataque básico ganha prioridade**.
         - Se o personagem estava preparando uma habilidade e o ataque básico ficou disponível nesse tempo, o ataque básico é lançado antes da próxima habilidade.
 - A recarga de uma habilidade é acionada a partir do momento que **seu tempo de uso terminou**. Por exemplo:
     - Se a habilidade A for usada, ela entra em recarga após 1 segundo (1 pelo preparo + 0 pelo tempo de uso).
     - Se a habilidade B for usada, ela entra em recarga após 4 segundos (2 pelo preparo + 2 pelo tempo de uso).
-    - Se a habilidade C for usada, ela entra em recarga após 2 segundos (0 pelo preparo + 1 pelo tempo de uso).
+    - Se a habilidade C for usada, ela entra em recarga após 1 segundos (0 pelo preparo + 1 pelo tempo de uso).
 - O tempo que uma habilidade demora para chegar ao inimigo **não interfere** na recarga da habilidade.
-- Parar o preparo de uma habilidade colocar ela em recarga **pela metade do tempo**.
+- Parar o preparo de uma habilidade coloca ela em recarga **pela metade do tempo**.
 
 ### Escolha de alvo
 
