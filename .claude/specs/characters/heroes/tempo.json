@@ -20,11 +20,7 @@
         },
         "outfit": {
             "description": "Tempo's costume helps their maintain their speed and agility, featuring a tight-fitting suit with aerodynamic designs and a visor that enhances their perception of time.",
-            "colors": [
-                "blue",
-                "silver",
-                "yellow"
-            ]
+            "colors": ["blue", "silver", "yellow"]
         }
     },
     "hidden": {
@@ -67,19 +63,19 @@
     "thornsPercent": 0,
     "lifeStealPercent": 0,
     "healthRegen": 0,
+    "autoAttacks": {
+        "type": "melee"
+    },
     "abilities": [
         {
             "id": "no-time-to-waste",
             "name": "No time to waste!",
             "description": "Tempo increases their own speed, granting increased attack speed, movement speed and cooldown reduction for a duration.",
             "ranks": 5,
-            "cooldown": [
-                30,
-                28,
-                25,
-                22,
-                20
-            ],
+            "cooldown": [30, 28, 25, 22, 20],
+            "preparation": 0,
+            "casting": 0.4,
+            "recoil": 0,
             "targeting": {
                 "who": "self",
                 "shape": "self"
@@ -91,13 +87,7 @@
                     "stat": "attackSpeed",
                     "mode": "percent",
                     "value": 20,
-                    "duration": [
-                        5,
-                        6,
-                        7,
-                        8,
-                        9
-                    ]
+                    "duration": [5, 6, 7, 8, 9]
                 },
                 {
                     "type": "modify_stat",
@@ -105,13 +95,7 @@
                     "stat": "movementSpeed",
                     "mode": "percent",
                     "value": 20,
-                    "duration": [
-                        5,
-                        6,
-                        7,
-                        8,
-                        9
-                    ]
+                    "duration": [5, 6, 7, 8, 9]
                 },
                 {
                     "type": "modify_stat",
@@ -119,13 +103,7 @@
                     "stat": "cooldownReduction",
                     "mode": "percent",
                     "value": 15,
-                    "duration": [
-                        5,
-                        6,
-                        7,
-                        8,
-                        9
-                    ]
+                    "duration": [5, 6, 7, 8, 9]
                 }
             ]
         },
@@ -134,13 +112,10 @@
             "name": "Relax!",
             "description": "Tempo slows down the enemies around them, decreasing their attack speed, movement speed and cooldown reduction for a duration.",
             "ranks": 5,
-            "cooldown": [
-                30,
-                28,
-                25,
-                22,
-                20
-            ],
+            "cooldown": [30, 28, 25, 22, 20],
+            "preparation": 0.4,
+            "casting": 0.5,
+            "recoil": 0,
             "targeting": {
                 "who": "enemies",
                 "shape": "area",
@@ -155,13 +130,7 @@
                     "stat": "attackSpeed",
                     "mode": "percent",
                     "value": -10,
-                    "duration": [
-                        5,
-                        6,
-                        7,
-                        8,
-                        9
-                    ]
+                    "duration": [5, 6, 7, 8, 9]
                 },
                 {
                     "type": "modify_stat",
@@ -169,13 +138,7 @@
                     "stat": "movementSpeed",
                     "mode": "percent",
                     "value": -10,
-                    "duration": [
-                        5,
-                        6,
-                        7,
-                        8,
-                        9
-                    ]
+                    "duration": [5, 6, 7, 8, 9]
                 },
                 {
                     "type": "modify_stat",
@@ -183,13 +146,7 @@
                     "stat": "cooldownReduction",
                     "mode": "percent",
                     "value": -8,
-                    "duration": [
-                        5,
-                        6,
-                        7,
-                        8,
-                        9
-                    ]
+                    "duration": [5, 6, 7, 8, 9]
                 }
             ]
         },
@@ -198,25 +155,16 @@
             "name": "Fast and Furious!",
             "description": "Tempo blinks through nearby enemies, striking each one of them, and lands behind the last enemy hit. They cannot be touched while moving between them.",
             "ranks": 5,
-            "cooldown": [
-                20,
-                18,
-                18,
-                18,
-                16
-            ],
+            "cooldown": [20, 18, 18, 18, 16],
+            "preparation": 0,
+            "casting": 1,
+            "recoil": 0,
             "targeting": {
                 "who": "enemies",
                 "shape": "chain",
                 "range": 3,
                 "jumpRange": 3,
-                "maxTargets": [
-                    3,
-                    3,
-                    4,
-                    4,
-                    5
-                ]
+                "maxTargets": [3, 3, 4, 4, 5]
             },
             "effects": [
                 {
@@ -235,13 +183,7 @@
                     "type": "deal_damage",
                     "target": "eachTarget",
                     "damageType": "physical",
-                    "base": [
-                        50,
-                        60,
-                        70,
-                        80,
-                        90
-                    ],
+                    "base": [50, 60, 70, 80, 90],
                     "scaling": {
                         "pow": 0.2
                     }
@@ -249,7 +191,7 @@
                 {
                     "type": "move_to",
                     "target": "self",
-                    "anchor": "behindLastTarget"
+                    "anchor": "lastTargetAnySide"
                 }
             ]
         }

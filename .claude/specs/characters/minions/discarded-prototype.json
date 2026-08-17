@@ -20,11 +20,7 @@
         },
         "outfit": {
             "description": "Discarded prototypes have no outfit, as they are unfinished robots. Their metal bodies are exposed and show signs of wear and tear.",
-            "colors": [
-                "rusty brown",
-                "grey",
-                "black"
-            ]
+            "colors": ["rusty brown", "grey", "black"]
         }
     },
     "hidden": {
@@ -63,5 +59,8 @@
     "thornsPercent": 0,
     "lifeStealPercent": 0,
     "healthRegen": 0,
+    "autoAttacks": {
+        "type": "melee"
+    },
     "abilities": []
 }

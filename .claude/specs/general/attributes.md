@@ -19,6 +19,8 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Os atributos principais estão presentes em todos os personagens.
 - Cada herói possui uma base de atributos principais.
 - Os jogadores podem aumentar os atributos principais através de outros meios (itens, árvore de habilidades, árvore de progresso).
+- O mínimo de pontos de um atributo é 0.
+- O máximo de pontos de um atributo é 500, porém o uso de buffs pode fazer com que o valor ultrapasse esse limite.
 
 ### Distribuição dos pontos de nível
 
