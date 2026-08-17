@@ -247,6 +247,13 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Árvore de habilidades
 - Testes: superfície de regra grande de novo, e ela multiplica com as habilidades da 0.7.0.0. É a versão em que a suíte existente mais paga o próprio custo.
 
+## 0.17.0.0
+
+- Criar uma timeline da fase.
+- Adicionar um timer ao começar a fase e finalizar ela.
+    - Assim o jogador poderia ver quanto tempo demora pra completar uma fase ou ter uma noção de qual build é mais rápida.
+- Quem sabe da pra colocar uma espécie de "ranking" próprio pra saber qual foi a melho run da pessoa em cada fase.
+
 # Ordem escolhida
 
 - Cada versão depende apenas das anteriores.
