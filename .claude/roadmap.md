@@ -198,6 +198,15 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - O plano de testes da 0.7.0.0 ficou escrito abaixo.
 - O resumo completo está em `.claude/versions/20260817_0.6.0.3.md`.
 
+## 0.6.0.4 (feita)
+
+- Habilidade passou a morar em um lugar só. Tudo foi para `abilities.md`, e `gameplay.md` ficou com um resumo curto de onde as duas coisas se encostam.
+- As "promessas" de `gameplay.md` não eram contradição, era texto escrito antes do `targeting` existir. O que faltava era um campo.
+- **`priority` entrou no `targeting`.** Ele troca a primeira regra da cadeia de alvo, e o resto da cadeia padrão continua embaixo como desempate — o que responde "e se empatar" sem inventar um segundo sistema de desempate.
+- `chain` e `line` ganharam o que faltava, incluindo a direção da linha, que nunca tinha sido escrita e sem a qual `line` não dava para implementar.
+- A gramática de habilidades está fechada. A 0.7.0.0 não precisa de mais nenhuma decisão de spec.
+- O resumo completo está em `.claude/versions/20260817_0.6.0.4.md`.
+
 ## 0.7.0.0
 
 - Habilidades.
@@ -205,8 +214,8 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - A superfície de regra é a maior do jogo inteiro, mas o trabalho é **grande e não complicado**, porque `characters.md` já decidiu o que importa: uma habilidade nunca é comportamento exclusivo, é combinação de peças reaproveitáveis. Depois que a gramática existir, cada habilidade é dado.
 - As costuras já estão prontas: `modify_stat` entra pelo `TotalOf`, o `TauntedBy` já é respeitado pelo `TargetSelector`, o `DamageCalculator` recebe só números e o `deal_damage` reaproveita ele inteiro, e o passo fixo faz um teste de habilidade rodar sem cena.
 - Testes, em três camadas, e a divisão importa:
-    - **Por peça**, que é onde está o valor: cada formato (`self`, `single`, `area`, `chain`, `line`), a ordem dos efeitos, as contas de recarga do personagem cobaia, a habilidade pronta que segura a carga em vez de ser usada no vazio, o preparo interrompido indo para metade da recarga, a provocação sobrescrevendo a cadeia de alvo, e o buff repetido renovando em vez de somar.
-    - **Por habilidade, como validador de autoria**: os `arrays` batem com `ranks`, o atributo citado existe, uma `chain` declara `jumpRange`, uma `area` declara as dimensões, e nenhuma ficha declara prioridade de alvo, que ainda não existe. Essa é a bateria por habilidade, custa pouco e **nunca envelhece**.
+    - **Por peça**, que é onde está o valor: cada formato (`self`, `single`, `area`, `chain`, `line`), cada valor de `priority` com a cadeia padrão desempatando embaixo, a ordem dos efeitos, as contas de recarga do personagem cobaia, a habilidade pronta que segura a carga em vez de ser usada no vazio, o preparo interrompido indo para metade da recarga, a provocação sobrescrevendo a cadeia de alvo, e o buff repetido renovando em vez de somar.
+    - **Por habilidade, como validador de autoria**: os `arrays` batem com `ranks`, o atributo citado existe, uma `chain` declara `jumpRange`, uma `area` declara as dimensões, e o `priority` declarado está na lista aceita e cabe no formato usado. Essa é a bateria por habilidade, custa pouco e **nunca envelhece**.
     - **Por combinação**, poucos cenários escritos à mão. É a camada que mais paga, porque é onde se verifica que uma build fora do meta continua funcionando.
 - O que **não** fazer: um teste por habilidade afirmando dano. Isso é caracterização em cima de conteúdo, protege o número que existe hoje e quebra em toda passada de balanceamento.
 

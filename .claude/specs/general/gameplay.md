@@ -199,27 +199,15 @@ Este é o fluxo principal do jogo.
 
 ### Habilidades
 
-- Habilidades são usadas conforme suas regras e podem ignorar completamente a escolha de alvo padrão. Por exemplo:
-    - Se a habilidade descrever que ela "ataca o inimigo mais distante".
-    - Se a habilidade descrever que ela "ataca o inimigo com a menor porcentagem de vida atual".
-    - Se a habilidade descrever que ela "ataca TODOS em uma área 3x3".
-- Habilidades também possuem o seu próprio alcance e o seu próprio formato de área, que não precisam ter nenhuma relação com o ataque básico do personagem.
-    - Por exemplo, um personagem com alcance 2 no ataque básico pode possuir uma habilidade que atinge todos os inimigos em linha reta até o fim do campo de batalha.
-- Uma habilidade só é avaliada pelas suas próprias regras, nunca pelo alcance do ataque básico de quem a usa.
-    - No exemplo acima, se existir um inimigo na linha da habilidade, ela é usada imediatamente, mesmo que esse inimigo esteja muito além das 2 casas do ataque básico.
-    - Ignorar isso transformaria a habilidade em desvantagem, pois o personagem ficaria esperando o inimigo chegar perto para usar algo que já podia ter usado.
-- Uma habilidade pronta que não encontra nenhum alvo válido pelas suas próprias regras segura a carga e tenta novamente no instante seguinte. Ela nunca é usada no vazio.
-- Uma habilidade que não descreve nenhuma regra de alvo utiliza a mesma ordem de prioridade do ataque básico.
-- Habilidades podem afetar aliados e inimigos conforme sua descrição. Por exemplo:
-    - Se a habilidade descrever que ela "ataca TODOS em uma área 3x3" e for usada em um local com aliados, os aliados também sofrerão aquele ataque.
-    - Se a habilidade descrever que ela "cura TODOS em uma área 3x3" e for usada em um local com inimigos, os inimigos também sofrerão aquela cura.
+Habilidades são descritas por inteiro em `abilities.md`. O que vale registrar aqui é onde as duas coisas se encostam:
 
-### Onde uma habilidade em área acontece
-
-- Uma habilidade em área é **sempre centrada em quem a usou**. Ela não procura o melhor lugar do tabuleiro.
-- Isso é uma escolha, e o motivo é a proposta do jogo: ele é minúsculo e vive num cantinho da tela, então o jogador precisa conseguir prever a briga olhando de relance. Uma área que aparece em um lugar escolhido por uma conta invisível destrói essa leitura, pelo mesmo motivo que não existe atributo de aggro.
-- O efeito colateral é que posicionar o herói vira parte da decisão, e não uma otimização que o jogo faz sozinho por trás.
-- Uma versão anterior desta página descrevia uma pontuação que procurava o melhor local do tabuleiro. Ela foi removida na 0.6.0.3, junto com a âncora `bestPlacement` que a selecionava.
+- Uma habilidade tem **alcance e formato próprios**, sem nenhuma relação com o alcance do ataque básico de quem a usa.
+- Uma habilidade escolhe alvo pelas regras dela, mas **a cadeia de prioridade desta página é a base**: uma habilidade sem critério declarado usa a cadeia inteira, e uma que declara um critério apenas troca a primeira regra e mantém o resto como desempate.
+- A **provocação continua acima de tudo**, inclusive de uma habilidade que declare o próprio critério.
+- Uma habilidade em área é **sempre centrada em quem a usou**, e não procura o melhor lugar do tabuleiro.
+    - O motivo é a proposta do jogo: ele é minúsculo e vive num cantinho da tela, então o jogador precisa conseguir prever a briga olhando de relance. Uma área aparecendo onde uma conta invisível decidiu destrói essa leitura, pelo mesmo motivo que não existe atributo de aggro.
+    - O efeito colateral é que posicionar o herói vira parte da decisão, em vez de uma otimização que o jogo faz sozinho por trás.
+    - Uma versão anterior desta página descrevia uma pontuação que procurava o melhor local do tabuleiro. Ela foi removida na 0.6.0.3, junto com a âncora `bestPlacement` que a selecionava.
 
 ### Morte no campo de batalha
 

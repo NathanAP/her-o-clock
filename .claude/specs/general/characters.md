@@ -44,7 +44,7 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
     - Este bloco existe **apenas como documento de design**. Ele nunca deve ir para o dado que o jogo lê, senão qualquer pessoa abre o arquivo do jogo e encontra a revelação antes de merecê-la.
 - `baseAttributes` — os atributos principais no nível inicial, antes de qualquer outra fonte.
 - `attributeGrowth` — como o personagem distribui os 5 pontos que recebe a cada nível, em porcentagens. Descrito em `progress.md`.
-- `abilities` — as habilidades do personagem, descritas abaixo.
+- `abilities` — as habilidades do personagem, descritas por inteiro em `abilities.md`.
 
 ## Heróis
 
