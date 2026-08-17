@@ -137,13 +137,13 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - `characters.md` deixou registrado que as fichas de `specs/` são documento de design, e não dado que o jogo lê.
 - O resumo completo está em `.claude/versions/20260814_0.5.6.0.md`.
 
-## 0.5.7.0 (próxima)
+## 0.5.7.0 (feita)
 
-- Modelo de atributos de lacaios e vilões.
-- Inimigos não têm itens, então autorar um lacaio dizendo "POW 24, CON 25" para chegar em "370 de vida, 24 de dano" é indireto, e vai doer na 0.9.0.0, quando forem 12 lacaios e 5 vilões escritos de uma vez.
-- A pergunta é se lacaios e vilões deveriam ter atributos primários. Tirar os primários quebra duas coisas que ainda não existem: as habilidades escalam por atributo (`tempo.json` já traz `scaling: { pow: 0.2 }`) e os `modify_stat` de buff e debuff precisam de um atributo em que morder.
-- O caminho provável é o meio: manter os primários e permitir que a ficha sobrescreva um secundário diretamente.
-- Precisa vir antes da 0.7.0.0, porque vilões vão ter habilidades, e obrigatoriamente antes da 0.9.0.0, que é quando o conteúdo em massa é escrito.
+- Modelo de atributos de lacaios e vilões. **O modelo não mudou:** o problema era de ergonomia, não de conceito.
+- Inimigos mantêm os atributos principais, porque as habilidades escalam por atributo e os `modify_stat` de buff e debuff precisam de algo em que morder. Tirá-los exigiria um segundo caminho só para eles nos dois sistemas.
+- A dificuldade de autoria foi resolvida no Inspector: a ficha passou a mostrar ao vivo o que produz, em qualquer nível e com qualquer multiplicador de fase, lendo as mesmas propriedades que o jogo lê.
+- `characters.md` fechou a estrutura da ficha, que a 0.5.6.0 tinha adiado para cá, e registrou o porquê de inimigos terem primários.
+- O resumo completo está em `.claude/versions/20260814_0.5.7.0.md`.
 
 ## 0.6.0.0
 

@@ -1,9 +1,11 @@
 {
     "id": "discarded-prototype",
-    "displayName": "Discarded Prototype",
     "kind": "minion",
     "initialLevel": 1,
     "maxLevel": 100,
+    "equipment": "light",
+    "minRange": 1,
+    "maxRange": 1,
     "info": {
         "name": "Discarded Prototype",
         "type": "Robot",
@@ -18,7 +20,11 @@
         },
         "outfit": {
             "description": "Discarded prototypes have no outfit, as they are unfinished robots. Their metal bodies are exposed and show signs of wear and tear.",
-            "colors": ["rusty brown", "grey", "black"]
+            "colors": [
+                "rusty brown",
+                "grey",
+                "black"
+            ]
         }
     },
     "hidden": {
@@ -30,5 +36,32 @@
         "spe": 0,
         "con": 2
     },
+    "attributeGrowth": {
+        "pow": 40,
+        "agi": 20,
+        "spe": 0,
+        "con": 40
+    },
+    "defence": {
+        "physicalArmor": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "fireResistance": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "waterResistance": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "electricResistance": {
+            "base": 0,
+            "perLevel": 0
+        }
+    },
+    "thornsPercent": 0,
+    "lifeStealPercent": 0,
+    "healthRegen": 0,
     "abilities": []
 }

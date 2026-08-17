@@ -1,9 +1,11 @@
 {
     "id": "exposed-prototype",
-    "displayName": "Exposed Prototype",
     "kind": "villain",
     "initialLevel": 1,
     "maxLevel": 100,
+    "equipment": "heavy",
+    "minRange": 1,
+    "maxRange": 2,
     "info": {
         "name": "Exposed Prototype",
         "type": "Robot",
@@ -18,7 +20,11 @@
         },
         "outfit": {
             "description": "Discarded prototypes have no outfit, as they are unfinished robots. Their metal bodies are exposed and show signs of wear and tear.",
-            "colors": ["rusty brown", "grey", "black"]
+            "colors": [
+                "rusty brown",
+                "grey",
+                "black"
+            ]
         }
     },
     "hidden": {
@@ -30,5 +36,32 @@
         "spe": 0,
         "con": 4
     },
+    "attributeGrowth": {
+        "pow": 30,
+        "agi": 10,
+        "spe": 25,
+        "con": 35
+    },
+    "defence": {
+        "physicalArmor": {
+            "base": 60,
+            "perLevel": 60
+        },
+        "fireResistance": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "waterResistance": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "electricResistance": {
+            "base": 0,
+            "perLevel": 0
+        }
+    },
+    "thornsPercent": 0,
+    "lifeStealPercent": 0,
+    "healthRegen": 0,
     "abilities": []
 }

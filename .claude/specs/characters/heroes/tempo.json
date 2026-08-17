@@ -1,9 +1,11 @@
 {
     "id": "tempo",
-    "displayName": "Tempo",
     "kind": "hero",
     "initialLevel": 1,
     "maxLevel": 100,
+    "equipment": "light",
+    "minRange": 1,
+    "maxRange": 1,
     "info": {
         "name": "Tempo",
         "type": "Robot",
@@ -18,7 +20,11 @@
         },
         "outfit": {
             "description": "Tempo's costume helps their maintain their speed and agility, featuring a tight-fitting suit with aerodynamic designs and a visor that enhances their perception of time.",
-            "colors": ["blue", "silver", "yellow"]
+            "colors": [
+                "blue",
+                "silver",
+                "yellow"
+            ]
         }
     },
     "hidden": {
@@ -34,13 +40,46 @@
         "spe": 8,
         "con": 7
     },
+    "attributeGrowth": {
+        "pow": 25,
+        "agi": 35,
+        "spe": 25,
+        "con": 15
+    },
+    "defence": {
+        "physicalArmor": {
+            "base": 20,
+            "perLevel": 20
+        },
+        "fireResistance": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "waterResistance": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "electricResistance": {
+            "base": 0,
+            "perLevel": 0
+        }
+    },
+    "thornsPercent": 0,
+    "lifeStealPercent": 0,
+    "healthRegen": 0,
     "abilities": [
         {
             "id": "no-time-to-waste",
             "name": "No time to waste!",
             "description": "Tempo increases their own speed, granting increased attack speed, movement speed and cooldown reduction for a duration.",
             "ranks": 5,
-            "cooldown": [30, 28, 25, 22, 20],
+            "cooldown": [
+                30,
+                28,
+                25,
+                22,
+                20
+            ],
             "targeting": {
                 "who": "self",
                 "shape": "self"
@@ -52,7 +91,13 @@
                     "stat": "attackSpeed",
                     "mode": "percent",
                     "value": 20,
-                    "duration": [5, 6, 7, 8, 9]
+                    "duration": [
+                        5,
+                        6,
+                        7,
+                        8,
+                        9
+                    ]
                 },
                 {
                     "type": "modify_stat",
@@ -60,7 +105,13 @@
                     "stat": "movementSpeed",
                     "mode": "percent",
                     "value": 20,
-                    "duration": [5, 6, 7, 8, 9]
+                    "duration": [
+                        5,
+                        6,
+                        7,
+                        8,
+                        9
+                    ]
                 },
                 {
                     "type": "modify_stat",
@@ -68,7 +119,13 @@
                     "stat": "cooldownReduction",
                     "mode": "percent",
                     "value": 15,
-                    "duration": [5, 6, 7, 8, 9]
+                    "duration": [
+                        5,
+                        6,
+                        7,
+                        8,
+                        9
+                    ]
                 }
             ]
         },
@@ -77,7 +134,13 @@
             "name": "Relax!",
             "description": "Tempo slows down the enemies around them, decreasing their attack speed, movement speed and cooldown reduction for a duration.",
             "ranks": 5,
-            "cooldown": [30, 28, 25, 22, 20],
+            "cooldown": [
+                30,
+                28,
+                25,
+                22,
+                20
+            ],
             "targeting": {
                 "who": "enemies",
                 "shape": "area",
@@ -92,7 +155,13 @@
                     "stat": "attackSpeed",
                     "mode": "percent",
                     "value": -10,
-                    "duration": [5, 6, 7, 8, 9]
+                    "duration": [
+                        5,
+                        6,
+                        7,
+                        8,
+                        9
+                    ]
                 },
                 {
                     "type": "modify_stat",
@@ -100,7 +169,13 @@
                     "stat": "movementSpeed",
                     "mode": "percent",
                     "value": -10,
-                    "duration": [5, 6, 7, 8, 9]
+                    "duration": [
+                        5,
+                        6,
+                        7,
+                        8,
+                        9
+                    ]
                 },
                 {
                     "type": "modify_stat",
@@ -108,7 +183,13 @@
                     "stat": "cooldownReduction",
                     "mode": "percent",
                     "value": -8,
-                    "duration": [5, 6, 7, 8, 9]
+                    "duration": [
+                        5,
+                        6,
+                        7,
+                        8,
+                        9
+                    ]
                 }
             ]
         },
@@ -117,13 +198,25 @@
             "name": "Fast and Furious!",
             "description": "Tempo blinks through nearby enemies, striking each one of them, and lands behind the last enemy hit. They cannot be touched while moving between them.",
             "ranks": 5,
-            "cooldown": [20, 18, 18, 18, 16],
+            "cooldown": [
+                20,
+                18,
+                18,
+                18,
+                16
+            ],
             "targeting": {
                 "who": "enemies",
                 "shape": "chain",
                 "range": 3,
                 "jumpRange": 3,
-                "maxTargets": [3, 3, 4, 4, 5]
+                "maxTargets": [
+                    3,
+                    3,
+                    4,
+                    4,
+                    5
+                ]
             },
             "effects": [
                 {
@@ -142,7 +235,13 @@
                     "type": "deal_damage",
                     "target": "eachTarget",
                     "damageType": "physical",
-                    "base": [50, 60, 70, 80, 90],
+                    "base": [
+                        50,
+                        60,
+                        70,
+                        80,
+                        90
+                    ],
                     "scaling": {
                         "pow": 0.2
                     }

@@ -16,7 +16,13 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - O texto que o jogador lê **não fica na ficha nem no asset**. Ele mora em `Assets/Strings/`, na chave `character.{id}.name`, conforme descrito em `attributes.md`.
 - As quatro fichas que existem hoje em `Assets/ScriptableObjects/` são de teste e não correspondem a nenhuma ficha desta pasta. Os personagens de verdade do ato 1 chegam na 0.9.0.0.
 
-**A estrutura completa da ficha ainda não está fechada.** Ela não declara alcance, classe de equipamento nem crescimento de defesa, que são coisas que o motor exige. Isso é resolvido na 0.5.7.0, junto com a decisão de como lacaios e vilões declaram os atributos deles, pois as duas coisas mudam o mesmo arquivo.
+### Lacaios e vilões também têm atributos principais
+
+- Pode parecer estranho, já que eles não carregam equipamento e ninguém distribui pontos por eles. Foi discutido e a decisão é mantê-los, por dois motivos que só aparecem mais adiante:
+    - **As habilidades escalam por atributo.** O bloco `scaling` de um `deal_damage` fala em frações de POW ou de SPE, e vilões vão ter habilidades.
+    - **Buffs e debuffs precisam de um atributo em que morder.** Um `modify_stat` que reduz POW não teria efeito nenhum sobre um inimigo que não tem POW.
+- Tirar os primários dos inimigos exigiria construir um segundo caminho, só para eles, nos dois sistemas.
+- A dificuldade real que isso cria é de autoria: escrever "POW 24, CON 25" para chegar em "370 de vida, 24 de dano" é indireto. Isso é resolvido no Inspector, que mostra ao vivo o que a ficha produz em qualquer nível, e não no modelo.
 - As fichas também indicam valores de dano, redução de recarga, escala para buffs e debuffs, entre outros.
 - As habilidades descritas nas fichas possuem níveis, então certos valores podem acabar mudando (o valor do dano pode aumentar a cada nível investido na habilidade). Nesses casos:
     - Valores descritos em `arrays` indicam a escalabilidade conforme o nível (index 0 = nível 1, index 1 = nível 2 e assim por diante).
@@ -29,9 +35,17 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 
 ### Estrutura de uma ficha
 
-- `id` — identificador estável em texto. É por ele que fases, saves e outras fichas apontam para este personagem, então ele nunca muda depois que existe conteúdo o referenciando.
-- `displayName` e `kind` — o nome mostrado e o tipo (`hero`, `minion` ou `villain`).
+- `id` — identificador estável em texto. É por ele que fases, saves, o arquivo de strings e outras fichas apontam para este personagem, então ele nunca muda depois que existe conteúdo o referenciando.
+    - O nome mostrado ao jogador **não fica na ficha**. Ele mora em `Assets/Strings/`, na chave `character.{id}.name`.
+- `kind` — o tipo: `hero`, `minion` ou `villain`.
 - `initialLevel` e `maxLevel` — a faixa de níveis que aquele personagem alcança.
+- `equipment` — a classe de equipamento (`light`, `magic` ou `heavy`), que decide como os atributos principais viram secundários, conforme `items.md`.
+    - Lacaios e vilões não carregam equipamento de verdade, mas declaram uma classe assim mesmo, pois é ela que define as constantes de evasão, velocidade e recarga deles.
+- `minRange` e `maxRange` — a faixa de alcance do ataque básico, em casas. Corpo a corpo é `1` e `1`. Um alcance mínimo acima de 1 faz o personagem recuar quando um inimigo encosta.
+- `defence` — os atributos defensivos, cada um com o valor inicial e **quanto ganha por nível**, conforme "Atributos limitados crescem com o nível" em `attributes.md`.
+    - `physicalArmor`, `fireResistance`, `waterResistance` e `electricResistance`.
+    - Ganho igual ao valor inicial mantém a mitigação parada durante o jogo inteiro, e é o caso mais comum.
+- `thornsPercent`, `lifeStealPercent` e `healthRegen` — secundários que são porcentagem ou taxa, e por isso não precisam de ganho por nível.
 - `info` — tudo que o jogador pode ver: descrição, história, características físicas e visual.
 - `hidden` — a verdade por trás do personagem, que o jogador só descobre jogando.
     - Este bloco existe **apenas como documento de design**. Ele nunca deve ir para o dado que o jogo lê, senão qualquer pessoa abre o arquivo do jogo e encontra a revelação antes de merecê-la.
