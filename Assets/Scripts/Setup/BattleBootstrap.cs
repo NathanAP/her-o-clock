@@ -6,7 +6,9 @@ using HerOClock.Progression;
 using HerOClock.Stages;
 using HerOClock.Text;
 using HerOClock.View;
+using HerOClock.Window;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace HerOClock.Setup
 {
@@ -54,6 +56,7 @@ namespace HerOClock.Setup
         private void Start()
         {
             Application.targetFrameRate = targetFrameRate;
+            SetUpWindow();
 
             if (!HasRequiredAssets())
             {
@@ -110,6 +113,31 @@ namespace HerOClock.Setup
             StageRunner runner = gameObject.AddComponent<StageRunner>();
             runner.Configure(grid, director, charactersById, wallet, strings, random, new BoardScroller(board, gridConfig.CellSize), heroes, CreateCharacter);
             runner.StartStage(stage);
+        }
+
+        /// <summary>
+        /// Puts the window on one of the allowed sizes.
+        ///
+        /// The reference resolution is read from the Pixel Perfect Camera rather than written
+        /// here, because those numbers are already tied to the pixels per unit and the board
+        /// width. Repeating them would give the pair a second chance to disagree.
+        ///
+        /// It lives in the bootstrap because the bootstrap is the only entry point the game has.
+        /// When there is a real application start, ahead of any battle, this belongs there.
+        /// </summary>
+        private void SetUpWindow()
+        {
+            Camera camera = Camera.main;
+            PixelPerfectCamera pixelPerfect = camera != null ? camera.GetComponent<PixelPerfectCamera>() : null;
+
+            if (pixelPerfect == null)
+            {
+                Debug.LogWarning("BattleBootstrap: no Pixel Perfect Camera found, so the window size is left alone.", this);
+                return;
+            }
+
+            WindowScale scale = gameObject.AddComponent<WindowScale>();
+            scale.Configure(pixelPerfect.refResolutionX, pixelPerfect.refResolutionY);
         }
 
         private bool HasRequiredAssets()

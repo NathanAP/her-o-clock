@@ -145,6 +145,15 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - `characters.md` fechou a estrutura da ficha, que a 0.5.6.0 tinha adiado para cá, e registrou o porquê de inimigos terem primários.
 - O resumo completo está em `.claude/versions/20260814_0.5.7.0.md`.
 
+## 0.5.8.0 (feita)
+
+- Comportamento da janela. 300 verificações, contra 278.
+- A janela deixou de ser redimensionável e não vai mais para tela cheia. `gameplay.md` sempre descreveu a janelinha no cantinho, mas nada forçava isso, e alargar um pixel já revelava a borda do tabuleiro.
+- A janela agora só assume tamanhos da escada 1×, 2× e 4×, sempre múltiplos inteiros da resolução de referência. Com isso a proporção nunca desvia e não é preciso cortar nem preencher com barras.
+- O tamanho inicial sai do tamanho da tela do jogador: 1× em 1080p, 2× em 4K. Atalhos `=` e `-` mudam, e a escolha fica em `PlayerPrefs`.
+- Não existe 0.5×: abaixo de 1× o Pixel Perfect precisaria reduzir, e reduzir pixel art quebra a grade.
+- O resumo completo está em `.claude/versions/20260817_0.5.8.0.md`.
+
 ## 0.6.0.0
 
 - Persistência.
@@ -157,6 +166,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Habilidades.
 - Recarga, área, provocação e reposicionamento.
 - Testes: é a maior superfície de regra do jogo inteiro, e quase tudo já está escrito como exemplo em `gameplay.md` e `characters.md`. A pontuação de posicionamento em área (o exemplo de 3 aliados e 2 inimigos pontuando 1), os formatos `chain`, `line` e `area`, os efeitos resolvidos na ordem em que aparecem, a habilidade pronta que segura a carga em vez de ser usada no vazio, e a provocação sobrescrevendo a cadeia de alvo.
+    - Uma dúvida: a gente consegue fazer uma bateria de teste para cada habilidade? Acho que seria a melhor forma de garantir que cada habilidade funciona, principalmente em combinações né?
 - Junto entra um validador de ficha, pois `characters.md` já avisa que um `array` menor que o `ranks` faria o último nível ler um valor inexistente **sem dar erro nenhum**. Uma spec que nomeia o próprio problema silencioso está pedindo um teste.
 
 ## 0.8.0.0
@@ -187,6 +197,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 ## 0.11.0.0
 
 - Menus.
+- **Leva junto a janela sem borda e o arrastar.** Clicar na tela e arrastar para mover a janela exige tirar a borda do sistema, o que é código nativo do Windows e torna o arrastar obrigatório, já que sem barra de título a janela ficaria presa. O controle de zoom sai do atalho e vira um item da tela de opções.
 - Testes: praticamente nenhum. Interface é a única parte do jogo em que o custo de testar não se paga.
 
 ## 0.12.0.0

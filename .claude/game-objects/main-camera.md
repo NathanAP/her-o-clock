@@ -43,6 +43,16 @@ Esses números não são arbitrários e não devem ser mudados isoladamente:
 
 Se um dia o tabuleiro mudar de tamanho, esses valores precisam ser recalculados junto.
 
+### A resolução de referência é o tamanho da janela
+
+Desde a 0.5.8.0, a janela do jogo é sempre `180×320` multiplicado por um número inteiro: 1×, 2× ou 4×. O `WindowScale` lê esses dois números **deste componente**, e não os repete em lugar nenhum, justamente porque eles já estão amarrados aos pixels por unidade e à largura do tabuleiro.
+
+Isso significa que mudar a resolução de referência muda o tamanho de toda janela possível. Ela deixou de ser só uma configuração de câmera.
+
+`Crop Frame` continua em `None` e está certo assim. Ele existiria para preencher com barras o que sobra quando a janela tem outra proporção, e com a escada de múltiplos inteiros isso nunca acontece.
+
+**Não existe rung abaixo de 1×.** Para o jogo ficar menor seria preciso reduzir esta resolução de referência, o que significa mostrar menos tabuleiro, e aí os números acima todos mudam juntos.
+
 ## Global Light 2D
 
 Já existe na `SampleScene`. Intensidade `1` e cor branca deixam as cores dos quadrados aparecerem exatamente como estão definidas.
