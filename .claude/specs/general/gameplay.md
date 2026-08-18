@@ -77,6 +77,11 @@ Este é o fluxo principal do jogo.
     - Atacam os heróis com seu ataque básico.
     - Quando disponíveis usam suas habilidades automaticamente.
 
+## NPCs
+
+- Aparecem pelas fases de forma scriptada e com um propósito específico.
+- Não podem ser curados e não sofrem buffs ou debuffs do grupo de heróis, porém sendo afetados por vilões e lacaios normalmente.
+
 ## Fases
 
 - Uma fase é uma sequência de combates contra grupos de lacaios, terminando sempre em um combate contra um vilão.

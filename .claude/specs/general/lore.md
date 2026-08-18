@@ -4,6 +4,12 @@
 
 Especificar a história e o universo de Her-o-clock.
 
+## Como a história é contada
+
+O jogador tem disponível uma opção chamada "Diário", uma opção acessível a qualquer momento que contém cada registro resgatado nas fases. Cada registro do diário contém um texto escrito por Tempo e contém seu ponto de vista e opiniões sobre os acontecimentos. Cada passagem do diário está presente nesta página na seção "Diário".
+
+O jogo não possui cutscenes, tudo é contado pelo diário e as vezes mostrado pela própria fase através de NPCs.
+
 ## Atenção
 
 Vamos utilizar tags `<public>` e `<private>` para indicar o que é totalmente público e totalmente privado aqui. Textos privados são TOTALMENTE secretos e não devem estar presentes em textos básicos (como lore de personagens ou de fases).
@@ -51,9 +57,11 @@ Aqui tem apenas esboços e ideias. Inclusive, não sei de que forma vamos contar
 
 O jogo começa quando Tempo, um robô de origem desconhecida, acorda ao ouvir grandes propulsores de jatos no meio da noite e próximo de uma instalação militar em destroços. Ao que parece, uma recente explosão de larga escala atingiu uma instalação laboratorial da capital. Ao se livrar dos escombros e sair às ruas, ele vê que a cidade está em total caos e tomada por outros robôs que agem como zumbis e atacam tudo que se move.
 
-</public>
+## Ato 1 - Halo
 
-## Ato 1
+O foco deste ato é salvar Halo de uma invasão descontrolada. Tempo sabe que sua missão é proteger os humanos em Unia e logo no início ela encontra um parceiro de combate: Gadrat, um novato que está procurando seu pai. A dupla avança por Halo combatendo hordas de inimigos e logo encontram o pai, porém ele é brutalmente morto por um desconhecido que foge, deixando seu capanga cuidar dos dois. Tempo e seu novo parceiro percebem que algo maior está por vir e agora querem entender quem são seus verdadeiros inimigos.
+
+</public>
 
 ## Ato 2
 
@@ -64,3 +72,7 @@ O jogo começa quando Tempo, um robô de origem desconhecida, acorda ao ouvir gr
 ## Ato 5
 
 ## Epílogo
+
+## Diário
+
+- As passagens disponíveis no diário serão escritas futuramente.

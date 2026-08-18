@@ -1,7 +1,6 @@
 {
     "id": "discarded-prototype",
     "kind": "minion",
-    "initialLevel": 1,
     "maxLevel": 100,
     "equipment": "light",
     "minRange": 1,

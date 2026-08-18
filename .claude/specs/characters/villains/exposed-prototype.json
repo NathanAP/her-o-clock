@@ -1,7 +1,6 @@
 {
     "id": "exposed-prototype",
     "kind": "villain",
-    "initialLevel": 1,
     "maxLevel": 100,
     "equipment": "heavy",
     "minRange": 1,
