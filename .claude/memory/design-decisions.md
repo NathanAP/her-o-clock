@@ -222,3 +222,11 @@ Both halves are load-bearing. Damage staying instantaneous is what keeps the who
 
 The practical rule: anything under `Assets/Scripts/View/` may read the battle, and may never change it. A view that can change the fight makes the fight depend on the frame rate, which 0.5.1.0 spent a whole version removing.
 
+## An id names a character, never a copy of one
+
+Ids are lowercase and hyphenated, and they never carry an instance number. Several identical enemies in one wave are the **same id placed at different cells**, which is what the stage format already does.
+
+Numbering them (`discarded-prototype-1`, `-2`) would create one sheet per copy holding the same block of numbers, which is the duplication `progress.md` exists to prevent, plus one strings key per copy all spelling the same name. The number would also never mean anything: a wave needing a seventh enemy would force somebody to invent a seventh character to place the same enemy once more.
+
+Two enemies that genuinely differ are two characters, and each gets a descriptive id such as `discarded-prototype-armored`. The same holds for heroes: a copy of one would be a character with an identity of its own, not `gadrat-2`.
+

@@ -249,48 +249,17 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Os valores de aparência nunca foram vistos rodando** e estão expostos no Inspector para serem corrigidos a olho.
 - O resumo completo está em `.claude/versions/20260818_0.8.0.0.md`.
 
-## O ato 1 (0.9.x)
+## 0.9.0.0 (próxima)
 
-O ato 1 é grande, mas **não é grande porque tem 17 personagens.** Doze lacaios e cinco vilões sem habilidade são a mesma carcaça preenchida com números diferentes, e os protótipos foram desenhados sem habilidade justamente para isso. O peso de verdade está em dois heróis com habilidade e em cinco fases balanceadas.
-
-Por isso ela é quebrada em quatro, na ordem em que uma depende da anterior.
-
-### 0.9.0.0 — A ponte entre ficha e asset
-
-- O `CharacterDefinition` passa a expressar tudo que uma ficha de design diz, e nasce o **teste que confere um contra o outro**.
-- Vem primeiro porque, sem ele, cada personagem criado depois é criado duas vezes à mão e os dois lados começam a divergir em silêncio — que é exatamente o problema que a pasta `balance/` existe para evitar.
-- Pela regra de "onde cada número mora", os números de entrada moram na spec e o teste os repete. O asset é uma segunda cópia, então ele precisa de alguém conferindo.
-- O `DesignSheetTests` da 0.7.1.1 é o começo disso, mas é raso de propósito: ele confere JSON, `id`, soma 100 e `initialLevel`, e não olha habilidade nenhuma. É esta versão que aprofunda.
-- Testes: a comparação asset contra documento de design, personagem a personagem.
-
-### 0.9.1.0 — As carcaças
-
-- Os 12 lacaios e os 5 vilões, sem habilidade nenhuma.
-- Repetitivo e barato, e é o que as fases precisam para existir.
-- **É aqui que a ponte se prova.** Se esta versão for demorada, a 0.9.0.0 foi mal feita.
-- Testes: os testes de conteúdo da 0.5.2.0 passando a valer para 17 fichas em vez de 4.
-
-### 0.9.2.0 — Tempo e Gadrat
-
-- Os dois heróis viram asset, com as habilidades que as fichas deles já descrevem.
-- É a primeira vez que o sistema de habilidades encosta em conteúdo de verdade, e é onde o validador da 0.7.0.0 finalmente paga o que custou: ele passa a rodar contra ficha escrita à mão em vez de ficha de laboratório.
-- A ideia é terminar o ato 1 com 3 heróis, então o terceiro entra depois.
-- Testes: nenhuma regra nova. O que muda é contra quem os testes de conteúdo rodam.
-
-### 0.9.3.0 — As 5 fases e a lore
-
-- As 5 fases, cada uma constando o nível mínimo esperado para avançar, o que torna o ato balanceável.
-- A lore do ato 1.
-- **O snapshot passa a medir gente de verdade pela primeira vez.** Hoje ele mede `hero-tank` e `hero-archer`, personagens de laboratório que vão deixar de existir, e é por isso que ele responde pouco.
-- As quatro fichas de teste saem de cena quando os personagens de verdade entrarem. Elas não viram conteúdo.
-- Testes: um teste de caracterização por fase, dizendo em que nível ela deveria ser vencível.
-
-### Contra o que cada teste roda
-
-A 0.9.x é onde essa divisão precisa ficar respeitada, e ela não é a mesma para todo teste:
-
-- **Testes de regra** (efeito, dano, alvo, tempo) continuam com fichas construídas em código. Um teste de regra escrito contra conteúdo real quebra a cada balanceamento, e aí ele passa a proteger um número em vez de uma regra. O motivo já está escrito dentro do `TestBattle.Sheet`.
-- **Testes de conteúdo e de balanceamento** passam a rodar contra os personagens de verdade. É neles que hoje mora o desperdício, pois medir a mitigação do `hero-tank` não diz nada sobre o jogo que vai existir.
+- Criar as 4 primeiras fases do ato 1. Isso envolve 1 ficha de vilão, 1 ficha de lacaio, 2 fichas de heróis e 1 ficha de NPC.
+- Criar uma ficha de NPC para o Gadrat. Ele não possui habilidades e seus atributos podem ser espelhados com a ficha base do herói Gadrat.
+    - Dito isso, em combate, o NPC Gadrat só usará ataques básicos.
+- Precisamos verificar se a entrada de NPCs no jogo faz alguma spec se tornar perigosa ou inviável. Lembre-se que os NPCs são os menos importantes dentre os 4 tipos de personagens. A ideia deles é apenas fazer parte da história.
+- O diário não precisa entrar agora, vamos deixar apenas documentado onde cada registro é pego.
+- Você precisa alterar os arquivos `json` das fases. Eu não mexo neles.
+- O evento da fase 3 (vilão ferido e com apenas 50% da vida já no início do combate) precisa ser criado.
+- Os heróis atuais da cena presente na Unity (`hero-tank`, `hero-archer`, `minion-standard` e `villain-boss`) são TOTALMENTE descartáveis depois dessa versão.
+- Você precisa me explicar como instanciar cada um dos personagens na Unity novamente para o jogo rodar normalmente.
 
 ## 0.10.0.0
 
@@ -347,10 +316,14 @@ A 0.9.x é onde essa divisão precisa ficar respeitada, e ela não é a mesma pa
 
 ## 0.18.0.0
 
-- Criar uma timeline da fase.
+- Criar uma timeline da fase para mostrar o atual progresso.
 - Adicionar um timer ao começar a fase e finalizar ela.
     - Assim o jogador poderia ver quanto tempo demora pra completar uma fase ou ter uma noção de qual build é mais rápida.
 - Quem sabe da pra colocar uma espécie de "ranking" próprio pra saber qual foi a melho run da pessoa em cada fase.
+
+## 0.19.0.0
+
+- Adicionar diário
 
 # No radar
 

@@ -80,7 +80,8 @@ Este é o fluxo principal do jogo.
 ## NPCs
 
 - Aparecem pelas fases de forma scriptada e com um propósito específico.
-- Não podem ser curados e não sofrem buffs ou debuffs do grupo de heróis, porém sendo afetados por vilões e lacaios normalmente.
+- Possuem suas próprias características, história, atributos e habilidades.
+- Geralmente fazem uma aparição rápida na fase e sua existência no projeto só está presente pelo fato do jogo ter uma história a ser contada.
 
 ## Fases
 
@@ -111,6 +112,10 @@ Este é o fluxo principal do jogo.
 - A fase é vencida quando o vilão é derrotado.
 - A fase é perdida quando todos os heróis caem.
 - Ao perder, a fase reinicia do começo, com todos os heróis vivos e com vida cheia.
+
+### Eventos de fase
+
+- Algumas fases trazem eventos específicos (vilão com menos vida, NPC com morte automática, entre outros). Essas regras serão sempre descritas individualmente em cada fase.
 
 ## Combate
 

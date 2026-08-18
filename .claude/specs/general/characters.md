@@ -29,6 +29,13 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 
 - `id` — identificador estável em texto. É por ele que fases, saves, o arquivo de strings e outras fichas apontam para este personagem, então ele nunca muda depois que existe conteúdo o referenciando.
     - O nome mostrado ao jogador **não fica na ficha**. Ele mora em `Assets/Strings/`, na chave `character.{id}.name`.
+    - Escrito em minúsculas, com hífen separando as palavras.
+    - **O id diz quem o personagem é, e nunca quantos são.** Nada de `discarded-prototype-1`, `-2`, `-3`.
+        - Vários inimigos iguais na mesma onda são o **mesmo id em posições diferentes**, que é exatamente o que o formato de fase já faz. A instância é a posição somada ao nível da fase, e nada disso mora na ficha.
+        - Numerar os ids criaria uma ficha por cópia, com o mesmo bloco de números repetido, que é o problema descrito em "### A ficha diz quem o personagem é, a fase diz quão forte ele está" em `progress.md`. Criaria também uma chave de texto por cópia, todas escrevendo o mesmo nome.
+        - E o número nunca significaria nada: se um dia a onda precisar de sete inimigos e só existirem seis ids, alguém teria que inventar um sétimo personagem para posicionar o mesmo inimigo mais uma vez.
+    - Quando dois personagens são **de fato diferentes**, eles são personagens diferentes e cada um ganha o seu id descritivo, como `discarded-prototype-armored`. Aí o sufixo diz alguma coisa sobre quem ele é.
+    - Isso vale igualmente para heróis. Uma eventual cópia de um herói é um personagem com identidade própria, e não `gadrat-2`.
 - `kind` — o tipo: `hero`, `minion` ou `villain`.
 - `initialLevel` e `maxLevel` — a faixa de níveis que aquele personagem alcança.
     - `initialLevel` existe **apenas na ficha de herói**, e vale `1`. É o nível com que ele entra no time.
@@ -87,6 +94,15 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - Vilões podem ser também chamados e considerados os "bosses" ou "chefões" do jogo.
 - A principal característica de design é que eles podem ser humanos, robôs ou monstruosidades.
 - Os vilões podem aplicar buffs aos lacaios ou debuffs aos jogadores conforme suas características.
+
+## NPCs
+
+- Os NPCs são personagens que aparecem em certas fases de forma fixa.
+- Eles lutam junto com os heróis e avançam as ondas junto deles.
+- NPCs podem ser personagens já existentes dentre os atuais heróis ou vilões e isso é totalmente normal.
+- NPCs tem o mesmo comportamento de um personagem como qualquer outro, então eles podem atacar, andar pelo tabuleiro, tomar dano, se curar ou até mesmo morrer.
+    - A morte de NPCs não implicam em falha da fase.
+- Alguns NPCs podem precisar passar por algum tipo de script automático (uma morte automática, um posicionamento automático ou lançar uma habilidade específica). A forma desse acontecimento automático estará descrito na fase.
 
 ## Nível de personagem
 
