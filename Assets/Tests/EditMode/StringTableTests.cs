@@ -37,7 +37,7 @@ namespace HerOClock.Tests
         [Test]
         public void KeysAreBuiltFromTheId()
         {
-            Assert.AreEqual("character.hero-tank.name", StringTable.CharacterName("hero-tank"));
+            Assert.AreEqual("character.some-hero.name", StringTable.CharacterName("some-hero"));
             Assert.AreEqual("stage.act1-stage1.name", StringTable.StageName("act1-stage1"));
             Assert.AreEqual("stage.act1-stage1.lore", StringTable.StageLore("act1-stage1"));
         }
@@ -147,11 +147,11 @@ namespace HerOClock.Tests
         {
             List<string> problems;
             StringTable strings = Build(Data(
-                "character.hero-tank.name", "Tank Hero",
+                "character.some-hero.name", "Some Hero",
                 "stage.one.name", "One",
                 "stage.one.lore", "Something happened."), out problems);
 
-            StringTableValidator.Validate(strings, new[] { "hero-tank" }, new[] { "one" }, problems);
+            StringTableValidator.Validate(strings, new[] { "some-hero" }, new[] { "one" }, problems);
 
             CollectionAssert.IsEmpty(problems);
         }
@@ -160,9 +160,9 @@ namespace HerOClock.Tests
         public void ACharacterWithoutANameIsReported()
         {
             List<string> problems;
-            StringTable strings = Build(Data("character.hero-tank.name", "Tank Hero"), out problems);
+            StringTable strings = Build(Data("character.some-hero.name", "Some Hero"), out problems);
 
-            StringTableValidator.Validate(strings, new[] { "hero-tank", "hero-archer" }, NoIds, problems);
+            StringTableValidator.Validate(strings, new[] { "some-hero", "some-archer" }, NoIds, problems);
 
             Assert.IsNotEmpty(problems);
         }
@@ -187,10 +187,10 @@ namespace HerOClock.Tests
         {
             List<string> problems;
             StringTable strings = Build(Data(
-                "character.hero-tank.name", "Tank Hero",
+                "character.some-hero.name", "Some Hero",
                 "character.deleted-hero.name", "Ghost"), out problems);
 
-            StringTableValidator.Validate(strings, new[] { "hero-tank" }, NoIds, problems);
+            StringTableValidator.Validate(strings, new[] { "some-hero" }, NoIds, problems);
 
             Assert.IsNotEmpty(problems);
         }

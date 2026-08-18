@@ -4,79 +4,30 @@
     "waves": [
         {
             "placements": [
-                {
-                    "character": "minion-standard",
-                    "column": 3,
-                    "row": 6
-                },
-                {
-                    "character": "minion-standard",
-                    "column": 4,
-                    "row": 6
-                }
+                { "character": "discarded-prototype", "column": 3, "row": 6 }
             ]
         },
         {
             "placements": [
-                {
-                    "character": "minion-standard",
-                    "column": 2,
-                    "row": 6
-                },
-                {
-                    "character": "minion-standard",
-                    "column": 4,
-                    "row": 6
-                },
-                {
-                    "character": "minion-standard",
-                    "column": 5,
-                    "row": 7
-                }
+                { "character": "discarded-prototype", "column": 2, "row": 6 },
+                { "character": "discarded-prototype", "column": 4, "row": 6 }
             ]
         },
         {
             "placements": [
-                {
-                    "character": "minion-standard",
-                    "column": 2,
-                    "row": 5
-                },
-                {
-                    "character": "minion-standard",
-                    "column": 3,
-                    "row": 6
-                },
-                {
-                    "character": "minion-standard",
-                    "column": 4,
-                    "row": 6
-                },
-                {
-                    "character": "minion-standard",
-                    "column": 5,
-                    "row": 5
-                }
+                { "character": "discarded-prototype", "column": 4, "row": 7 }
+            ]
+        },
+        {
+            "placements": [
+                { "character": "discarded-prototype", "column": 2, "row": 6 },
+                { "character": "discarded-prototype", "column": 5, "row": 6 }
             ]
         }
     ],
     "villainWave": {
         "placements": [
-            {
-                "character": "minion-standard",
-                "column": 2,
-                "row": 6
-            },
-            {
-                "character": "minion-standard",
-                "column": 5,
-                "row": 6
-            },
-            {
-                "character": "villain-boss",
-                "column": 4,
-                "row": 8
-            }
+            { "character": "exposed-prototype", "column": 3, "row": 7 }
         ]
     }
 }

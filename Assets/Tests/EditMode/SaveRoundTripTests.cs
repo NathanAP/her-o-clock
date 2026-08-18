@@ -48,7 +48,7 @@ namespace HerOClock.Tests
 
         private CharacterDefinition Sheet()
         {
-            return battle.Sheet("hero-tank", CharacterKind.Hero,
+            return battle.Sheet("some-hero", CharacterKind.Hero,
                 power: 10, agility: 5, specialty: 3, constitution: 20);
         }
 

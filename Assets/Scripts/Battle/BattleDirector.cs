@@ -213,7 +213,7 @@ namespace HerOClock.Battle
 
         private void CheckForEnd()
         {
-            bool heroesAlive = AnyAlive(heroes);
+            bool heroesAlive = AnyPartyMemberAlive();
             bool enemiesAlive = AnyAlive(enemies);
 
             if (heroesAlive && enemiesAlive)
@@ -233,6 +233,27 @@ namespace HerOClock.Battle
         private void RaiseBasicAttack(Character attacker, Character target)
         {
             BasicAttackLanded?.Invoke(attacker, target);
+        }
+
+        /// <summary>
+        /// Whether the player still has somebody standing.
+        ///
+        /// **An NPC does not count.** It fights on the hero side to tell a story and belongs to
+        /// nobody, so a stage is lost the moment the party falls, even with the NPC still up.
+        /// Counting it would let an NPC win a fight the player had already lost, and would keep a
+        /// lost stage running until the story character happened to die.
+        /// </summary>
+        private bool AnyPartyMemberAlive()
+        {
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                if (heroes[i] != null && heroes[i].IsAlive && heroes[i].Kind != CharacterKind.Npc)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static bool AnyAlive(List<Character> characters)

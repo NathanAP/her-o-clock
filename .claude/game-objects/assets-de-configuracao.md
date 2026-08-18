@@ -31,66 +31,37 @@ As cores seguem o roadmap: azul para heróis, rosa para lacaios, vermelho para v
 
 A ficha **não guarda nenhum texto que o jogador leia**. O nome mostrado vem do arquivo de strings, na chave `character.{id}.name`. Ver "## Arquivo de strings" no fim deste arquivo.
 
-### Heroi Tanque
+### As fichas do ato 1
 
-- Id: `hero-tank`
-- Kind: `Hero`
-- Color: `#3B6FD4`
-- Level: `1`, Max Level: `100`
-- Min Range: `1`, Max Range: `1`
-- Equipment: `Heavy`
-- Base Power: `5`, Base Agility: `2`, Base Specialty: `1`, Base Constitution: `4`
-- Base Physical Armor: `100`, Physical Armor Per Level: `100`
+Desde a 0.9.0.0 as fichas são geradas a partir dos documentos de design em
+`.claude/specs/characters/`, campo a campo. **Não edite os números no Inspector**: mexa na ficha
+de design e gere de novo, senão os dois lados passam a discordar em silêncio, que é o problema
+que a ponte da 0.9.1.0 existe para pegar.
 
-### Heroi Arqueiro
+| Asset | Id | Tipo | Documento de design |
+|---|---|---|---|
+| Tempo | `tempo` | Hero | `heroes/tempo.json` |
+| Gadrat | `gadrat` | Hero | `heroes/gadrat.json` |
+| Gadrat NPC | `gadrat-npc` | Npc | `heroes/gadrat.json`, sem as habilidades |
+| Discarded Prototype | `discarded-prototype` | Minion | `minions/discarded-prototype.json` |
+| Exposed Prototype | `exposed-prototype` | Villain | `villains/exposed-prototype.json` |
 
-- Id: `hero-archer`
-- Kind: `Hero`
-- Color: `#6FA8F0`
-- Level: `1`, Max Level: `100`
-- Min Range: `2`, Max Range: `4`
-- Equipment: `Light`
-- Base Power: `4`, Base Agility: `5`, Base Specialty: `1`, Base Constitution: `2`
-- Base Physical Armor: `10`, Physical Armor Per Level: `10`
+O `Gadrat NPC` é o mesmo personagem espelhado: mesmos atributos, mesma defesa, **lista de
+habilidades vazia**. Ele só dá ataque básico, e é assim que a fase 3 o usa.
 
-O alcance mínimo `2` é o que faz este personagem recuar quando um inimigo encosta nele. É o melhor jeito de ver a regra de recuo funcionando.
-
-### Lacaio
-
-- Id: `minion-standard`
-- Kind: `Minion`
-- Color: `#E86FA8`
-- Level: `1`, Max Level: `100`
-- Min Range: `1`, Max Range: `1`
-- Equipment: `Light`
-- Base Power: `2`, Base Agility: `1`, Base Specialty: `0`, Base Constitution: `3`
-- Sem armadura nenhuma. É um civil sob controle de alguém, não um soldado.
-
-O campo `Level` da ficha é ignorado para lacaios e vilões: quem define o nível deles é a fase em que aparecem.
-
-### Vilao
-
-- Id: `villain-boss`
-- Kind: `Villain`
-- Color: `#C22B2B`
-- Level: `1`, Max Level: `100`
-- Min Range: `1`, Max Range: `2`
-- Equipment: `Heavy`
-- Base Power: `3`, Base Agility: `2`, Base Specialty: `0`, Base Constitution: `4`
-- Base Physical Armor: `150`, Physical Armor Per Level: `150`
+As quatro fichas de teste (`hero-tank`, `hero-archer`, `minion-standard`, `villain-boss`) foram
+apagadas nesta versão. Elas eram um andaime da 0.1.0.0 e nunca foram conteúdo.
 
 ### Crescimento de defesa por nível
 
 Toda ficha declara, ao lado do valor inicial de armadura e de cada resistência, **quanto aquele atributo ganha por nível**. Sem isso a defesa apodrece sozinha, porque a constante da curva de mitigação cresce com o nível do atacante.
 
-**Ganho igual ao valor inicial mantém a mitigação parada para sempre**, pois a armadura e a constante passam a crescer juntas e se cancelam. É o que as quatro fichas usam, e é por isso que os números de nível 1 delas continuam valendo em qualquer nível:
+**Ganho igual ao valor inicial mantém a mitigação parada para sempre**, pois a armadura e a constante passam a crescer juntas e se cancelam.
 
-| Ficha | Armadura inicial | Ganho por nível | Mitigação em qualquer nível |
-|---|---|---|---|
-| Heroi Tanque | 100 | 100 | 50,0% |
-| Heroi Arqueiro | 10 | 10 | 12,5% |
-| Lacaio | 0 | 0 | 0% |
-| Vilao | 150 | 150 | 56,3% |
+Todas as fichas do ato 1 usam essa forma. Os valores de cada uma vivem no documento de design
+dela, e a mitigação que eles produzem em cada nível vive em `.claude/balance/snapshot.md`, que é
+gerado por teste. **Nenhum dos dois é copiado para cá**, porque um número derivado dentro de um
+`.md` envelhece em silêncio.
 
 Ganhos menores que a base fazem a defesa perder força devagar, e maiores fazem ganhar. As duas coisas são escolhas válidas.
 
@@ -102,14 +73,7 @@ Toda ficha precisa declarar como o personagem gasta os **5 pontos que recebe a c
 
 Para heróis é a distribuição padrão, que o jogador vai poder substituir quando existir interface. Para lacaios e vilões é a **única** forma que eles têm de ficar mais fortes, já que ninguém distribui pontos por eles.
 
-Sugestões para as fichas atuais:
-
-| Ficha | POW | AGI | SPE | CON |
-|---|---|---|---|---|
-| Heroi Tanque | 30 | 5 | 0 | 65 |
-| Heroi Arqueiro | 35 | 45 | 0 | 20 |
-| Lacaio | 40 | 20 | 0 | 40 |
-| Vilao | 35 | 15 | 15 | 35 |
+Os quatro números de cada ficha vêm do documento de design dela.
 
 O campo `Max Level` fica em `100` para heróis. Para lacaios e vilões ele pode ser menor, se você quiser que aquele inimigo não exista acima de certo nível.
 
@@ -129,11 +93,11 @@ Como o ataque básico ainda é sempre físico, as três resistências elementais
 
 O campo `Auto Attack` diz se o ataque básico desenha um projétil (`Ranged`) ou não (`Melee`). Ele é **puramente visual** e não muda regra nenhuma: quem decide alcance são o `Min Range` e o `Max Range`.
 
-Um personagem de alcance longo com ataque `Melee` bate de longe sem nada voando, e isso é uma combinação válida de se querer. Das quatro fichas de teste, só o `Hero Archer Def` é `Ranged`.
+Um personagem de alcance longo com ataque `Melee` bate de longe sem nada voando, e isso é uma combinação válida de se querer. **Nenhuma ficha do ato 1 é `Ranged`**, então o projétil da 0.8.0.0 não aparece em jogo até existir um personagem à distância.
 
 ### Lista de habilidades
 
-A lista `Abilities` da ficha está **vazia de propósito nas quatro fichas de teste**. O sistema funciona desde a 0.7.0.0, e ele só aparece no jogo rodando quando a 0.9.0.0 trouxer os personagens de verdade.
+A Tempo e o Gadrat têm habilidade; o `Gadrat NPC`, os lacaios e os vilões têm a lista vazia. Elas são geradas junto com o resto da ficha, a partir do documento de design.
 
 Ao preencher uma habilidade à mão no Inspector, dois campos carregam regra e passam despercebidos:
 
@@ -148,13 +112,13 @@ Um único asset chamado `CharacterDatabase`, com a lista de todas as fichas.
 
 Existe porque os arquivos de fase são JSON e não conseguem guardar referência de asset. Eles nomeiam o personagem por `Id` e este banco resolve. Os saves vão precisar exatamente da mesma coisa.
 
-Arraste as quatro fichas para a lista `Characters`. O teste `ContentTests` reprova se alguma ficha do projeto ficar de fora. O banco reclama no Console se alguma ficha estiver sem `Id` ou se dois `Id` forem iguais.
+Arraste todas as fichas para a lista `Characters`. O teste `ContentTests` reprova se alguma ficha do projeto ficar de fora. O banco reclama no Console se alguma ficha estiver sem `Id` ou se dois `Id` forem iguais.
 
 ## StageDatabase
 
 Um único asset chamado `StageDatabase`, com a lista dos arquivos `.json` das fases, na ordem em que devem ser jogadas.
 
-Arraste `act1-stage1.json` e `act1-stage2.json` de `Assets/Stages/` para a lista `Stages`.
+Arraste as quatro fases de `Assets/Stages/` para a lista `Stages`, na ordem em que devem ser jogadas.
 
 Os arquivos são referenciados como `TextAsset`, e não carregados por nome de uma pasta `Resources`, para que renomear ou mover uma fase nunca quebre a referência.
 
@@ -164,16 +128,13 @@ O time do jogador e onde ele começa no tabuleiro. Agora existe **apenas a forma
 
 - Team: `Heroes`
 - Placements:
-    - `Heroi Tanque`, Column `3`, Row `2`
-    - `Heroi Tanque`, Column `4`, Row `2`
-    - `Heroi Arqueiro`, Column `2`, Row `1`
-    - `Heroi Arqueiro`, Column `5`, Row `1`
-
-A fileira 1 é a mais recuada, então os tanques na fileira 2 ficam **à frente** dos arqueiros.
+    - `Gadrat`, Column `3`, Row `2`
+    - `Tempo`, Column `4`, Row `1`
+A fileira 1 é a mais recuada, então o Gadrat na fileira 2 fica **à frente** da Tempo. É o que a ficha dele pede: ele é o tanque pesado, ela é a rápida e frágil.
 
 A mesma ficha pode aparecer várias vezes. Cada linha cria um personagem separado, com atributos próprios.
 
-A antiga `Formacao Inimigos` deixou de ser usada e pode ser apagada. O conteúdo dela virou a primeira onda de `act1-stage1.json`.
+O `Form Enemies` foi apagado na 0.9.0.0. Ele era um resto de antes das fases existirem, não era usado por script nenhum, e apontava para fichas que não existem mais.
 
 ## Arquivo de strings
 

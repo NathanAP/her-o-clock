@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CharacterDatabase
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDatabase
   Characters:
-  - {fileID: 11400000, guid: 53bb90ad68e0e0647b3764395839f1fb, type: 2}
-  - {fileID: 11400000, guid: fab6720aa0a2eb4448e746c4819cacf7, type: 2}
-  - {fileID: 11400000, guid: 2b10c4de3e9abff458883a68f18ca681, type: 2}
-  - {fileID: 11400000, guid: 8a929c9229c7e3246b54dea365f1b74a, type: 2}
+  - {fileID: 11400000, guid: 61ff3f6beebde5ccfabac9fa98795afd, type: 2}
+  - {fileID: 11400000, guid: 2b3e0bf0d122586531c073dd840a4c7c, type: 2}
+  - {fileID: 11400000, guid: ebbb484c1a523f9c62b1c13f9115c96d, type: 2}
+  - {fileID: 11400000, guid: 02ce67e4a453ebff8bbec9aaee419c00, type: 2}
+  - {fileID: 11400000, guid: 69c426d63e0fbadfbde4438b19579a71, type: 2}

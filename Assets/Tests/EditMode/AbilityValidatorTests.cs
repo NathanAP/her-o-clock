@@ -209,7 +209,7 @@ namespace HerOClock.Tests
         {
             List<AbilityDefinition> abilities = new List<AbilityDefinition> { Sound(), Sound() };
 
-            Assert.IsNotEmpty(AbilityValidator.Validate(abilities, "hero-tank"));
+            Assert.IsNotEmpty(AbilityValidator.Validate(abilities, "some-hero"));
         }
 
         [Test]
@@ -219,10 +219,10 @@ namespace HerOClock.Tests
             broken.Targeting.Range = 0;
 
             List<string> problems = AbilityValidator.Validate(
-                new List<AbilityDefinition> { broken }, "hero-tank");
+                new List<AbilityDefinition> { broken }, "some-hero");
 
             Assert.IsNotEmpty(problems);
-            StringAssert.StartsWith("hero-tank", problems[0]);
+            StringAssert.StartsWith("some-hero", problems[0]);
         }
 
         // --- The falloff ---

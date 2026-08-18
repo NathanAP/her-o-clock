@@ -40,6 +40,9 @@ xpPorLacaio(nível do lacaio)  = 10 × nível^2
 
 ### Quem ganha experiência
 
+- **Só herói ganha experiência.** Lacaio, vilão e NPC não acumulam experiência nenhuma, em nenhuma circunstância.
+    - O nível deles vem da fase, conforme "### A ficha diz quem o personagem é, a fase diz quão forte ele está". Uma barra de experiência neles seria um número que nada lê e nada alimenta.
+    - Isso não muda o fato de que **matar lacaio e vilão concede experiência ao herói**, que é a progressão inteira do jogo. As duas coisas são diferentes: o inimigo é a fonte, e nunca o destino.
 - Todos os heróis do grupo ativo ganham a experiência dos inimigos derrotados.
 - **Heróis caídos continuam ganhando experiência** até o fim da fase.
     - Sem essa regra, um herói fraco carregado por um grupo forte não ganharia quase nada, pois morreria logo na primeira onda.

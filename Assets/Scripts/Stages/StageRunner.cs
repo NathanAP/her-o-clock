@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
@@ -43,6 +43,18 @@ namespace HerOClock.Stages
 
         private StageData stage;
         private readonly List<Character> heroes = new List<Character>();
+
+        /// <summary>
+        /// Story characters fighting on the hero side in this stage.
+        ///
+        /// Kept apart from <see cref="heroes"/> on purpose. That list is index-parallel with the
+        /// regroup movers built when the party was configured, and an NPC arrives later, with the
+        /// stage. They also answer to different rules: an NPC earns nothing and does not count
+        /// towards defeat.
+        /// </summary>
+        private readonly List<Character> allies = new List<Character>();
+
+        private readonly List<CharacterMover> allyRegroupMovers = new List<CharacterMover>();
         private readonly List<Character> enemies = new List<Character>();
 
         private readonly List<CharacterMover> regroupMovers = new List<CharacterMover>();
@@ -172,6 +184,7 @@ namespace HerOClock.Stages
                 + context.Strings.Get(StringTable.StageLore(stage.id)), this);
 
             DespawnEnemies();
+            DespawnAllies();
 
             for (int i = 0; i < regroupMovers.Count; i++)
             {
@@ -191,6 +204,9 @@ namespace HerOClock.Stages
             }
 
             context.Scroller.ResetPosition();
+
+            // After the heroes are back on their cells, so an NPC cannot claim one of theirs.
+            SpawnAllies();
 
             waveIndex = 0;
             BeginWave();
@@ -334,6 +350,7 @@ namespace HerOClock.Stages
             SpawnWave(wave);
 
             List<Character> everyone = new List<Character>(heroes);
+            everyone.AddRange(allies);
             everyone.AddRange(enemies);
 
             phase = Phase.Fighting;
@@ -378,6 +395,11 @@ namespace HerOClock.Stages
                 regroupMovers[i].BeginWalkBack(heroes[i].InitialPosition);
             }
 
+            for (int i = 0; i < allyRegroupMovers.Count; i++)
+            {
+                allyRegroupMovers[i].BeginWalkBack(allies[i].InitialPosition);
+            }
+
             EnterPhase(Phase.Regrouping, MaxRegroupDuration);
 
             // After the index moved, so whoever saves records the wave that comes next.
@@ -413,7 +435,12 @@ namespace HerOClock.Stages
                     continue;
                 }
 
-                Character enemy = context.Spawn(definition, Team.Enemies, position, stage.enemyLevel, placement.EffectiveMultiplier);
+                Character enemy = context.Spawn(
+                    definition, Team.Enemies, position,
+                    placement.EffectiveLevel(stage.enemyLevel), placement.EffectiveMultiplier);
+
+                enemy.StartWoundedAt(placement.EffectiveStartingHealthPercent);
+
                 enemy.Died += OnEnemyDied;
                 enemies.Add(enemy);
             }
@@ -480,10 +507,79 @@ namespace HerOClock.Stages
                 heroes[i].ClearFromGrid();
             }
 
+            for (int i = 0; i < allies.Count; i++)
+            {
+                allies[i].ClearFromGrid();
+            }
+
             for (int i = 0; i < heroes.Count; i++)
             {
                 heroes[i].ReturnToStart();
             }
+
+            for (int i = 0; i < allies.Count; i++)
+            {
+                allies[i].ReturnToStart();
+            }
+        }
+
+        /// <summary>
+        /// Places the stage's story characters on the hero side, once, at the start.
+        ///
+        /// They stay for the whole stage and walk back between waves like the party does, because
+        /// characters.md says they advance the waves together with the heroes.
+        /// </summary>
+        private void SpawnAllies()
+        {
+            if (stage.allies == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < stage.allies.Length; i++)
+            {
+                StagePlacement placement = stage.allies[i];
+
+                CharacterDefinition definition;
+                if (!context.CharactersById.TryGetValue(placement.character, out definition))
+                {
+                    // Validation already reported this when the stage was loaded.
+                    continue;
+                }
+
+                GridPosition position = new GridPosition(placement.column, placement.row);
+
+                if (!context.Grid.IsFree(position))
+                {
+                    Debug.LogWarning("Stage '" + stage.id + "': " + placement.character
+                        + " cannot take cell " + position + " because it is occupied.", this);
+                    continue;
+                }
+
+                Character ally = context.Spawn(
+                    definition, Team.Heroes, position,
+                    placement.EffectiveLevel(stage.enemyLevel), placement.EffectiveMultiplier);
+
+                ally.StartWoundedAt(placement.EffectiveStartingHealthPercent);
+
+                allies.Add(ally);
+                allyRegroupMovers.Add(new CharacterMover(ally, context.Grid));
+            }
+        }
+
+        private void DespawnAllies()
+        {
+            for (int i = 0; i < allies.Count; i++)
+            {
+                if (allies[i] != null)
+                {
+                    allies[i].ClearFromGrid();
+                    destroy(allies[i].gameObject);
+                }
+            }
+
+            allies.Clear();
+            allyRegroupMovers.Clear();
         }
     }
 }

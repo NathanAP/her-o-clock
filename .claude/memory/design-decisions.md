@@ -230,3 +230,25 @@ Numbering them (`discarded-prototype-1`, `-2`) would create one sheet per copy h
 
 Two enemies that genuinely differ are two characters, and each gets a descriptive id such as `discarded-prototype-armored`. The same holds for heroes: a copy of one would be a character with an identity of its own, not `gadrat-2`.
 
+## An NPC fights on the hero side but never counts as one
+
+`CharacterKind.Npc` is the fourth type. It gains no experience and, crucially, **it does not count towards defeat**.
+
+That second half is the one that touches code. `BattleDirector` ends a battle when one side has nobody standing, and an NPC sits in the hero list. Without the exception a lost stage would keep running until the story character happened to die, and an NPC could win a fight the player had already lost.
+
+An NPC is placed by the stage, in `allies`, and stays across every wave like a hero rather than being spawned per wave. It belongs to nobody: the player never picks, equips or positions one.
+
+## Only heroes carry experience
+
+`Character.Progress` is null on minions, villains and NPCs, and `Level` is a field of its own.
+
+Before 0.9.0.0 every character was given a `LevelProgress` at spawn and only heroes were ever awarded any, so each enemy carried a bar nothing read — allocation per spawn in a game meant to sit open all day.
+
+The distinction that matters, and that is easy to get backwards: **an enemy is the source of experience and never its destination.** Killing minions and villains still pays the heroes; that is the whole progression.
+
+## A wounded arrival is not a smaller character
+
+`startingHealthPercent` on a stage placement lowers the health a character walks in with, and never its maximum. The character is still exactly who its sheet says; it has just been hit already.
+
+Reducing maximum health instead would change mitigation, the experience granted and everything else derived from the sheet, which is a different statement from "somebody was fighting them before you arrived".
+

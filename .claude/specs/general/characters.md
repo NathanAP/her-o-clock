@@ -36,13 +36,13 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
         - E o número nunca significaria nada: se um dia a onda precisar de sete inimigos e só existirem seis ids, alguém teria que inventar um sétimo personagem para posicionar o mesmo inimigo mais uma vez.
     - Quando dois personagens são **de fato diferentes**, eles são personagens diferentes e cada um ganha o seu id descritivo, como `discarded-prototype-armored`. Aí o sufixo diz alguma coisa sobre quem ele é.
     - Isso vale igualmente para heróis. Uma eventual cópia de um herói é um personagem com identidade própria, e não `gadrat-2`.
-- `kind` — o tipo: `hero`, `minion` ou `villain`.
+- `kind` — o tipo: `hero`, `minion`, `villain` ou `npc`.
 - `initialLevel` e `maxLevel` — a faixa de níveis que aquele personagem alcança.
     - `initialLevel` existe **apenas na ficha de herói**, e vale `1`. É o nível com que ele entra no time.
-    - Lacaios e vilões não declaram esse campo, pois o nível deles vem da fase em que aparecem, e não da ficha, conforme "### A ficha diz quem o personagem é, a fase diz quão forte ele está" em `progress.md`. Um nível inicial escrito na ficha deles seria um número que nada lê.
+    - Lacaios, vilões e NPCs não declaram esse campo, pois o nível deles vem da fase em que aparecem, e não da ficha, conforme "### A ficha diz quem o personagem é, a fase diz quão forte ele está" em `progress.md`. Um nível inicial escrito na ficha deles seria um número que nada lê.
     - `maxLevel` limita a curva de crescimento de qualquer personagem.
 - `equipment` — a classe de equipamento (`light`, `magic` ou `heavy`), que decide como os atributos principais viram secundários, conforme `items.md`.
-    - Lacaios e vilões não carregam equipamento de verdade, mas declaram uma classe assim mesmo, pois é ela que define as constantes de evasão, velocidade e recarga deles.
+    - Lacaios, vilões e NPCs não carregam equipamento de verdade, mas declaram uma classe assim mesmo, pois é ela que define as constantes de evasão, velocidade e recarga deles.
 - `minRange` e `maxRange` — a faixa de alcance do ataque básico, em casas. Corpo a corpo é `1` e `1`. Um alcance mínimo acima de 1 faz o personagem recuar quando um inimigo encosta.
 - `autoAttacks` — como o ataque básico se apresenta. Hoje só carrega `type`, que é `melee` ou `ranged`, e serve ao visual: um ataque `ranged` dispara um projétil. Ele não muda regra nenhuma de combate, pois quem decide alcance são os dois campos acima.
 - `defence` — os atributos defensivos, cada um com o valor inicial e **quanto ganha por nível**, conforme "Atributos limitados crescem com o nível" em `attributes.md`.
@@ -62,7 +62,7 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
     - `id` — identificador estável, no mesmo padrão do `id` do personagem.
     - `name` — o nome da árvore.
     - `abilities` — as habilidades que moram nela.
-- **Lacaios e vilões usam `abilities`**, uma lista lisa, sem árvore nenhuma em volta.
+- **Lacaios, vilões e NPCs usam `abilities`**, uma lista lisa, sem árvore nenhuma em volta.
 - A diferença não é inconsistência, é a diferença real entre os dois lados: **árvore é progressão, e ninguém progride um lacaio.** O jogador investe pontos, escolhe caminho e destrava rank em um herói. Um lacaio nasce com o que a ficha dele diz e morre com isso.
     - Envolver as habilidades de um lacaio em uma árvore criaria um nó que nunca é comprado por ninguém, e alguém acabaria tentando dar sentido a ele mais tarde.
 - Um herói pode ter **mais de uma árvore**, e é isso que sustenta o sistema de classes e subclasses. Uma árvore é a unidade que o jogador escolhe seguir ou não.
@@ -102,6 +102,8 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - NPCs podem ser personagens já existentes dentre os atuais heróis ou vilões e isso é totalmente normal.
 - NPCs tem o mesmo comportamento de um personagem como qualquer outro, então eles podem atacar, andar pelo tabuleiro, tomar dano, se curar ou até mesmo morrer.
     - A morte de NPCs não implicam em falha da fase.
+- **NPCs não ganham experiência nenhuma**, conforme `progress.md`. Eles não pertencem ao grupo do jogador.
+- **NPCs não contam para a derrota.** Uma fase é perdida quando o grupo do jogador cai, mesmo que o NPC continue de pé. Sem essa regra, um NPC venceria sozinho uma fase que o jogador perdeu.
 - Alguns NPCs podem precisar passar por algum tipo de script automático (uma morte automática, um posicionamento automático ou lançar uma habilidade específica). A forma desse acontecimento automático estará descrito na fase.
 
 ## Nível de personagem
@@ -112,5 +114,5 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
     - Mais habilidades ele irá possuir.
 - Para subir o nível de seus heróis, o jogador deve enfrentar lacaios e vilões.
     - Muitas vezes o jogador precisará repetir a mesma fase inúmeras vezes para conseguir ficar mais forte e enfrentar a próxima fase.
-- Lacaios e vilões possuem níveis de acordo com a fase em que estão presentes, e não de acordo com a ficha deles.
+- Lacaios, vilões e NPCs possuem níveis de acordo com a fase em que estão presentes, e não de acordo com a ficha deles.
 - Tudo que diz respeito a ganhar experiência, subir de nível e distribuir os pontos recebidos está descrito em `progress.md`.

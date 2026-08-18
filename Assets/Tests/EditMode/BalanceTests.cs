@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -46,16 +46,20 @@ namespace HerOClock.Tests
         }
 
         /// <summary>
-        /// The second stage is deliberately above the team's level. It is the wall that gives
-        /// farming a reason to exist, and it stops being one the moment it can be walked through.
+        /// A fresh team cannot walk through the act. Somewhere in it there is a wall, and that is
+        /// what gives farming a reason to exist.
+        ///
+        /// It asks about the **last** stage rather than a numbered one, because which stage is the
+        /// wall is a balance decision that moves. That the act has one at all is not.
         /// </summary>
         [Test]
-        public void TheSecondStageIsAWallForAFreshTeam()
+        public void TheActIsNotWalkableByAFreshTeam()
         {
-            StageSimulation.Outcome outcome = Play(1, HeroLevelFromFormation());
+            StageDatabase stages = Load<StageDatabase>();
+            StageSimulation.Outcome outcome = Play(stages.Stages.Count - 1, 1);
 
             Assert.IsFalse(outcome.Cleared,
-                "The second stage stopped being a wall, so nothing in the game asks the player to farm.");
+                "A brand new team clears the whole act, so nothing in the game asks it to farm.");
         }
 
         /// <summary>

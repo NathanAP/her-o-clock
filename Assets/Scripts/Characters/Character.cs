@@ -1,4 +1,4 @@
-using HerOClock.Battle;
+﻿using HerOClock.Battle;
 using HerOClock.Progression;
 using UnityEngine;
 
@@ -12,9 +12,11 @@ namespace HerOClock.Characters
         private BattleGrid grid;
         private float multiplier = 1f;
         private float regenerationCarry;
+        private int level;
 
         public CharacterDefinition Definition { get; private set; }
         public Team Team { get; private set; }
+
         public GridPosition Position { get; private set; }
         public int CurrentHealth { get; private set; }
 
@@ -52,7 +54,15 @@ namespace HerOClock.Characters
         /// </summary>
         public CharacterStats Stats { get; private set; }
 
-        /// <summary>Level and experience of this instance.</summary>
+        /// <summary>
+        /// Level and experience of this instance, and **only heroes have one**.
+        ///
+        /// A minion, villain or NPC takes its level from the stage it appears in and never
+        /// accumulates any experience, so a progress bar on them would be a number nothing reads
+        /// and nothing feeds. See "### Quem ganha experiência" in progress.md.
+        ///
+        /// Null on everybody else. Read <see cref="Level"/> instead, which works for all four.
+        /// </summary>
         public LevelProgress Progress { get; private set; }
 
         /// <summary>
@@ -69,7 +79,7 @@ namespace HerOClock.Characters
         /// </summary>
         public int Level
         {
-            get { return Progress.Level; }
+            get { return level; }
         }
 
         public CharacterKind Kind
@@ -114,12 +124,19 @@ namespace HerOClock.Characters
             this.grid = grid;
             this.multiplier = multiplier;
 
-            Progress = new LevelProgress(level, definition.MaxLevel);
-            Progress.LevelGained += OnLevelGained;
+            this.level = level < 1 ? 1 : level > definition.MaxLevel ? definition.MaxLevel : level;
+
+            // Only a hero carries experience. Everybody else is handed a level by the stage and
+            // never earns another one, so there is nothing for a progress bar to hold.
+            if (definition.Kind == CharacterKind.Hero)
+            {
+                Progress = new LevelProgress(this.level, definition.MaxLevel);
+                Progress.LevelGained += OnLevelGained;
+            }
 
             // Granted before subscribing, because the stats do not exist yet to be rebuilt.
             Attributes = new AttributeAllocation(definition.Growth);
-            Attributes.GrantFor(Progress.Level);
+            Attributes.GrantFor(this.level);
 
             Modifiers = new StatModifiers();
             Statuses = new CharacterStatuses();
@@ -129,7 +146,7 @@ namespace HerOClock.Characters
             // Handed over before the first calculation, so every derived value already counts
             // buffs from the very first step.
             Stats.UseModifiers(Modifiers);
-            Stats.ApplyInstance(Progress.Level, Attributes, multiplier);
+            Stats.ApplyInstance(this.level, Attributes, multiplier);
 
             Modifiers.Changed += OnStatsSourceChanged;
 
@@ -143,9 +160,41 @@ namespace HerOClock.Characters
             transform.position = grid.WorldPositionOf(position);
         }
 
-        /// <summary>Adds experience to this character, applying every level it earns.</summary>
+        /// <summary>
+        /// Brings the character onto the field already hurt, as a percentage of its maximum health.
+        ///
+        /// This is not the same as lowering maximum health: the character is still exactly who its
+        /// sheet says it is, it has simply been hit already. A villain the story says was fighting
+        /// somebody else before the party arrived belongs here.
+        ///
+        /// It never goes below 1. A character that walked in dead would end its wave before the
+        /// first step, which is always a typo rather than a thing anybody wanted.
+        /// </summary>
+        public void StartWoundedAt(int percentOfMaximum)
+        {
+            if (percentOfMaximum >= 100)
+            {
+                return;
+            }
+
+            int wounded = Mathf.RoundToInt(Stats.MaxHealth * (percentOfMaximum / 100f));
+            CurrentHealth = Mathf.Clamp(wounded, 1, Stats.MaxHealth);
+
+            Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Adds experience to this character, applying every level it earns.
+        ///
+        /// Does nothing on a minion, villain or NPC, which never gain any.
+        /// </summary>
         public void AwardExperience(long amount)
         {
+            if (Progress == null)
+            {
+                return;
+            }
+
             Progress.Award(amount);
         }
 
@@ -159,6 +208,8 @@ namespace HerOClock.Characters
         /// </summary>
         private void OnLevelGained(int newLevel)
         {
+            level = newLevel;
+
             // Granting raises Changed, which rebuilds the stats through OnAttributesChanged.
             Attributes.GrantFor(newLevel);
             Changed?.Invoke();

@@ -20,9 +20,9 @@ namespace HerOClock.Tests
 
         private static readonly Dictionary<string, CharacterKind> Known = new Dictionary<string, CharacterKind>
         {
-            { "minion-standard", CharacterKind.Minion },
-            { "villain-boss", CharacterKind.Villain },
-            { "hero-tank", CharacterKind.Hero }
+            { "some-minion", CharacterKind.Minion },
+            { "some-villain", CharacterKind.Villain },
+            { "some-hero", CharacterKind.Hero }
         };
 
         private static StagePlacement Place(string character, int column, int row, float multiplier = 0f)
@@ -48,8 +48,8 @@ namespace HerOClock.Tests
             {
                 id = "act1-stage1",
                 enemyLevel = 1,
-                waves = new[] { Wave(Place("minion-standard", 3, 6)) },
-                villainWave = Wave(Place("villain-boss", 4, 8))
+                waves = new[] { Wave(Place("some-minion", 3, 6)) },
+                villainWave = Wave(Place("some-villain", 4, 8))
             };
         }
 
@@ -129,7 +129,7 @@ namespace HerOClock.Tests
         public void AVillainWaveWithoutAVillainIsRejected()
         {
             StageData stage = ValidStage();
-            stage.villainWave = Wave(Place("minion-standard", 3, 6));
+            stage.villainWave = Wave(Place("some-minion", 3, 6));
 
             AssertRejected(stage, "The final fight has to contain a villain.");
         }
@@ -138,7 +138,7 @@ namespace HerOClock.Tests
         public void AVillainWaveMayAlsoContainMinions()
         {
             StageData stage = ValidStage();
-            stage.villainWave = Wave(Place("minion-standard", 2, 6), Place("villain-boss", 4, 8));
+            stage.villainWave = Wave(Place("some-minion", 2, 6), Place("some-villain", 4, 8));
 
             CollectionAssert.IsEmpty(Validate(stage));
         }
@@ -167,7 +167,7 @@ namespace HerOClock.Tests
         public void AHeroPlacedAsAnEnemyIsRejected()
         {
             StageData stage = ValidStage();
-            stage.waves = new[] { Wave(Place("hero-tank", 3, 6)) };
+            stage.waves = new[] { Wave(Place("some-hero", 3, 6)) };
 
             AssertRejected(stage, "Waves are made of minions and villains.");
         }
@@ -181,7 +181,7 @@ namespace HerOClock.Tests
         public void ACellOutsideTheBoardIsRejected(int column, int row)
         {
             StageData stage = ValidStage();
-            stage.waves = new[] { Wave(Place("minion-standard", column, row)) };
+            stage.waves = new[] { Wave(Place("some-minion", column, row)) };
 
             AssertRejected(stage, "Cell " + column + ", " + row + " is off the board.");
         }
@@ -196,7 +196,7 @@ namespace HerOClock.Tests
         public void AnEnemyPlacedInTheHeroAreaIsRejected(int row)
         {
             StageData stage = ValidStage();
-            stage.waves = new[] { Wave(Place("minion-standard", 3, row)) };
+            stage.waves = new[] { Wave(Place("some-minion", 3, row)) };
 
             AssertRejected(stage, "Row " + row + " belongs to the heroes.");
         }
@@ -205,7 +205,7 @@ namespace HerOClock.Tests
         public void TheFirstRowOfTheEnemyAreaIsAllowed()
         {
             StageData stage = ValidStage();
-            stage.waves = new[] { Wave(Place("minion-standard", 3, HeroRows + 1)) };
+            stage.waves = new[] { Wave(Place("some-minion", 3, HeroRows + 1)) };
 
             CollectionAssert.IsEmpty(Validate(stage));
         }
@@ -214,7 +214,7 @@ namespace HerOClock.Tests
         public void TwoPlacementsOnTheSameCellOfOneWaveIsRejected()
         {
             StageData stage = ValidStage();
-            stage.waves = new[] { Wave(Place("minion-standard", 3, 6), Place("minion-standard", 3, 6)) };
+            stage.waves = new[] { Wave(Place("some-minion", 3, 6), Place("some-minion", 3, 6)) };
 
             AssertRejected(stage, "Two characters cannot start on the same cell.");
         }
@@ -229,8 +229,8 @@ namespace HerOClock.Tests
             StageData stage = ValidStage();
             stage.waves = new[]
             {
-                Wave(Place("minion-standard", 3, 6)),
-                Wave(Place("minion-standard", 3, 6))
+                Wave(Place("some-minion", 3, 6)),
+                Wave(Place("some-minion", 3, 6))
             };
 
             CollectionAssert.IsEmpty(Validate(stage));
@@ -244,11 +244,11 @@ namespace HerOClock.Tests
         public void ColumnsAndRowsAreCheckedAgainstTheirOwnLimits()
         {
             StageData wide = ValidStage();
-            wide.waves = new[] { Wave(Place("minion-standard", 8, 6)) };
+            wide.waves = new[] { Wave(Place("some-minion", 8, 6)) };
             AssertRejected(wide, "Column 8 does not exist on a 6 column board.");
 
             StageData tall = ValidStage();
-            tall.waves = new[] { Wave(Place("minion-standard", 3, 8)) };
+            tall.waves = new[] { Wave(Place("some-minion", 3, 8)) };
             CollectionAssert.IsEmpty(Validate(tall), "Row 8 does exist on an 8 row board.");
         }
 
@@ -258,7 +258,7 @@ namespace HerOClock.Tests
         public void ANegativeMultiplierIsRejected()
         {
             StageData stage = ValidStage();
-            stage.waves = new[] { Wave(Place("minion-standard", 3, 6, -1f)) };
+            stage.waves = new[] { Wave(Place("some-minion", 3, 6, -1f)) };
 
             AssertRejected(stage, "Leave it out for the normal strength.");
         }
@@ -266,13 +266,13 @@ namespace HerOClock.Tests
         [Test]
         public void AMissingMultiplierMeansNormalStrength()
         {
-            Assert.AreEqual(1f, Place("minion-standard", 3, 6).EffectiveMultiplier);
+            Assert.AreEqual(1f, Place("some-minion", 3, 6).EffectiveMultiplier);
         }
 
         [Test]
         public void AGivenMultiplierIsUsedAsWritten()
         {
-            Assert.AreEqual(0.5f, Place("minion-standard", 3, 6, 0.5f).EffectiveMultiplier);
+            Assert.AreEqual(0.5f, Place("some-minion", 3, 6, 0.5f).EffectiveMultiplier);
         }
 
         // --- Reporting ---
@@ -289,7 +289,7 @@ namespace HerOClock.Tests
                 id = "",
                 enemyLevel = 0,
                 waves = new[] { Wave(Place("nope", 99, 99)) },
-                villainWave = Wave(Place("minion-standard", 3, 6))
+                villainWave = Wave(Place("some-minion", 3, 6))
             };
 
             Assert.GreaterOrEqual(Validate(stage).Count, 4);

@@ -12,7 +12,7 @@ namespace HerOClock.Text
     /// duplicating every sheet rather than adding one file.
     ///
     /// The keys are built from the id the asset already carries, so there is nothing to keep in
-    /// sync: a character with the id <c>hero-tank</c> reads <c>character.hero-tank.name</c>, and
+    /// sync: a character with the id <c>gadrat</c> reads <c>character.gadrat.name</c>, and
     /// renaming an id is the same act as renaming its text.
     ///
     /// It knows nothing about Unity, so the whole thing can be checked outside the editor.

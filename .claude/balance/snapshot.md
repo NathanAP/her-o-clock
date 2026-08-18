@@ -27,10 +27,11 @@ Valores no nível inicial da ficha, sem itens.
 
 | Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão | Armadura | Regen/s |
 |---|---|---|---|---|---|---|---|
-| hero-tank | 65 | 5 | 1.00 | 2.02 | 0.4% | 100 | 0.00 |
-| hero-archer | 40 | 4 | 1.05 | 2.10 | 4.8% | 10 | 0.00 |
-| minion-standard | 40 | 2 | 1.01 | 2.02 | 1.0% | 0 | 0.00 |
-| villain-boss | 55 | 3 | 1.00 | 2.02 | 0.4% | 150 | 0.00 |
+| tempo | 100 | 6 | 1.09 | 2.18 | 8.3% | 20 | 0.00 |
+| gadrat | 170 | 10 | 1.00 | 2.02 | 0.4% | 60 | 0.00 |
+| gadrat-npc | 170 | 10 | 1.00 | 2.02 | 0.4% | 60 | 0.00 |
+| discarded-prototype | 25 | 1 | 1.01 | 2.02 | 1.0% | 0 | 0.00 |
+| exposed-prototype | 50 | 2 | 1.00 | 2.02 | 0.4% | 60 | 0.00 |
 
 ### Mitigação física contra um atacante do mesmo nível
 
@@ -39,10 +40,11 @@ significa que aquela ficha perde defesa conforme o jogo avança.
 
 | Ficha | Nível 1 | Nível 12 | Nível 30 | Nível 50 | Nível 100 |
 |---|---|---|---|---|---|
-| hero-tank | 50.0% | 50.0% | 50.0% | 50.0% | 50.0% |
-| hero-archer | 12.5% | 12.5% | 12.5% | 12.5% | 12.5% |
-| minion-standard | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
-| villain-boss | 56.3% | 56.3% | 56.3% | 56.3% | 56.3% |
+| tempo | 21.4% | 21.4% | 21.4% | 21.4% | 21.4% |
+| gadrat | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
+| gadrat-npc | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
+| discarded-prototype | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| exposed-prototype | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
 
 ## Fases
 
@@ -51,8 +53,10 @@ A formação de heróis é a do asset. O tempo é só de combate, sem as transi�
 
 | Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |
 |---|---|---|---|---|---|
-| act1-stage1 | 1 | 1 | 26.2 s | 210 | 21 |
-| act1-stage2 | 12 | 15 | 64.5 s | 34560 | 24 |
+| act1-stage1 | 1 | 1 | 13.9 s | 160 | 16 |
+| act1-stage2 | 2 | 1 | 22.8 s | 800 | 20 |
+| act1-stage3 | 4 | 3 | 50.6 s | 2160 | 21 |
+| act1-stage4 | 5 | 14 | 40.2 s | 6750 | 27 |
 
 ### Paredes
 
@@ -63,7 +67,9 @@ exigido passa o de chegada, o jogador é obrigado a parar e farmar.
 | Fase | Chega com | Exige | Parede | Custo |
 |---|---|---|---|---|
 | act1-stage1 | 1 | 1 | não | - |
-| act1-stage2 | 2 | 15 | sim | 10037x a fase anterior, 3986.9 min de combate |
+| act1-stage2 | 2 | 1 | não | - |
+| act1-stage3 | 3 | 3 | não | - |
+| act1-stage4 | 3 | 14 | sim | 705x a fase anterior, 594.4 min de combate |
 
 O custo conta só o tempo de combate, e despreza a experiência parcial que sobra
 de um nível para o outro. As transições entre ondas somam vários segundos por

@@ -15,19 +15,20 @@ O preço é que uma referência vira texto e um erro de digitação só aparecer
 ```json
 {
   "id": "act1-stage1",
-  "name": "Avenida das Turbinas",
-  "lore": "A pequena historia desta fase.",
   "enemyLevel": 1,
+  "allies": [
+    { "character": "gadrat-npc", "column": 4, "row": 3 }
+  ],
   "waves": [
     {
       "placements": [
-        { "character": "minion-standard", "column": 3, "row": 6 }
+        { "character": "discarded-prototype", "column": 3, "row": 6 }
       ]
     }
   ],
   "villainWave": {
     "placements": [
-      { "character": "villain-boss", "column": 4, "row": 8 }
+      { "character": "exposed-prototype", "column": 4, "row": 8 }
     ]
   }
 }
@@ -36,8 +37,11 @@ O preço é que uma referência vira texto e um erro de digitação só aparecer
 ### Campos
 
 - `id` — identificador estável da fase. Os saves vão se referir a ele, então não deve mudar depois de existir progresso salvo.
-- `name` — nome mostrado ao jogador.
-- `lore` — a pequena história da fase, contada quando ela começa. Pode ser curta.
+- `allies` — opcional, os NPCs que lutam ao lado do grupo nesta fase.
+    - Eles são posicionados uma vez, no começo, e **ficam durante todas as ondas**, como os heróis. Por isso não moram dentro de uma onda.
+    - Precisam ser do tipo `npc` e começar nas fileiras dos heróis. O validador recusa qualquer outra coisa.
+    - Um NPC nunca conta para a derrota: a fase é perdida quando o grupo do jogador cai.
+- O nome e a pequena história da fase **não ficam neste arquivo**. Eles moram no arquivo de strings, em `stage.{id}.name` e `stage.{id}.lore`.
 - `enemyLevel` — nível de todos os lacaios e vilões da fase, ignorando o `Level` das fichas. É o que permite reaproveitar o mesmo lacaio em atos diferentes com forças diferentes.
 - `waves` — os grupos de lacaios, enfrentados na ordem em que aparecem.
 - `villainWave` — o combate final. Fica em campo próprio, e não como última entrada de `waves`, para que a estrutura obrigue a regra de que toda fase termina contra um vilão. O validador reclama se não houver ninguém do tipo `Villain` ali.
@@ -52,6 +56,14 @@ O preço é que uma referência vira texto e um erro de digitação só aparecer
     - É o ajuste fino: a ficha diz **quem** o personagem é e o nível diz **quão forte**, mas às vezes um inimigo precisa aparecer enfraquecido ou reforçado só naquela fase.
     - Serve, por exemplo, para um vilão que invoca lacaios do primeiro ato: mesma ficha, nível baixo e `"multiplier": 0.5`.
     - O validador reclama de valor negativo.
+- `level` — opcional, o nível daquele inimigo específico, ignorando o `enemyLevel` da fase.
+    - Serve para um inimigo que precisa ser mais fraco ou mais forte que o resto da onda por motivo de história, e não de balanceamento fino.
+    - Omitir faz ele usar o `enemyLevel` da fase, que é o caso normal.
+    - Ele é diferente do `multiplier`: o nível muda a mitigação, a experiência concedida e o crescimento inteiro do personagem, enquanto o multiplicador só escala os atributos já calculados.
+- `startingHealthPercent` — opcional, com quanto de vida aquele personagem entra em campo, em porcentagem da vida máxima dele.
+    - Serve para um personagem que chega ferido, sem que a vida máxima dele mude. É diferente de reduzir a vida máxima: ele continua sendo quem é, ele só já apanhou.
+    - Omitir equivale a `100`.
+    - O validador reclama de valor fora da faixa de 1 a 100. Zero seria um personagem que nasce morto, e isso é sempre erro de digitação.
 
 Lacaios e vilões devem ficar nas fileiras de 5 a 8, que é a área deles. A área só define onde a onda começa, os personagens se movimentam livremente depois.
 

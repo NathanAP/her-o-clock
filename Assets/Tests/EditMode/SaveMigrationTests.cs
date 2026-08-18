@@ -71,7 +71,7 @@ namespace HerOClock.Tests
         {
             SavePayload payload = new SavePayload
             {
-                heroes = new[] { new HeroSave { id = "hero-tank", manualPoints = null } }
+                heroes = new[] { new HeroSave { id = "some-hero", manualPoints = null } }
             };
 
             string problem;

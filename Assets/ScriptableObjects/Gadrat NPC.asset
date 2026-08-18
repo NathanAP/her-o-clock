@@ -10,31 +10,31 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9bf44a08b4b6abc4a9c7c7dca3fbd4aa, type: 3}
-  m_Name: Villain Def
+  m_Name: Gadrat NPC
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
-  Id: villain-boss
-  Kind: 2
-  Color: {r: 0.7607843, g: 0.16862746, b: 0.16862746, a: 1}
+  Id: gadrat-npc
+  Kind: 3
+  Color: {r: 0.5137255, g: 0.6392157, b: 0.8862745, a: 1}
   Level: 1
   MaxLevel: 100
   Growth:
     Power: 35
-    Agility: 15
-    Specialty: 15
+    Agility: 5
+    Specialty: 25
     Constitution: 35
   MinRange: 1
-  MaxRange: 2
+  MaxRange: 1
   AutoAttack: 0
   Stats:
-    BasePower: 3
+    BasePower: 10
     BaseAgility: 2
-    BaseSpecialty: 0
-    BaseConstitution: 4
+    BaseSpecialty: 6
+    BaseConstitution: 12
     Equipment: 2
-    BasePhysicalArmor: 150
-    PhysicalArmorPerLevel: 150
-    BaseFireResistance: 0
-    FireResistancePerLevel: 0
+    BasePhysicalArmor: 60
+    PhysicalArmorPerLevel: 60
+    BaseFireResistance: 100
+    FireResistancePerLevel: 100
     BaseWaterResistance: 0
     WaterResistancePerLevel: 0
     BaseElectricResistance: 0
@@ -42,3 +42,4 @@ MonoBehaviour:
     ThornsPercent: 0
     LifeStealPercent: 0
     BaseHealthRegen: 0
+  Abilities: []

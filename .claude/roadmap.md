@@ -249,21 +249,23 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Os valores de aparência nunca foram vistos rodando** e estão expostos no Inspector para serem corrigidos a olho.
 - O resumo completo está em `.claude/versions/20260818_0.8.0.0.md`.
 
-## 0.9.0.0 (próxima)
+## 0.9.0.0 (feita)
 
-- Criar as 4 primeiras fases do ato 1. Isso envolve 1 ficha de vilão, 1 ficha de lacaio, 2 fichas de heróis e 1 ficha de NPC.
-- Criar uma ficha de NPC para o Gadrat. Ele não possui habilidades e seus atributos podem ser espelhados com a ficha base do herói Gadrat.
-    - Dito isso, em combate, o NPC Gadrat só usará ataques básicos.
-- Precisamos verificar se a entrada de NPCs no jogo faz alguma spec se tornar perigosa ou inviável. Lembre-se que os NPCs são os menos importantes dentre os 4 tipos de personagens. A ideia deles é apenas fazer parte da história.
-- O diário não precisa entrar agora, vamos deixar apenas documentado onde cada registro é pego.
-- Você precisa alterar os arquivos `json` das fases. Eu não mexo neles.
-- O evento da fase 3 (vilão ferido e com apenas 50% da vida já no início do combate) precisa ser criado.
-- Os heróis atuais da cena presente na Unity (`hero-tank`, `hero-archer`, `minion-standard` e `villain-boss`) são TOTALMENTE descartáveis depois dessa versão.
-- Você precisa me explicar como instanciar cada um dos personagens na Unity novamente para o jogo rodar normalmente.
+- Os personagens de verdade do ato 1. 537 verificações no EditMode e 2 no PlayMode, todas passando.
+- **O ato 1 usa duas fichas de inimigo.** As fases 1 a 4 só pedem `Discarded Prototype` e `Exposed Prototype`; o que muda entre elas é quantidade, posição e nível.
+- **NPC virou o quarto tipo.** Ele não ganha experiência e não conta para a derrota — sem essa segunda regra, uma fase perdida continuaria rodando até o NPC morrer.
+- **Experiência saiu de quem nunca a teve.** Todo lacaio e vilão nascia com uma barra de experiência que nada tocava. Só herói tem `Progress` agora.
+- A fase ganhou `allies`, e `level` e `startingHealthPercent` por posicionamento. Os dois últimos existem para o vilão ferido da fase 3.
+- **As fichas foram geradas a partir dos documentos de design**, campo a campo, para a ponte da 0.9.1.0 verificar algo que nasceu correto.
+- Os quatro mocks, o `Form Enemies` e as chaves de texto deles foram apagados. Cinco arquivos de teste que citavam os ids na mão passaram a usar literais inventados.
+- **O ato não está balanceado**, e o snapshot mostra onde: a fase 2 e a 3 são limpas um nível abaixo do declarado, e a fase 4 pede muito acima. Mexer no `enemyLevel` piorou — a dificuldade da 4 vem do volume de ondas, não do nível.
+- O resumo completo está em `.claude/versions/20260818_0.9.0.0.md`.
 
-## 0.9.1.0
+## 0.9.1.0 (próxima)
 
-- Testes.
+- Balancear as 4 fases contra os níveis que `stages.md` declara.
+- A ponte: o teste que confere cada asset contra o documento de design que ele espelha.
+- Os testes que a 0.9.0.0 adiou, incluindo um de caracterização por fase.
 
 ## 0.10.0.0
 
