@@ -19,22 +19,22 @@ Detalhar o que cada fase contém para ser transformado em `json` na pasta `.clau
 ### Fase 2
 
 - 6 ondas totais contendo apenas `Discarded Prototype`.
-- A última onda contém um único vilão `Exposed Prototype`.
+- A última onda contém um único vilão `Exposed Prototype` junto com 2 `Discarded Prototype`.
 - Nível necessário para passar: 2.
 
 ### Fase 3
 
-- 8 ondas totais contendo apenas `Discarded Prototype`.
-- A última onda contém um único vilão `Exposed Prototype` entrando com vida reduzida (50%) e nível abaixo do normal (2).
-- Nível necessário para passar: 3.
-- NPC `Gadrat` auxilia nessa batalha.
-- Novo registro de diário é resgatado ao completar a fase pela primeira vez.
+- 6 ondas totais contendo apenas `Discarded Prototype`.
+- A última onda contém um vilão `Exposed Prototype` junto com 4 `Discarded Prototype`.
+- Nível necessário para passar: 4.
 
 ### Fase 4
 
-- 6 ondas totais contendo apenas `Pickpocket Bandit`.
-- A última onda contém um único vilão `Robber Leader`.
-- Nível necessário para passar: 4.
+- 8 ondas totais contendo apenas `Discarded Prototype`.
+- A última onda contém um único vilão `Exposed Prototype` entrando com vida reduzida (50%) e nível abaixo do normal (2).
+- Nível necessário para passar: 5.
+- NPC `Gadrat` auxilia nessa batalha.
+- Novo registro de diário é resgatado ao completar a fase pela primeira vez.
 
 ### Fase 5
 
