@@ -32,34 +32,47 @@ namespace HerOClock.Tests.PlayMode
     {
         private const string ScenePath = "Assets/Scenes/SampleScene.unity";
 
+        /// <summary>
+        /// How long to keep looking for both sides on the board.
+        ///
+        /// It watches over a window instead of checking one instant, and that is not slack: the
+        /// game plays itself, so what is on the board at any given second depends on how strong
+        /// the party is. It used to look exactly three seconds in and passed only because the
+        /// heroes were slow enough. Once a save existed, a party that came back from an absence a
+        /// few levels up cleared the first wave before the test looked, and the scene assembling
+        /// itself — the only thing this test is about — was reported as broken.
+        /// </summary>
+        private const float LookForSeconds = 15f;
+
         [UnityTest]
         public IEnumerator TheSceneBuildsItselfAndStartsFighting()
         {
             yield return LoadScene();
 
-            // A few seconds of real play, long enough for the first wave to be engaged.
-            yield return new WaitForSeconds(3f);
-
-            Character[] characters = Object.FindObjectsByType<Character>();
-            Assert.Greater(characters.Length, 0, "No character was created, so the board is empty.");
-
             bool anyHero = false;
             bool anyEnemy = false;
 
-            for (int i = 0; i < characters.Length; i++)
+            for (float waited = 0f; waited < LookForSeconds && !(anyHero && anyEnemy); waited += Time.deltaTime)
             {
-                if (characters[i].Team == Team.Heroes)
+                Character[] characters = Object.FindObjectsByType<Character>();
+
+                for (int i = 0; i < characters.Length; i++)
                 {
-                    anyHero = true;
+                    if (characters[i].Team == Team.Heroes)
+                    {
+                        anyHero = true;
+                    }
+                    else
+                    {
+                        anyEnemy = true;
+                    }
                 }
-                else
-                {
-                    anyEnemy = true;
-                }
+
+                yield return null;
             }
 
             Assert.IsTrue(anyHero, "The heroes were never spawned.");
-            Assert.IsTrue(anyEnemy, "The first wave was never spawned.");
+            Assert.IsTrue(anyEnemy, "No wave was ever spawned.");
 
             Assert.IsNotNull(Object.FindAnyObjectByType<StageRunner>(), "No StageRunner is running the stage.");
             Assert.IsNotNull(Object.FindAnyObjectByType<BattleDirector>(), "No BattleDirector was created.");

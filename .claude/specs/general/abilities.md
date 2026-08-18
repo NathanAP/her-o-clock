@@ -57,8 +57,10 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
 ### Ativação
 
 - Aqui o personagem está usando sua habilidade.
+- O tempo de uso mantém o personagem parado no lugar e não pode realizar ações.
 - Pode ser considerado também como o tempo de animação **durante** a habilidade.
 - Descrito na ficha como `casting`.
+- As três fases formam **um bloco ocupado**: do começo do preparo até o fim do recuo o personagem só executa aquela habilidade. É a mesma leitura que a regra de conflito abaixo já usa ao somar as três, e é o que impede um personagem de sair andando no meio do próprio golpe.
 
 ### Recuo
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HerOClock.Abilities;
 using HerOClock.Characters;
 using HerOClock.Combat;
 using HerOClock.Movement;
@@ -40,6 +41,7 @@ namespace HerOClock.Battle
         private readonly List<Character> all = new List<Character>();
         private readonly List<CharacterMover> movers = new List<CharacterMover>();
         private readonly List<CharacterAttacker> attackers = new List<CharacterAttacker>();
+        private readonly List<AbilityCaster> casters = new List<AbilityCaster>();
 
         private bool running;
         private int heroCount;
@@ -63,6 +65,7 @@ namespace HerOClock.Battle
             all.Clear();
             movers.Clear();
             attackers.Clear();
+            casters.Clear();
 
             // Heroes are added first and enemies second, so each side occupies a contiguous
             // half of the list and the side that resolves first can be swapped by swapping the
@@ -100,6 +103,10 @@ namespace HerOClock.Battle
             attacker.Attacked += RaiseAttacked;
             attackers.Add(attacker);
 
+            AbilityCaster caster = new AbilityCaster(character, grid, random);
+            caster.Damaged += RaiseAttacked;
+            casters.Add(caster);
+
             if (character.Team == Team.Heroes)
             {
                 heroes.Add(character);
@@ -136,10 +143,12 @@ namespace HerOClock.Battle
             stepCount++;
 
             // Regeneration is not an action against an opponent, so it is applied to everyone in
-            // one pass and is deliberately left out of the alternation above.
+            // one pass and is deliberately left out of the alternation above. Buffs, debuffs and
+            // named states count down here for the same reason: they are not somebody's turn.
             for (int i = 0; i < all.Count; i++)
             {
                 all[i].Regenerate(step);
+                all[i].TickEffects(step);
             }
 
             if (heroesFirst)
@@ -156,14 +165,39 @@ namespace HerOClock.Battle
             CheckForEnd();
         }
 
+        /// <summary>
+        /// One side's turn inside a step. The order within a character is what the spec's priority
+        /// rules turn into:
+        ///
+        /// 1. The caster advances, so being busy with an ability is already true for this step.
+        /// 2. While busy, the character neither moves nor attacks — the three ability phases are
+        ///    one occupied block.
+        /// 3. The attacker runs **before** a new ability can start, which is what "the basic attack
+        ///    takes priority" means in practice. Its timer keeps running while busy and is held at
+        ///    zero rather than banking blows, so it lands in the first gap.
+        /// </summary>
         private void TickRange(int from, int to, float step)
         {
             for (int i = from; i < to; i++)
             {
                 IReadOnlyList<Character> opponents = all[i].Team == Team.Heroes ? enemies : heroes;
+                IReadOnlyList<Character> friends = all[i].Team == Team.Heroes ? heroes : enemies;
 
-                movers[i].Tick(step, opponents);
-                attackers[i].Tick(step, opponents, movers[i].IsMoving);
+                casters[i].Tick(step, friends, opponents);
+
+                bool busy = casters[i].IsBusy;
+
+                if (!busy)
+                {
+                    movers[i].Tick(step, opponents);
+                }
+
+                attackers[i].Tick(step, opponents, busy || movers[i].IsMoving);
+
+                if (!busy && !movers[i].IsMoving)
+                {
+                    casters[i].TryStart(friends, opponents);
+                }
             }
         }
 

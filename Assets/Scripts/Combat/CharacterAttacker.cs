@@ -52,7 +52,15 @@ namespace HerOClock.Combat
             cooldown = AttackInterval;
         }
 
-        public void Tick(float step, IReadOnlyList<Character> enemies, bool isMoving)
+        /// <summary>
+        /// Advances the timer and lands a blow when everything allows it.
+        ///
+        /// <paramref name="blocked"/> covers every reason the character cannot swing right now:
+        /// mid step, or busy with an ability. The timer keeps running either way, which is what
+        /// makes the basic attack become available during an ability's wind up and land in the
+        /// first gap afterwards, exactly as abilities.md describes.
+        /// </summary>
+        public void Tick(float step, IReadOnlyList<Character> enemies, bool blocked)
         {
             if (!character.IsAlive)
             {
@@ -71,7 +79,7 @@ namespace HerOClock.Combat
 
             // The timer is ready. From here it is held at zero until a blow actually lands, so a
             // character that walked for a long time cannot bank several blows to land at once.
-            if (isMoving)
+            if (blocked)
             {
                 cooldown = 0f;
                 return;
@@ -81,6 +89,15 @@ namespace HerOClock.Combat
             if (target == null)
             {
                 cooldown = 0f;
+                return;
+            }
+
+            // Blindness makes a share of the basic attacks miss. The share comes from whatever
+            // applied it, since each source of blindness decides how strong it is.
+            if (character.Statuses.Has(Abilities.StatusKind.Blinded)
+                && random.Roll(character.Statuses.ValueOf(Abilities.StatusKind.Blinded)))
+            {
+                cooldown += AttackInterval;
                 return;
             }
 

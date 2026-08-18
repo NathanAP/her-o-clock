@@ -19,10 +19,28 @@ namespace HerOClock.Characters
         public int CurrentHealth { get; private set; }
 
         /// <summary>
-        /// Who is currently taunting this character. Always null for now, since taunt only
-        /// comes from skills, which do not exist yet. Target selection already honours it.
+        /// Who is currently taunting this character, set by an ability applying the taunt status
+        /// and cleared when it runs out. Target selection honours it above every other rule.
         /// </summary>
         public Character TauntedBy { get; set; }
+
+        /// <summary>The buffs and debuffs on this instance. The stats read them through their own seam.</summary>
+        public StatModifiers Modifiers { get; private set; }
+
+        /// <summary>The named states on this instance, such as untargetable or silenced.</summary>
+        public CharacterStatuses Statuses { get; private set; }
+
+        /// <summary>True while nothing can be chosen as a target, though an area still catches it.</summary>
+        public bool IsUntargetable
+        {
+            get { return Statuses.Has(Abilities.StatusKind.Untargetable); }
+        }
+
+        /// <summary>True while no damage from any source lands on it.</summary>
+        public bool IsIntangible
+        {
+            get { return Statuses.Has(Abilities.StatusKind.Intangible); }
+        }
 
         /// <summary>
         /// This instance's own stats, copied from the definition on initialisation.
@@ -97,8 +115,17 @@ namespace HerOClock.Characters
             Attributes = new AttributeAllocation(definition.Growth);
             Attributes.GrantFor(Progress.Level);
 
+            Modifiers = new StatModifiers();
+            Statuses = new CharacterStatuses();
+
             Stats = definition.Stats.Clone();
+
+            // Handed over before the first calculation, so every derived value already counts
+            // buffs from the very first step.
+            Stats.UseModifiers(Modifiers);
             Stats.ApplyInstance(Progress.Level, Attributes, multiplier);
+
+            Modifiers.Changed += OnStatsSourceChanged;
 
             Attributes.Changed += OnAttributesChanged;
 
@@ -135,6 +162,54 @@ namespace HerOClock.Characters
         /// Rebuilds the stats after the level points moved, whether that was a level arriving, the
         /// player placing a point, the automatic distribution being toggled, or a reset.
         /// </summary>
+        /// <summary>
+        /// A buff arrived or ran out, so everything derived from the stats has to be recomputed.
+        ///
+        /// It goes through the same path as points being placed, because it is the same problem:
+        /// a source of stats changed and the cached maximum health has to follow, including the
+        /// clamp that keeps current health from sitting above it.
+        /// </summary>
+        private void OnStatsSourceChanged()
+        {
+            OnAttributesChanged();
+        }
+
+        /// <summary>
+        /// Counts down every buff, debuff and named state on this character.
+        ///
+        /// Driven from outside like everything else in combat, so it advances by the fixed step and
+        /// keeps running between waves, where an ability's buff is quietly ticking away.
+        /// </summary>
+        public void TickEffects(float step)
+        {
+            Modifiers.Tick(step);
+            Statuses.Tick(step);
+
+            // The taunt lives as a status, but who is doing the taunting is a reference. When the
+            // status runs out the reference has to go with it, or the character would keep chasing
+            // somebody who stopped taunting minutes ago.
+            if (TauntedBy != null && !Statuses.Has(Abilities.StatusKind.Taunted))
+            {
+                TauntedBy = null;
+                Changed?.Invoke();
+            }
+        }
+
+        /// <summary>Forces this character to attack whoever applied it, for a while.</summary>
+        public void ApplyTaunt(Character source, float duration)
+        {
+            if (source == null || duration <= 0f)
+            {
+                return;
+            }
+
+            // Taunt does not stack, and the most recent one wins, as gameplay.md states.
+            TauntedBy = source;
+            Statuses.Apply(Abilities.StatusKind.Taunted, duration);
+
+            Changed?.Invoke();
+        }
+
         private void OnAttributesChanged()
         {
             Stats.ApplyInstance(Level, Attributes, multiplier);
@@ -163,6 +238,14 @@ namespace HerOClock.Characters
         public void TakeDamage(int amount)
         {
             if (amount <= 0 || !IsAlive)
+            {
+                return;
+            }
+
+            // The single choke point every source of damage passes through, which is why the
+            // intangible check lives here rather than in each of them. Missing it in one place
+            // would be a state that works everywhere except against one attack.
+            if (IsIntangible)
             {
                 return;
             }
@@ -244,6 +327,13 @@ namespace HerOClock.Characters
         /// </summary>
         private void Die()
         {
+            // Whatever was on the character stops with it. A fallen hero stays on its cell and can
+            // be revived, and it should come back as itself rather than under a buff that has been
+            // counting down on a corpse.
+            Modifiers.Clear();
+            Statuses.Clear();
+            TauntedBy = null;
+
             if (Kind == CharacterKind.Hero)
             {
                 return;
@@ -274,6 +364,12 @@ namespace HerOClock.Characters
         /// </summary>
         public void ResetForBattle()
         {
+            // A stage starting over is a clean slate. Carrying a buff across it would make the
+            // restart depend on what was happening at the moment of the wipe.
+            Modifiers.Clear();
+            Statuses.Clear();
+            TauntedBy = null;
+
             CurrentHealth = Stats.MaxHealth;
             ReturnToStart();
         }

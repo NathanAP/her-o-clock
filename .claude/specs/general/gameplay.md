@@ -173,6 +173,9 @@ Este é o fluxo principal do jogo.
 - Provocação sempre possui uma duração e desaparece quando ela termina.
 - Provocação não é um atributo e não acumula. Ela é aplicada por habilidades e existe apenas enquanto durar.
     - Se dois inimigos provocarem o mesmo personagem, vale a provocação mais recente.
+- Quem provocou **precisa estar ao alcance** para receber o ataque. Estando longe demais, a provocação continua mandando na **movimentação**, e o personagem caminha na direção de quem o provocou.
+    - Enquanto caminha, ele ataca normalmente quem estiver ao alcance. Um provocador inalcançável não pode deixar o personagem parado sem atacar ninguém.
+    - É a mesma cadeia decidindo as duas coisas, uma respeitando alcance e outra não, conforme `memory/architecture.md`.
 - A escolha de alvo é toda posicional e visível no tabuleiro justamente para que o jogador consiga prever o combate apenas olhando para a tela. Provocação é a única coisa capaz de quebrar essa leitura, e por isso ela é sempre temporária e sempre vem de uma habilidade.
 
 ### Movimentação

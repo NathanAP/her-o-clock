@@ -16,7 +16,7 @@ namespace HerOClock.Tests
     /// The whole point of the fixed step is that this is possible: a fight advances by being
     /// told to, so a test can run one in milliseconds and assert what came out.
     /// </summary>
-    public class TestBattle
+    public class TestBattle : System.IDisposable
     {
         private readonly List<Object> owned = new List<Object>();
 

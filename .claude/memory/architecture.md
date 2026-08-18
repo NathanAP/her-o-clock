@@ -41,6 +41,18 @@ Two accumulators — one for the fight, one for the transition — would lose th
 
 The accumulator is capped at `MaxStepsPerFrame`. Past it, time is dropped on purpose: a long hitch would otherwise ask for thousands of steps and freeze the game trying to catch up, making the next frame worse still.
 
+### Abilities sit at the front of a character's turn
+
+Inside one step, a character resolves in a fixed order, and that order **is** the spec's priority rules rather than an implementation of them:
+
+1. The `AbilityCaster` advances, so "busy with an ability" is already true for this step.
+2. While busy, the character neither moves nor attacks. Preparation, casting and recovery are one occupied block.
+3. The attacker runs **before** a new ability may start. That is the whole of "the basic attack takes priority": no rule says so anywhere, the ordering does.
+
+`CharacterAttacker` therefore takes `blocked` rather than `isMoving`. Its timer keeps running while the character is busy and is held at zero rather than banking, which is what makes a basic attack become available during a wind up and land in the first gap afterwards — one blow, not the four that a banking timer would release at once.
+
+The cooldown of an ability starts when its **casting** ends, not when the recovery does. That is the one asymmetry in the model and it is deliberate: the recovery delays the next ability without delaying this one's recharge. Two sums, `BusySeconds` and `SecondsUntilCooldownStarts`, exist for exactly that reason, and they are the first thing to check when an ability's rhythm feels wrong.
+
 ### The resolution order alternates
 
 Heroes used to be first in the list, so they won every exact tie: their blow landed and killed before the enemy whose own blow was due in the same step ever swung. Which side resolves first now flips every step, driven by the battle's own step counter so it stays reproducible.
@@ -64,6 +76,8 @@ The level contribution is computed from the level, never accumulated level by le
 `AttributeAllocation` had to preserve that while also letting a player place points by hand, and the trick is what it stores: the automatic share is kept as a **count of points**, not as a distributed result, and redistributed whole every time it is read. Handing out five points thirty-nine times does not give the same split as handing out 195 once, because the percentages are resolved by largest remainder. Store the result and a minion created at level 40 stops matching one that climbed there, which quietly breaks replaying a battle from a seed.
 
 If you find yourself reading `BasePower` outside this class, something is being calculated in the wrong place.
+
+**As of 0.7.0.0 the seam reaches the derived values too**, and that was not the original plan. `TotalOf` only ever covered the four primaries, but the first real content buffs attack speed, movement speed and cooldown reduction, none of which is an attribute. So `AttacksPerSecond`, `CellsPerSecond`, `CooldownReduction` and `PhysicalArmor` each run their computed value through `StatModifiers` at the end. Anything that gains a buff from now on joins them there rather than growing a second calculation beside them.
 
 Rebuilding the stats also clamps current health down to the new maximum. Points only arrive while levelling, so the maximum only ever rises and the clamp does nothing — until a player takes their points back to rebuild, which drops the maximum with the current health still above it. `attributes.md` has always said current health can never exceed maximum; nothing enforced it until 0.6.0.0, and it was the save round trip that noticed, because restoring a hero clamped it and the hero it was restored from never had been.
 

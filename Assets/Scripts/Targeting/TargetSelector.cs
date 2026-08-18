@@ -25,7 +25,7 @@ namespace HerOClock.Targeting
             }
 
             // Rule 1: a taunt overrides everything else.
-            if (self.TauntedBy != null && self.TauntedBy.IsAlive)
+            if (self.TauntedBy != null && self.TauntedBy.IsAlive && !self.TauntedBy.IsUntargetable)
             {
                 if (!respectRange || self.CanAttack(self.TauntedBy))
                 {
@@ -44,12 +44,19 @@ namespace HerOClock.Targeting
                     continue;
                 }
 
+                // Untargetable takes a character out of the running entirely. An area still
+                // catches it, because an area chooses nobody: it covers a rectangle.
+                if (candidate.IsUntargetable)
+                {
+                    continue;
+                }
+
                 if (respectRange && !self.CanAttack(candidate))
                 {
                     continue;
                 }
 
-                if (best == null || IsBetterTarget(self, candidate, best))
+                if (best == null || IsBetterByStandardChain(self, candidate, best))
                 {
                     best = candidate;
                 }
@@ -62,8 +69,12 @@ namespace HerOClock.Targeting
         /// Rules 2 through 6. Each one is only consulted when the previous one ties.
         /// Rule 6 is positional precisely because it can never tie, so the chain always
         /// ends with a single winner.
+        ///
+        /// Public because abilities reuse it: a declared `priority` replaces the head of the chain
+        /// and everything here carries on underneath as the tie-break. Reusing it is what avoids a
+        /// second tie-break system that could disagree with this one.
         /// </summary>
-        private static bool IsBetterTarget(Character self, Character candidate, Character current)
+        public static bool IsBetterByStandardChain(Character self, Character candidate, Character current)
         {
             // Rule 2: the closest enemy.
             int candidateDistance = GridPosition.Distance(self.Position, candidate.Position);

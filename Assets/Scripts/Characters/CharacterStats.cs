@@ -1,4 +1,5 @@
 using System;
+using HerOClock.Abilities;
 using HerOClock.Progression;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -72,6 +73,15 @@ namespace HerOClock.Characters
         [NonSerialized] private float multiplier = 1f;
         [NonSerialized] private int[] levelPoints = new int[4];
 
+        /// <summary>
+        /// The buffs and debuffs currently on this instance, or null when there are none.
+        ///
+        /// This is the seam the class was written around, now actually carrying something. It
+        /// reaches the derived values as well as the four primaries, because content buffs attack
+        /// speed and cooldown reduction long before it buffs an attribute.
+        /// </summary>
+        [NonSerialized] private StatModifiers modifiers;
+
         /// <summary>Base attack speed of every character, in attacks per second.</summary>
         public const float BaseAttacksPerSecond = 1f;
 
@@ -90,7 +100,24 @@ namespace HerOClock.Characters
             CharacterStats copy = (CharacterStats)MemberwiseClone();
             copy.levelPoints = new int[4];
             Array.Copy(levelPoints, copy.levelPoints, 4);
+
+            // Never inherited. A copy belongs to another character, and sharing the buff list
+            // would let one character's slow land on somebody else.
+            copy.modifiers = null;
+
             return copy;
+        }
+
+        /// <summary>Hands this instance the buff list it should read. Called once, by the character.</summary>
+        public void UseModifiers(StatModifiers value)
+        {
+            modifiers = value;
+        }
+
+        /// <summary>Runs a computed value through the buffs touching that stat, if there are any.</summary>
+        private float Modified(ModifiableStat stat, float value)
+        {
+            return modifiers == null ? value : modifiers.Apply(stat, value);
         }
 
         /// <summary>
@@ -131,14 +158,29 @@ namespace HerOClock.Characters
         /// </summary>
         public int TotalOf(Attribute attribute)
         {
-            int total = BaseOf(attribute) + levelPoints[(int)attribute];
+            float total = BaseOf(attribute) + levelPoints[(int)attribute];
 
-            if (Mathf.Approximately(multiplier, 1f))
+            if (!Mathf.Approximately(multiplier, 1f))
             {
-                return total;
+                total *= multiplier;
             }
 
-            return Mathf.Max(0, Mathf.RoundToInt(total * multiplier));
+            // Buffs come last, on top of everything the sheet and the level produced. A debuff can
+            // take an attribute down to 0 and no further, as buffs-and-debuffs.md states.
+            total = Modified(StatOf(attribute), total);
+
+            return Mathf.Max(0, Mathf.RoundToInt(total));
+        }
+
+        private static ModifiableStat StatOf(Attribute attribute)
+        {
+            switch (attribute)
+            {
+                case Attribute.Power: return ModifiableStat.Power;
+                case Attribute.Agility: return ModifiableStat.Agility;
+                case Attribute.Specialty: return ModifiableStat.Specialty;
+                default: return ModifiableStat.Constitution;
+            }
         }
 
         public int Power { get { return TotalOf(Attribute.Power); } }
@@ -173,19 +215,23 @@ namespace HerOClock.Characters
         /// </summary>
         private int DefenceOf(int baseValue, int perLevel)
         {
-            int total = baseValue + perLevel * (level - 1);
+            float total = baseValue + perLevel * (level - 1);
 
-            if (Mathf.Approximately(multiplier, 1f))
+            if (!Mathf.Approximately(multiplier, 1f))
             {
-                return Mathf.Max(0, total);
+                total *= multiplier;
             }
 
-            return Mathf.Max(0, Mathf.RoundToInt(total * multiplier));
+            return Mathf.Max(0, Mathf.RoundToInt(total));
         }
 
         public int PhysicalArmor
         {
-            get { return DefenceOf(BasePhysicalArmor, PhysicalArmorPerLevel); }
+            get
+            {
+                float armor = DefenceOf(BasePhysicalArmor, PhysicalArmorPerLevel);
+                return Mathf.Max(0, Mathf.RoundToInt(Modified(ModifiableStat.PhysicalArmor, armor)));
+            }
         }
 
         public int FireResistance
@@ -239,12 +285,20 @@ namespace HerOClock.Characters
 
         public float AttacksPerSecond
         {
-            get { return BaseAttacksPerSecond * (1f + Agility * AttackSpeedPerAgility); }
+            get
+            {
+                float rate = BaseAttacksPerSecond * (1f + Agility * AttackSpeedPerAgility);
+                return Mathf.Max(0f, Modified(ModifiableStat.AttackSpeed, rate));
+            }
         }
 
         public float CellsPerSecond
         {
-            get { return BaseCellsPerSecond * (1f + Agility * MoveSpeedPerAgility); }
+            get
+            {
+                float speed = BaseCellsPerSecond * (1f + Agility * MoveSpeedPerAgility);
+                return Mathf.Max(0f, Modified(ModifiableStat.MovementSpeed, speed));
+            }
         }
 
         // --- Secondary attributes with diminishing returns ---
@@ -255,10 +309,21 @@ namespace HerOClock.Characters
             get { return (float)DiminishingReturns(100.0, Agility, EvasionConstant); }
         }
 
-        /// <summary>Cooldown reduction, from 0 to 60. Never reaches 60.</summary>
+        /// <summary>
+        /// Cooldown reduction, from 0 to 60 before buffs. The curve never reaches 60, so nothing
+        /// clamps it; a buff can push past that, the same way elemental resistance can pass 100%.
+        ///
+        /// It is not clamped here either. What protects the game is that an ability's cooldown is
+        /// floored at zero where it is computed, so even an absurd value can only ever mean
+        /// "ready immediately" rather than a negative wait.
+        /// </summary>
         public float CooldownReduction
         {
-            get { return (float)DiminishingReturns(60.0, Specialty, CooldownConstant); }
+            get
+            {
+                float reduction = (float)DiminishingReturns(60.0, Specialty, CooldownConstant);
+                return Mathf.Max(0f, Modified(ModifiableStat.CooldownReduction, reduction));
+            }
         }
 
         /// <summary>

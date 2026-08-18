@@ -70,6 +70,8 @@ Essas validações existem porque quase nenhum desses casos gera erro da Unity. 
 
 Ambos são adicionados automaticamente pelo `BattleBootstrap` em tempo de execução. **Nenhum dos dois deve ser adicionado na mão.**
 
+Desde a 0.7.0.0 o `BattleDirector` também cria um `AbilityCaster` por personagem, e a **ordem dentro do passo é regra de jogo**: o caster anda primeiro, quem está ocupado com habilidade não anda nem ataca, e o attacker roda antes de uma habilidade nova poder começar. É essa ordem que faz a prioridade do ataque básico existir, sem nenhuma regra escrita para isso.
+
 O `BattleDirector` é o único laço de atualização do combate. Os personagens não possuem `Update` próprio de propósito: com um laço só, em ordem fixa e em passo fixo, o combate roda sempre igual para o mesmo estado inicial e a mesma semente. Ele roda **um** combate e para.
 
 Desde a 0.5.1.0 o `BattleDirector` **não possui `Update`**. Ele expõe um `Tick(float)` que só é chamado de fora, e a simulação anda sempre `BattleDirector.FixedStep` de cada vez, que é 1/60 de segundo.
@@ -115,7 +117,11 @@ Adicionado automaticamente pelo `BattleBootstrap`, depois que a fase já está d
 
 Ele não tem campo nenhum para configurar. O que faz é decidir quando gravar, e são só três momentos: quando uma onda é limpa, quando uma fase começa, e ao fechar a janela. Não existe save periódico, e o motivo está em `specs/general/save.md`.
 
-Os arquivos ficam na pasta de dados persistentes do sistema operacional, **fora do projeto**, em `Saves/`. Um detalhe que atrapalha o desenvolvimento: rodar a aba PlayMode joga o jogo de verdade, então o smoke test grava um save real e a corrida seguinte retoma dele. Se algum teste futuro precisar começar do zero, ele vai precisar apontar o `SaveStore` para outra pasta.
+Os arquivos ficam na pasta de dados persistentes do sistema operacional, **fora do projeto**, em `Saves/`.
+
+Um detalhe que atrapalha o desenvolvimento, e que já cobrou o preço dele: rodar a aba PlayMode **joga o jogo de verdade**, então o smoke test grava um save real, credita progressão offline e a corrida seguinte retoma dele. Na 0.7.0.0 isso quebrou o smoke test, que olhava o tabuleiro exatamente 3 segundos depois de abrir a cena: a party voltou de uma ausência de dezesseis horas no nível 3 e limpou a primeira onda antes de o teste olhar.
+
+O teste foi consertado procurando durante uma janela em vez de olhar um instante, mas a causa continua lá. Qualquer teste futuro que precise de um estado inicial conhecido vai precisar apontar o `SaveStore` para outra pasta, e é melhor resolver isso do que escrever o segundo teste que convive com o problema.
 
 ## DevSpeedControl
 

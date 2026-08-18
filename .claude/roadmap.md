@@ -207,17 +207,16 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - A gramática de habilidades está fechada. A 0.7.0.0 não precisa de mais nenhuma decisão de spec.
 - O resumo completo está em `.claude/versions/20260817_0.6.0.4.md`.
 
-## 0.7.0.0
+## 0.7.0.0 (feita)
 
-- Habilidades.
-- As quatro fases de `abilities.md` — preparo, tempo de uso, recuo e recarga —, os formatos de alvo, os efeitos, a provocação e o reposicionamento.
-- A superfície de regra é a maior do jogo inteiro, mas o trabalho é **grande e não complicado**, porque `characters.md` já decidiu o que importa: uma habilidade nunca é comportamento exclusivo, é combinação de peças reaproveitáveis. Depois que a gramática existir, cada habilidade é dado.
-- As costuras já estão prontas: `modify_stat` entra pelo `TotalOf`, o `TauntedBy` já é respeitado pelo `TargetSelector`, o `DamageCalculator` recebe só números e o `deal_damage` reaproveita ele inteiro, e o passo fixo faz um teste de habilidade rodar sem cena.
-- Testes, em três camadas, e a divisão importa:
-    - **Por peça**, que é onde está o valor: cada formato (`self`, `single`, `area`, `chain`, `line`), cada valor de `priority` com a cadeia padrão desempatando embaixo, a ordem dos efeitos, as contas de recarga do personagem cobaia, a habilidade pronta que segura a carga em vez de ser usada no vazio, o preparo interrompido indo para metade da recarga, a provocação sobrescrevendo a cadeia de alvo, e o buff repetido renovando em vez de somar.
-    - **Por habilidade, como validador de autoria**: os `arrays` batem com `ranks`, o atributo citado existe, uma `chain` declara `jumpRange`, uma `area` declara as dimensões, e o `priority` declarado está na lista aceita e cabe no formato usado. Essa é a bateria por habilidade, custa pouco e **nunca envelhece**.
-    - **Por combinação**, poucos cenários escritos à mão. É a camada que mais paga, porque é onde se verifica que uma build fora do meta continua funcionando.
-- O que **não** fazer: um teste por habilidade afirmando dano. Isso é caracterização em cima de conteúdo, protege o número que existe hoje e quebra em toda passada de balanceamento.
+- Habilidades. 510 verificações no EditMode, contra 419, e 2 no PlayMode. O snapshot não se moveu.
+- A gramática de `abilities.md` virou dado: as quatro fases, os cinco formatos, a prioridade, os quatro tipos de efeito. Uma habilidade agora é ficha, e não código.
+- **A costura do `TotalOf` se estendeu aos derivados.** O conteúdo real buffa velocidade de ataque e redução de recarga, que não são atributos principais, então os modificadores precisaram alcançar as propriedades calculadas também.
+- O `AbilityCaster` roda antes do mover e do attacker, e é essa ordem que faz a prioridade do ataque básico existir sem nenhuma regra explícita.
+- O validador de autoria recusa em vez de ignorar, e já roda contra todas as fichas do projeto. Hoje passa por vacuidade; ele existe para a 0.9.0.0.
+- Dois achados: o smoke test do PlayMode dependia do relógio e quebrou quando o save deixou a party mais forte, e a provocação fora de alcance nunca tinha sido escrita.
+- **Nenhuma ficha de teste ganhou habilidade**, de propósito. O sistema está pronto e só aparece no jogo rodando quando a 0.9.0.0 trouxer personagens de verdade.
+- O resumo completo está em `.claude/versions/20260818_0.7.0.0.md`.
 
 ## 0.8.0.0
 

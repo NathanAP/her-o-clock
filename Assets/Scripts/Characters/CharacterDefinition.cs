@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HerOClock.Characters
@@ -41,6 +42,10 @@ namespace HerOClock.Characters
 
         [Header("Attributes")]
         public CharacterStats Stats = new CharacterStats();
+
+        [Header("Abilities")]
+        [Tooltip("Used automatically, in this order, whenever one is off cooldown and has a valid target.")]
+        public List<Abilities.AbilityDefinition> Abilities = new List<Abilities.AbilityDefinition>();
 
         private void OnValidate()
         {

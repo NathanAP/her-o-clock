@@ -151,6 +151,19 @@ Stacking was rejected because it would need a ceiling **per buff**: with six her
 
 Different effects on the same attribute still add up. The rule is about one source arriving again, not about the attribute.
 
+### Flat first, and percentages add before they multiply
+
+Two orderings the spec did not need to settle and the code did, both for the same reason: the same pair of buffs must not give two different answers depending on which arrived first.
+
+- **Flat is applied before percent**, so a percentage always reads as a share of the whole rather than of whatever happened to land before it.
+- **Percentages from different sources are added, then applied once.** Two 20% buffs give 40%, not 44%. Multiplying them would make the result depend on arrival order, which nobody looking at the screen could predict.
+
+### An ability never fails whole because one effect did not fit
+
+Effects resolve in the order they are written and are independent of each other. A reposition with nowhere to go leaves the character where it is and the damage beside it still happens.
+
+The order is load-bearing rather than cosmetic, and the spec's own example is the proof: an ability that makes its user intangible has to apply that **before** dealing the damage that would otherwise come back at it.
+
 ## A skill never fails whole because one effect did not fit
 
 `move_to` with `lastTargetAnySide` looks at the four cells around the last target and takes the first free one on the board, ordered by lowest row then lowest column. If none of them serves, the character simply stays where it is and the rest of the skill resolves normally.

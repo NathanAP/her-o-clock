@@ -259,6 +259,11 @@ namespace HerOClock.Stages
             for (int i = 0; i < heroes.Count; i++)
             {
                 heroes[i].Regenerate(step);
+
+                // Buffs keep counting down between waves. A buff is a length of time, not a
+                // number of fights, and stopping the clock here would make a long buff worth more
+                // the more transitions it survived.
+                heroes[i].TickEffects(step);
             }
 
             if (phase == Phase.Regrouping)
