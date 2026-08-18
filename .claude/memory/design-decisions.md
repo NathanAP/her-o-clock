@@ -203,3 +203,22 @@ Hero sheets use `abilityTrees`, each with `id`, `name` and its own `abilities`. 
 This is not an inconsistency to be tidied up later. A tree is progression, and nobody progresses a minion: the player spends points, picks a path and unlocks ranks on a hero, while a minion is born with what its sheet says. Wrapping an enemy's abilities in a tree would create a node nobody ever buys, and somebody would eventually try to give it meaning.
 
 A hero can have more than one tree, and that is what the class and subclass system rests on.
+
+## The swing is a separate event from the blow
+
+`CharacterAttacker.Struck`, re-raised by the director as `BasicAttackLanded`, exists alongside `Attacked` and must not be merged back into it.
+
+`Attacked` cannot answer "was this a basic attack". It fires for the blow, fires **again** for the thorns coming back at the attacker, and the director raises it once more for every blow an ability lands. Anything that draws the swing itself needs that question answered: hung off `Attacked`, a projectile flies backwards out of whoever was hit, and a ranged character shoots arrows while casting a fire ability.
+
+It is announced **before** the damage is resolved, so whatever draws the swing sees the board as it was when the blow was thrown, with the target still standing. A killing shot would otherwise be drawn out of a fight the target had already left.
+
+Abilities will need their own signal when they get visuals. This is the shape to copy, not a thing to generalise into one event with a flag.
+
+## The view layer never touches the simulation
+
+Projectiles are drawn after the damage has already been applied, and they fly to a position captured at launch rather than following the target.
+
+Both halves are load-bearing. Damage staying instantaneous is what keeps the whole question of flight time — determinism, when evasion is rolled, targets dying mid-flight — out of the engine entirely; the reasoning for deferring that is in the roadmap under "No radar". Holding a position instead of a reference is what survives the target dying, since a dead minion is deactivated while a bolt aimed at it is still travelling.
+
+The practical rule: anything under `Assets/Scripts/View/` may read the battle, and may never change it. A view that can change the fight makes the fight depend on the frame rate, which 0.5.1.0 spent a whole version removing.
+
