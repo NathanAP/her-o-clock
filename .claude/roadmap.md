@@ -275,6 +275,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Vamos tentar fazer esboços de sprites pra ter uma representação mais visual do jogo.
 - Provavelmente precisamos trocar as fontes.
 - Adicionar algumas cores, principalmente aos números e dar um constraste melhor ao que aparece escrito na tela.
+- Projéteis melhores.
 - Trocar o fundo verde atual do jogo por algo mais concreto, como um background esteira que roda infinitamente.
 - Acho que ao invés do grid ser preto, ele deveria contrastar melhor, vamos pensar nisso também.
 
