@@ -31,6 +31,9 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
     - O nome mostrado ao jogador **não fica na ficha**. Ele mora em `Assets/Strings/`, na chave `character.{id}.name`.
 - `kind` — o tipo: `hero`, `minion` ou `villain`.
 - `initialLevel` e `maxLevel` — a faixa de níveis que aquele personagem alcança.
+    - `initialLevel` existe **apenas na ficha de herói**, e vale `1`. É o nível com que ele entra no time.
+    - Lacaios e vilões não declaram esse campo, pois o nível deles vem da fase em que aparecem, e não da ficha, conforme "### A ficha diz quem o personagem é, a fase diz quão forte ele está" em `progress.md`. Um nível inicial escrito na ficha deles seria um número que nada lê.
+    - `maxLevel` limita a curva de crescimento de qualquer personagem.
 - `equipment` — a classe de equipamento (`light`, `magic` ou `heavy`), que decide como os atributos principais viram secundários, conforme `items.md`.
     - Lacaios e vilões não carregam equipamento de verdade, mas declaram uma classe assim mesmo, pois é ela que define as constantes de evasão, velocidade e recarga deles.
 - `minRange` e `maxRange` — a faixa de alcance do ataque básico, em casas. Corpo a corpo é `1` e `1`. Um alcance mínimo acima de 1 faz o personagem recuar quando um inimigo encosta.
@@ -44,7 +47,19 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
     - Este bloco existe **apenas como documento de design**. Ele nunca deve ir para o dado que o jogo lê, senão qualquer pessoa abre o arquivo do jogo e encontra a revelação antes de merecê-la.
 - `baseAttributes` — os atributos principais no nível inicial, antes de qualquer outra fonte.
 - `attributeGrowth` — como o personagem distribui os 5 pontos que recebe a cada nível, em porcentagens. Descrito em `progress.md`.
-- `abilities` — as habilidades do personagem, descritas por inteiro em `abilities.md`.
+- `abilityTrees` ou `abilities` — as habilidades do personagem, descritas por inteiro em `abilities.md`. Qual dos dois campos a ficha usa depende do tipo, e está detalhado logo abaixo.
+
+### Herói guarda habilidade em árvore, lacaio e vilão guardam em lista
+
+- **Heróis usam `abilityTrees`**, uma lista de árvores. Cada árvore declara:
+    - `id` — identificador estável, no mesmo padrão do `id` do personagem.
+    - `name` — o nome da árvore.
+    - `abilities` — as habilidades que moram nela.
+- **Lacaios e vilões usam `abilities`**, uma lista lisa, sem árvore nenhuma em volta.
+- A diferença não é inconsistência, é a diferença real entre os dois lados: **árvore é progressão, e ninguém progride um lacaio.** O jogador investe pontos, escolhe caminho e destrava rank em um herói. Um lacaio nasce com o que a ficha dele diz e morre com isso.
+    - Envolver as habilidades de um lacaio em uma árvore criaria um nó que nunca é comprado por ninguém, e alguém acabaria tentando dar sentido a ele mais tarde.
+- Um herói pode ter **mais de uma árvore**, e é isso que sustenta o sistema de classes e subclasses. Uma árvore é a unidade que o jogador escolhe seguir ou não.
+- Enquanto a árvore de habilidades não existir, toda habilidade é usada no rank 1, conforme `abilities.md`. A árvore já é escrita agora porque é ela que diz a qual caminho cada habilidade pertence, e isso é decisão de design, não de implementação.
 
 ## Heróis
 

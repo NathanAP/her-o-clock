@@ -218,11 +218,39 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Nenhuma ficha de teste ganhou habilidade**, de propósito. O sistema está pronto e só aparece no jogo rodando quando a 0.9.0.0 trouxer personagens de verdade.
 - O resumo completo está em `.claude/versions/20260818_0.7.0.0.md`.
 
+## 0.7.1.0 (feita)
+
+- Queda de dano por distância e autodano que não mata. 529 verificações no EditMode, contra 510, e 2 no PlayMode. O snapshot não se moveu.
+- A gramática de habilidades tinha sido declarada fechada na 0.7.0.0, e **a primeira ficha escrita à mão de verdade abriu ela de novo**. Era o previsto: o validador só começa a pagar quando encontra ficha escrita por uma pessoa.
+- **`falloff` entrou no `deal_damage`.** Multiplicativo, com expoente `distância − 1`, então o alvo colado leva o número cheio da ficha e o dano nunca chega a zero. Recusado em `self` e `single`.
+- **Dano da habilidade em quem a usou trava em 1 de vida.** Proibir o uso teria dois furos: o preparo desatualiza a conta, e o personagem ficaria desarmado justamente com a vida baixa.
+- A trava vale só para o dano da própria habilidade. Espinhos, área de aliado e ataque básico continuam matando, senão o custo viraria defesa.
+- O resumo completo está em `.claude/versions/20260818_0.7.1.0.md`.
+
+## 0.7.1.1 (feita)
+
+- A ficha do Gadrat e as specs que ela revelou. 534 verificações no EditMode, contra 529. Só documentação e um teste novo.
+- A ficha tinha onze problemas, cinco deles impedindo ela de ser lida por qualquer coisa: não era JSON, falava em "cone", falava em "dano por segundo", tinha 10 segundos de `casting` e nenhuma habilidade tinha `effects`.
+- **`characters.md` ganhou o `abilityTrees`**, que estava divergente desde a ficha da Tempo, e o escopo do `initialLevel` (só herói; lacaio e vilão tiram o nível da fase).
+- **`progress.md` ganhou a regra de que o `attributeGrowth` soma 100.** Ela precisava existir porque o cálculo não depende dela: uma ficha somando 125 continua funcionando, então não havia nada para o erro violar.
+- **`DesignSheetTests` passou a ler as fichas de `.claude/specs/characters/`**, que nenhum teste lia. É o detector que faltava, e foi conferido reintroduzindo os dois erros originais do Gadrat.
+- O resumo completo está em `.claude/versions/20260818_0.7.1.1.md`.
+
 ## 0.8.0.0
 
 - Projéteis.
 - Podemos fazer primeiro uns laserzinhos simples e coloridos, apenas para ver a coisa acontecer.
 - Testes: só se o projétil tiver tempo de voo capaz de mudar quando o dano é aplicado. Se for puramente visual, não precisa de nenhum.
+
+## 0.8.1.0 (proposta, saiu da 0.7.1.0)
+
+- **Efeito periódico**, ou seja, um `deal_damage` que acontece várias vezes ao longo de uma duração em vez de uma só.
+- Ele destrava aura, queimadura, veneno e zona de cura de uma vez, e todos eles são a mesma peça com números diferentes.
+- O `warm-up` do Gadrat foi escrito originalmente assim e teve que virar um pulso único, porque a peça não existe.
+- Precisa de dois campos no efeito: a `duration`, que já existe, e um intervalo entre os tiques, que não existe.
+- **Vem antes da 0.9.0.0 de propósito.** Aquela versão escreve 17 fichas à mão, e qualquer uma delas pode querer dano ao longo do tempo. Chegar depois significa reescrever ficha.
+- A regra que ficou clara ao discutir isso e vale repetir na spec: **`casting` é congelamento, `duration` é consequência.** Um `casting` alto quase sempre é um número escrito no campo errado.
+- Testes: os tiques acontecendo na quantidade certa dentro da duração, o efeito parando quando o portador morre, e a interação com a regra de que o mesmo buff chegando duas vezes renova em vez de somar.
 
 ## 0.9.0.0
 
@@ -244,12 +272,20 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 ## 0.10.0.0
 
+- Vamos tentar fazer esboços de sprites pra ter uma representação mais visual do jogo.
+- Provavelmente precisamos trocar as fontes.
+- Adicionar algumas cores, principalmente aos números e dar um constraste melhor ao que aparece escrito na tela.
+- Trocar o fundo verde atual do jogo por algo mais concreto, como um background esteira que roda infinitamente.
+- Acho que ao invés do grid ser preto, ele deveria contrastar melhor, vamos pensar nisso também.
+
+## 0.11.0.0
+
 - Items.
 - Ataques básicos agora variam de acordo com o item.
 - Uma mesma seed ainda define como a batalha vai ocorrer.
 - Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, e o teste de determinismo rodado de novo, já que o item passa a alterar o ataque básico. A própria linha "uma mesma seed ainda define como a batalha vai ocorrer" é uma assertiva.
 
-## 0.11.0.0
+## 0.12.0.0
 
 - Menus.
 - **Leva junto o que a janela sem borda deixou pendente**, já que ela chegou na 0.5.9.0:
@@ -260,33 +296,33 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Leva junto a tela de volta ao jogo**, que a 0.6.0.0 deixou pendente. Os números da ausência já são calculados e escritos no Console; falta mostrá-los. Eles saem inteiros do `OfflineCredit`, então é só apresentação.
 - Testes: praticamente nenhum. Interface é a única parte do jogo em que o custo de testar não se paga.
 
-## 0.12.0.0
+## 0.13.0.0
 
 - Inventário.
 - Baús.
 - Testes: as regras de espaço e de empilhamento, que são aritmética e não interface.
 
-## 0.13.0.0
+## 0.14.0.0
 
 - Mapa dos atos.
 
-## 0.14.0.0
+## 0.15.0.0
 
 - Árvore de progressão.
 - Dinheiro.
 - Testes: a curva de custo dos nós, que por `progress.md` depende de quantos nós já foram comprados e não de qual nó é. E a projeção de espera de cada trecho da árvore, pelo mesmo motivo da tabela de horas: é um número publicado na spec.
 
-## 0.15.0.0
+## 0.16.0.0
 
 - Classes.
 - Testes: a classe entrando como mais uma fonte no `TotalOf`.
 
-## 0.16.0.0
+## 0.17.0.0
 
 - Árvore de habilidades
 - Testes: superfície de regra grande de novo, e ela multiplica com as habilidades da 0.7.0.0. É a versão em que a suíte existente mais paga o próprio custo.
 
-## 0.17.0.0
+## 0.18.0.0
 
 - Criar uma timeline da fase.
 - Adicionar um timer ao começar a fase e finalizar ela.

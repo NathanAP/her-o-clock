@@ -157,6 +157,62 @@ namespace HerOClock.Abilities
             }
         }
 
+        /// <summary>
+        /// The falloff is the fraction of damage lost per cell, so it lives between 0 and 1, and it
+        /// only says something on the shapes that reach cells at different distances.
+        ///
+        /// On `self` and `single` the distance never varies, so a falloff there would be read
+        /// without any error and change nothing at all. That is the same silent failure the
+        /// priority rule guards against, and it gets the same treatment: refused, not ignored.
+        /// </summary>
+        private static void CheckFalloff(
+            string name, AbilityDefinition ability, AbilityEffect effect, List<string> problems)
+        {
+            if (effect.Falloff.IsEmpty)
+            {
+                return;
+            }
+
+            for (int rank = 1; rank <= ability.Ranks; rank++)
+            {
+                float falloff = effect.Falloff.At(rank);
+
+                if (falloff < 0f || falloff >= 1f)
+                {
+                    problems.Add(name + ": it has a falloff of " + falloff + " at rank " + rank
+                        + ", and a falloff is a fraction between 0 and 1. A full 1 would leave every "
+                        + "cell but the adjacent one at zero, which is a range of 1.");
+                    break;
+                }
+            }
+
+            if (ability.Targeting == null || !HasFalloff(effect, ability.Ranks))
+            {
+                return;
+            }
+
+            if (ability.Targeting.Shape == AbilityShape.Self || ability.Targeting.Shape == AbilityShape.Single)
+            {
+                problems.Add(name + ": it declares a falloff on a '" + ability.Targeting.Shape
+                    + "' shape, where every target sits at the same distance, so it would change "
+                    + "nothing. Remove it or change the shape.");
+            }
+        }
+
+        /// <summary>True when any rank actually asks for a falloff, so an explicit zero is not flagged.</summary>
+        private static bool HasFalloff(AbilityEffect effect, int ranks)
+        {
+            for (int rank = 1; rank <= ranks; rank++)
+            {
+                if (effect.Falloff.At(rank) > 0f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static void CheckEffects(string name, AbilityDefinition ability, List<string> problems)
         {
             if (ability.Effects == null || ability.Effects.Length == 0)
@@ -185,6 +241,8 @@ namespace HerOClock.Abilities
 
                     case EffectType.DealDamage:
                         CheckRanked(where, "base", effect.Base, ability.Ranks, true, problems);
+                        CheckRanked(where, "falloff", effect.Falloff, ability.Ranks, false, problems);
+                        CheckFalloff(where, ability, effect, problems);
 
                         if (effect.Scaling == null)
                         {

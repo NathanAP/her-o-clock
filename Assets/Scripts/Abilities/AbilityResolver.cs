@@ -136,7 +136,7 @@ namespace HerOClock.Abilities
             // Without the scaling an ability would be worth the same on a character that built for
             // it and on one that did not.
             float raw = effect.Base.At(rank) + effect.Scaling.AppliedTo(user.Stats);
-            int baseDamage = Mathf.Max(0, Mathf.RoundToInt(raw));
+            int baseDamage = Mathf.Max(0, Mathf.RoundToInt(raw * FalloffFactor(user, target, effect, rank)));
 
             DamageInput input = new DamageInput
             {
@@ -156,6 +156,19 @@ namespace HerOClock.Abilities
             };
 
             DamageResult result = DamageCalculator.Resolve(input, random);
+
+            // An ability never kills the character that used it. The cost of a powerful ability is
+            // meant to hurt, and the promise that it will not finish the job has to be absolute:
+            // checking before the cast would look at a number the preparation time can outdate, and
+            // would disarm the character exactly when the battle got hard.
+            //
+            // Only the ability's own damage is held back. Thorns, an ally's area and anybody's
+            // basic attack still kill normally, or a character with a costly ability would become
+            // immortal by accident.
+            if (ReferenceEquals(target, user))
+            {
+                result.Damage = Mathf.Min(result.Damage, Mathf.Max(0, target.CurrentHealth - 1));
+            }
 
             target.TakeDamage(result.Damage);
             target.Heal(result.Healing);
@@ -242,6 +255,30 @@ namespace HerOClock.Abilities
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// How much of the base damage survives the distance between the user and the target.
+        ///
+        /// Multiplicative rather than subtractive, for the same reason every other reduction in the
+        /// game is: it falls off but never reaches zero, so being in the line always counts for
+        /// something and being close always counts for more. A subtractive curve would zero out
+        /// past some distance and would need a floor written by hand on every ability.
+        ///
+        /// The exponent is the distance minus one, which is what makes the target standing right
+        /// next to the user take the full number written on the sheet.
+        /// </summary>
+        private static float FalloffFactor(Character user, Character target, AbilityEffect effect, int rank)
+        {
+            float falloff = effect.Falloff.At(rank);
+
+            if (falloff <= 0f)
+            {
+                return 1f;
+            }
+
+            int cells = GridPosition.Distance(user.Position, target.Position);
+            return Mathf.Pow(1f - falloff, Mathf.Max(0, cells - 1));
         }
 
         private static int MitigationPointsOf(CharacterStats stats, DamageType type)

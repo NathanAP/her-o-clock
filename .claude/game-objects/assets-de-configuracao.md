@@ -125,6 +125,17 @@ Além dos acima, toda ficha possui campos que ainda não têm fonte no jogo, poi
 
 Como o ataque básico ainda é sempre físico, as três resistências elementais não têm efeito nenhum por enquanto. Espinhos e roubo de vida funcionam desde já.
 
+### Lista de habilidades
+
+A lista `Abilities` da ficha está **vazia de propósito nas quatro fichas de teste**. O sistema funciona desde a 0.7.0.0, e ele só aparece no jogo rodando quando a 0.9.0.0 trouxer os personagens de verdade.
+
+Ao preencher uma habilidade à mão no Inspector, dois campos carregam regra e passam despercebidos:
+
+- **Falloff**, dentro de um efeito de dano: o quanto o dano perde a cada casa de distância de quem usou. Fica em `0` quando a habilidade não quer isso, e aí o dano é o mesmo em qualquer distância. Ele é recusado nas formas `Self` e `Single`, onde todo alvo está sempre à mesma distância.
+- **Target igual a Self em um efeito de dano**: é assim que se escreve o custo de vida de uma habilidade. Esse dano nunca mata quem a usou, ele para em 1 de vida.
+
+Todo campo numérico é um `RankedValue`, ou seja, uma lista. **Uma entrada** significa constante em todos os ranks, e **uma por rank** significa que o valor escala. Qualquer outro tamanho é recusado pelo validador, e é o erro mais fácil de cometer no Inspector, porque a lista cresce com um clique e ninguém confere o tamanho depois.
+
 ## CharacterDatabase
 
 Um único asset chamado `CharacterDatabase`, com a lista de todas as fichas.

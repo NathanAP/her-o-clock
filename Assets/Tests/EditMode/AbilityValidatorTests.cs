@@ -225,6 +225,95 @@ namespace HerOClock.Tests
             StringAssert.StartsWith("hero-tank", problems[0]);
         }
 
+        // --- The falloff ---
+
+        [Test]
+        public void AFalloffOnAShapeThatReachesSeveralDistancesIsAccepted()
+        {
+            AbilityDefinition ability = TestAbility.Timed("breath", 1f, 1f, 0.5f, 30f)
+                .Shaped(AbilityShape.Line)
+                .WithDamage(100f, falloff: 0.15f);
+
+            Assert.IsEmpty(AbilityValidator.Validate(ability));
+        }
+
+        /// <summary>
+        /// On these two shapes every target sits at the same distance, so a falloff would be read
+        /// without any error and change nothing at all. Same silent failure as a priority on a
+        /// shape that chooses nobody, and it gets the same treatment.
+        /// </summary>
+        [TestCase(AbilityShape.Self)]
+        [TestCase(AbilityShape.Single)]
+        public void AFalloffOnAShapeWithOnlyOneDistanceIsRefused(AbilityShape shape)
+        {
+            AbilityDefinition ability = TestAbility.Timed("breath", 0f, 1f, 0f, 30f)
+                .Shaped(shape, shape == AbilityShape.Self ? AbilityWho.Self : AbilityWho.Enemies)
+                .WithDamage(100f, falloff: 0.15f);
+
+            Assert.IsNotEmpty(AbilityValidator.Validate(ability));
+        }
+
+        /// <summary>An explicit zero is not a falloff, so it must not be flagged on any shape.</summary>
+        [Test]
+        public void AZeroFalloffIsAcceptedEverywhere()
+        {
+            AbilityDefinition ability = TestAbility.Timed("jab", 0f, 1f, 0f, 30f)
+                .Shaped(AbilityShape.Single)
+                .WithDamage(100f, falloff: 0f);
+
+            Assert.IsEmpty(AbilityValidator.Validate(ability));
+        }
+
+        /// <summary>
+        /// It is a fraction of the damage lost per cell. A full 1 would leave every cell but the
+        /// adjacent one at zero, which is a range of 1 written the hard way.
+        /// </summary>
+        [TestCase(-0.1f)]
+        [TestCase(1f)]
+        [TestCase(1.5f)]
+        public void AFalloffOutsideZeroToOneIsRefused(float falloff)
+        {
+            AbilityDefinition ability = TestAbility.Timed("breath", 0f, 1f, 0f, 30f)
+                .Shaped(AbilityShape.Line)
+                .WithDamage(100f, falloff: falloff);
+
+            Assert.IsNotEmpty(AbilityValidator.Validate(ability));
+        }
+
+        /// <summary>
+        /// The falloff scales with the rank like every other number, so its array answers to the
+        /// same rule: one entry for a constant, or exactly one per rank.
+        /// </summary>
+        [Test]
+        public void AFalloffArrayOneEntryShortIsRefused()
+        {
+            AbilityDefinition ability = TestAbility.Timed("breath", 0f, 1f, 0f, 30f)
+                .Shaped(AbilityShape.Line)
+                .WithDamage(100f);
+
+            ability.Ranks = 5;
+            ability.Cooldown = new RankedValue(35f, 30f, 25f, 20f, 15f);
+            ability.Effects[0].Base = new RankedValue(60f, 75f, 90f, 105f, 120f);
+            ability.Effects[0].Falloff = new RankedValue(0.15f, 0.14f, 0.13f, 0.12f);
+
+            Assert.IsNotEmpty(AbilityValidator.Validate(ability));
+        }
+
+        [Test]
+        public void AFalloffWithOneEntryPerRankIsAccepted()
+        {
+            AbilityDefinition ability = TestAbility.Timed("breath", 0f, 1f, 0f, 30f)
+                .Shaped(AbilityShape.Line)
+                .WithDamage(100f);
+
+            ability.Ranks = 5;
+            ability.Cooldown = new RankedValue(35f, 30f, 25f, 20f, 15f);
+            ability.Effects[0].Base = new RankedValue(60f, 75f, 90f, 105f, 120f);
+            ability.Effects[0].Falloff = new RankedValue(0.15f, 0.14f, 0.13f, 0.12f, 0.11f);
+
+            Assert.IsEmpty(AbilityValidator.Validate(ability));
+        }
+
         /// <summary>
         /// Every sheet the game actually ships with has to pass. This is the test that turns the
         /// validator from a library into a guarantee, and it is the one that will catch a real

@@ -43,6 +43,10 @@ namespace HerOClock.Abilities
         [Tooltip("Fraction of each of the user's attributes that is added to the damage.")]
         public AbilityScaling Scaling = new AbilityScaling();
 
+        [Tooltip("How much damage is lost per cell of distance from the user. 0 keeps it the same "
+            + "everywhere. Multiplicative, so the damage falls off but never reaches zero.")]
+        public RankedValue Falloff;
+
         [Header("Apply status")]
         public StatusKind Status = StatusKind.Untargetable;
 

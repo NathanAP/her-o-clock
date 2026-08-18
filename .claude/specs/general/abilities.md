@@ -146,10 +146,44 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
     - `modify_stat` — altera um atributo por um tempo. Recebe `stat`, `mode` (`percent` ou `flat`) e `value`.
         - Buff e debuff são o mesmo efeito. O que separa os dois é o sinal do valor.
         - O mesmo efeito chegando duas vezes renova em vez de somar, conforme `buffs-and-debuffs.md`.
-    - `deal_damage` — causa dano. Recebe `damageType`, `base` e `scaling`, que é a fração de cada atributo que entra no cálculo.
+    - `deal_damage` — causa dano. Recebe `damageType`, `base` e `scaling`, que é a fração de cada atributo que entra no cálculo, e aceita um `falloff` opcional.
     - `apply_status` — aplica um estado nomeado, como `untargetable` ou `intangible`. Cada um deles está descrito em `buffs-and-debuffs.md`.
     - `move_to` — reposiciona alguém. Recebe `anchor`, que hoje só tem um valor: `lastTargetAnySide`, uma das casas vizinhas ao último alvo da habilidade.
 - Um estado nomeado só existe quando ele faz algo que o jogo ainda não sabe fazer. Estados que são apenas números não precisam existir, pois `modify_stat` já dá conta deles.
+
+### A queda de dano por distância
+
+- O `deal_damage` aceita um campo `falloff`, que é o quanto o dano perde a cada casa de distância entre quem usou a habilidade e quem está recebendo.
+- A conta é multiplicativa:
+    - `Dano = Dano base × (1 − falloff) ^ (distância − 1)`
+    - A `distância` é medida em casas a partir de quem usou, contando a diagonal como 1, do mesmo jeito que o resto do jogo mede.
+    - O `− 1` é o que faz o alvo colado receber o dano cheio. Sem ele, nem quem está do lado levaria o valor escrito na ficha, e o número da ficha deixaria de significar alguma coisa.
+- Por exemplo, com 100 de dano base e `falloff` de 0.15:
+    - A 1 casa, 100 de dano.
+    - A 2 casas, 85 de dano.
+    - A 4 casas, 61 de dano.
+    - A 7 casas, 38 de dano.
+    - As 7 casas são a maior distância que o campo de batalha permite, de um canto ao canto oposto, conforme "## Campo de batalha" em `gameplay.md`.
+- A queda acontece sobre o **dano base**, ou seja, no passo 1 de "## Ordem do cálculo de dano" em `attributes.md`. Espinhos, mitigação e evasão acontecem normalmente depois dela, já sobre o valor reduzido.
+- Ela é multiplicativa e nunca subtrativa, pelo mesmo motivo das reduções descritas em "### As reduções sempre multiplicam entre si" em `attributes.md`: assim o dano **nunca chega a zero**.
+    - Uma queda subtrativa zeraria o dano a partir de certa distância, e aí cada habilidade precisaria de um piso escrito à mão. Seria mais uma constante para calibrar, e ela não seria discutível sozinha.
+    - Com a queda multiplicativa, estar na linha sempre vale alguma coisa e estar perto sempre vale mais.
+- O campo é opcional e vale `0` quando omitido, ou seja, o dano é o mesmo a qualquer distância.
+- Ele só é aceito nas formas que alcançam casas a distâncias diferentes, que são `area`, `chain` e `line`.
+    - Em `self` e em `single` a distância é sempre a mesma, então a queda seria lida sem erro nenhum e não faria diferença. Uma ficha declarando `falloff` nessas duas formas é recusada, e não ignorada.
+- Ele aceita um valor por rank, como qualquer outro número de habilidade. Uma habilidade que perde menos dano por casa conforme evolui é uma evolução legítima.
+- O valor fica **entre 0 e 1, sem incluir o 1**. Uma queda de 100% por casa faria todo alvo que não estivesse colado receber zero, e quem quer isso está pedindo uma habilidade de alcance 1.
+
+### Dano em quem usou a habilidade
+
+- Uma habilidade pode causar dano em quem a usou, declarando um `deal_damage` com `target` igual a `self`. É assim que se escreve o custo de uma habilidade poderosa.
+- **Esse dano nunca leva a vida abaixo de 1.** Quando não há vida suficiente, ele é reduzido ao que sobra e o personagem continua vivo com 1 ponto.
+- A trava existe para que a promessa seja absoluta. A alternativa seria impedir o uso quando a conta mataria, e ela tem dois furos:
+    - A habilidade tem preparo. O personagem passaria na conferência, levaria dano durante o preparo e morreria quando ela finalmente saísse. A proibição teria olhado para um número que já não valia mais.
+    - Ela desarmaria o personagem justamente com a vida baixa, que é quando ele mais precisa do efeito. Uma habilidade que some quando a batalha aperta é uma habilidade que não existe.
+- A trava vale **apenas para o dano que a própria habilidade causa em quem a usou**. Nada mais é travado:
+    - Espinhos de um inimigo, dano em área de um aliado e o ataque básico de qualquer um continuam capazes de matar normalmente.
+    - Sem esse limite, um personagem com uma habilidade de custo se tornaria imortal por acidente, e a trava deixaria de ser um custo para virar uma defesa.
 
 ### Para onde o `move_to` leva
 

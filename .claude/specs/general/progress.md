@@ -67,6 +67,11 @@ xpPorLacaio(nível do lacaio)  = 10 × nível^2
 - Para **heróis**, essa é a distribuição padrão. Ela é aplicada sozinha enquanto o herói estiver com a distribuição automática ligada, e o jogador pode desligá-la para colocar os pontos à mão. Os controles estão descritos em `attributes.md`.
 - Para **lacaios e vilões**, essa é a única forma que eles têm de ficar mais fortes, pois não existe ninguém distribuindo pontos por eles. Eles são personagens com o automático permanentemente ligado.
 - São quatro números por ficha, e não uma tabela de valores por nível. O nível faz o resto.
+- **Os quatro números somam exatamente 100.** Uma ficha que soma qualquer outra coisa é recusada.
+    - No exemplo acima, `40 + 20 + 0 + 40 = 100`.
+    - Um `spe` de 0 é válido e comum. O que não é válido é o conjunto não fechar em 100.
+    - A regra precisa estar escrita porque o cálculo **não depende dela**: a distribuição divide cada parte pelo total declarado, então uma ficha somando 125 continua funcionando e apenas significa outra coisa do que quem a escreveu quis dizer. Sem esta linha não existe nada para o erro violar, e ele passa sem ruído nenhum.
+    - Ler "40 de POW" como 40% só é verdade quando o total é 100. Fora disso o mesmo número quer dizer proporções diferentes em cada ficha, e comparar dois personagens deixa de ser possível a olho.
 - A parte automática é sempre recalculada a partir do total, e nunca somada de cinco em cinco.
     - O arredondamento das porcentagens é resolvido por maior resto, então distribuir 5 pontos trinta e nove vezes não dá o mesmo resultado que distribuir 195 de uma vez.
     - É isso que garante que um lacaio criado direto no nível 40 tenha exatamente os mesmos atributos de um que subiu do 1 até lá, o que a reprodutibilidade das batalhas depende.

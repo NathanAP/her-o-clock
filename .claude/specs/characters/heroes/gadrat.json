@@ -1,6 +1,7 @@
 {
     "id": "gadrat",
     "kind": "hero",
+    "initialLevel": 1,
     "maxLevel": 100,
     "equipment": "heavy",
     "minRange": 1,
@@ -18,7 +19,7 @@
             "weight": "120 kg"
         },
         "outfit": {
-            "description": "Gadrat's costume maintain his durability and strength, featuring a heavy-duty suit with reinforced armor and a visor that enhances their perception of the battlefield.",
+            "description": "Gadrat's costume maintains their durability and strength, featuring a heavy-duty suit with reinforced armor and a visor that enhances their perception of the battlefield.",
             "colors": ["red", "gold", "black"]
         }
     },
@@ -29,25 +30,25 @@
         "realFatherName": "Gytoss, Lord of Fire"
     },
     "baseAttributes": {
-        "pow": 9,
-        "agi": 3,
-        "spe": 5,
-        "con": 8
+        "pow": 10,
+        "agi": 2,
+        "spe": 6,
+        "con": 12
     },
     "attributeGrowth": {
-        "pow": 40,
-        "agi": 20,
-        "spe": 30,
+        "pow": 35,
+        "agi": 5,
+        "spe": 25,
         "con": 35
     },
     "defence": {
         "physicalArmor": {
-            "base": 50,
-            "perLevel": 30
+            "base": 60,
+            "perLevel": 60
         },
         "fireResistance": {
-            "base": 20,
-            "perLevel": 0
+            "base": 100,
+            "perLevel": 100
         },
         "waterResistance": {
             "base": 0,
@@ -58,99 +59,95 @@
             "perLevel": 0
         }
     },
-    // "thornsPercent": 0,
-    // "lifeStealPercent": 0,
-    // "healthRegen": 0,
+    "thornsPercent": 0,
+    "lifeStealPercent": 0,
+    "healthRegen": 0,
     "autoAttacks": {
         "type": "melee"
     },
     "abilityTrees": [
         {
-            "id": "gadrat-burn",
+            "id": "son-of-fire",
             "name": "Son of Fire",
             "abilities": [
                 {
                     "id": "dragon-breath",
                     "name": "Dragon Breath",
-                    "description": "Gadrat releases fire from their mouth, dealing fire damage to enemies in a cone in front of them.",
+                    "description": "Gadrat releases fire from their mouth, burning every enemy in a straight line in front of them and melting their armor. The flames thin out with distance.",
                     "ranks": 5,
                     "cooldown": [35, 30, 25, 20, 15],
                     "preparation": 1,
                     "casting": 1,
-                    "recoil": 0.5
-                    // "targeting": {
-                    //     "who": "self",
-                    //     "shape": "self"
-                    // },
-                    // "effects": [
-                    //     {
-                    //         "type": "modify_stat",
-                    //         "target": "self",
-                    //         "stat": "attackSpeed",
-                    //         "mode": "percent",
-                    //         "value": 20,
-                    //         "duration": [5, 6, 7, 8, 9]
-                    //     },
-                    //     {
-                    //         "type": "modify_stat",
-                    //         "target": "self",
-                    //         "stat": "movementSpeed",
-                    //         "mode": "percent",
-                    //         "value": 20,
-                    //         "duration": [5, 6, 7, 8, 9]
-                    //     },
-                    //     {
-                    //         "type": "modify_stat",
-                    //         "target": "self",
-                    //         "stat": "cooldownReduction",
-                    //         "mode": "percent",
-                    //         "value": 15,
-                    //         "duration": [5, 6, 7, 8, 9]
-                    //     }
-                    // ]
+                    "recoil": 0.5,
+                    "targeting": {
+                        "who": "enemies",
+                        "shape": "line",
+                        "range": 4,
+                        "priority": "nearest"
+                    },
+                    "effects": [
+                        {
+                            "type": "deal_damage",
+                            "target": "eachTarget",
+                            "damageType": "fire",
+                            "base": [60, 75, 90, 105, 120],
+                            "falloff": 0.15,
+                            "scaling": {
+                                "spe": 0.5
+                            }
+                        },
+                        {
+                            "type": "modify_stat",
+                            "target": "eachTarget",
+                            "stat": "physicalArmor",
+                            "mode": "percent",
+                            "value": -20,
+                            "duration": [4, 5, 6, 7, 8]
+                        }
+                    ]
                 },
                 {
                     "id": "warm-up",
                     "name": "Warm Up",
-                    "description": "Gadrat evolves himself in fire, dealing extra fire damage per second to enemies around him, but also taking fire damage.",
+                    "description": "Gadrat envelops themselves in fire, burning every enemy around them. The heat also burns Gadrat, but leaves them running hotter and faster for a while.",
                     "ranks": 5,
                     "cooldown": [40, 40, 35, 35, 30],
                     "preparation": 0.5,
-                    "casting": 10,
-                    "recoil": 0,
+                    "casting": 1,
+                    "recoil": 0.5,
                     "targeting": {
                         "who": "enemies",
                         "shape": "area",
                         "anchor": "self",
                         "areaColumns": 3,
                         "areaRows": 3
-                    }
-                    // "effects": [
-                    //     {
-                    //         "type": "modify_stat",
-                    //         "target": "eachTarget",
-                    //         "stat": "attackSpeed",
-                    //         "mode": "percent",
-                    //         "value": -10,
-                    //         "duration": [5, 6, 7, 8, 9]
-                    //     },
-                    //     {
-                    //         "type": "modify_stat",
-                    //         "target": "eachTarget",
-                    //         "stat": "movementSpeed",
-                    //         "mode": "percent",
-                    //         "value": -10,
-                    //         "duration": [5, 6, 7, 8, 9]
-                    //     },
-                    //     {
-                    //         "type": "modify_stat",
-                    //         "target": "eachTarget",
-                    //         "stat": "cooldownReduction",
-                    //         "mode": "percent",
-                    //         "value": -8,
-                    //         "duration": [5, 6, 7, 8, 9]
-                    //     }
-                    // ]
+                    },
+                    "effects": [
+                        {
+                            "type": "deal_damage",
+                            "target": "eachTarget",
+                            "damageType": "fire",
+                            "base": [40, 50, 60, 70, 80],
+                            "scaling": {
+                                "spe": 0.4
+                            }
+                        },
+                        {
+                            "type": "deal_damage",
+                            "target": "self",
+                            "damageType": "fire",
+                            "base": 30,
+                            "scaling": {}
+                        },
+                        {
+                            "type": "modify_stat",
+                            "target": "self",
+                            "stat": "attackSpeed",
+                            "mode": "percent",
+                            "value": [10, 15, 20, 25, 30],
+                            "duration": [6, 7, 8, 9, 10]
+                        }
+                    ]
                 }
             ]
         }

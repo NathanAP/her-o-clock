@@ -177,3 +177,29 @@ Characters cross the whole board chasing their target. The areas only define whe
 Tanking still works because the second rule of the chain is "closest", and whoever stands in front is the closest. The assassin's blink keeps its identity because in real time its value is not *being able to reach*, it is *reaching now*, saving the seconds everyone else spends walking.
 
 Giving melee characters body blocking would remove the value of free movement. Both are valid paths and we cannot have both.
+
+## Damage falloff multiplies, so it never reaches zero
+
+`Damage = base x (1 - falloff) ^ (distance - 1)`, on the `deal_damage` effect, with distance counted in cells from the user.
+
+It is the same reasoning as reductions multiplying instead of adding. A subtractive falloff would zero the damage past some distance, and then every ability using it would need a floor written by hand — one more constant to calibrate per ability, and none of them discussable on its own. Multiplying means being in the line always counts for something and being close always counts for more, with no extra number.
+
+The `- 1` in the exponent is what makes the adjacent target take the full number written on the sheet. Without it nobody would ever receive the sheet's number, and the number would stop meaning anything.
+
+It is refused on `self` and `single`, where every target sits at the same distance. There it would be read without error and change nothing, which is the same silent failure the priority rule guards against.
+
+## An ability never kills the character that used it
+
+Self targeted damage is how the cost of a powerful ability is written, and it stops at 1 health.
+
+The alternative considered was refusing to cast when the arithmetic would kill. It was rejected for two reasons. Abilities have preparation time, so the check would look at a number that can be outdated by the time the ability actually fires — the promise would not hold. And it would disarm the character exactly at low health, which is when the effect is most needed; an ability that disappears when the battle gets hard is an ability that does not exist.
+
+The limit covers **only the ability's own damage against its own user**. Thorns, an ally's area and anybody's basic attack still kill normally. Widening it would turn a cost into a defence and make a character with a costly ability immortal by accident.
+
+## A hero's abilities live in trees, an enemy's live in a flat list
+
+Hero sheets use `abilityTrees`, each with `id`, `name` and its own `abilities`. Minion and villain sheets use a flat `abilities`.
+
+This is not an inconsistency to be tidied up later. A tree is progression, and nobody progresses a minion: the player spends points, picks a path and unlocks ranks on a hero, while a minion is born with what its sheet says. Wrapping an enemy's abilities in a tree would create a node nobody ever buys, and somebody would eventually try to give it meaning.
+
+A hero can have more than one tree, and that is what the class and subclass system rests on.

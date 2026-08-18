@@ -47,15 +47,21 @@ namespace HerOClock.Tests
             return ability;
         }
 
-        public static AbilityDefinition WithDamage(this AbilityDefinition ability, float baseDamage, float powerScaling = 0f)
+        public static AbilityDefinition WithDamage(
+            this AbilityDefinition ability,
+            float baseDamage,
+            float powerScaling = 0f,
+            float falloff = 0f,
+            EffectTarget target = EffectTarget.EachTarget)
         {
             return ability.With(new AbilityEffect
             {
                 Type = EffectType.DealDamage,
-                Target = EffectTarget.EachTarget,
+                Target = target,
                 DamageType = DamageType.Physical,
                 Base = RankedValue.Constant(baseDamage),
-                Scaling = new AbilityScaling { Power = powerScaling }
+                Scaling = new AbilityScaling { Power = powerScaling },
+                Falloff = RankedValue.Constant(falloff)
             });
         }
 

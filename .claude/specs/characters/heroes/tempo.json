@@ -1,6 +1,7 @@
 {
     "id": "tempo",
     "kind": "hero",
+    "initialLevel": 1,
     "maxLevel": 100,
     "equipment": "light",
     "minRange": 1,
