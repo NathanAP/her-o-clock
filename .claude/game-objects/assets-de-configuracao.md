@@ -125,6 +125,12 @@ Além dos acima, toda ficha possui campos que ainda não têm fonte no jogo, poi
 
 Como o ataque básico ainda é sempre físico, as três resistências elementais não têm efeito nenhum por enquanto. Espinhos e roubo de vida funcionam desde já.
 
+### Tipo de ataque básico
+
+O campo `Auto Attack` diz se o ataque básico desenha um projétil (`Ranged`) ou não (`Melee`). Ele é **puramente visual** e não muda regra nenhuma: quem decide alcance são o `Min Range` e o `Max Range`.
+
+Um personagem de alcance longo com ataque `Melee` bate de longe sem nada voando, e isso é uma combinação válida de se querer. Das quatro fichas de teste, só o `Hero Archer Def` é `Ranged`.
+
 ### Lista de habilidades
 
 A lista `Abilities` da ficha está **vazia de propósito nas quatro fichas de teste**. O sistema funciona desde a 0.7.0.0, e ele só aparece no jogo rodando quando a 0.9.0.0 trouxer os personagens de verdade.

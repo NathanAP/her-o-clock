@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using HerOClock.Abilities;
 using HerOClock.Characters;
@@ -49,6 +49,15 @@ namespace HerOClock.Battle
 
         /// <summary>Attacker, target and outcome. The view layer listens to this.</summary>
         public event Action<Character, Character, DamageResult> Attacked;
+
+        /// <summary>
+        /// Raised once per basic attack, naming who swung at whom, before the damage is resolved.
+        ///
+        /// Separate from <see cref="Attacked"/> on purpose: that one also carries the thorns coming
+        /// back and every blow an ability lands, so it cannot answer "was this a basic attack".
+        /// Drawing the swing needs that answer.
+        /// </summary>
+        public event Action<Character, Character> BasicAttackLanded;
 
         /// <summary>Raised once when a side runs out of living members. True means the heroes won.</summary>
         public event Action<bool> BattleEnded;
@@ -101,6 +110,7 @@ namespace HerOClock.Battle
 
             CharacterAttacker attacker = new CharacterAttacker(character, random);
             attacker.Attacked += RaiseAttacked;
+            attacker.Struck += RaiseBasicAttack;
             attackers.Add(attacker);
 
             AbilityCaster caster = new AbilityCaster(character, grid, random);
@@ -218,6 +228,11 @@ namespace HerOClock.Battle
         private void RaiseAttacked(Character attacker, Character target, DamageResult result)
         {
             Attacked?.Invoke(attacker, target, result);
+        }
+
+        private void RaiseBasicAttack(Character attacker, Character target)
+        {
+            BasicAttackLanded?.Invoke(attacker, target);
         }
 
         private static bool AnyAlive(List<Character> characters)

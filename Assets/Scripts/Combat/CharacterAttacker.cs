@@ -38,6 +38,16 @@ namespace HerOClock.Combat
         /// <summary>Raised on every blow landed, so the view can react.</summary>
         public event System.Action<Character, Character, DamageResult> Attacked;
 
+        /// <summary>
+        /// Raised once per basic attack, naming who swung at whom.
+        ///
+        /// It exists apart from <see cref="Attacked"/> because that one cannot answer "was this a
+        /// basic attack": it also fires for the thorns coming back at the attacker, and the
+        /// director raises it again for every blow an ability lands. Anything that wants to draw
+        /// the swing itself — a projectile, later an animation — needs the question answered.
+        /// </summary>
+        public event System.Action<Character, Character> Struck;
+
         private float AttackInterval
         {
             get
@@ -118,6 +128,10 @@ namespace HerOClock.Combat
 
         private void Attack(Character target)
         {
+            // Announced before the damage is resolved, so whatever draws the swing is looking at
+            // the board as it was when the blow was thrown, with the target still standing.
+            Struck?.Invoke(character, target);
+
             DamageResult result = Resolve(character, target, character.Stats.PhysicalDamage, DamageType.Physical, true);
 
             target.TakeDamage(result.Damage);

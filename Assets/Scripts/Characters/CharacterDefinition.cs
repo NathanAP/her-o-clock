@@ -40,6 +40,10 @@ namespace HerOClock.Characters
         [Tooltip("Longest distance, in cells, the character can reach. Melee uses 1.")]
         [Min(1)] public int MaxRange = 1;
 
+        [Tooltip("Whether the basic attack draws a projectile flying to the target. Purely visual: "
+            + "the two ranges above are what decide reach.")]
+        public AutoAttackType AutoAttack = AutoAttackType.Melee;
+
         [Header("Attributes")]
         public CharacterStats Stats = new CharacterStats();
 

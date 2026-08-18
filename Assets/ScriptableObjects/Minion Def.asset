@@ -24,6 +24,7 @@ MonoBehaviour:
     Constitution: 40
   MinRange: 1
   MaxRange: 1
+  AutoAttack: 0
   Stats:
     BasePower: 2
     BaseAgility: 1

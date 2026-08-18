@@ -87,6 +87,12 @@ namespace HerOClock.Characters
             get { return Definition.MaxRange; }
         }
 
+        /// <summary>Whether the basic attack draws a projectile. Visual only, and no rule reads it.</summary>
+        public AutoAttackType AutoAttack
+        {
+            get { return Definition.AutoAttack; }
+        }
+
         public bool IsAlive
         {
             get { return CurrentHealth > 0; }

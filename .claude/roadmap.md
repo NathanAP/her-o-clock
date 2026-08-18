@@ -236,15 +236,18 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **`DesignSheetTests` passou a ler as fichas de `.claude/specs/characters/`**, que nenhum teste lia. É o detector que faltava, e foi conferido reintroduzindo os dois erros originais do Gadrat.
 - O resumo completo está em `.claude/versions/20260818_0.7.1.1.md`.
 
-## 0.8.0.0
+## 0.8.0.0 (feita)
 
-- Projéteis, **puramente visuais**.
-- Primeiro item da versão: **o tipo de ataque básico não existe no asset.** O `autoAttacks.type` (`melee` ou `ranged`) está nas fichas de design e não tem campo equivalente no `CharacterDefinition`, então hoje nada sabe dizer quem atira. Sem ele a versão não consegue nem escolher quem mostra projétil.
-- Podemos fazer primeiro uns laserzinhos simples e coloridos, apenas para ver a coisa acontecer.
-- O projétil nasce ouvindo o evento `Attacked`, que já existe e já é o que alimenta os números de dano flutuantes. **O dano continua acontecendo na hora**, e o projétil é só a viagem sendo desenhada depois do fato.
-    - Isso mantém a versão inteira dentro de `Assets/Scripts/View/`, sem encostar na simulação. O `DamageNumberPool` já é o molde do ciclo de nascer, viajar e voltar para o pool.
-- A ficha de teste `Hero Archer Def` já tem `MinRange 2`, então já existe alguém à distância para ver a coisa funcionando.
-- Testes: nenhum. Nada da simulação é tocado, e interface e animação não pagam custo de teste conforme o `CLAUDE.md`.
+- Projéteis, puramente visuais. 537 verificações no EditMode, contra 534, e 2 no PlayMode. O snapshot não se moveu.
+- **O `autoAttacks.type` entrou no asset.** Ele estava nas fichas de design desde sempre e não tinha campo equivalente no `CharacterDefinition`, então nada sabia dizer quem atira. É por natureza tarefa da 0.9.0.0, adiantada porque é um campo só.
+- **O achado da versão foi o evento.** O `Attacked` é disparado por três motivos — o golpe, os espinhos voltando, e cada golpe de habilidade — então ele não consegue responder "isto foi um ataque básico?".
+    - Pendurar o projétil nele faria flecha sair de quem levou o golpe, por causa dos espinhos, e faria o Gadrat atirar flechas ao usar o Dragon Breath na 0.9.2.0.
+    - Nasceu o `BasicAttackLanded`, disparado uma vez por ataque básico e **antes** do dano ser resolvido, para que quem desenha veja o alvo ainda de pé.
+- O projétil voa para uma posição capturada no disparo e nunca segue o alvo, que pode morrer no meio do caminho e ser desativado.
+- Ele anda com `Time.deltaTime`, que o controle de velocidade já escala, então fica em passo com a batalha de 0.25x a 8x sem saber que essas velocidades existem.
+- Testes: nenhum para o desenho, conforme planejado. O `BasicAttackLanded` ganhou os seus, porque ele é contrato de combate e não desenho.
+- **Os valores de aparência nunca foram vistos rodando** e estão expostos no Inspector para serem corrigidos a olho.
+- O resumo completo está em `.claude/versions/20260818_0.8.0.0.md`.
 
 ## O ato 1 (0.9.x)
 

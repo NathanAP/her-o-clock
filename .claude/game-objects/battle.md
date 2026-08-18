@@ -164,4 +164,27 @@ O arquivo da cena nunca corre risco: em Play Mode a Unity não grava alteração
 
 Já configuradas em `ProjectSettings/TagManager.asset`: `Default`, `Background`, `Ground`, `Characters`, `Projectiles`, `VFX`, `UI`.
 
-O código usa quatro delas pelo nome: `Background` para as casas, `Ground` para a linha divisória, `Characters` para os personagens e `VFX` para os números de dano. Renomear qualquer uma quebra a renderização em silêncio.
+O código usa cinco delas pelo nome: `Background` para as casas, `Ground` para a linha divisória, `Characters` para os personagens, `Projectiles` para os tiros de ataque básico e `VFX` para os números de dano. Renomear qualquer uma quebra a renderização em silêncio.
+
+A ordem entre `Characters`, `Projectiles` e `VFX` importa e não é acidental: o tiro passa na frente de quem o disparou, e o número de dano passa na frente do tiro. Se o projétil ficasse acima do `VFX`, ele cobriria justamente o número que diz o que ele fez.
+
+## Projéteis do ataque básico
+
+Nada para criar na mão. O `Battle` monta um pool de projéteis junto com o dos números de dano, e nenhum objeto precisa existir na cena.
+
+Um tiro só aparece quando o personagem que golpeou tem o campo `Auto Attack` da ficha em `Ranged`. Das quatro fichas de teste, só o `Hero Archer Def` está assim.
+
+O projétil é **puramente decorativo**. O dano já foi aplicado quando ele sai, então mexer em qualquer valor abaixo não altera nenhuma batalha e nenhuma semente.
+
+Os valores ficam no bloco `Projectile Settings` do componente `BattleBootstrap`, e são para serem mexidos com o jogo rodando:
+
+| Campo | Valor inicial | O que faz |
+|---|---|---|
+| Size | 0.36 x 0.08 | Tamanho do tiro em fração de casa. Comprido e baixo para ler como algo viajando, e não como um ponto. |
+| Cells Per Second | 14 | Velocidade do desenho, em casas por segundo. |
+| Max Lifetime | 1.5 | Rede de segurança, em segundos. Só importa se a velocidade for posta absurdamente baixa. |
+| Color From Shooter | 0.65 | Quanto o tiro puxa a cor de quem atirou. 0 é branco, 1 é a cor exata do corpo. |
+
+**Estes valores são um chute inicial e nunca foram vistos rodando.** Ajuste sem cerimônia. Os dois que mais provavelmente estão errados são a velocidade, que pode fazer o tiro sumir antes de ser visto, e o tamanho.
+
+O tiro voa para a posição onde o alvo estava **no instante do disparo**, e não persegue ninguém. É de propósito: o alvo pode morrer no meio do caminho, e lacaio morto é desativado.

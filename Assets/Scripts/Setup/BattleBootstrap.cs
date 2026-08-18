@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using HerOClock.Battle;
@@ -42,6 +42,10 @@ namespace HerOClock.Setup
         [Header("Placeholder look")]
         [SerializeField] private CharacterViewSettings viewSettings = new CharacterViewSettings();
 
+        [Tooltip("The bolt drawn for a ranged basic attack. Decoration only: the damage has already "
+            + "been applied by the time it leaves.")]
+        [SerializeField] private ProjectileSettings projectileSettings = new ProjectileSettings();
+
         [Header("Combat")]
         [Tooltip("Random seed. The same value always produces the same battle. Leave 0 to draw a new seed on every Play.")]
         [SerializeField] private int randomSeed;
@@ -62,6 +66,7 @@ namespace HerOClock.Setup
         private PlayerWallet wallet;
         private ActivityLog activity;
         private DamageNumberPool damageNumbers;
+        private ProjectilePool projectiles;
 
         private void Start()
         {
@@ -108,6 +113,7 @@ namespace HerOClock.Setup
             grid = new BattleGrid(gridConfig);
             Transform board = BoardRenderer.Build(grid, transform);
             damageNumbers = new DamageNumberPool(transform, gridConfig.CellSize);
+            projectiles = new ProjectilePool(transform, gridConfig.CellSize, projectileSettings);
 
             List<Character> heroes = SpawnHeroes();
             if (heroes.Count == 0)
@@ -140,6 +146,7 @@ namespace HerOClock.Setup
 
             director = gameObject.AddComponent<BattleDirector>();
             director.Attacked += OnAttacked;
+            director.BasicAttackLanded += OnBasicAttackLanded;
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             // Never present in a released build. A speed slider would defeat a game whose
@@ -453,6 +460,28 @@ namespace HerOClock.Setup
             damageNumbers.Show(origin, result);
 
             RecordBlow(attacker, target, result);
+        }
+
+        /// <summary>
+        /// Draws the bolt of a ranged basic attack, from whoever swung to where the target stood.
+        ///
+        /// Only the basic attack reaches here, which is the whole reason `BasicAttackLanded` exists
+        /// apart from `Attacked`: that one also carries the thorns coming back and every blow an
+        /// ability lands, and neither of those is a shot anybody fired.
+        ///
+        /// The destination is read now and handed over as a plain position. The bolt must not hold
+        /// on to the target, which can die and be deactivated while the bolt is still travelling.
+        /// </summary>
+        private void OnBasicAttackLanded(Character attacker, Character target)
+        {
+            if (attacker.AutoAttack != AutoAttackType.Ranged)
+            {
+                return;
+            }
+
+            Color color = attacker.Definition != null ? attacker.Definition.Color : Color.white;
+
+            projectiles.Fire(attacker.transform.position, target.transform.position, color);
         }
 
         /// <summary>
