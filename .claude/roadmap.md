@@ -238,37 +238,56 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 ## 0.8.0.0
 
-- Projéteis.
+- Projéteis, **puramente visuais**.
+- Primeiro item da versão: **o tipo de ataque básico não existe no asset.** O `autoAttacks.type` (`melee` ou `ranged`) está nas fichas de design e não tem campo equivalente no `CharacterDefinition`, então hoje nada sabe dizer quem atira. Sem ele a versão não consegue nem escolher quem mostra projétil.
 - Podemos fazer primeiro uns laserzinhos simples e coloridos, apenas para ver a coisa acontecer.
-- Testes: só se o projétil tiver tempo de voo capaz de mudar quando o dano é aplicado. Se for puramente visual, não precisa de nenhum.
+- O projétil nasce ouvindo o evento `Attacked`, que já existe e já é o que alimenta os números de dano flutuantes. **O dano continua acontecendo na hora**, e o projétil é só a viagem sendo desenhada depois do fato.
+    - Isso mantém a versão inteira dentro de `Assets/Scripts/View/`, sem encostar na simulação. O `DamageNumberPool` já é o molde do ciclo de nascer, viajar e voltar para o pool.
+- A ficha de teste `Hero Archer Def` já tem `MinRange 2`, então já existe alguém à distância para ver a coisa funcionando.
+- Testes: nenhum. Nada da simulação é tocado, e interface e animação não pagam custo de teste conforme o `CLAUDE.md`.
 
-## 0.8.1.0 (proposta, saiu da 0.7.1.0)
+## O ato 1 (0.9.x)
 
-- **Efeito periódico**, ou seja, um `deal_damage` que acontece várias vezes ao longo de uma duração em vez de uma só.
-- Ele destrava aura, queimadura, veneno e zona de cura de uma vez, e todos eles são a mesma peça com números diferentes.
-- O `warm-up` do Gadrat foi escrito originalmente assim e teve que virar um pulso único, porque a peça não existe.
-- Precisa de dois campos no efeito: a `duration`, que já existe, e um intervalo entre os tiques, que não existe.
-- **Vem antes da 0.9.0.0 de propósito.** Aquela versão escreve 17 fichas à mão, e qualquer uma delas pode querer dano ao longo do tempo. Chegar depois significa reescrever ficha.
-- A regra que ficou clara ao discutir isso e vale repetir na spec: **`casting` é congelamento, `duration` é consequência.** Um `casting` alto quase sempre é um número escrito no campo errado.
-- Testes: os tiques acontecendo na quantidade certa dentro da duração, o efeito parando quando o portador morre, e a interação com a regra de que o mesmo buff chegando duas vezes renova em vez de somar.
+O ato 1 é grande, mas **não é grande porque tem 17 personagens.** Doze lacaios e cinco vilões sem habilidade são a mesma carcaça preenchida com números diferentes, e os protótipos foram desenhados sem habilidade justamente para isso. O peso de verdade está em dois heróis com habilidade e em cinco fases balanceadas.
 
-## 0.9.0.0
+Por isso ela é quebrada em quatro, na ordem em que uma depende da anterior.
 
-- Lore do ato 1.
-- Equipe de 2 heróis.
-    - A ideia é terminar o ato 1 com 3 heróis.
-- 5 fases.
-    - Precisam constar o nível mínimo esperado para avançar, assim fica mais fácil balancear o ato.
-- 5 vilões.
-- 12 lacaios.
-- Instâncias de todo mundo organizada na Unity.
-    - Hoje existem quatro fichas na Unity (`hero-tank`, `hero-archer`, `minion-standard`, `villain-boss`) e três documentos de design em `.claude/specs/characters/` (`tempo`, `discarded-prototype`, `exposed-prototype`). É esta versão que faz os dois lados se encontrarem.
-    - As fichas de teste saem de cena quando os personagens de verdade entrarem. Elas não viram conteúdo.
-- **Uma decisão que esta versão precisa tomar:** quando a Tempo virar asset, os números dela vão existir em dois lugares — o documento de design e o `ScriptableObject`.
-    - Pela regra de "onde cada número mora", os números de entrada moram na spec e o teste os repete. Então o caminho coerente é um teste conferindo que o asset bate com o documento de design, do mesmo jeito que os testes de dano conferem o código contra `attributes.md`.
-    - Sem isso, os dois envelhecem separados em silêncio, que é exatamente o problema que a pasta `balance/` existe para evitar.
-- Testes: nenhuma regra nova, mas muito conteúdo novo. Os testes de conteúdo da 0.5.2.0 passam a valer para as 5 fases e os 17 personagens, e cada fase ganha um teste de caracterização dizendo em que nível ela deveria ser vencível.
-- Aqui também é onde a bateria de validação de habilidade da 0.7.0.0 começa a pagar de verdade: ela passa a rodar contra 17 fichas escritas à mão, em vez de contra fichas de laboratório.
+### 0.9.0.0 — A ponte entre ficha e asset
+
+- O `CharacterDefinition` passa a expressar tudo que uma ficha de design diz, e nasce o **teste que confere um contra o outro**.
+- Vem primeiro porque, sem ele, cada personagem criado depois é criado duas vezes à mão e os dois lados começam a divergir em silêncio — que é exatamente o problema que a pasta `balance/` existe para evitar.
+- Pela regra de "onde cada número mora", os números de entrada moram na spec e o teste os repete. O asset é uma segunda cópia, então ele precisa de alguém conferindo.
+- O `DesignSheetTests` da 0.7.1.1 é o começo disso, mas é raso de propósito: ele confere JSON, `id`, soma 100 e `initialLevel`, e não olha habilidade nenhuma. É esta versão que aprofunda.
+- Testes: a comparação asset contra documento de design, personagem a personagem.
+
+### 0.9.1.0 — As carcaças
+
+- Os 12 lacaios e os 5 vilões, sem habilidade nenhuma.
+- Repetitivo e barato, e é o que as fases precisam para existir.
+- **É aqui que a ponte se prova.** Se esta versão for demorada, a 0.9.0.0 foi mal feita.
+- Testes: os testes de conteúdo da 0.5.2.0 passando a valer para 17 fichas em vez de 4.
+
+### 0.9.2.0 — Tempo e Gadrat
+
+- Os dois heróis viram asset, com as habilidades que as fichas deles já descrevem.
+- É a primeira vez que o sistema de habilidades encosta em conteúdo de verdade, e é onde o validador da 0.7.0.0 finalmente paga o que custou: ele passa a rodar contra ficha escrita à mão em vez de ficha de laboratório.
+- A ideia é terminar o ato 1 com 3 heróis, então o terceiro entra depois.
+- Testes: nenhuma regra nova. O que muda é contra quem os testes de conteúdo rodam.
+
+### 0.9.3.0 — As 5 fases e a lore
+
+- As 5 fases, cada uma constando o nível mínimo esperado para avançar, o que torna o ato balanceável.
+- A lore do ato 1.
+- **O snapshot passa a medir gente de verdade pela primeira vez.** Hoje ele mede `hero-tank` e `hero-archer`, personagens de laboratório que vão deixar de existir, e é por isso que ele responde pouco.
+- As quatro fichas de teste saem de cena quando os personagens de verdade entrarem. Elas não viram conteúdo.
+- Testes: um teste de caracterização por fase, dizendo em que nível ela deveria ser vencível.
+
+### Contra o que cada teste roda
+
+A 0.9.x é onde essa divisão precisa ficar respeitada, e ela não é a mesma para todo teste:
+
+- **Testes de regra** (efeito, dano, alvo, tempo) continuam com fichas construídas em código. Um teste de regra escrito contra conteúdo real quebra a cada balanceamento, e aí ele passa a proteger um número em vez de uma regra. O motivo já está escrito dentro do `TestBattle.Sheet`.
+- **Testes de conteúdo e de balanceamento** passam a rodar contra os personagens de verdade. É neles que hoje mora o desperdício, pois medir a mitigação do `hero-tank` não diz nada sobre o jogo que vai existir.
 
 ## 0.10.0.0
 
@@ -329,6 +348,28 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Adicionar um timer ao começar a fase e finalizar ela.
     - Assim o jogador poderia ver quanto tempo demora pra completar uma fase ou ter uma noção de qual build é mais rápida.
 - Quem sabe da pra colocar uma espécie de "ranking" próprio pra saber qual foi a melho run da pessoa em cada fase.
+
+# No radar
+
+Coisas decididas conscientemente como "não agora". Elas não têm versão marcada, e estão aqui para não serem redescobertas do zero mais tarde.
+
+## Efeito periódico
+
+- Um `deal_damage` que acontece várias vezes ao longo de uma duração, em vez de uma só. Precisa da `duration`, que já existe, e de um intervalo entre os tiques, que não existe.
+- Destrava aura, queimadura, veneno e zona de cura de uma vez, pois todos eles são a mesma peça com números diferentes.
+- Saiu da 0.7.1.0: o `warm-up` do Gadrat foi escrito assim originalmente e teve que virar um pulso único.
+- **A condição para ele deixar de esperar** é alguma ficha depender dele de verdade. Se uma ficha nova pedir dano ao longo do tempo, ele vem antes daquela ficha, e nunca depois — senão a ficha é escrita torta e reescrita em seguida.
+- A regra que ficou clara ao discutir isso: **`casting` é congelamento, `duration` é consequência.** Um `casting` alto quase sempre é um número escrito no campo errado.
+
+## Projétil com tempo de voo
+
+- Um projétil que demora para chegar e **atrasa o dano**, em vez de só desenhar a viagem depois do fato.
+- Foi avaliado na 0.8.0.0 e recusado por enquanto, porque não existe nenhuma mecânica que dependa dele. Ele só se paga quando o voo virar jogo: projétil que dá para desviar, interceptar ou errar.
+- O custo não é o projétil, é o dano deixar de ser instantâneo, coisa que o motor inteiro assume hoje. O que abre junto:
+    - **Determinismo.** O voo tem que andar dentro do passo fixo, nunca no `Update`.
+    - **Quando a evasão é sorteada.** Sortear na chegada faz a ordem dos sorteios depender dos tempos de voo. Sortear na saída é a resposta segura.
+    - O alvo morrendo no meio do voo, o alvo saindo do lugar, espinhos e roubo de vida tendo que viajar junto, a onda acabando com projétil no ar, e o log de atividade registrando o dano num instante diferente do que ele aconteceu.
+- Cada um desses é regra nova na spec com teste próprio.
 
 # Ordem escolhida
 
