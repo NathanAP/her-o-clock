@@ -1,0 +1,158 @@
+{
+    "id": "gadrat",
+    "kind": "hero",
+    "maxLevel": 100,
+    "equipment": "heavy",
+    "minRange": 1,
+    "maxRange": 1,
+    "info": {
+        "name": "Gadrat",
+        "type": "Robot",
+        "description": "Gadrat is a robot known for their immense strength and durability.",
+        "startingLore": "Gadrat is an experimental robot designed for simple combat scenarios.",
+        "characteristics": {
+            "age": 2,
+            "gender": "Non-binary",
+            "body": "Gadrat's body is robust and designed for durability. Their chest contains a powerful engine that provides their immense strength. Their limbs are built for power and resilience, with reinforced joints and heavy-duty materials.",
+            "height": "180 cm",
+            "weight": "120 kg"
+        },
+        "outfit": {
+            "description": "Gadrat's costume maintain his durability and strength, featuring a heavy-duty suit with reinforced armor and a visor that enhances their perception of the battlefield.",
+            "colors": ["red", "gold", "black"]
+        }
+    },
+    "hidden": {
+        "realName": "Gadrat",
+        "realAge": 67,
+        "realGender": "Male",
+        "realFatherName": "Gytoss, Lord of Fire"
+    },
+    "baseAttributes": {
+        "pow": 9,
+        "agi": 3,
+        "spe": 5,
+        "con": 8
+    },
+    "attributeGrowth": {
+        "pow": 40,
+        "agi": 20,
+        "spe": 30,
+        "con": 35
+    },
+    "defence": {
+        "physicalArmor": {
+            "base": 50,
+            "perLevel": 30
+        },
+        "fireResistance": {
+            "base": 20,
+            "perLevel": 0
+        },
+        "waterResistance": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "electricResistance": {
+            "base": 0,
+            "perLevel": 0
+        }
+    },
+    // "thornsPercent": 0,
+    // "lifeStealPercent": 0,
+    // "healthRegen": 0,
+    "autoAttacks": {
+        "type": "melee"
+    },
+    "abilityTrees": [
+        {
+            "id": "gadrat-burn",
+            "name": "Son of Fire",
+            "abilities": [
+                {
+                    "id": "dragon-breath",
+                    "name": "Dragon Breath",
+                    "description": "Gadrat releases fire from their mouth, dealing fire damage to enemies in a cone in front of them.",
+                    "ranks": 5,
+                    "cooldown": [35, 30, 25, 20, 15],
+                    "preparation": 1,
+                    "casting": 1,
+                    "recoil": 0.5
+                    // "targeting": {
+                    //     "who": "self",
+                    //     "shape": "self"
+                    // },
+                    // "effects": [
+                    //     {
+                    //         "type": "modify_stat",
+                    //         "target": "self",
+                    //         "stat": "attackSpeed",
+                    //         "mode": "percent",
+                    //         "value": 20,
+                    //         "duration": [5, 6, 7, 8, 9]
+                    //     },
+                    //     {
+                    //         "type": "modify_stat",
+                    //         "target": "self",
+                    //         "stat": "movementSpeed",
+                    //         "mode": "percent",
+                    //         "value": 20,
+                    //         "duration": [5, 6, 7, 8, 9]
+                    //     },
+                    //     {
+                    //         "type": "modify_stat",
+                    //         "target": "self",
+                    //         "stat": "cooldownReduction",
+                    //         "mode": "percent",
+                    //         "value": 15,
+                    //         "duration": [5, 6, 7, 8, 9]
+                    //     }
+                    // ]
+                },
+                {
+                    "id": "warm-up",
+                    "name": "Warm Up",
+                    "description": "Gadrat evolves himself in fire, dealing extra fire damage per second to enemies around him, but also taking fire damage.",
+                    "ranks": 5,
+                    "cooldown": [40, 40, 35, 35, 30],
+                    "preparation": 0.5,
+                    "casting": 10,
+                    "recoil": 0,
+                    "targeting": {
+                        "who": "enemies",
+                        "shape": "area",
+                        "anchor": "self",
+                        "areaColumns": 3,
+                        "areaRows": 3
+                    }
+                    // "effects": [
+                    //     {
+                    //         "type": "modify_stat",
+                    //         "target": "eachTarget",
+                    //         "stat": "attackSpeed",
+                    //         "mode": "percent",
+                    //         "value": -10,
+                    //         "duration": [5, 6, 7, 8, 9]
+                    //     },
+                    //     {
+                    //         "type": "modify_stat",
+                    //         "target": "eachTarget",
+                    //         "stat": "movementSpeed",
+                    //         "mode": "percent",
+                    //         "value": -10,
+                    //         "duration": [5, 6, 7, 8, 9]
+                    //     },
+                    //     {
+                    //         "type": "modify_stat",
+                    //         "target": "eachTarget",
+                    //         "stat": "cooldownReduction",
+                    //         "mode": "percent",
+                    //         "value": -8,
+                    //         "duration": [5, 6, 7, 8, 9]
+                    //     }
+                    // ]
+                }
+            ]
+        }
+    ]
+}

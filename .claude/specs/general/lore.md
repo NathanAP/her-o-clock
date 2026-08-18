@@ -38,12 +38,15 @@ Aqui tem apenas esboços e ideias. Inclusive, não sei de que forma vamos contar
 
 - Basicamente a Samantha (Sam) morreu e seu pai (DR Carter) ficou completamente abalado.
 - Como era ele quem fazia os experimentos, ele quis tentar usar o Catarsis pra recuperar ela de alguma forma pois já havia percebido que seus experimentos estavam avançando.
+- O jogo começa com Tempo acordando no meio da cidade próxima a algum tipo de instalação militar em destroços.
 - DR Carter é o vilão do ato 4 porque os heróis foram informados que ele era o vilão final no ato 3, enquanto ele lutava pois não queria ter que enfrentar todo mundo que confiou nele, além de não saber que alguns de seus experimentos (os heróis) tinha dado certo, ele conta tudo e é aí que sabemos que ele é pai dela e que os experimentos eram feitos com pessoas. Ele indica que o assistente é o vilão final pois entrou em contato com o Catarsis e por algum motivo acionou o modo auto destruição do laboratório em seguida.
 - O assistente é o vilão do ato 5. Ele é uma monstruosidade totalmente perdida que mergulhou em um poço de catarsis quando ocorreu a explosão. O catarsis deu a ele poderes e resistências inimagináveis que o salvaram da explosão. Durante o tempo que permaneceu lúdico, ele gravou muitos relatos. A maioria fala que quem nasceu em Unia automaticamente não sofre com Catarsis e pode até acabar se beneficiando de diferentes formas. Testes foram feitos em criminosos mas também em pessoas que se disporam a participar do experimento em troca de dinheiro, promessas, proteção à família ou algo do gênero.
 - O final da primeira passada contém tudo até aqui.
-- O final da segunda passada também indica que o assistente entrou em contato com o Catarsis e foi inicialmente curado de seus problemas oculares, porém ele foi capaz de enxergar anos luz de distância e isso o levou a enxergar um OVNI gigantesco vindo de uma direção totalmente oposta usada frequentemente por Unia e a Terra.
+- O final da segunda passada também indica que o assistente entrou em contato com o Catarsis e foi inicialmente curado de seus problemas oculares, porém ele foi capaz de enxergar anos luz de distância e isso o levou a enxergar um OVNI gigantesco vindo de uma direção totalmente oposta usada frequentemente por Unia e a Terra. Desesperado, ele causou a explosão porque se desesperou e quis cometer suicídio.
 - O final da terceira passada mostra que quem está chegando à Unia é uma nova raça (só pra indicar algum tipo de continuação).
 
+- Sam foi batizada como Tempo para não ter sua identidade ou história revelada.
+- Uma das explicações para Tempo ter conseguido fugir da explosão inicial foi a ativação de seus poderes de parar o tempo. Um instinto de sobrevivência fez seu poder despertar ao proteger a si e a quem pôde, incluindo DR Carter, seu assistente em questão de segundos, porém ao acordar não tinha essa lembrança.
 - Os outros heróis ainda não tenho muitas ideias do que vou fazer, porém, todos eles são (eram) tão jovens quanto a Sam e possuíam seus motivos para terem participado do experimento.
 - Dois deles são irmãos e crianças órfãs entregues por um senhor que morreu pra alguém (provavelmente algum vilão de fase). Eles vão ser encontrados ainda no ato 1.
 - Os outros 3 ainda não sei.
