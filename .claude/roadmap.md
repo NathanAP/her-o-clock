@@ -261,6 +261,10 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Os heróis atuais da cena presente na Unity (`hero-tank`, `hero-archer`, `minion-standard` e `villain-boss`) são TOTALMENTE descartáveis depois dessa versão.
 - Você precisa me explicar como instanciar cada um dos personagens na Unity novamente para o jogo rodar normalmente.
 
+## 0.9.1.0
+
+- Testes.
+
 ## 0.10.0.0
 
 - Vamos tentar fazer esboços de sprites pra ter uma representação mais visual do jogo.
