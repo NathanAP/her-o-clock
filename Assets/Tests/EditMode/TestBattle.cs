@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
@@ -49,7 +49,8 @@ namespace HerOClock.Tests
             EquipmentClass equipment = EquipmentClass.Light,
             int minRange = 1,
             int maxRange = 1,
-            int physicalArmor = 0)
+            int physicalArmor = 0,
+            int baseDamage = 10)
         {
             CharacterDefinition definition = ScriptableObject.CreateInstance<CharacterDefinition>();
             definition.Id = id;
@@ -67,7 +68,12 @@ namespace HerOClock.Tests
                 BaseSpecialty = specialty,
                 BaseConstitution = constitution,
                 Equipment = equipment,
-                BasePhysicalArmor = physicalArmor
+                BasePhysicalArmor = physicalArmor,
+
+                // Damage comes from a base the content provides, and POW only multiplies it. A test
+                // character with no base would punch for nothing however much POW it was given, so
+                // the helper hands out a workable weapon unless a test asks for another.
+                BaseDamage = baseDamage
             };
 
             owned.Add(definition);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using HerOClock.Characters;
 using UnityEngine;
 
@@ -20,18 +20,32 @@ namespace HerOClock.Abilities
         [Min(0f)] public float Specialty;
         [Min(0f)] public float Constitution;
 
-        /// <summary>What the attributes of the given character add to an ability's base damage.</summary>
-        public float AppliedTo(CharacterStats stats)
+        /// <summary>
+        /// How much this ability's base damage is raised by the user's attributes, as a multiplier.
+        ///
+        /// The numbers here are **weights on the standard rate**, and not flat damage per point. A
+        /// weight of 1 means the attribute pays the full ten points for one percent that
+        /// attributes.md gives; 0.5 means half of it. An ability that scales with nothing returns 1
+        /// and is worth exactly what its rank says.
+        ///
+        /// It reads the same way as a weapon and POW, on purpose: the content gives the base — here
+        /// the rank — and the attribute multiplies it. Adding flat damage per point instead would
+        /// make the rank stop mattering once a character has enough points, which is the same
+        /// failure a flat weapon bonus causes.
+        /// </summary>
+        public float MultiplierFor(CharacterStats stats)
         {
             if (stats == null)
             {
-                return 0f;
+                return 1f;
             }
 
-            return stats.Power * Power
+            float share = stats.Power * Power
                 + stats.Agility * Agility
                 + stats.Specialty * Specialty
                 + stats.Constitution * Constitution;
+
+            return 1f + share * CharacterStats.DamageSharePerPoint;
         }
     }
 }

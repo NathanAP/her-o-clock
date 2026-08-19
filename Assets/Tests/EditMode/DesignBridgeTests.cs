@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using HerOClock.Characters;
@@ -41,6 +41,7 @@ namespace HerOClock.Tests
             public Attributes baseAttributes;
             public Attributes attributeGrowth;
             public Defence defence;
+            public Scaled baseDamage;
             public AutoAttacks autoAttacks;
         }
 
@@ -212,6 +213,13 @@ namespace HerOClock.Tests
             Check(sheet.id, "attributeGrowth.agi", sheet.attributeGrowth.agi, asset.Growth.Agility, problems);
             Check(sheet.id, "attributeGrowth.spe", sheet.attributeGrowth.spe, asset.Growth.Specialty, problems);
             Check(sheet.id, "attributeGrowth.con", sheet.attributeGrowth.con, asset.Growth.Constitution, problems);
+
+            if (sheet.baseDamage != null)
+            {
+                Check(sheet.id, "baseDamage.base", sheet.baseDamage.@base, asset.Stats.BaseDamage, problems);
+                Check(sheet.id, "baseDamage.perLevel", sheet.baseDamage.perLevel,
+                    asset.Stats.BaseDamagePerLevel, problems);
+            }
 
             Check(sheet.id, "defence.physicalArmor.base", sheet.defence.physicalArmor.@base,
                 asset.Stats.BasePhysicalArmor, problems);

@@ -305,20 +305,27 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **A promessa de "1 ponto de dano elemental por SPE" saiu de `attributes.md`.** O jogo nunca a cumpriu: o valor era calculado, aparecia no Inspector e nenhum cálculo de combate o lia. Retirada em vez de implementada, porque a 0.10.0.0 muda o modelo inteiro.
 - O resumo completo está em `.claude/versions/20260819_0.9.4.0.md`.
 
-## 0.10.0.0
+## 0.10.0.0 (feita)
 
-- **Primeiro: o modelo de dano por atributo.** Os itens são desenhados em cima dele, então decidi-lo depois significaria refazer item.
-    - Hoje o atributo dá dano **somado** e é isso que faz o item perder o sentido: com o teto de 500 pontos o personagem carrega 500 de dano e uma arma de base 8 a 12 vira ruído.
-    - O modelo escolhido é o de Path of Exile: **o conteúdo fornece a base e o atributo multiplica ela**. A arma dá a base do ataque básico, o rank dá a base da habilidade.
-    - A escala combinada é **10 pontos = 1%**. Com o teto de 500, um POW extremo dá +50% — o "fortidão" existe e a arma continua sendo o que decide.
-    - **O POW deixa de dar vida.** Ele é hoje o único atributo que paga dos dois lados da luta, e é por isso que nenhuma build de AGI ou SPE passa da fase 3 (medido na 0.9.3.0). Vida passa a vir só de CON, e o multiplicador de regeneração vai junto.
-    - Consequência que precisa ser aceita junto: com 5 pontos por nível, subir de nível passa a valer 0.5% de dano. **O modelo só funciona acompanhado dos itens**, e é por isso que ele mora aqui e não numa versão própria.
+- O atributo multiplica e nunca soma. 562 verificações no EditMode e 1 ignorada, e 2 no PlayMode.
+- **O conteúdo fornece a base e o atributo multiplica ela**, a 10 pontos = 1%. A base do ataque básico é o soco do personagem até uma arma substituí-la; a da habilidade é o rank.
+- **O POW não dá mais vida**, e o multiplicador de regeneração foi para CON. Ele era o único atributo que pagava dos dois lados da luta.
+- **O dano base cresce por nível** como a armadura, porque com o atributo multiplicando o nível deixaria de aumentar dano — e inimigo não ganha item.
+- O domínio inverteu: `só POW` saiu de 12/12 para 0/12 e `só CON` de 6/12 para 12/12. É o custo aceito do modelo: antes dos itens, ofensiva quase não paga.
+- Dezessete testes quebraram e **nenhum foi afrouxado** — cada valor esperado foi reescrito a partir da spec nova.
+- O resumo completo está em `.claude/versions/20260819_0.10.0.0.md`.
+
+## 0.10.1.0 (próxima)
+
 - Itens.
-- Ataques básicos agora variam de acordo com o item.
-- **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar. Itens focados em habilidade ajudam por outros caminhos, e quais são eles é assunto desta versão.
-- Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico: com itens bons o bastante, redirecionar a árvore vira uma jogada e não um conserto.
-- Uma mesma seed ainda define como a batalha vai ocorrer.
-- Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, e o teste de determinismo rodado de novo, já que o item passa a alterar o ataque básico. A varredura de balanceamento vai precisar de uma dimensão nova, porque o espaço deixa de ser só nível e build.
+- Ataques básicos variam de acordo com a arma equipada, que substitui o dano base do personagem.
+- **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar.
+- Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico: com itens bons o bastante, redirecionar a árvore vira jogada e não conserto.
+- Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, o determinismo rodado de novo, e a varredura ganhando uma dimensão, já que o espaço deixa de ser só nível e build.
+
+## 0.10.2.0
+
+- **Drop de itens.** Versão própria e não parte do menu: taxa, raridade e sorteio têm superfície de balanceamento própria, e o `CLAUDE.md` já lista drop rate como coisa a testar.
 
 ## 0.11.0.0
 

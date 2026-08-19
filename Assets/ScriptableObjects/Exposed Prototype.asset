@@ -30,6 +30,8 @@ MonoBehaviour:
     BaseAgility: 2
     BaseSpecialty: 0
     BaseConstitution: 4
+    BaseDamage: 4
+    BaseDamagePerLevel: 2
     Equipment: 2
     BasePhysicalArmor: 60
     PhysicalArmorPerLevel: 60

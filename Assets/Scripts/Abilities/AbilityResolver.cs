@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
@@ -132,10 +132,10 @@ namespace HerOClock.Abilities
             BattleRandom random,
             DamageDealt onDamage)
         {
-            // The ability's own number, plus the share of the user's attributes it scales with.
-            // Without the scaling an ability would be worth the same on a character that built for
-            // it and on one that did not.
-            float raw = effect.Base.At(rank) + effect.Scaling.AppliedTo(user.Stats);
+            // The rank's own number, raised by the share of the user's attributes it scales with.
+            // The attribute multiplies rather than adds, exactly as a weapon and POW do: otherwise
+            // enough points would make the rank stop mattering.
+            float raw = effect.Base.At(rank) * effect.Scaling.MultiplierFor(user.Stats);
             int baseDamage = Mathf.Max(0, Mathf.RoundToInt(raw * FalloffFactor(user, target, effect, rank)));
 
             DamageInput input = new DamageInput

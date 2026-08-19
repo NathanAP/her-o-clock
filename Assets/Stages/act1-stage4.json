@@ -8,12 +8,14 @@
                 {
                     "character": "discarded-prototype",
                     "column": 3,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 },
                 {
                     "character": "discarded-prototype",
                     "column": 4,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 }
             ]
         },
@@ -22,17 +24,20 @@
                 {
                     "character": "discarded-prototype",
                     "column": 2,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 },
                 {
                     "character": "discarded-prototype",
                     "column": 4,
-                    "row": 7
+                    "row": 7,
+                    "multiplier": 0.7
                 },
                 {
                     "character": "discarded-prototype",
                     "column": 5,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 }
             ]
         },
@@ -41,12 +46,14 @@
                 {
                     "character": "discarded-prototype",
                     "column": 2,
-                    "row": 7
+                    "row": 7,
+                    "multiplier": 0.7
                 },
                 {
                     "character": "discarded-prototype",
                     "column": 4,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 }
             ]
         },
@@ -55,17 +62,20 @@
                 {
                     "character": "discarded-prototype",
                     "column": 2,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 },
                 {
                     "character": "discarded-prototype",
                     "column": 3,
-                    "row": 7
+                    "row": 7,
+                    "multiplier": 0.7
                 },
                 {
                     "character": "discarded-prototype",
                     "column": 5,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 }
             ]
         },
@@ -74,17 +84,20 @@
                 {
                     "character": "discarded-prototype",
                     "column": 2,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 },
                 {
                     "character": "discarded-prototype",
                     "column": 3,
-                    "row": 6
+                    "row": 6,
+                    "multiplier": 0.7
                 },
                 {
                     "character": "discarded-prototype",
                     "column": 5,
-                    "row": 7
+                    "row": 7,
+                    "multiplier": 0.7
                 }
             ]
         }
@@ -94,17 +107,20 @@
             {
                 "character": "discarded-prototype",
                 "column": 1,
-                "row": 6
+                "row": 6,
+                "multiplier": 0.7
             },
             {
                 "character": "discarded-prototype",
                 "column": 2,
-                "row": 7
+                "row": 7,
+                "multiplier": 0.7
             },
             {
                 "character": "exposed-prototype",
                 "column": 3,
-                "row": 8
+                "row": 8,
+                "multiplier": 0.7
             }
         ]
     }

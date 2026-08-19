@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Abilities;
 using HerOClock.Battle;
 using HerOClock.Characters;
@@ -187,10 +187,10 @@ namespace HerOClock.Tests
             int before = user.Stats.MaxHealth;
 
             Apply(user, TestAbility.Instant("grow")
-                .WithBuff(ModifiableStat.Power, 10f, 5f, EffectTarget.Self, StatModifierMode.Flat), user);
+                .WithBuff(ModifiableStat.Constitution, 10f, 5f, EffectTarget.Self, StatModifierMode.Flat), user);
 
-            Assert.AreEqual(before + 50, user.Stats.MaxHealth,
-                "Maximum health is power x 5 plus constitution x 10, so ten more power is fifty more health.");
+            Assert.AreEqual(before + 100, user.Stats.MaxHealth,
+                "Maximum health is constitution x 10, so ten more constitution is a hundred more health.");
         }
 
         [Test]

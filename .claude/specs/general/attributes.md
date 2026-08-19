@@ -40,11 +40,18 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 ### Poder (POW)
 
-- POW aumenta ataques físicos e vida máxima do personagem.
-    - Para cada 1 ponto de POW, o personagem ganha 1 ponto de dano físico.
-    - Para cada 1 ponto de POW, o personagem ganha 5 pontos de vida máxima.
-    - Para cada 1 ponto de POW, o personagem ganha 0.5% de velocidade de regeneração de vida.
+- POW aumenta o dano dos ataques físicos do personagem.
+    - **A cada 10 pontos de POW, o dano físico aumenta 1%.**
+    - Ele **multiplica** o dano base e nunca soma nada a ele. O dano base vem do conteúdo: a arma equipada, ou o dano próprio do personagem enquanto ele não tiver uma.
+- POW não dá vida, não dá regeneração e não dá nada além de dano. Quem quer vida investe em CON.
 - Personagens com mais POW são capazes de utilizar equipamentos e armaduras mais pesados.
+
+#### Por que o atributo multiplica em vez de somar
+
+- Com o teto de 500 pontos, um atributo que desse 1 ponto de dano por ponto entregaria 500 de dano de graça. Nenhuma arma vale quinhentos de coisa alguma, então **o item deixaria de importar** — e item é metade do jogo.
+- Multiplicando, os dois crescem juntos: uma arma melhor é sempre melhor, e mais POW faz toda arma render mais. É isso que mantém procurar item valendo a pena do começo ao fim.
+- A porcentagem é pequena de propósito. Um POW extremo, no teto, dá +50%. O personagem é reconhecidamente forte, e mesmo assim a arma continua sendo o que decide o dano dele.
+- **Isso tem um custo que é aceito conscientemente:** 5 pontos por nível passam a valer 0.5% de dano, então subir de nível quase não é sentido na ofensiva. Quem carrega essa sensação é o item e a árvore de habilidades, e não o nível.
 
 ### Agilidade (AGI)
 
@@ -69,8 +76,10 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 ### Constituição (CON)
 
-- CON ajuda a aumentar a vida máxima do personagem.
+- CON é a **única** fonte de vida máxima que um atributo oferece.
     - Para cada 1 ponto de CON, o personagem ganha 10 pontos de vida máxima.
+    - Para cada 1 ponto de CON, o personagem ganha 0.5% de velocidade de regeneração de vida.
+- Concentrar a vida em um atributo só é proposital. Enquanto o POW dava vida **e** dano, ele era o único dos quatro que pagava dos dois lados da luta, e nenhuma build que o ignorasse era viável.
 
 ## Rendimento decrescente
 
@@ -119,6 +128,13 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 ### Dano físico
 
 - É o dano causado através de ataques físicos e através do elemento terra.
+- `Dano do ataque básico = Dano base × (1 + POW × 0.001)`
+- O **dano base** vem do conteúdo, e nunca do atributo:
+    - Enquanto o personagem não tem arma, ele é o valor declarado na ficha — o soco do próprio personagem. É baixo de propósito.
+    - Com item, a arma equipada substitui esse valor.
+- Assim como a armadura, o dano base declara **quanto ganha por nível**, e pelo mesmo motivo descrito em "Atributos limitados crescem com o nível": um valor parado envelhece.
+    - Heróis deixam esse ganho em zero, pois quem os faz bater mais forte é o equipamento.
+    - Lacaios e vilões usam o ganho, pois não existe outra coisa que os faça bater mais forte em um ato posterior.
 
 ### Dano elemental
 
@@ -132,10 +148,10 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Qualquer valor de regeneração de vida abaixo de 0 é considerado como sendo 0.
 - O valor base é 0 para todo personagem. Nenhum personagem regenera vida por existir.
     - A regeneração chega por outros meios: itens, árvore de habilidades e buffs. Para lacaios e vilões, ela é escrita na ficha, como todo secundário deles.
-- POW não concede regeneração, ele multiplica a que existir. É isso que os 0.5% por ponto significam:
-    - `Regeneração por segundo = Regeneração base × (1 + POW × 0.005)`
-    - Um personagem com 0 de regeneração base continua com 0, por mais POW que tenha.
-    - Um personagem com 10 de regeneração base e 40 de POW regenera 12 pontos por segundo.
+- CON não concede regeneração, ele multiplica a que existir. É isso que os 0.5% por ponto significam:
+    - `Regeneração por segundo = Regeneração base × (1 + CON × 0.005)`
+    - Um personagem com 0 de regeneração base continua com 0, por mais CON que tenha.
+    - Um personagem com 10 de regeneração base e 40 de CON regenera 12 pontos por segundo.
 - A regeneração continua correndo entre uma onda e outra, pois é medida por segundo e a transição leva vários segundos.
     - Isso não contradiz o desgaste descrito em `gameplay.md`. Ninguém volta com a vida cheia: cada personagem recupera apenas o que a própria taxa render naquele tempo.
     - É exatamente aí que um item de regeneração se paga, e é o que dá sentido ao atributo existir.

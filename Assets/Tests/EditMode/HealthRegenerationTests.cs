@@ -1,4 +1,4 @@
-using HerOClock.Battle;
+﻿using HerOClock.Battle;
 using HerOClock.Characters;
 using NUnit.Framework;
 
@@ -28,12 +28,11 @@ namespace HerOClock.Tests
             battle.Dispose();
         }
 
-        private static CharacterStats Sheet(float baseRegen, int power)
+        private static CharacterStats Sheet(float baseRegen, int constitution)
         {
             CharacterStats stats = new CharacterStats
             {
-                BasePower = power,
-                BaseConstitution = 100,
+                BaseConstitution = constitution,
                 BaseHealthRegen = baseRegen
             };
 
@@ -58,23 +57,23 @@ namespace HerOClock.Tests
             Assert.AreEqual(0f, Sheet(0f, 500).HealthPerSecond, 0.0001f);
         }
 
-        /// <summary>The spec's example: 10 of base regeneration with 40 POW gives 12 per second.</summary>
+        /// <summary>The spec's example: 10 of base regeneration with 40 CON gives 12 per second.</summary>
         [Test]
-        public void PowerMultipliesWhateverRegenerationExists()
+        public void ConstitutionMultipliesWhateverRegenerationExists()
         {
             Assert.AreEqual(12f, Sheet(10f, 40).HealthPerSecond, 0.0001f);
         }
 
         [Test]
-        public void WithoutPowerTheBaseRateIsUntouched()
+        public void WithoutConstitutionTheBaseRateIsUntouched()
         {
             Assert.AreEqual(10f, Sheet(10f, 0).HealthPerSecond, 0.0001f);
         }
 
         [Test]
-        public void EachPointOfPowerAddsHalfAPercent()
+        public void EachPointOfConstitutionAddsHalfAPercent()
         {
-            Assert.AreEqual(0.005f, CharacterStats.HealthRegenPerPower, 0.00001f);
+            Assert.AreEqual(0.005f, CharacterStats.HealthRegenPerConstitution, 0.00001f);
             Assert.AreEqual(200f, Sheet(100f, 200).HealthPerSecond, 0.0001f);
         }
 
@@ -101,14 +100,16 @@ namespace HerOClock.Tests
             Character character = Wounded(0.5f, 500);
             int wounded = character.CurrentHealth;
 
-            // Ten seconds at half a point per second is five points.
+            // A base of 0.5 with 100 CON regenerates 0.75 per second, since CON multiplies whatever
+            // regeneration exists. Ten seconds of that is seven and a half points, and the halves
+            // only survive because the remainder is carried between steps.
             for (int step = 0; step < 600; step++)
             {
                 character.Regenerate(BattleDirector.FixedStep);
             }
 
-            Assert.AreEqual(wounded + 5, character.CurrentHealth, 1,
-                "Half a point per second over ten seconds is five points.");
+            Assert.AreEqual(wounded + 7, character.CurrentHealth, 1,
+                "0.75 per second over ten seconds is seven and a half points.");
         }
 
         [Test]

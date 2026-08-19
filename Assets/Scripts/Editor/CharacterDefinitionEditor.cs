@@ -1,4 +1,4 @@
-using HerOClock.Characters;
+﻿using HerOClock.Characters;
 using UnityEditor;
 using UnityEngine;
 
@@ -69,7 +69,6 @@ namespace HerOClock.EditorTools
 
             Row("Maximum health", stats.MaxHealth.ToString());
             Row("Physical damage", stats.PhysicalDamage.ToString());
-            Row("Elemental damage", stats.ElementalDamage.ToString());
             Row("Attacks per second", stats.AttacksPerSecond.ToString("F2"));
             Row("Cells per second", stats.CellsPerSecond.ToString("F2"));
             Row("Health per second", stats.HealthPerSecond.ToString("F2"));

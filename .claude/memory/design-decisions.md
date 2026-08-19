@@ -36,9 +36,11 @@ A gain below the base means a character that slowly loses ground, and above it o
 
 For heroes this is a **stand-in for equipment**. When items arrive, the armour on a hero sheet should drop to zero and the gear should take over, otherwise a defensive item competes with a base that already solved the problem.
 
-## Regeneration is multiplied by POW, never granted by it
+## Regeneration is multiplied by CON, never granted by it
 
-The base is zero for everyone. POW's "0.5% of regeneration speed per point" multiplies whatever other sources provide, so a character with no source still regenerates nothing.
+The base is zero for everyone. CON's "0.5% of regeneration speed per point" multiplies whatever other sources provide, so a character with no source still regenerates nothing.
+
+It belonged to POW until 0.10.0.0, and moved when POW became offence only. Survival is CON's job now, and regeneration is survival.
 
 The alternative, a flat rate everyone gets, was rejected because it heals the party for free between waves early on and becomes irrelevant later, and attrition between waves is what `gameplay.md` leans on to make farming necessary.
 
@@ -318,4 +320,28 @@ Measured by the sweep in 0.9.3.0: no AGI or SPE build clears stage 3 onwards at 
 The cause is structural rather than a number. POW gives physical damage **and** maximum health; CON gives health; AGI gives evasion and speed; SPE gives elemental damage and cooldown. Only one of the four pays on both sides of a fight.
 
 Deliberately not fixed. Items do not exist yet and will move everything, and a rebalance could just as well come from the other direction — raising enemy physical armour hurts POW while leaving elemental damage alone, and no enemy today has a single point of elemental resistance. It is on the watch list, not on the fix list.
+
+## An attribute multiplies the base, it never adds to it
+
+Ten points of POW or SPE raise damage by one percent. The base comes from content: the weapon for a basic attack, the rank for an ability, and the character's own punch until a weapon exists.
+
+A point that added flat damage hands a character at the 500 cap five hundred damage for free, and no weapon is worth five hundred of anything — **the item would stop mattering before it was built**. Multiplying makes the two grow together: a better weapon is always better, and more POW makes every weapon better.
+
+The cost is real and was accepted knowingly: five points per level become half a percent of damage, so levelling is barely felt on offence. Items and the skill tree carry that feeling, never the level. It is also why this landed beside items rather than earlier.
+
+An ability's `scaling` block is a **weight on that rate**, and not damage per point, for the same reason one level up: flat damage per point would make the rank stop mattering once a character had enough points.
+
+## POW is offence only, CON is survival only
+
+POW gives damage and nothing else. CON gives maximum health and multiplies regeneration. AGI gives evasion and speed. SPE gives ability damage and cooldown reduction.
+
+Before 0.10.0.0 POW gave damage **and** health, and the sweep measured what that did: no AGI or SPE build cleared stage 3 onwards, and pure POW cleared stage 4 outright while the sheet's own distribution cleared half of it.
+
+After the change the dominance inverted — pure CON clears everything, pure POW clears nothing. That is not the old problem returning: CON wins because survival decides a fight nobody can win on damage yet, and a punch is all anybody has. The weapon is what puts POW back in the conversation, which is what the next version is for.
+
+## The damage base grows per level, like armour
+
+With the attribute multiplying instead of adding, **the level stops raising damage on its own**. A hero is fine, since equipment raises theirs. A minion has no equipment, so one from a late act would punch exactly like one from the first.
+
+So the damage base declares a gain per level, the same shape defence already used, and for the same reason: a number that never moves is worth less every level, because what it is measured against keeps rising. Heroes leave the gain at zero; minions and villains use it.
 

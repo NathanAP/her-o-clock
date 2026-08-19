@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using HerOClock.Abilities;
 using HerOClock.Progression;
 using UnityEngine;
@@ -24,6 +24,15 @@ namespace HerOClock.Characters
         [Min(0)] public int BaseAgility;
         [Min(0)] public int BaseSpecialty;
         [Min(0)] public int BaseConstitution;
+
+        [Header("Damage")]
+        [Tooltip("Damage of one basic attack before POW raises it. The character's own fists, "
+            + "replaced by a weapon once items exist.")]
+        [Min(0)] public int BaseDamage = 1;
+
+        [Tooltip("How much the damage base gains per level. Heroes leave it at zero and grow through "
+            + "items; minions and villains use it, since nothing else makes them hit harder.")]
+        [Min(0)] public int BaseDamagePerLevel;
 
         [Header("Equipment")]
         public EquipmentClass Equipment = EquipmentClass.Light;
@@ -213,6 +222,13 @@ namespace HerOClock.Characters
         /// Growth equal to the base is the shape that holds mitigation still, because both the
         /// armour and the curve's constant then scale with the level and cancel out.
         /// </summary>
+        /// <summary>
+        /// A sheet value that grows with the level and then answers to the stage's fine tuning.
+        ///
+        /// Used by every defence and by the damage base, because they share the same problem: a
+        /// number that never moves is worth less every level, since what it is measured against
+        /// keeps rising.
+        /// </summary>
         private int DefenceOf(int baseValue, int perLevel)
         {
             float total = baseValue + perLevel * (level - 1);
@@ -253,8 +269,21 @@ namespace HerOClock.Characters
 
         public int MaxHealth
         {
-            get { return Power * 5 + Constitution * 10; }
+            get { return Constitution * HealthPerConstitution; }
         }
+
+        /// <summary>Health granted by each point of CON, from attributes.md.</summary>
+        public const int HealthPerConstitution = 10;
+
+        /// <summary>
+        /// How much of the damage base a single attribute point adds, as a fraction.
+        ///
+        /// Ten points are one percent. It is deliberately small: the base comes from content — the
+        /// weapon for a basic attack, the rank for an ability — and the attribute multiplies it.
+        /// A point that added flat damage would make the weapon irrelevant, since a character can
+        /// reach 500 points and no weapon is worth five hundred of anything.
+        /// </summary>
+        public const float DamageSharePerPoint = 0.001f;
 
         /// <summary>
         /// Health recovered per second.
@@ -267,20 +296,31 @@ namespace HerOClock.Characters
         /// </summary>
         public float HealthPerSecond
         {
-            get { return BaseHealthRegen * (1f + Power * HealthRegenPerPower); }
+            get { return BaseHealthRegen * (1f + Constitution * HealthRegenPerConstitution); }
         }
 
-        /// <summary>Share of regeneration speed granted by each point of POW.</summary>
-        public const float HealthRegenPerPower = 0.005f;
+        /// <summary>Share of regeneration speed granted by each point of CON.</summary>
+        public const float HealthRegenPerConstitution = 0.005f;
 
+        /// <summary>
+        /// Damage of one basic attack: the base this character swings with, raised by POW.
+        ///
+        /// The base is the character's own until an item replaces it — the punch a robot throws
+        /// with nothing equipped. POW never adds to it, it multiplies it, which is what keeps a
+        /// weapon worth finding.
+        /// </summary>
         public int PhysicalDamage
         {
-            get { return Power; }
-        }
+            get
+            {
+                // The base grows with the level the same way armour does, and for the same reason:
+                // a value standing still is a character that stops mattering. A hero leaves the
+                // growth at zero because a weapon is what raises it; a minion has no weapon, so
+                // this is the only thing that makes it hit harder in a later act.
+                float swing = DefenceOf(BaseDamage, BaseDamagePerLevel);
 
-        public int ElementalDamage
-        {
-            get { return Specialty; }
+                return Mathf.Max(0, Mathf.RoundToInt(swing * (1f + Power * DamageSharePerPoint)));
+            }
         }
 
         public float AttacksPerSecond

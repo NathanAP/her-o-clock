@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using HerOClock.Battle;
 using HerOClock.Characters;
@@ -49,9 +49,12 @@ namespace HerOClock.Tests
         [TestCase(300, 4.00f)]
         public void BlowsLandAtTheRateTheSheetPromises(int agility, float expectedPerSecond)
         {
-            // Power zero means every blow deals nothing, so the target survives the whole run and
-            // the count is not cut short by a death. The blow still happens and is still reported.
-            CharacterDefinition attackerSheet = battle.Sheet("attacker", CharacterKind.Hero, power: 0, agility: agility);
+            // No damage base means every blow deals nothing, so the target survives the whole run
+            // and the count is not cut short by a death. The blow still happens and is still
+            // reported. POW alone cannot do this any more: it multiplies the base rather than being
+            // the damage, so a character with no base does nothing however much of it it carries.
+            CharacterDefinition attackerSheet = battle.Sheet(
+                "attacker", CharacterKind.Hero, power: 0, agility: agility, baseDamage: 0);
             CharacterDefinition targetSheet = battle.Sheet("target", CharacterKind.Minion);
 
             Character attacker = battle.Spawn(attackerSheet, Team.Heroes, 3, 4);

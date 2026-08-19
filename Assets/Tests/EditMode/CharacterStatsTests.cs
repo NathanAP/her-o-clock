@@ -1,4 +1,4 @@
-using HerOClock.Characters;
+﻿using HerOClock.Characters;
 using NUnit.Framework;
 
 namespace HerOClock.Tests
@@ -31,15 +31,12 @@ namespace HerOClock.Tests
             return stats;
         }
 
-        /// <summary>
-        /// A level 1 sheet carrying armour and nothing else. No growth is declared, so the armour
-        /// stays exactly at the given value and the mitigation examples read straight from it.
-        /// </summary>
+        /// <summary>A sheet carrying only physical armour, for the mitigation curve.</summary>
         private static CharacterStats Armoured(int armor)
         {
             CharacterStats stats = new CharacterStats
             {
-                Equipment = EquipmentClass.Heavy,
+                Equipment = EquipmentClass.Light,
                 BasePhysicalArmor = armor
             };
 
@@ -47,29 +44,31 @@ namespace HerOClock.Tests
             return stats;
         }
 
-        // --- Maximum health: 5 per POW and 10 per CON ---
-
-        [TestCase(0, 0, 0)]
-        [TestCase(1, 0, 5)]
-        [TestCase(0, 1, 10)]
-        [TestCase(20, 30, 400)]
-        public void MaxHealth_IsFivePerPowerAndTenPerConstitution(int power, int constitution, int expected)
+        /// <summary>
+        /// attributes.md: ten points of POW raise the damage base by one percent, and the attribute
+        /// never adds to it. With a base of 100 and 200 points, the swing is 120.
+        ///
+        /// The multiplication is the whole point. A point that added flat damage would hand a
+        /// character at the 500 cap five hundred damage for free, and no weapon is worth that, so
+        /// the item would stop mattering.
+        /// </summary>
+        [Test]
+        public void PowerMultipliesTheDamageBaseAndNeverAddsToIt()
         {
-            Assert.AreEqual(expected, Sheet(power, 0, 0, constitution, EquipmentClass.Light).MaxHealth);
+            CharacterStats stats = Sheet(200, 0, 0, 0, EquipmentClass.Light);
+            stats.BaseDamage = 100;
+
+            Assert.AreEqual(120, stats.PhysicalDamage);
         }
 
-        // --- Damage: 1 physical per POW, 1 elemental per SPE ---
-
+        /// <summary>A character with no damage base does no damage, however much POW it carries.</summary>
         [Test]
-        public void PhysicalDamage_IsOnePerPower()
+        public void PowerAloneIsWorthNoDamage()
         {
-            Assert.AreEqual(17, Sheet(17, 0, 0, 0, EquipmentClass.Light).PhysicalDamage);
-        }
+            CharacterStats stats = Sheet(500, 0, 0, 0, EquipmentClass.Light);
+            stats.BaseDamage = 0;
 
-        [Test]
-        public void ElementalDamage_IsOnePerSpecialty()
-        {
-            Assert.AreEqual(23, Sheet(0, 0, 23, 0, EquipmentClass.Light).ElementalDamage);
+            Assert.AreEqual(0, stats.PhysicalDamage);
         }
 
         // --- Attack speed: base 1, plus 1% / 0.5% / 0.2% per AGI by equipment class ---

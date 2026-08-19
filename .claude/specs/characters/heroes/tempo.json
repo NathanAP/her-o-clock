@@ -46,6 +46,10 @@
         "spe": 25,
         "con": 15
     },
+    "baseDamage": {
+        "base": 6,
+        "perLevel": 0
+    },
     "defence": {
         "physicalArmor": {
             "base": 20,
@@ -280,7 +284,7 @@
                                 120
                             ],
                             "scaling": {
-                                "pow": 0.2
+                                "pow": 1.0
                             }
                         },
                         {
