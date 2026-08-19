@@ -49,6 +49,14 @@ xpPorLacaio(nível do lacaio)  = 10 × nível^2
 - **Heróis fora do grupo não ganham experiência.**
 - Todo herói recém-liberado começa no **nível 1**, independente do nível dos demais.
 
+### O que a primeira vitória de uma fase libera
+
+- Toda liberação acontece **na primeira vez que a fase é completada**, e nunca de novo ao repetí-la.
+- Uma fase pode liberar um **herói novo**, um **slot novo** na equipe, um **ato novo** ou um **registro de diário**. O que cada uma libera está escrito em `stages.md`.
+- **Herói e slot são liberações diferentes**, mesmo quando saem da mesma fase. Um diz quem existe para ser escalado, o outro diz quantas posições existem para escalar.
+- Isso é diferente do **limite de heróis da fase**, que é uma regra da própria fase e vale sempre, inclusive ao repetí-la depois com a equipe cheia.
+    - Ou seja: as fases precisam respeitar o número de heróis que elas declaram, e não o tamanho da equipe do jogador naquele momento.
+
 ### O custo de trocar de herói, e o item que o resolve
 
 - As duas regras acima significam que colocar um herói novo no grupo custa caro. Subir do nível 1 ao 100 sendo carregado por um grupo que farma no nível máximo leva cerca de 200 horas, contra 366 horas no ritmo normal.

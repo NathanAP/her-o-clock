@@ -261,11 +261,21 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **O ato não está balanceado**, e o snapshot mostra onde: a fase 2 e a 3 são limpas um nível abaixo do declarado, e a fase 4 pede muito acima. Mexer no `enemyLevel` piorou — a dificuldade da 4 vem do volume de ondas, não do nível.
 - O resumo completo está em `.claude/versions/20260818_0.9.0.0.md`.
 
-## 0.9.1.0 (próxima)
+## 0.9.1.0 (feita)
 
-- Balancear as 4 fases contra os níveis que `stages.md` declara.
-- A ponte: o teste que confere cada asset contra o documento de design que ele espelha.
-- Os testes que a 0.9.0.0 adiou, incluindo um de caracterização por fase.
+- Equipe, banco e o balanceamento do ato 1. 548 verificações no EditMode, contra 537, e 2 no PlayMode.
+- **A 0.9.0.0 mediu o ato com um time que não existe**: ela punha Tempo e Gadrat juntos desde a fase 1, quando a Tempo começa sozinha e o Gadrat só entra depois da fase 3.
+- **`Roster`** separa três coisas que se parecem: slots (quantas posições), possuídos (quem existe) e equipe (quem entra, em ordem). O `heroLimit` é o quarto número e mora na fase.
+- A fase ganhou `heroLimit` e `firstClear` (`unlocksCharacter`, `grantsTeamSlots`). A formação virou leiaute, e não mais o time.
+- **O `StageSimulation` passou a respeitar o limite de heróis** — sem isso o snapshot continuaria medindo dois heróis em toda fase, que era a origem do erro anterior.
+- O ato flui sem parede, conforme a intenção de não pedir farm até a fase 6.
+- **A descoberta: a dificuldade inicial é um penhasco, não uma ladeira.** Com um herói e sem cura entre ondas, o nível exigido salta entre 1 e muitos com mudanças mínimas. Alargar esse meio é decisão de design (regeneração entre ondas, menos ondas, cura ao limpar), não número.
+- O resumo completo está em `.claude/versions/20260818_0.9.1.0.md`.
+
+## 0.9.2.0 (próxima)
+
+- A ponte: o teste que confere cada asset contra o documento de design que ele espelha. Cedeu lugar ao roster na 0.9.1.0.
+- A decisão sobre o penhasco, e o ajuste fino das fases contra os níveis declarados em `stages.md`.
 
 ## 0.10.0.0
 
@@ -291,6 +301,10 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
     - O atalho para esconder ou minimizar a janela.
     - O arrastar distinguindo fundo de interface. Hoje qualquer clique arrasta, o que é inofensivo só porque não há nada clicável.
     - O controle de zoom saindo do atalho e virando um item da tela de opções.
+- **Controle de para onde ir ao terminar uma fase**, que hoje não existe:
+    - Voltar à fase anterior ao falhar, para tentar avançar de novo depois de fortalecer.
+    - Não avançar à próxima ao vencer, que é o que torna o farm possível numa fase escolhida.
+- **A abertura da fase mostrando o número e o nome**, algo como "1 - 1" grande com o nome embaixo. Os dois textos já existem no arquivo de strings desde a 0.9.0.0 e hoje só aparecem no Console.
 - **Leva junto a tela de volta ao jogo**, que a 0.6.0.0 deixou pendente. Os números da ausência já são calculados e escritos no Console; falta mostrá-los. Eles saem inteiros do `OfflineCredit`, então é só apresentação.
 - Testes: praticamente nenhum. Interface é a única parte do jogo em que o custo de testar não se paga.
 

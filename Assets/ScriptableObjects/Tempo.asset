@@ -45,6 +45,12 @@ MonoBehaviour:
   Abilities:
   - Id: no-time-to-waste
     Ranks: 5
+    RankAvailability:
+    - 1
+    - 6
+    - 14
+    - 25
+    - 40
     Preparation:
       PerRank:
       - 0
@@ -152,6 +158,12 @@ MonoBehaviour:
       Anchor: 0
   - Id: relax
     Ranks: 5
+    RankAvailability:
+    - 1
+    - 12
+    - 22
+    - 35
+    - 50
     Preparation:
       PerRank:
       - 0.4
@@ -259,6 +271,12 @@ MonoBehaviour:
       Anchor: 0
   - Id: fast-and-furious
     Ranks: 5
+    RankAvailability:
+    - 1
+    - 10
+    - 20
+    - 32
+    - 45
     Preparation:
       PerRank:
       - 0
@@ -344,11 +362,11 @@ MonoBehaviour:
       DamageType: 0
       Base:
         PerRank:
-        - 50
-        - 60
+        - 12
+        - 40
         - 70
-        - 80
-        - 90
+        - 95
+        - 120
       Scaling:
         Power: 0.2
         Agility: 0

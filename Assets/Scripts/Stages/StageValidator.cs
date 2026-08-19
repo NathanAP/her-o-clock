@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HerOClock.Characters;
+using HerOClock.Progression;
 
 namespace HerOClock.Stages
 {
@@ -40,6 +41,13 @@ namespace HerOClock.Stages
                 problems.Add("enemyLevel is " + stage.enemyLevel + ", but the lowest level is 1.");
             }
 
+            if (stage.heroLimit < 0 || stage.heroLimit > Roster.MaxSlots)
+            {
+                problems.Add("heroLimit is " + stage.heroLimit + ", and a team never has more than "
+                    + Roster.MaxSlots + " heroes. Leave it out for no limit.");
+            }
+
+            ValidateFirstClear(stage, knownCharacters, problems);
             ValidateAllies(stage, columns, rows, heroRows, knownCharacters, problems);
 
             if (stage.waves == null || stage.waves.Length == 0)
@@ -64,6 +72,42 @@ namespace HerOClock.Stages
             }
 
             return problems;
+        }
+
+        /// <summary>
+        /// What the stage hands out the first time it is cleared. A reward naming a character that
+        /// does not exist would simply never arrive, with nothing said about it anywhere.
+        /// </summary>
+        private static void ValidateFirstClear(
+            StageData stage, IReadOnlyDictionary<string, CharacterKind> knownCharacters, List<string> problems)
+        {
+            if (stage.firstClear == null)
+            {
+                return;
+            }
+
+            string id = stage.firstClear.unlocksCharacter;
+
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                CharacterKind kind;
+
+                if (knownCharacters == null || !knownCharacters.TryGetValue(id, out kind))
+                {
+                    problems.Add("firstClear unlocks '" + id + "', which is not in the character database.");
+                }
+                else if (kind != CharacterKind.Hero)
+                {
+                    problems.Add("firstClear unlocks '" + id + "', which is a " + kind
+                        + ". Only a hero joins the roster.");
+                }
+            }
+
+            if (stage.firstClear.grantsTeamSlots < 0 || stage.firstClear.grantsTeamSlots > Roster.MaxSlots)
+            {
+                problems.Add("firstClear grants " + stage.firstClear.grantsTeamSlots
+                    + " team slots, and a team never has more than " + Roster.MaxSlots + ".");
+            }
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
@@ -84,7 +84,15 @@ namespace HerOClock.Tests
             {
                 List<Character> heroes = new List<Character>();
 
-                for (int i = 0; i < formation.Count; i++)
+                // The stage decides how many heroes walk in, taken from the front of the
+                // formation, which is the same order the roster uses for the team. Without this
+                // every stage would be measured with the full party, and the early ones would
+                // look far easier than they are.
+                int party = stage.heroLimit > 0 && stage.heroLimit < formation.Count
+                    ? stage.heroLimit
+                    : formation.Count;
+
+                for (int i = 0; i < party; i++)
                 {
                     Placement placement = formation[i];
                     heroes.Add(Spawn(spawned, grid, placement.Sheet, Team.Heroes,

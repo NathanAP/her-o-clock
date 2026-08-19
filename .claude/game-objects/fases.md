@@ -37,6 +37,13 @@ O preço é que uma referência vira texto e um erro de digitação só aparecer
 ### Campos
 
 - `id` — identificador estável da fase. Os saves vão se referir a ele, então não deve mudar depois de existir progresso salvo.
+- `heroLimit` — quantos heróis esta fase aceita, contados a partir do começo da equipe escalada.
+    - É regra **da fase**, não do time: repetir uma fase antiga com a equipe cheia continua entrando com o limite dela.
+    - Omitir significa sem limite, e a equipe inteira entra.
+- `firstClear` — o que a fase entrega **na primeira vez** que é completada, e nunca de novo.
+    - `unlocksCharacter` — o id de um herói que passa a ser possuído pelo jogador.
+    - `grantsTeamSlots` — quantas posições novas a equipe ganha.
+    - Os dois são campos separados de propósito: herói liberado e slot liberado costumam acontecer juntos e **não são a mesma coisa**.
 - `allies` — opcional, os NPCs que lutam ao lado do grupo nesta fase.
     - Eles são posicionados uma vez, no começo, e **ficam durante todas as ondas**, como os heróis. Por isso não moram dentro de uma onda.
     - Precisam ser do tipo `npc` e começar nas fileiras dos heróis. O validador recusa qualquer outra coisa.

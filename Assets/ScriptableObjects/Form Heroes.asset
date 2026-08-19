@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Setup.BattleFormation
   Team: 0
   Placements:
-  - Character: {fileID: 11400000, guid: 2b3e0bf0d122586531c073dd840a4c7c, type: 2}
-    Column: 3
-    Row: 2
   - Character: {fileID: 11400000, guid: 61ff3f6beebde5ccfabac9fa98795afd, type: 2}
     Column: 4
     Row: 1
+  - Character: {fileID: 11400000, guid: 2b3e0bf0d122586531c073dd840a4c7c, type: 2}
+    Column: 3
+    Row: 2

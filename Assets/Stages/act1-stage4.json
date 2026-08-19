@@ -1,48 +1,111 @@
 {
     "id": "act1-stage4",
-    "enemyLevel": 5,
+    "enemyLevel": 3,
+    "heroLimit": 2,
     "waves": [
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 3, "row": 6 },
-                { "character": "discarded-prototype", "column": 4, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 3,
+                    "row": 6
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 4,
+                    "row": 6
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 2, "row": 6 },
-                { "character": "discarded-prototype", "column": 4, "row": 7 },
-                { "character": "discarded-prototype", "column": 5, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 6
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 4,
+                    "row": 7
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 5,
+                    "row": 6
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 2, "row": 7 },
-                { "character": "discarded-prototype", "column": 4, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 7
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 4,
+                    "row": 6
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 2, "row": 6 },
-                { "character": "discarded-prototype", "column": 3, "row": 7 },
-                { "character": "discarded-prototype", "column": 5, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 6
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 3,
+                    "row": 7
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 5,
+                    "row": 6
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 2, "row": 6 },
-                { "character": "discarded-prototype", "column": 3, "row": 6 },
-                { "character": "discarded-prototype", "column": 5, "row": 7 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 6
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 3,
+                    "row": 6
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 5,
+                    "row": 7
+                }
             ]
         }
     ],
     "villainWave": {
         "placements": [
-            { "character": "discarded-prototype", "column": 1, "row": 6 },
-            { "character": "discarded-prototype", "column": 2, "row": 7 },
-            { "character": "discarded-prototype", "column": 5, "row": 7 },
-            { "character": "discarded-prototype", "column": 6, "row": 6 },
-            { "character": "exposed-prototype", "column": 3, "row": 8 }
+            {
+                "character": "discarded-prototype",
+                "column": 1,
+                "row": 6
+            },
+            {
+                "character": "discarded-prototype",
+                "column": 2,
+                "row": 7
+            },
+            {
+                "character": "exposed-prototype",
+                "column": 3,
+                "row": 8
+            }
         ]
     }
 }

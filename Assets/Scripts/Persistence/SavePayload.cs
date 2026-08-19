@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace HerOClock.Persistence
 {
@@ -45,6 +45,16 @@ namespace HerOClock.Persistence
         public StageSave stage = new StageSave();
 
         public HeroSave[] heroes = new HeroSave[0];
+
+        /// <summary>
+        /// Team, bench and unlocked positions.
+        ///
+        /// Added without moving the format version, because a file written before it arrives with
+        /// zero slots and the mapper rebuilds it from the heroes already in the file. That is the
+        /// "a new field with a sensible default needs no conversion step" rule of
+        /// <see cref="SaveMigration"/> being used rather than described.
+        /// </summary>
+        public RosterSave roster = new RosterSave();
 
         public ActivitySave activity = new ActivitySave();
     }

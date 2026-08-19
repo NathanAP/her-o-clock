@@ -32,6 +32,27 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
 - Enquanto a árvore de habilidades não existir, **toda habilidade é usada no rank 1**. Os demais ranks já ficam escritos na ficha, e é a árvore que vai destravá-los.
     - Escrever os cinco ranks desde já não é trabalho perdido: é o que faz o validador ter o que conferir, e é onde a intenção de escala da habilidade fica registrada enquanto ela é desenhada.
 
+## Em que nível cada rank é liberado
+
+- Toda habilidade declara um `rankAvailability`: **uma entrada por rank**, dizendo o nível de personagem necessário para alcançá-lo.
+
+```json
+"ranks": 5,
+"rankAvailability": [1, 10, 20, 35, 50]
+```
+
+- A primeira entrada é o nível em que a habilidade passa a existir para aquele personagem. As seguintes são os degraus.
+- Os valores **nunca diminuem** de um rank para o outro. Um rank 3 liberado antes do rank 2 seria um degrau que ninguém consegue subir na ordem.
+- O array segue a mesma regra de todo array de habilidade: exatamente uma entrada por rank, conforme "## Habilidades nas fichas".
+- **É por habilidade, e nunca por árvore.** Duas habilidades da mesma árvore podem abrir os ranks em ritmos completamente diferentes, e é isso que permite uma delas ser a que cresce cedo e a outra ser a recompensa tardia.
+
+### Por que o degrau existe
+
+- Ele é o que permite escrever **dano baixo no rank 1 sem condenar a habilidade a ser fraca para sempre**.
+- Sem o degrau, a escala de dano de uma habilidade precisa ser suave do começo ao fim, porque nada impede o jogador de alcançar o rank máximo cedo. Uma habilidade que começa forte o bastante para servir vira absurda alguns níveis depois, e uma que começa fraca o bastante para não quebrar nada nunca deixa de ser fraca.
+- Com o degrau, quem decide quando aquele salto de dano entra no jogo é a ficha, e não o ritmo em que o jogador acumula pontos. É isso que torna possível uma escala como `15, 50, 90, 120, 150`, que sem controle de nível seria impossível de calibrar.
+- **Isso não substitui a escala por atributo.** O degrau controla quando o salto acontece; a fração de atributo é o que faz a habilidade responder à build entre um degrau e outro.
+
 ## Quando uma habilidade é usada
 
 - Uma habilidade é avaliada **apenas pelas suas próprias regras**, e nunca pelo alcance do ataque básico de quem a usa.

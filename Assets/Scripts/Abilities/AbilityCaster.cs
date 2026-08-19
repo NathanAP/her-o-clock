@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
@@ -29,10 +29,23 @@ namespace HerOClock.Abilities
         }
 
         /// <summary>
-        /// The rank every ability is used at while the skill tree does not exist.
-        /// The other ranks are already written on the sheets, waiting for it.
+        /// <summary>
+        /// The rank an ability is used at, which is the highest one its schedule has opened for
+        /// this character's level.
+        ///
+        /// While the skill tree does not exist, the level is the only gate: `rankAvailability` on
+        /// the sheet says when each step arrives, per ability. A sheet with no schedule stays at
+        /// rank 1, which is what every ability written before the field meant.
+        ///
+        /// This is what makes a low rank 1 safe to write. Without it the damage of an ability has
+        /// to be gentle from end to end, because nothing would stop a character reaching the top
+        /// rank early.
         /// </summary>
-        public const int CurrentRank = 1;
+        private int RankOf(AbilityDefinition ability)
+        {
+            int rank = ability.RankAt(character.Level);
+            return rank < 1 ? 1 : rank;
+        }
 
         private readonly Character character;
         private readonly BattleGrid grid;
@@ -147,7 +160,7 @@ namespace HerOClock.Abilities
                 }
 
                 List<Character> found = AbilityTargetResolver.Resolve(
-                    character, ability.Targeting, CurrentRank, allies, enemies);
+                    character, ability.Targeting, RankOf(ability), allies, enemies);
 
                 if (found.Count == 0)
                 {
@@ -166,7 +179,7 @@ namespace HerOClock.Abilities
             castingIndex = index;
             targets = found;
 
-            float preparation = ability.Preparation.At(CurrentRank);
+            float preparation = ability.Preparation.At(RankOf(ability));
 
             if (preparation > 0f)
             {
@@ -178,7 +191,7 @@ namespace HerOClock.Abilities
             // An instant ability skips straight to the casting phase, which resolves on the next
             // step through the same path every other ability takes.
             phase = Phase.Casting;
-            remaining = ability.Casting.At(CurrentRank);
+            remaining = ability.Casting.At(RankOf(ability));
         }
 
         private void AdvancePhase(float step, IReadOnlyList<Character> allies, IReadOnlyList<Character> enemies)
@@ -200,7 +213,7 @@ namespace HerOClock.Abilities
             if (phase == Phase.Preparing)
             {
                 phase = Phase.Casting;
-                remaining = ability.Casting.At(CurrentRank) - overshoot;
+                remaining = ability.Casting.At(RankOf(ability)) - overshoot;
                 overshoot = 0f;
             }
 
@@ -211,7 +224,7 @@ namespace HerOClock.Abilities
                 Fire(ability, allies, enemies);
 
                 phase = Phase.Recoiling;
-                remaining = ability.Recoil.At(CurrentRank) - overshoot;
+                remaining = ability.Recoil.At(RankOf(ability)) - overshoot;
             }
 
             if (phase == Phase.Recoiling && remaining <= 0f)
@@ -236,14 +249,14 @@ namespace HerOClock.Abilities
         private void Fire(AbilityDefinition ability, IReadOnlyList<Character> allies, IReadOnlyList<Character> enemies)
         {
             List<Character> current = AbilityTargetResolver.Resolve(
-                character, ability.Targeting, CurrentRank, allies, enemies);
+                character, ability.Targeting, RankOf(ability), allies, enemies);
 
             if (current.Count > 0)
             {
                 targets = current;
             }
 
-            AbilityResolver.Apply(character, ability, CurrentRank, targets, grid, random, RaiseDamaged);
+            AbilityResolver.Apply(character, ability, RankOf(ability), targets, grid, random, RaiseDamaged);
 
             // The cooldown starts the moment the casting ended, which is right here, and the
             // recovery that follows is deliberately not part of it.
@@ -260,7 +273,7 @@ namespace HerOClock.Abilities
         /// </summary>
         private float CooldownOf(AbilityDefinition ability)
         {
-            float cooldown = ability.Cooldown.At(CurrentRank);
+            float cooldown = ability.Cooldown.At(RankOf(ability));
             float reduction = character.Stats.CooldownReduction;
 
             return Mathf.Max(0f, cooldown * (1f - reduction / 100f));

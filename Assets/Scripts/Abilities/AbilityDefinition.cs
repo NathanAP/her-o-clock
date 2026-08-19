@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace HerOClock.Abilities
@@ -21,6 +21,9 @@ namespace HerOClock.Abilities
 
         [Tooltip("How many ranks the ability has. Every scaling array has to be exactly this long.")]
         [Min(1)] public int Ranks = 1;
+
+        [Tooltip("Character level needed to reach each rank, one entry per rank. Never decreasing.")]
+        public int[] RankAvailability = new int[0];
 
         [Header("Timing, in seconds")]
         [Tooltip("Time the character spends winding up. It stands still and cannot act.")]
@@ -48,6 +51,33 @@ namespace HerOClock.Abilities
         /// The three phases are one block: whatever comes next, ability or basic attack, waits for
         /// all of it.
         /// </summary>
+        /// <summary>
+        /// The highest rank a character of this level can have reached.
+        ///
+        /// Zero when the level is below the first entry, which means the ability does not exist for
+        /// that character yet. With no schedule declared the ability is simply available at rank 1,
+        /// which is what every sheet written before the field meant.
+        /// </summary>
+        public int RankAt(int characterLevel)
+        {
+            if (RankAvailability == null || RankAvailability.Length == 0)
+            {
+                return 1;
+            }
+
+            int reached = 0;
+
+            for (int i = 0; i < RankAvailability.Length && i < Ranks; i++)
+            {
+                if (characterLevel >= RankAvailability[i])
+                {
+                    reached = i + 1;
+                }
+            }
+
+            return reached;
+        }
+
         public float BusySeconds(int rank)
         {
             return Preparation.At(rank) + Casting.At(rank) + Recoil.At(rank);

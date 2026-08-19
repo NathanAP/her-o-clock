@@ -252,3 +252,25 @@ The distinction that matters, and that is easy to get backwards: **an enemy is t
 
 Reducing maximum health instead would change mitigation, the experience granted and everything else derived from the sheet, which is a different statement from "somebody was fighting them before you arrived".
 
+## Slots, owned heroes and the team are three different things
+
+`Roster` keeps them apart because they look alike and are not:
+
+- **Slots** are how many positions the team has. One at the start, four at most, opened by clearing stages.
+- **Owned** is who the player has met, also grown by clearing stages.
+- **Team** is the ordered few who walk into a stage; whoever is owned and not fielded is benched.
+
+A hero arriving and a position opening are separate events that usually land together, and collapsing them would make it impossible to have a hero waiting for room, or room waiting for a hero.
+
+The stage's `heroLimit` is a fourth number and belongs to the stage, not here: it is a rule of that stage and still applies when a later run replays it with a full team. The party is the front of the team, so the order the player chose is what decides who goes.
+
+While there is no menu, an unlocked hero takes a free position by itself and a new slot pulls whoever has been benched longest. Otherwise an unlock would look like it had failed.
+
+## The early difficulty is a cliff, not a slope
+
+Measured in 0.9.1.0: with one hero and no healing between waves, the level a stage demands jumps between "1" and "many" over tiny changes to the enemies. A 0.8 multiplier on stage 4 asked for level 7; 0.6 asked for level 1.
+
+The cause is structural rather than a tuning mistake. Damage carries across a whole stage, and a solo hero has no redundancy: either the party survives the attrition of every wave, in which case level 1 is enough, or it does not, in which case it needs many levels. There is almost no middle.
+
+Anything that widens that middle is a design lever and not a number: regeneration between waves, fewer waves early, or a partial heal on clearing one. Until one of them exists, the early stages can only be tuned to "flows" or "wall", and nothing in between.
+

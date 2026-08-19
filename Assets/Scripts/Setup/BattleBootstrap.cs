@@ -67,6 +67,8 @@ namespace HerOClock.Setup
         private ActivityLog activity;
         private DamageNumberPool damageNumbers;
         private ProjectilePool projectiles;
+        private Roster roster;
+        private readonly List<string> clearedStages = new List<string>();
 
         private void Start()
         {
@@ -115,7 +117,18 @@ namespace HerOClock.Setup
             damageNumbers = new DamageNumberPool(transform, gridConfig.CellSize);
             projectiles = new ProjectilePool(transform, gridConfig.CellSize, projectileSettings);
 
-            List<Character> heroes = SpawnHeroes();
+            // The roster says who exists and who is fielded; the stage says how many of them it
+            // takes. A brand new game owns only the first hero of the formation, with one
+            // position, and everything else is unlocked by clearing stages.
+            roster = new Roster();
+            roster.Unlock(FirstFormationHeroId());
+
+            if (save.Found)
+            {
+                SaveMapper.ApplyRoster(save.Payload, roster, clearedStages);
+            }
+
+            List<Character> heroes = SpawnHeroes(roster.PartyFor(stage.heroLimit));
             if (heroes.Count == 0)
             {
                 Debug.LogError("BattleBootstrap: no hero was created, so the stage cannot be played. Check the hero formation.", this);
@@ -173,6 +186,7 @@ namespace HerOClock.Setup
             // rate is meant to describe.
             runner.Stepped += activity.Advance;
             runner.EnemyDefeated += OnEnemyDefeated;
+            runner.StageEnded += cleared => GrantFirstClear(stage, cleared);
 
             // Always from the top. A save says which stage the player is on and never where inside
             // it, so being loaded is the same entry a defeat uses.
@@ -181,7 +195,7 @@ namespace HerOClock.Setup
             // Subscribed only now, so the write below is the first one and already carries the
             // loaded state and whatever the absence was worth.
             SaveService saves = gameObject.AddComponent<SaveService>();
-            saves.Configure(store, runner, heroes, wallet, activity, integrity);
+            saves.Configure(store, runner, heroes, wallet, activity, integrity, roster, clearedStages);
 
             // **This write is what consumes the absence.** The time away is measured from the
             // instant in the file that was loaded, so crediting it and then falling over before
@@ -508,13 +522,72 @@ namespace HerOClock.Setup
             }
         }
 
-        private List<Character> SpawnHeroes()
+        /// <summary>
+        /// Puts on the board the heroes the roster says are going, at the cells the formation
+        /// gives them.
+        ///
+        /// The formation is the layout, and no longer the team: who walks in is decided by what
+        /// the player owns, what they fielded, and how many heroes the stage accepts.
+        /// </summary>
+        /// <summary>The first hero the formation lists, which is who a brand new game starts with.</summary>
+        private string FirstFormationHeroId()
+        {
+            for (int i = 0; heroFormation != null && i < heroFormation.Placements.Count; i++)
+            {
+                if (heroFormation.Placements[i].Character != null)
+                {
+                    return heroFormation.Placements[i].Character.Id;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Hands out what a stage gives the first time it is cleared, and never again.
+        ///
+        /// The rewards live in the stage file rather than here, so a rule of the story is content.
+        /// A hero arriving and a position opening are separate fields: they usually land together
+        /// and they are not the same thing.
+        /// </summary>
+        private void GrantFirstClear(StageData stage, bool cleared)
+        {
+            if (!cleared || stage.firstClear == null || clearedStages.Contains(stage.id))
+            {
+                return;
+            }
+
+            clearedStages.Add(stage.id);
+
+            if (!string.IsNullOrWhiteSpace(stage.firstClear.unlocksCharacter)
+                && roster.Unlock(stage.firstClear.unlocksCharacter))
+            {
+                Debug.Log("BattleBootstrap: " + stage.firstClear.unlocksCharacter
+                    + " joined the roster after clearing '" + stage.id + "'.", this);
+            }
+
+            for (int i = 0; i < stage.firstClear.grantsTeamSlots; i++)
+            {
+                if (roster.GrantSlot())
+                {
+                    Debug.Log("BattleBootstrap: the team has " + roster.Slots
+                        + " position(s) after clearing '" + stage.id + "'.", this);
+                }
+            }
+        }
+
+        private List<Character> SpawnHeroes(List<string> party)
         {
             List<Character> heroes = new List<Character>();
 
             for (int i = 0; i < heroFormation.Placements.Count; i++)
             {
                 BattleFormation.Placement placement = heroFormation.Placements[i];
+
+                if (placement.Character != null && !party.Contains(placement.Character.Id))
+                {
+                    continue;
+                }
 
                 if (placement.Character == null)
                 {

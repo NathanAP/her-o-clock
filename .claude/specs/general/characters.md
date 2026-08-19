@@ -78,9 +78,29 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 
 - Um grupo de heróis é composto de até 4 personagens e pode ser escolhido pelo jogador a qualquer momento.
 - Um grupo de heróis pode ser montado do jeito que o jogador preferir.
+- Um grupo de heróis só é alterado verdadeiramente no início da fase.
+    - Ou seja, alterar o grupo de heróis no meio da fase não tem efeito imediato, o jogador precisa aguardar a atual fase terminar para que o grupo seja atualizado.
+- A ordem do grupo de heróis é importante pois em fases que demandam menos que o total de heróis liberados (slots), a escolha é sempre na ordem do slot. Por exemplo:
+    - Se a fase exige apenas um personagem e meu grupo é composto pelos heróis A, B, C e D (nesta ordem), sempre o A será escolhido para aquela fase. Se eu alterar o grupo para B, A, D, C, sempre o B será escolhido para aquela fase. O mesmo vale para fases que exigem dois heróis (A e B seriam escolhidos no primeiro exemplo e B e A no segundo).
 - Durante a escolha do grupo, o jogador pode também alterar a formação inicial em campo de batalha, dispondo das 24 casas da área dos heróis (6 colunas por 4 fileiras).
     - Como o grupo possui no máximo 4 heróis, a maior parte da área fica vazia. Isso é intencional e é o que permite ao jogador escolher entre concentrar o grupo ou espalhá-lo contra ataques em área.
     - A formação define apenas onde a batalha começa. A partir dali os personagens se movimentam sozinhos, conforme descrito em `gameplay.md`.
+
+### Banco de heróis
+
+- Além do grupo de heróis, o jogador conta com um banco de heróis (ou só "banco").
+- O banco é usado para guardar os heróis que não estão sendo usados no grupo de heróis.
+- O banco pode ser consultado e seus heróis podem ser manipulados a qualquer momento (troca de itens, alterar habilidades e atributos, etc).
+- Heróis que estão no grupo podem ser substituídos pelos que estão no banco a qualquer momento.
+    - Lembrando que o efeito da troca não é imediata.
+- Alguns itens podem afetar o banco (divisão de experiência).
+- Heróis do banco não ganham experiência, conforme aponta o `progress.md`.
+
+### Slots
+
+- Os slots definem quantas posições a equipe tem, começando por 1 e com o limite de 4.
+- Os slots são liberados conforme o jogador completa fases específicas, conforme aponta o `stages.md`.
+- Liberação de slot e liberação de heróis são eventos separados. Em um certo ponto o jogador terá 3 slots disponíveis mas um quarto ou quinto herói fica disponível. Cabe a ele decidir quem vai ficar no grupo e quem vai ir para o banco de heróis.
 
 ## Lacaios
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using HerOClock.Characters;
 using HerOClock.Progression;
@@ -34,14 +34,22 @@ namespace HerOClock.Persistence
         /// </summary>
         private string integrity = SavePayload.IntegrityOk;
 
+        private Roster roster;
+        private IReadOnlyList<string> clearedStages;
+
         public void Configure(
             SaveStore store,
             StageRunner runner,
             IReadOnlyList<Character> heroes,
             PlayerWallet wallet,
             ActivityLog activity,
-            string integrity)
+            string integrity,
+            Roster roster,
+            IReadOnlyList<string> clearedStages)
         {
+            this.roster = roster;
+            this.clearedStages = clearedStages;
+
             this.store = store;
             this.runner = runner;
             this.heroes = heroes;
@@ -86,6 +94,8 @@ namespace HerOClock.Persistence
                 activity,
                 runner.Stage.id,
                 integrity);
+
+            payload.roster = SaveMapper.ToSave(roster, clearedStages);
 
             try
             {

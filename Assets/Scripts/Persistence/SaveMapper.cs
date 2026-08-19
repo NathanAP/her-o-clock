@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Characters;
 using HerOClock.Progression;
 using UnityEngine;
@@ -234,5 +234,72 @@ namespace HerOClock.Persistence
             activity.Restore(buckets);
         }
 
+
+        /// <summary>Writes the team, the bench and the positions that have been unlocked.</summary>
+        public static RosterSave ToSave(Roster roster, IReadOnlyList<string> clearedStages)
+        {
+            RosterSave saved = new RosterSave();
+
+            if (roster == null)
+            {
+                return saved;
+            }
+
+            saved.slots = roster.Slots;
+            saved.owned = new List<string>(roster.Owned).ToArray();
+            saved.team = new List<string>(roster.Team).ToArray();
+            saved.clearedStages = clearedStages == null
+                ? new string[0]
+                : new List<string>(clearedStages).ToArray();
+
+            return saved;
+        }
+
+        /// <summary>
+        /// Puts the roster back, rebuilding it when the file predates it.
+        ///
+        /// A save written before the roster existed carries zero slots, and everything it knows
+        /// about the team is the list of heroes it saved. Treating those as the team, with one
+        /// position each, lands exactly where that player left off.
+        /// </summary>
+        public static void ApplyRoster(SavePayload payload, Roster roster, List<string> clearedStages)
+        {
+            if (payload == null || roster == null)
+            {
+                return;
+            }
+
+            RosterSave saved = payload.roster ?? new RosterSave();
+
+            if (saved.slots <= 0)
+            {
+                List<string> fromHeroes = new List<string>();
+
+                for (int i = 0; payload.heroes != null && i < payload.heroes.Length; i++)
+                {
+                    if (payload.heroes[i] != null && !string.IsNullOrWhiteSpace(payload.heroes[i].id)
+                        && !fromHeroes.Contains(payload.heroes[i].id))
+                    {
+                        fromHeroes.Add(payload.heroes[i].id);
+                    }
+                }
+
+                roster.Restore(fromHeroes.Count, fromHeroes, fromHeroes);
+            }
+            else
+            {
+                roster.Restore(saved.slots, saved.owned, saved.team);
+            }
+
+            if (clearedStages != null)
+            {
+                clearedStages.Clear();
+
+                for (int i = 0; saved.clearedStages != null && i < saved.clearedStages.Length; i++)
+                {
+                    clearedStages.Add(saved.clearedStages[i]);
+                }
+            }
+        }
     }
 }

@@ -53,10 +53,10 @@ A formação de heróis é a do asset. O tempo é só de combate, sem as transi�
 
 | Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |
 |---|---|---|---|---|---|
-| act1-stage1 | 1 | 1 | 13.9 s | 160 | 16 |
-| act1-stage2 | 2 | 1 | 22.8 s | 800 | 20 |
-| act1-stage3 | 4 | 3 | 50.6 s | 2160 | 21 |
-| act1-stage4 | 5 | 14 | 40.2 s | 6750 | 27 |
+| act1-stage1 | 1 | 1 | 24.3 s | 160 | 16 |
+| act1-stage2 | 2 | 2 | 48.5 s | 800 | 20 |
+| act1-stage3 | 4 | 4 | 65.1 s | 3280 | 28 |
+| act1-stage4 | 3 | 5 | 49.9 s | 2250 | 25 |
 
 ### Paredes
 
@@ -67,9 +67,9 @@ exigido passa o de chegada, o jogador é obrigado a parar e farmar.
 | Fase | Chega com | Exige | Parede | Custo |
 |---|---|---|---|---|
 | act1-stage1 | 1 | 1 | não | - |
-| act1-stage2 | 2 | 1 | não | - |
-| act1-stage3 | 3 | 3 | não | - |
-| act1-stage4 | 3 | 14 | sim | 705x a fase anterior, 594.4 min de combate |
+| act1-stage2 | 2 | 2 | não | - |
+| act1-stage3 | 3 | 4 | sim | 4x a fase anterior, 2.4 min de combate |
+| act1-stage4 | 4 | 5 | sim | 3x a fase anterior, 3.3 min de combate |
 
 O custo conta só o tempo de combate, e despreza a experiência parcial que sobra
 de um nível para o outro. As transições entre ondas somam vários segundos por

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace HerOClock.Abilities
 {
@@ -44,6 +44,7 @@ namespace HerOClock.Abilities
             CheckRanked(name, "recoil", ability.Recoil, ability.Ranks, true, problems);
             CheckRanked(name, "cooldown", ability.Cooldown, ability.Ranks, true, problems);
 
+            CheckRankAvailability(name, ability, problems);
             CheckTargeting(name, ability, problems);
             CheckEffects(name, ability, problems);
 
@@ -103,6 +104,44 @@ namespace HerOClock.Abilities
             {
                 problems.Add(name + ": '" + field + "' has " + value.Length + " entries, and the ability has "
                     + ranks + " ranks. It has to be one entry, for a constant, or exactly one per rank.");
+            }
+        }
+
+        /// <summary>
+        /// The level each rank opens at, from "## Em que nível cada rank é liberado" in abilities.md.
+        ///
+        /// It is one entry per rank and never a single constant, unlike the other arrays: a rank
+        /// schedule that does not change per rank is not a schedule at all.
+        /// </summary>
+        private static void CheckRankAvailability(string name, AbilityDefinition ability, List<string> problems)
+        {
+            if (ability.RankAvailability == null || ability.RankAvailability.Length == 0)
+            {
+                return;
+            }
+
+            if (ability.RankAvailability.Length != ability.Ranks)
+            {
+                problems.Add(name + ": 'rankAvailability' has " + ability.RankAvailability.Length
+                    + " entries and the ability has " + ability.Ranks
+                    + " ranks. It needs exactly one level per rank.");
+                return;
+            }
+
+            for (int i = 0; i < ability.RankAvailability.Length; i++)
+            {
+                if (ability.RankAvailability[i] < 1)
+                {
+                    problems.Add(name + ": rank " + (i + 1) + " opens at level "
+                        + ability.RankAvailability[i] + ", and the lowest level is 1.");
+                }
+
+                if (i > 0 && ability.RankAvailability[i] < ability.RankAvailability[i - 1])
+                {
+                    problems.Add(name + ": rank " + (i + 1) + " opens at level "
+                        + ability.RankAvailability[i] + ", before rank " + i + " at level "
+                        + ability.RankAvailability[i - 1] + ". A step nobody can climb in order.");
+                }
             }
         }
 

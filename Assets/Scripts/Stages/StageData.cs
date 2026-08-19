@@ -38,6 +38,17 @@ namespace HerOClock.Stages
         /// </summary>
         public StagePlacement[] allies;
 
+        /// <summary>
+        /// How many heroes this stage accepts, taken from the front of the player's team.
+        ///
+        /// A rule of the stage, not of the party: replaying an early stage in a later run still
+        /// enters with its own limit, however big the team has grown. Zero means no limit.
+        /// </summary>
+        public int heroLimit;
+
+        /// <summary>What clearing this stage for the first time hands out. Never happens twice.</summary>
+        public StageFirstClear firstClear;
+
         /// <summary>Minion groups, fought in order.</summary>
         public StageWave[] waves;
 
@@ -46,6 +57,23 @@ namespace HerOClock.Stages
         /// the structure itself enforces the rule that a stage always ends against a villain.
         /// </summary>
         public StageWave villainWave;
+    }
+
+    /// <summary>
+    /// Rewards granted the first time a stage is cleared, and never again.
+    ///
+    /// They live in the stage file rather than in code so that a rule of the story is content. A
+    /// hero arriving and a team position opening are separate fields on purpose: they often happen
+    /// together, and they are not the same thing.
+    /// </summary>
+    [Serializable]
+    public class StageFirstClear
+    {
+        /// <summary>Id of a hero the player meets here. Empty for none.</summary>
+        public string unlocksCharacter;
+
+        /// <summary>How many team positions open up here.</summary>
+        public int grantsTeamSlots;
     }
 
     [Serializable]

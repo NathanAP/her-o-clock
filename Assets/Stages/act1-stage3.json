@@ -1,53 +1,167 @@
 {
     "id": "act1-stage3",
     "enemyLevel": 4,
+    "heroLimit": 1,
+    "firstClear": {
+        "unlocksCharacter": "gadrat",
+        "grantsTeamSlots": 1
+    },
     "allies": [
-        { "character": "gadrat-npc", "column": 4, "row": 3 }
+        {
+            "character": "gadrat-npc",
+            "column": 4,
+            "row": 3,
+            "level": 2
+        }
     ],
     "waves": [
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 3, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 3,
+                    "row": 6,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 4,
+                    "row": 6,
+                    "multiplier": 0.5
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 2, "row": 6 },
-                { "character": "discarded-prototype", "column": 4, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 6,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 4,
+                    "row": 6,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 5,
+                    "row": 7,
+                    "multiplier": 0.5
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 5, "row": 7 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 7,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 4,
+                    "row": 6,
+                    "multiplier": 0.5
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 2, "row": 7 },
-                { "character": "discarded-prototype", "column": 4, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 6,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 3,
+                    "row": 7,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 5,
+                    "row": 6,
+                    "multiplier": 0.5
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 3, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 3,
+                    "row": 6,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 5,
+                    "row": 6,
+                    "multiplier": 0.5
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 2, "row": 6 },
-                { "character": "discarded-prototype", "column": 5, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 6,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 4,
+                    "row": 7,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 5,
+                    "row": 6,
+                    "multiplier": 0.5
+                }
             ]
         },
         {
             "placements": [
-                { "character": "discarded-prototype", "column": 3, "row": 7 },
-                { "character": "discarded-prototype", "column": 5, "row": 6 }
+                {
+                    "character": "discarded-prototype",
+                    "column": 2,
+                    "row": 7,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 3,
+                    "row": 6,
+                    "multiplier": 0.5
+                },
+                {
+                    "character": "discarded-prototype",
+                    "column": 5,
+                    "row": 6,
+                    "multiplier": 0.5
+                }
             ]
         }
     ],
     "villainWave": {
         "placements": [
-            { "character": "exposed-prototype", "column": 3, "row": 7, "level": 2, "startingHealthPercent": 50 }
+            {
+                "character": "exposed-prototype",
+                "column": 3,
+                "row": 7,
+                "level": 2,
+                "startingHealthPercent": 50,
+                "multiplier": 0.5
+            }
         ]
     }
 }
