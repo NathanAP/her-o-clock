@@ -114,6 +114,7 @@ namespace HerOClock.Tests
             AppendPacing(page);
             AppendSheets(page);
             AppendStages(page);
+            AppendSweep(page);
 
             string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ".claude", "balance"));
             Directory.CreateDirectory(folder);
@@ -122,6 +123,194 @@ namespace HerOClock.Tests
             File.WriteAllText(path, page.ToString());
 
             Debug.Log("Balance snapshot written to " + path);
+        }
+
+        /// <summary>
+        /// A player who never opened the attributes screen gets past a stage at the level it
+        /// recommends.
+        ///
+        /// The sheet's own distribution is the baseline the content was written against, and it is
+        /// the only build the game can promise anything about. The corners swept alongside it —
+        /// every point in one attribute — are deliberately bad and are measured, not promised.
+        /// </summary>
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void TheSheetsOwnBuildClearsAStageAtTheLevelItRecommends(int index)
+        {
+            StageData stage = Load<StageDatabase>().Load(index);
+            int high = RecommendedLevels[index][1];
+
+            List<StageSweep.BuildResult> perBuild = StageSweep.PerBuild(
+                Load<BattleGridConfig>(), Formation(), high, stage,
+                Load<CharacterDatabase>().BuildIndex(), StageSweep.BuildsAt(high));
+
+            Assert.IsTrue(perBuild[0].ClearedAny,
+                "At level " + high + ", which " + stage.id + " recommends, the sheet's own build "
+                + "cleared none of its " + perBuild[0].Tried + " attempts.");
+        }
+
+        /// <summary>
+        /// No stage depends on a single build.
+        ///
+        /// This is the project's own promise, from the flexibility `CLAUDE.md` asks for: a player
+        /// who built something other than the obvious answer should still have a game. A stage only
+        /// one build gets through is the failure that promise is about.
+        /// </summary>
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void MoreThanOneBuildClearsEveryStage(int index)
+        {
+            StageData stage = Load<StageDatabase>().Load(index);
+            int high = RecommendedLevels[index][1];
+
+            if (StageSweep.BuildsAt(high) < 2)
+            {
+                Assert.Ignore("At level " + high + " no points have been spent yet, so there is only "
+                    + "one build to have. Diversity is not a thing that exists here to measure.");
+            }
+
+            List<StageSweep.BuildResult> perBuild = StageSweep.PerBuild(
+                Load<BattleGridConfig>(), Formation(), high, stage,
+                Load<CharacterDatabase>().BuildIndex(), StageSweep.BuildsAt(high));
+
+            int worked = 0;
+
+            for (int i = 0; i < perBuild.Count; i++)
+            {
+                if (perBuild[i].ClearedAny)
+                {
+                    worked++;
+                }
+            }
+
+            Assert.Greater(worked, 1,
+                stage.id + " is cleared by " + worked + " of the " + perBuild.Count
+                + " builds swept, so it asks for one answer instead of a level.");
+        }
+
+        /// <summary>
+        /// Below the range, the level has to matter. A stage every party clears two levels early is
+        /// a stage whose recommended level says nothing.
+        ///
+        /// Skipped where the range already starts at 1, since there is nothing below it.
+        /// </summary>
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void NotEveryPartyClearsAStageBelowTheLevelItRecommends(int index)
+        {
+            StageData stage = Load<StageDatabase>().Load(index);
+            int below = RecommendedLevels[index][0] - 1;
+
+            if (below < 1)
+            {
+                Assert.Ignore("The stage recommends level 1, so there is no level below it.");
+            }
+
+            StageSweep.Result result = StageSweep.At(
+                Load<BattleGridConfig>(), Formation(), below, stage,
+                Load<CharacterDatabase>().BuildIndex(), StageSweep.BuildsAt(RecommendedLevels[index][1]));
+
+            Assert.Less(result.ClearedFraction, 1f,
+                "Every one of the " + result.Tried + " sampled parties cleared " + stage.id
+                + " at level " + below + ", below what it recommends, so the level asks for nothing.");
+        }
+
+        /// <summary>
+        /// The recommended level range of each stage, copied from `stages.md`.
+        ///
+        /// It is the spec's number repeated here on purpose, as "## Onde cada número mora" in
+        /// CLAUDE.md asks: two independent statements of the same intent, so that a disagreement
+        /// between them shows up instead of being invisible.
+        /// </summary>
+        private static readonly int[][] RecommendedLevels =
+        {
+            new[] { 1, 1 },
+            new[] { 2, 3 },
+            new[] { 4, 5 },
+            new[] { 5, 6 }
+        };
+
+        /// <summary>
+        /// How many of many different parties clear each stage, level by level.
+        ///
+        /// This replaces "the minimum level is 4", which was a sample of one wearing the clothes of
+        /// a fact: one party, the sheet's own build, one seed. Two players with different builds
+        /// have different afternoons on the same stage, and that spread is the thing worth writing
+        /// down.
+        /// </summary>
+        private static void AppendSweep(StringBuilder page)
+        {
+            StageDatabase stages = Load<StageDatabase>();
+            CharacterDatabase characters = Load<CharacterDatabase>();
+            BattleGridConfig config = Load<BattleGridConfig>();
+
+            page.AppendLine("## Quantas equipes limpam cada fase");
+            page.AppendLine();
+            page.AppendLine("Cada linha roda várias equipes, várias builds e várias sementes na mesma");
+            page.AppendLine("fase e no mesmo nível, e conta quantas limparam.");
+            page.AppendLine();
+            page.AppendLine("**Isto é uma amostra, e nunca uma prova.** O espaço de equipes, builds,");
+            page.AppendLine("ordens e, mais adiante, itens e árvores é grande demais para ser coberto.");
+            page.AppendLine("O que a tabela mostra é a forma: no nível recomendado a maioria passa, e");
+            page.AppendLine("alguns níveis abaixo a maioria não passa.");
+            page.AppendLine();
+            page.AppendLine("A amostra cresce junto com o espaço. No começo não há o que variar: um herói");
+            page.AppendLine("no nível 1 não tem ponto nenhum para distribuir.");
+            page.AppendLine();
+
+            for (int index = 0; index < stages.Stages.Count; index++)
+            {
+                StageData stage = stages.Load(index);
+
+                if (stage == null)
+                {
+                    continue;
+                }
+
+                int low = index < RecommendedLevels.Length ? RecommendedLevels[index][0] : 1;
+                int high = index < RecommendedLevels.Length ? RecommendedLevels[index][1] : low;
+
+                page.AppendLine("### " + stage.id + " (recomendado " + low + " a " + high + ")");
+                page.AppendLine();
+                page.AppendLine("| Nível | Limparam | Testadas | % |");
+                page.AppendLine("|---|---|---|---|");
+
+                int from = low - 2 < 1 ? 1 : low - 2;
+
+                // Fixed for the whole table, so the rows can be read against each other.
+                int builds = StageSweep.BuildsAt(high);
+
+                for (int level = from; level <= high + 2; level++)
+                {
+                    StageSweep.Result result = StageSweep.At(
+                        config, Formation(), level, stage, characters.BuildIndex(), builds);
+
+                    page.AppendLine("| " + level + " | " + result.Cleared + " | " + result.Tried + " | "
+                        + (result.ClearedFraction * 100f).ToString("0", CultureInfo.InvariantCulture) + "% |");
+                }
+
+                page.AppendLine();
+                page.AppendLine("Por build, no nível " + high + ":");
+                page.AppendLine();
+                page.AppendLine("| Build | Limpou | Tentativas |");
+                page.AppendLine("|---|---|---|");
+
+                List<StageSweep.BuildResult> perBuild = StageSweep.PerBuild(
+                    config, Formation(), high, stage, characters.BuildIndex(), builds);
+
+                for (int b = 0; b < perBuild.Count; b++)
+                {
+                    page.AppendLine("| " + perBuild[b].Name + " | " + perBuild[b].Cleared
+                        + " | " + perBuild[b].Tried + " |");
+                }
+
+                page.AppendLine();
+            }
         }
 
         private static void AppendPacing(StringBuilder page)

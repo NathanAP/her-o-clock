@@ -80,3 +80,94 @@ inimigos de nível 12 de propósito, para exercitar herói caindo em combate e a
 bloqueado. A parede gigante entre as duas é o resultado esperado desse par, e não
 um problema de balanceamento. Ver `game-objects/fases.md`.
 
+## Quantas equipes limpam cada fase
+
+Cada linha roda várias equipes, várias builds e várias sementes na mesma
+fase e no mesmo nível, e conta quantas limparam.
+
+**Isto é uma amostra, e nunca uma prova.** O espaço de equipes, builds,
+ordens e, mais adiante, itens e árvores é grande demais para ser coberto.
+O que a tabela mostra é a forma: no nível recomendado a maioria passa, e
+alguns níveis abaixo a maioria não passa.
+
+A amostra cresce junto com o espaço. No começo não há o que variar: um herói
+no nível 1 não tem ponto nenhum para distribuir.
+
+### act1-stage1 (recomendado 1 a 1)
+
+| Nível | Limparam | Testadas | % |
+|---|---|---|---|
+| 1 | 6 | 6 | 100% |
+| 2 | 6 | 6 | 100% |
+| 3 | 6 | 6 | 100% |
+
+Por build, no nível 1:
+
+| Build | Limpou | Tentativas |
+|---|---|---|
+| a da ficha | 6 | 6 |
+
+### act1-stage2 (recomendado 2 a 3)
+
+| Nível | Limparam | Testadas | % |
+|---|---|---|---|
+| 1 | 12 | 24 | 50% |
+| 2 | 18 | 24 | 75% |
+| 3 | 24 | 24 | 100% |
+| 4 | 24 | 24 | 100% |
+| 5 | 24 | 24 | 100% |
+
+Por build, no nível 3:
+
+| Build | Limpou | Tentativas |
+|---|---|---|
+| a da ficha | 6 | 6 |
+| só POW | 6 | 6 |
+| só AGI | 6 | 6 |
+| só SPE | 6 | 6 |
+
+### act1-stage3 (recomendado 4 a 5)
+
+| Nível | Limparam | Testadas | % |
+|---|---|---|---|
+| 2 | 3 | 36 | 8% |
+| 3 | 12 | 36 | 33% |
+| 4 | 21 | 36 | 58% |
+| 5 | 24 | 36 | 67% |
+| 6 | 24 | 36 | 67% |
+| 7 | 24 | 36 | 67% |
+
+Por build, no nível 5:
+
+| Build | Limpou | Tentativas |
+|---|---|---|
+| a da ficha | 6 | 6 |
+| só POW | 6 | 6 |
+| só AGI | 0 | 6 |
+| só SPE | 0 | 6 |
+| só CON | 6 | 6 |
+| POW/CON | 6 | 6 |
+
+### act1-stage4 (recomendado 5 a 6)
+
+| Nível | Limparam | Testadas | % |
+|---|---|---|---|
+| 3 | 1 | 84 | 1% |
+| 4 | 12 | 84 | 14% |
+| 5 | 24 | 84 | 29% |
+| 6 | 34 | 84 | 40% |
+| 7 | 36 | 84 | 43% |
+| 8 | 42 | 84 | 50% |
+
+Por build, no nível 6:
+
+| Build | Limpou | Tentativas |
+|---|---|---|
+| a da ficha | 6 | 12 |
+| só POW | 12 | 12 |
+| só AGI | 0 | 12 |
+| só SPE | 0 | 12 |
+| só CON | 6 | 12 |
+| POW/CON | 10 | 12 |
+| AGI/SPE | 0 | 12 |
+

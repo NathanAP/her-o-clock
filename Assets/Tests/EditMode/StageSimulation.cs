@@ -31,6 +31,16 @@ namespace HerOClock.Tests
             public CharacterDefinition Sheet;
             public int Column;
             public int Row;
+
+            /// <summary>
+            /// How this hero spends its level points, as four weights over POW, AGI, SPE and CON.
+            ///
+            /// Null leaves the sheet's own distribution doing it, which is what a player who never
+            /// touches the screen gets. Anything else is one of the many builds a player could have
+            /// chosen instead, and sweeping them is the only way to learn what a stage really asks
+            /// for rather than what it asks of one build.
+            /// </summary>
+            public int[] Build;
         }
 
         public struct Outcome
@@ -64,6 +74,60 @@ namespace HerOClock.Tests
         /// The time limit is a safety net: two sides that cannot hurt each other would otherwise
         /// keep the loop going forever.
         /// </summary>
+        /// <summary>
+        /// Spends this hero's level points by the given weights instead of the sheet's.
+        ///
+        /// Takes every point back first, so what is placed here is the whole allocation and not an
+        /// addition on top of the automatic one. Leftovers from the division go to the attribute
+        /// with the largest weight, so the total placed is always exactly what the level granted.
+        /// </summary>
+        private static void ApplyBuild(Character hero, int[] weights)
+        {
+            if (weights == null || weights.Length != 4)
+            {
+                return;
+            }
+
+            hero.Attributes.SetAutomatic(false);
+            hero.Attributes.Reset();
+
+            int points = hero.Attributes.Unspent;
+
+            if (points <= 0)
+            {
+                return;
+            }
+
+            int total = 0;
+            int heaviest = 0;
+
+            for (int i = 0; i < 4; i++)
+            {
+                total += weights[i];
+
+                if (weights[i] > weights[heaviest])
+                {
+                    heaviest = i;
+                }
+            }
+
+            if (total <= 0)
+            {
+                return;
+            }
+
+            int placed = 0;
+
+            for (int i = 0; i < 4; i++)
+            {
+                int share = points * weights[i] / total;
+                hero.Attributes.Spend((Attribute)i, share);
+                placed += share;
+            }
+
+            hero.Attributes.Spend((Attribute)heaviest, points - placed);
+        }
+
         public static Outcome Run(
             BattleGridConfig config,
             IReadOnlyList<Placement> formation,
@@ -95,8 +159,12 @@ namespace HerOClock.Tests
                 for (int i = 0; i < party; i++)
                 {
                     Placement placement = formation[i];
-                    heroes.Add(Spawn(spawned, grid, placement.Sheet, Team.Heroes,
-                        new GridPosition(placement.Column, placement.Row), heroLevel, 1f));
+
+                    Character hero = Spawn(spawned, grid, placement.Sheet, Team.Heroes,
+                        new GridPosition(placement.Column, placement.Row), heroLevel, 1f);
+
+                    ApplyBuild(hero, placement.Build);
+                    heroes.Add(hero);
                 }
 
                 GameObject host = new GameObject("Stage");
