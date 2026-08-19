@@ -55,6 +55,9 @@ namespace HerOClock.Stages
         private readonly List<Character> allies = new List<Character>();
 
         private readonly List<CharacterMover> allyRegroupMovers = new List<CharacterMover>();
+
+        /// <summary>Whether the attempt that just finished cleared the stage, which decides where to go next.</summary>
+        private bool lastAttemptCleared;
         private readonly List<Character> enemies = new List<Character>();
 
         private readonly List<CharacterMover> regroupMovers = new List<CharacterMover>();
@@ -139,7 +142,7 @@ namespace HerOClock.Stages
             get { return stage; }
         }
 
-        public void Configure(StageContext context, IReadOnlyList<Character> heroes)
+        public void Configure(StageContext context)
         {
             this.context = context;
 
@@ -147,18 +150,39 @@ namespace HerOClock.Stages
             // Mode has to pass DestroyImmediate, because the deferred one never runs there.
             destroy = context.Destroy ?? (target => Destroy(target));
 
-            this.heroes.Clear();
-            this.heroes.AddRange(heroes);
+            context.Director.BattleEnded += OnBattleEnded;
+        }
 
-            // The heroes live for the whole stage, so one walking-back mover each, created
-            // once. It only runs between waves, never while the battle director is running.
+        /// <summary>
+        /// Reads the party for this stage and gives each of them a mover to walk back with.
+        ///
+        /// Done at the start of every stage rather than once, because who walks in can change
+        /// between them: a stage has its own hero limit, a hero can have just been unlocked, and
+        /// the player may have rearranged the team. Reading it here is what makes those changes
+        /// land on the next stage and never in the middle of one.
+        /// </summary>
+        private void BuildParty()
+        {
+            heroes.Clear();
             regroupMovers.Clear();
-            for (int i = 0; i < this.heroes.Count; i++)
+
+            if (context.BuildParty == null)
             {
-                regroupMovers.Add(new CharacterMover(this.heroes[i], context.Grid));
+                return;
             }
 
-            context.Director.BattleEnded += OnBattleEnded;
+            List<Character> party = context.BuildParty(stage);
+
+            for (int i = 0; party != null && i < party.Count; i++)
+            {
+                if (party[i] == null)
+                {
+                    continue;
+                }
+
+                heroes.Add(party[i]);
+                regroupMovers.Add(new CharacterMover(party[i], context.Grid));
+            }
         }
 
         private void OnDestroy()
@@ -186,18 +210,22 @@ namespace HerOClock.Stages
             DespawnEnemies();
             DespawnAllies();
 
-            for (int i = 0; i < regroupMovers.Count; i++)
-            {
-                regroupMovers[i].Reset();
-            }
-
-            // Everyone leaves the board before anyone is placed back, otherwise a character
-            // standing on someone else's starting cell would make both claim the same one.
+            // Everyone the last stage used leaves the board before the new party is read, so a
+            // hero who is not in this one cannot keep holding a cell.
             for (int i = 0; i < heroes.Count; i++)
             {
                 heroes[i].ClearFromGrid();
             }
 
+            BuildParty();
+
+            for (int i = 0; i < regroupMovers.Count; i++)
+            {
+                regroupMovers[i].Reset();
+            }
+
+            // The party arrives already standing on its cells, placed by whoever built it, so
+            // this only puts the health back.
             for (int i = 0; i < heroes.Count; i++)
             {
                 heroes[i].ResetForBattle();
@@ -307,7 +335,11 @@ namespace HerOClock.Stages
 
                 case Phase.Celebrating:
                 case Phase.Restarting:
-                    StartStage(stage);
+                    // Winning moves on, losing starts the same stage again. Which stage that is
+                    // belongs to whoever owns the database, never to the runner.
+                    StartStage(context.NextStage != null
+                        ? context.NextStage(stage, lastAttemptCleared)
+                        : stage);
                     break;
             }
         }
@@ -364,6 +396,8 @@ namespace HerOClock.Stages
 
         private void OnBattleEnded(bool heroesWon)
         {
+            lastAttemptCleared = false;
+
             if (!heroesWon)
             {
                 Debug.Log("The heroes fell on wave " + (waveIndex + 1) + " of '" + stage.id
@@ -379,6 +413,8 @@ namespace HerOClock.Stages
 
             if (wasVillain)
             {
+                lastAttemptCleared = true;
+
                 ReturnHeroesToStart();
                 Debug.Log("Stage '" + stage.id + "' cleared.", this);
                 EnterPhase(Phase.Celebrating, CelebrationDuration);

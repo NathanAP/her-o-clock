@@ -70,6 +70,17 @@ namespace HerOClock.Setup
         private Roster roster;
         private readonly List<string> clearedStages = new List<string>();
 
+        /// <summary>
+        /// One instance per hero the player owns, alive for the whole session.
+        ///
+        /// Heroes are **not** rebuilt between stages: destroying and recreating them would throw
+        /// away the level and the experience they just earned. What changes per stage is which of
+        /// them stand on the board.
+        /// </summary>
+        private readonly Dictionary<string, Character> heroesById = new Dictionary<string, Character>();
+
+        private StageDatabase stages;
+
         private void Start()
         {
             Application.targetFrameRate = targetFrameRate;
@@ -128,7 +139,9 @@ namespace HerOClock.Setup
                 SaveMapper.ApplyRoster(save.Payload, roster, clearedStages);
             }
 
-            List<Character> heroes = SpawnHeroes(roster.PartyFor(stage.heroLimit));
+            stages = stageDatabase;
+
+            List<Character> heroes = BuildParty(stage);
             if (heroes.Count == 0)
             {
                 Debug.LogError("BattleBootstrap: no hero was created, so the stage cannot be played. Check the hero formation.", this);
@@ -178,8 +191,10 @@ namespace HerOClock.Setup
                 Strings = strings,
                 Random = random,
                 Scroller = new BoardScroller(board, gridConfig.CellSize),
-                Spawn = CreateCharacter
-            }, heroes);
+                Spawn = CreateCharacter,
+                BuildParty = BuildParty,
+                NextStage = NextStage
+            });
 
             // The buckets measure simulation time, not the wall clock. A game the operating system
             // stopped drawing has earned nothing during that stretch, and it is the fighting the
@@ -530,6 +545,127 @@ namespace HerOClock.Setup
         /// the player owns, what they fielded, and how many heroes the stage accepts.
         /// </summary>
         /// <summary>The first hero the formation lists, which is who a brand new game starts with.</summary>
+        /// <summary>
+        /// Who walks into a stage, placed on the cells the formation gives them.
+        ///
+        /// Read fresh at the start of every stage, which is what makes a change to the team or the
+        /// formation take effect on the next one and never in the middle of one. Whoever is owned
+        /// but not going leaves the board entirely.
+        /// </summary>
+        private List<Character> BuildParty(StageData forStage)
+        {
+            List<string> party = roster.PartyFor(forStage.heroLimit);
+
+            // Everybody steps off first, so a hero moving to another cell cannot collide with
+            // whoever was standing there.
+            foreach (KeyValuePair<string, Character> entry in heroesById)
+            {
+                if (entry.Value != null)
+                {
+                    entry.Value.LeaveStage();
+                }
+            }
+
+            List<Character> going = new List<Character>();
+
+            for (int i = 0; i < party.Count; i++)
+            {
+                Character hero = HeroFor(party[i]);
+
+                if (hero == null)
+                {
+                    continue;
+                }
+
+                GridPosition cell;
+
+                if (!FormationCellFor(party[i], out cell))
+                {
+                    Debug.LogWarning("BattleBootstrap: " + party[i]
+                        + " is on the team but has no cell in the formation, so it stays out.", this);
+                    continue;
+                }
+
+                hero.EnterStageAt(cell);
+                going.Add(hero);
+            }
+
+            return going;
+        }
+
+        /// <summary>The instance of a hero, created the first time that hero is needed.</summary>
+        private Character HeroFor(string id)
+        {
+            Character existing;
+
+            if (heroesById.TryGetValue(id, out existing) && existing != null)
+            {
+                return existing;
+            }
+
+            CharacterDefinition definition;
+
+            if (!characterDatabase.BuildIndex().TryGetValue(id, out definition))
+            {
+                Debug.LogError("BattleBootstrap: the team names '" + id
+                    + "', which is not in the character database.", this);
+                return null;
+            }
+
+            GridPosition cell;
+            if (!FormationCellFor(id, out cell))
+            {
+                return null;
+            }
+
+            Character created = CreateCharacter(definition, Team.Heroes, cell, definition.Level, 1f);
+            heroesById[id] = created;
+
+            return created;
+        }
+
+        private bool FormationCellFor(string id, out GridPosition cell)
+        {
+            cell = new GridPosition(1, 1);
+
+            for (int i = 0; heroFormation != null && i < heroFormation.Placements.Count; i++)
+            {
+                BattleFormation.Placement placement = heroFormation.Placements[i];
+
+                if (placement.Character != null && placement.Character.Id == id)
+                {
+                    cell = new GridPosition(placement.Column, placement.Row);
+                    return grid.IsInside(cell);
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Where to go once a stage ends: forward on a win, the same one again on a defeat.
+        ///
+        /// The last stage repeats itself, because there is no menu yet to say the content ran out.
+        /// </summary>
+        private StageData NextStage(StageData current, bool cleared)
+        {
+            if (!cleared || stages == null)
+            {
+                return current;
+            }
+
+            int index = stages.IndexOf(current.id) + 1;
+
+            if (index <= 0 || index >= stages.Stages.Count)
+            {
+                return current;
+            }
+
+            StageData next = stages.Load(index);
+
+            return next != null && IsStageValid(next, characterDatabase.BuildIndex()) ? next : current;
+        }
+
         private string FirstFormationHeroId()
         {
             for (int i = 0; heroFormation != null && i < heroFormation.Placements.Count; i++)

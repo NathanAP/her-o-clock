@@ -274,3 +274,27 @@ The cause is structural rather than a tuning mistake. Damage carries across a wh
 
 Anything that widens that middle is a design lever and not a number: regeneration between waves, fewer waves early, or a partial heal on clearing one. Until one of them exists, the early stages can only be tuned to "flows" or "wall", and nothing in between.
 
+## Rank steps are what make a weak rank 1 possible
+
+Every ability declares `rankAvailability`, one character level per rank, and the caster picks the rank from the character's level.
+
+Without it, an ability's damage curve has to be gentle end to end, because nothing stops a player reaching the top rank early. Strong enough to matter at rank 1 becomes absurd a few levels later; weak enough to be safe never stops being weak. With the step, the sheet decides when the jump enters the game rather than the rate the player accumulates points.
+
+It is **per ability and never per tree**: two abilities in one tree can open at completely different paces, which is what lets one be the early worker and the other the late reward.
+
+Attribute scaling is the other half and not a substitute. The step controls when the jump happens; the fraction of an attribute is what makes the ability answer to the build between one step and the next.
+
+## The party is composed when a stage begins, never before
+
+Who walks in is read at `StartStage` and only there — first attempt, advance after a win, restart after a defeat. The hero limit of that stage, the fielded team and its order, the formation, and later the equipment are all read together at that moment.
+
+The player-facing rule falls out of it: changing gear, team or formation only takes effect on the next stage.
+
+**Heroes are not rebuilt between stages.** One instance per owned hero lives for the whole session, so the level and experience earned in one stage carry into the next; what changes per stage is who stands on the board and where. Destroying and recreating them would have thrown away exactly what the player just earned, and would have needed the progress carried somewhere else and put back.
+
+## Where a stage's difficulty peak lives is a design decision, written per stage
+
+Measured in 0.9.2.0: removing two minions from the final wave of stage 4 moved the level it demands by eight. The five other waves together do not come close.
+
+So without saying it, every stage ends up calibrated at the same place — the last wave. `stages.md` now declares whether each stage peaks at the villain, at the attrition, or is balanced across both, and the three tune very differently. A villain peak is graded and adjusts in small steps through who accompanies it; an attrition peak is far coarser and needs many enemy instances before the multiplier stops jumping.
+

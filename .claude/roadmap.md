@@ -272,10 +272,22 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **A descoberta: a dificuldade inicial é um penhasco, não uma ladeira.** Com um herói e sem cura entre ondas, o nível exigido salta entre 1 e muitos com mudanças mínimas. Alargar esse meio é decisão de design (regeneração entre ondas, menos ondas, cura ao limpar), não número.
 - O resumo completo está em `.claude/versions/20260818_0.9.1.0.md`.
 
-## 0.9.2.0 (próxima)
+## 0.9.2.0 (feita)
 
-- A ponte: o teste que confere cada asset contra o documento de design que ele espelha. Cedeu lugar ao roster na 0.9.1.0.
-- A decisão sobre o penhasco, e o ajuste fino das fases contra os níveis declarados em `stages.md`.
+- Avançar de fase e o degrau de rank. 551 verificações no EditMode, contra 548, e 2 no PlayMode.
+- **`rankAvailability`**: uma entrada por rank com o nível necessário, **por habilidade e nunca por árvore**. O caster escolhe o rank pelo nível, então já vale hoje.
+    - É ele que torna possível escrever um rank 1 fraco. O Dragon Breath saiu de 63 para 18 de dano.
+- **Vencer avança sozinho, perder reinicia, a última fase se repete.** O runner pergunta para onde ir em vez de decidir, o que deixa o menu da 0.11.0.0 acrescentar "farmar aqui" sem ele aprender nada.
+- **O grupo é montado no começo de cada fase**, lendo limite, equipe, ordem e formação de uma vez. Mexer em item, equipe ou formação só vale na próxima fase.
+    - Os heróis não são recriados: uma instância por herói atravessa a sessão, então nível e experiência não se perdem na troca.
+- **O ato 1 fechou nas faixas** de `stages.md`, com duas paredinhas de 2,4 e 3,3 min.
+- Três aprendizados de balanceamento: o pico é quase sempre a onda do vilão; mais instâncias dão calibragem mais fina; e o penhasco era em boa parte a habilidade apagando ondas.
+- O resumo completo está em `.claude/versions/20260818_0.9.2.0.md`.
+
+## 0.9.3.0 (próxima)
+
+- **A ponte**: o teste que confere cada asset contra o documento de design que ele espelha. Cedeu lugar três vezes.
+- Revisar os cronogramas de rank e os valores de dano das cinco habilidades, que hoje são chute inicial.
 
 ## 0.10.0.0
 

@@ -432,6 +432,36 @@ namespace HerOClock.Characters
         }
 
         /// <summary>
+        /// Sends the character into a stage from a cell, which becomes its new starting cell.
+        ///
+        /// A hero is not rebuilt between stages: the same instance keeps its level, its experience
+        /// and the points it spent. What changes from one stage to the next is whether it is on the
+        /// board at all and where it stands, and that is read fresh every time a stage begins, so a
+        /// change to the formation only takes effect on the next one.
+        ///
+        /// Like the other placements, it must run only after everyone has left the board.
+        /// </summary>
+        public void EnterStageAt(GridPosition cell)
+        {
+            InitialPosition = cell;
+            Position = cell;
+            TauntedBy = null;
+
+            gameObject.SetActive(true);
+            grid.Occupy(cell, this);
+            transform.position = grid.WorldPositionOf(cell);
+
+            Changed?.Invoke();
+        }
+
+        /// <summary>Takes the character off the board entirely, for a stage it is not part of.</summary>
+        public void LeaveStage()
+        {
+            ClearFromGrid();
+            gameObject.SetActive(false);
+        }
+
+        /// <summary>
         /// Puts the character back on its starting cell without touching its health.
         ///
         /// Used between waves of the same stage, where damage carries over. Fallen heroes come

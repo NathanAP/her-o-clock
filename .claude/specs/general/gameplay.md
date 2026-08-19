@@ -112,6 +112,19 @@ Este é o fluxo principal do jogo.
 - A fase é vencida quando o vilão é derrotado.
 - A fase é perdida quando todos os heróis caem.
 - Ao perder, a fase reinicia do começo, com todos os heróis vivos e com vida cheia.
+- **Ao vencer, o jogo avança sozinho para a próxima fase.** A última fase existente se repete, enquanto não houver menu para dizer que o conteúdo acabou.
+    - Os controles que quebram esse automático — ficar na mesma fase para farmar, ou voltar para a anterior depois de uma derrota — são item do menu, e não regra do combate.
+
+### O grupo é montado no começo de cada fase
+
+- Quem entra em campo é decidido **no instante em que uma fase começa**, e nunca antes disso. Vale para a primeira tentativa, para o avanço após uma vitória e para o reinício após uma derrota.
+- É ali que são lidos, todos de uma vez:
+    - o **limite de heróis daquela fase**;
+    - a **equipe escalada** e a ordem dela;
+    - a **formação**, que diz em que casa cada herói começa;
+    - e futuramente o **equipamento** de cada um.
+- A consequência prática é a regra que o jogador percebe: **trocar item, mexer na equipe ou mudar a formação só tem efeito quando a próxima fase começar.** Nada disso muda no meio de uma fase em andamento.
+- Os heróis em si **não são recriados** entre fases. É a mesma instância que atravessa a sessão inteira, então o nível e a experiência ganhos numa fase seguem para a próxima. O que muda é quem está no tabuleiro e onde.
 
 ### Eventos de fase
 

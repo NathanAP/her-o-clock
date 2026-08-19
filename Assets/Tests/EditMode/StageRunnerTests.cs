@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Combat;
@@ -109,7 +109,10 @@ namespace HerOClock.Tests
                     return character;
                 },
                 Destroy = target => Object.DestroyImmediate(target)
-            }, heroes);
+                ,
+                BuildParty = forStage => new List<Character>(heroes),
+                NextStage = (current, cleared) => current
+            });
 
             return runner;
         }

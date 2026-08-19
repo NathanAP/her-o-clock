@@ -128,8 +128,14 @@ namespace HerOClock.Tests
                     // The whole reason this can drive the real runner. Outside Play Mode the
                     // deferred Destroy never runs, so every enemy of every wave would stay on the
                     // board holding its cell.
-                    Destroy = target => Object.DestroyImmediate(target)
-                }, heroes);
+                    Destroy = target => Object.DestroyImmediate(target),
+
+                    // The party is already placed, so the simulation hands the runner the same
+                    // list every time. It measures one stage and never advances, which is why the
+                    // next stage is always this one.
+                    BuildParty = forStage => new List<Character>(heroes),
+                    NextStage = (current, wasCleared) => current
+                });
 
                 runner.StartStage(stage);
 

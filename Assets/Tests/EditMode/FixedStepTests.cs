@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
@@ -187,7 +187,10 @@ namespace HerOClock.Tests
                     Spawn = (definition, team, position, level, multiplier) =>
                         battle.Spawn(definition, team, position.Column, position.Row, level, multiplier),
                     Destroy = target => UnityEngine.Object.DestroyImmediate(target)
-                }, heroes);
+                    ,
+                    BuildParty = forStage => new List<Character>(heroes),
+                    NextStage = (current, cleared) => current
+                });
 
                 runner.StartStage(Stage(minionSheet.Id));
 

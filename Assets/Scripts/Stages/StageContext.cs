@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
@@ -29,6 +29,25 @@ namespace HerOClock.Stages
         public StringTable Strings;
         public BattleRandom Random;
         public BoardScroller Scroller;
+
+        /// <summary>
+        /// Puts together the party for a stage, and returns it in order.
+        ///
+        /// Called at the start of **every** stage, including a restart after a defeat. That is what
+        /// makes a change to the team, the formation or the equipment take effect on the next stage
+        /// and never in the middle of one.
+        ///
+        /// The heroes themselves are not rebuilt: the same instances keep their level and their
+        /// experience. What this decides is who is on the board and where.
+        /// </summary>
+        public Func<StageData, List<Character>> BuildParty;
+
+        /// <summary>
+        /// Which stage comes after this one, given whether it was cleared.
+        ///
+        /// The runner never picks: it knows one stage at a time, and the database lives outside it.
+        /// </summary>
+        public Func<StageData, bool, StageData> NextStage;
 
         /// <summary>Creates one enemy: sheet, side, cell, level and the stage's fine tuning multiplier.</summary>
         public Func<CharacterDefinition, Team, GridPosition, int, float, Character> Spawn;
