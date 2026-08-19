@@ -284,19 +284,41 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Três aprendizados de balanceamento: o pico é quase sempre a onda do vilão; mais instâncias dão calibragem mais fina; e o penhasco era em boa parte a habilidade apagando ondas.
 - O resumo completo está em `.claude/versions/20260818_0.9.2.0.md`.
 
-## 0.9.3.0 (próxima)
+## 0.9.3.0 (feita)
 
-- **A ponte**: o teste que confere cada asset contra o documento de design que ele espelha. Cedeu lugar três vezes.
-- Revisar os cronogramas de rank e os valores de dano das cinco habilidades, que hoje são chute inicial.
+- A ponte e a varredura de balanceamento. 563 verificações no EditMode e 1 ignorada, contra 551, e 2 no PlayMode.
+- **A ponte**: cada asset é conferido campo a campo contra o documento de design que ele espelha. Conferida quebrando dois valores de propósito, e ela pegou os dois.
+- **`StageSweep`** substituiu o "nível mínimo" por uma distribuição: várias equipes, várias builds e várias sementes por fase, com a amostra crescendo com o espaço.
+    - O número antigo era o **melhor caso vestido de requisito**: ele dizia que a fase 4 pedia nível 5, e a varredura mostrou que no nível 5 menos de um terço das builds passa.
+    - Um erro meu no caminho: dimensionar a amostra por linha em vez de por fase fazia a fase 3 parecer piorar com o nível, porque cada linha tinha denominador diferente.
+- **As assertivas mudaram de natureza**: a build da ficha passa no nível recomendado, mais de uma build passa em cada fase, e abaixo da faixa nem todas passam. Porcentagem virou informação no snapshot, não afirmação.
+- **Dois achados que só a varredura mostraria**, ambos deixados de propósito para depois dos itens:
+    - Nenhuma build de AGI ou SPE passa da fase 3 em diante, em nível nenhum.
+    - Na fase 4, `só POW` limpa tudo e a distribuição declarada nas fichas limpa metade.
+- O resumo completo está em `.claude/versions/20260819_0.9.3.0.md`.
+
+## 0.9.4.0 (feita)
+
+- O reposicionamento conferido e uma promessa retirada. 566 verificações no EditMode e 1 ignorada, contra 563.
+- **A suspeita da Tempo reaparecendo errado foi investigada e o código está certo.** Dois testes novos, um sintético e um contra o ato real, afirmam que todo herói começa cada onda na casa da formação. Os dois passam.
+    - O que está errado é a casa: na 0.9.2.0 a Tempo virou "herói 1" e herdou a coluna 4, fileira 1 — o fundo da área. Sendo corpo a corpo e jogando sozinha por três fases, ela atravessa o tabuleiro toda onda. É decisão de conteúdo e ficou em aberto.
+- **A promessa de "1 ponto de dano elemental por SPE" saiu de `attributes.md`.** O jogo nunca a cumpriu: o valor era calculado, aparecia no Inspector e nenhum cálculo de combate o lia. Retirada em vez de implementada, porque a 0.10.0.0 muda o modelo inteiro.
+- O resumo completo está em `.claude/versions/20260819_0.9.4.0.md`.
 
 ## 0.10.0.0
 
-- Vamos tentar fazer esboços de sprites pra ter uma representação mais visual do jogo.
-- Provavelmente precisamos trocar as fontes.
-- Adicionar algumas cores, principalmente aos números e dar um constraste melhor ao que aparece escrito na tela.
-- Projéteis melhores.
-- Trocar o fundo verde atual do jogo por algo mais concreto, como um background esteira que roda infinitamente.
-- Acho que ao invés do grid ser preto, ele deveria contrastar melhor, vamos pensar nisso também.
+- **Primeiro: o modelo de dano por atributo.** Os itens são desenhados em cima dele, então decidi-lo depois significaria refazer item.
+    - Hoje o atributo dá dano **somado** e é isso que faz o item perder o sentido: com o teto de 500 pontos o personagem carrega 500 de dano e uma arma de base 8 a 12 vira ruído.
+    - O modelo escolhido é o de Path of Exile: **o conteúdo fornece a base e o atributo multiplica ela**. A arma dá a base do ataque básico, o rank dá a base da habilidade.
+    - A escala combinada é **10 pontos = 1%**. Com o teto de 500, um POW extremo dá +50% — o "fortidão" existe e a arma continua sendo o que decide.
+    - **O POW deixa de dar vida.** Ele é hoje o único atributo que paga dos dois lados da luta, e é por isso que nenhuma build de AGI ou SPE passa da fase 3 (medido na 0.9.3.0). Vida passa a vir só de CON, e o multiplicador de regeneração vai junto.
+    - Consequência que precisa ser aceita junto: com 5 pontos por nível, subir de nível passa a valer 0.5% de dano. **O modelo só funciona acompanhado dos itens**, e é por isso que ele mora aqui e não numa versão própria.
+- Itens.
+- Ataques básicos agora variam de acordo com o item.
+- **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar. Itens focados em habilidade ajudam por outros caminhos, e quais são eles é assunto desta versão.
+- Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico: com itens bons o bastante, redirecionar a árvore vira uma jogada e não um conserto.
+- Uma mesma seed ainda define como a batalha vai ocorrer.
+- Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, e o teste de determinismo rodado de novo, já que o item passa a alterar o ataque básico. A varredura de balanceamento vai precisar de uma dimensão nova, porque o espaço deixa de ser só nível e build.
 
 ## 0.11.0.0
 

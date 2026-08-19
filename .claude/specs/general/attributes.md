@@ -61,7 +61,9 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 ### Especialidade (SPE)
 
 - SPE aumenta ataques elementais e redução de recarga do personagem.
-    - Para cada 1 ponto de SPE, o personagem ganha 1 ponto de dano elemental.
+    - SPE aumenta o dano das habilidades do personagem. **Quanto ele aumenta ainda não está definido**, e é decidido junto com os itens.
+        - Até a 0.9.3.0 esta linha prometia "1 ponto de dano elemental por ponto de SPE". O jogo nunca fez isso: o valor era calculado, aparecia no Inspector e nenhum cálculo de combate o lia. A escala de habilidade sempre leu o SPE cru, através do bloco `scaling` da própria habilidade.
+        - A promessa foi retirada em vez de implementada porque o modelo inteiro muda com os itens: dano de atributo vai deixar de ser um valor somado e passar a ser uma porcentagem sobre a base que o conteúdo fornece — a arma para o ataque básico, o rank para a habilidade. Implementar o valor antigo agora seria construir algo para apagar em seguida.
     - SPE é a fonte principal de redução de recarga, mas a conversão em porcentagem é feita por rendimento decrescente e está descrita em "Redução de recarga".
 - Personagens com mais SPE são capazes de utilizar equipamentos e armaduras mágicos.
 

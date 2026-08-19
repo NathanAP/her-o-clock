@@ -298,3 +298,24 @@ Measured in 0.9.2.0: removing two minions from the final wave of stage 4 moved t
 
 So without saying it, every stage ends up calibrated at the same place — the last wave. `stages.md` now declares whether each stage peaks at the villain, at the attrition, or is balanced across both, and the three tune very differently. A villain peak is graded and adjusts in small steps through who accompanies it; an attrition peak is far coarser and needs many enemy instances before the multiplier stops jumping.
 
+## A balance test measures a distribution, never one party
+
+`StageSweep` plays a stage many times — different parties, different builds, different seeds — and reports how many cleared. It replaced a single number that came from one party with the sheet's own build on one seed, and was presented as a property of the stage.
+
+The number was not merely imprecise, it was the **best case wearing the clothes of the requirement**: the old test said stage 4 needed level 5, and the sweep found that at level 5 fewer than a third of sampled builds get through.
+
+Two rules fell out of building it, and both are easy to get wrong again:
+
+- **The sample size grows with the space, per stage and never per row.** Sizing it per level looks reasonable and is a trap: the builds that enter at higher levels are the strange corners, so the share of clears falls as the level rises and the rows stop being comparable.
+- **It is a sample and never a proof**, and the snapshot says so in as many words. Past the opening stages the space of parties, builds, orders, items and trees cannot be covered.
+
+The assertions ask about things the project actually promises — the sheet's own build gets through at the recommended level, more than one build gets through at all, and the level matters below the range — rather than a percentage. A share of a sample that deliberately includes terrible builds has a ceiling that has nothing to do with the stage.
+
+## POW is the only attribute that is offence and defence at once
+
+Measured by the sweep in 0.9.3.0: no AGI or SPE build clears stage 3 onwards at any level, and on stage 4 pure POW clears every attempt while the sheet's own distribution clears half.
+
+The cause is structural rather than a number. POW gives physical damage **and** maximum health; CON gives health; AGI gives evasion and speed; SPE gives elemental damage and cooldown. Only one of the four pays on both sides of a fight.
+
+Deliberately not fixed. Items do not exist yet and will move everything, and a rebalance could just as well come from the other direction — raising enemy physical armour hurts POW while leaving elemental damage alone, and no enemy today has a single point of elemental resistance. It is on the watch list, not on the fix list.
+
