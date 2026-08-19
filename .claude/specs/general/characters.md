@@ -77,6 +77,8 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 ### Grupo de heróis
 
 - Um grupo de heróis é composto de até 4 personagens e pode ser escolhido pelo jogador a qualquer momento.
+    - Perceba que se um jogador quiser usar apenas um único personagem na fase, também é possível.
+        - Ele pode querer fazer isso para maximizar o ganho de experiência daquele personagem por exemplo.
 - Um grupo de heróis pode ser montado do jeito que o jogador preferir.
 - Um grupo de heróis só é alterado verdadeiramente no início da fase.
     - Ou seja, alterar o grupo de heróis no meio da fase não tem efeito imediato, o jogador precisa aguardar a atual fase terminar para que o grupo seja atualizado.
