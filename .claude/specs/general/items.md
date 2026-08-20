@@ -9,41 +9,59 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 - Os equipamentos são itens que os heróis obtém e podem ser usados quando os requerimentos forem atingidos.
     - Dito isso, se o herói não atender mais o requerimento de um item já equipado, aquele item é desconsiderado. Visualmente falando ele fica com uma borda vermelha para indicar que o item está inativo.
 - Apenas heróis usam equipamentos.
+- Os equipamentos não alteram sprites, skins, animações ou efeitos do herói.
 
 ### Tipo de equipamento
 
-- Capacete
-- Botas
-- Luvas
-- Corporal
-- Armas
-- Escudos
-- Controlador
-- Firmware
+- Cada tipo de equipamento corresponde a um slot de equipamento que o herói pode utilizar.
+
+#### Casco superior
+
+- Correspondente à equipamentos da parte superior do corpo do herói.
+
+#### Casco inferior
+
+- Correspondente à equipamentos da parte inferior do corpo do herói.
+
+#### Cascos braçais
+
+- Correspondente à equipamentos dos braços do herói.
+
+#### Casco corporal
+
+- Correspondente à equipamentos do corpo do herói.
+
+#### Mão primária
+
+#### Mão secundária
+
+#### Controlador
+
+#### Firmware
 
 ### Classes
 
 - Todo equipamento pertence a uma das classes abaixo.
-- A classe do equipamento define como os atributos principais do personagem são convertidos em atributos secundários, conforme descrito em `attributes.md`.
-- Cada classe é liberada por um atributo principal diferente, então a escolha do equipamento acompanha naturalmente a build do personagem.
+- A classe do equipamento define como os atributos principais do herói são convertidos em atributos secundários, conforme descrito em `attributes.md`.
+- Cada classe é liberada por um atributo principal diferente, então a escolha do equipamento acompanha naturalmente a build do herói.
 
 #### Pesado
 
 - Liberado por POW.
 - Características voltadas à armadura física, fazendo o herói absorver parcialmente os ataques.
-- Torna o personagem menos eficaz em AGI e SPE.
+- Torna o herói menos eficaz em AGI e SPE.
 
 #### Leve
 
 - Liberado por AGI.
 - Características voltadas à agilidade, fazendo o herói ter velocidade de ataque, velocidade de movimento e evasão.
-- Torna o personagem menos eficaz em POW e SPE.
+- Torna o herói menos eficaz em POW e SPE.
 
 #### Especial
 
 - Liberado por SPE.
 - Características voltadas às habilidades e resistência elemental, fazendo o herói desferir habilidades mais rapidamente e ser mais resistente a outros ataques elementais.
-- Torna o personagem menos eficaz em POW e AGI.
+- Torna o herói menos eficaz em POW e AGI.
 - Apesar do nome, todo itens especiais continua sendo tecnologia, assim como todo o resto do universo de Unia.
 
 #### Médio
@@ -124,8 +142,6 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 ### Modificadores
 
 - Os modificadores aparecem a partir da tecnologia básica.
-- Alguns modificadores são exclusivos a um tipo de equipamento, porém, itens de tecnologia única podem quebrar essa regra. Por exemplo:
-    - O modificador de velocidade de movimento é exclusivo de botas.
 - Os modificadores são sub-divididos em hardware e software.
     - A melhor forma de entender essa subdivisão é comparar com os prefixos e sufixos dos itens de Path of Exile.
 - Cada equipamento pode possui de 0 até 3 hardwares e de 0 até 3 softwares. Por exemplo:
@@ -135,6 +151,7 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
         - 3 hardwares e 0 softwares.
         - 0 hardwares e 3 softwares.
 - Modificadores possuem 5 camadas que fazem com que o item se torne mais sucinto a possuir melhores números.
+- Futuramente teremos modificadores exclusivos para cada tipo de equipamento.
 
 #### Modificadores de hardware
 
