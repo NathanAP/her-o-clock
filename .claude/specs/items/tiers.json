@@ -1,0 +1,93 @@
+{
+    "comment": "As camadas de modificador. Duas coisas moram aqui e elas sao independentes: a escada, que diz quanto uma camada vale, e a distribuicao, que diz com que frequencia ela aparece. Separar as duas permite balancear a generosidade sem mexer na raridade e vice-versa.",
+
+    "ladder": {
+        "comment": "Um multiplicador por camada, compartilhado por todos os modificadores. Cada modificador declara apenas a propria faixa de camada 1 em modifiers.json, e a escada multiplica ela. A alternativa seria escrever cinco faixas por modificador, o que daria centenas de numeros para balancear um de cada vez e nenhuma garantia de que a camada 4 de um modificador vale o mesmo que a camada 4 de outro. Com a escada, mexer em um numero move o jogo inteiro de forma coerente. Um modificador pode declarar a propria escada quando precisar fugir da regra, e nenhum precisa disso hoje.",
+        "steps": [
+            { "tier": 1, "multiplier": 1.0 },
+            { "tier": 2, "multiplier": 1.6 },
+            { "tier": 3, "multiplier": 2.5 },
+            { "tier": 4, "multiplier": 4.0 },
+            { "tier": 5, "multiplier": 6.5 }
+        ]
+    },
+
+    "distribution": {
+        "comment": "A chance de cada camada por nivel do item. As pontas sao as que ja estavam em items.md. O miolo foi escrito para a curva acelerar, conforme a spec pede: a camada 5 aproximadamente dobra a cada 20 niveis, enquanto a camada 1 despenca. Entre dois pontos da tabela o valor e interpolado linearmente. Nenhuma camada e travada por nivel: um item de nivel 1 pode sortear camada 5, e essa loteria pequena e proposital, porque ela e a unica coisa que torna um drop do ato 1 capaz de surpreender.",
+        "interpolation": "linear",
+        "byItemLevel": [
+            {
+                "itemLevel": 1,
+                "tier1": 70.0,
+                "tier2": 25.0,
+                "tier3": 3.0,
+                "tier4": 1.5,
+                "tier5": 0.5
+            },
+            {
+                "itemLevel": 20,
+                "tier1": 58.0,
+                "tier2": 30.0,
+                "tier3": 8.0,
+                "tier4": 3.0,
+                "tier5": 1.0
+            },
+            {
+                "itemLevel": 40,
+                "tier1": 42.0,
+                "tier2": 34.0,
+                "tier3": 16.0,
+                "tier4": 6.0,
+                "tier5": 2.0
+            },
+            {
+                "itemLevel": 60,
+                "tier1": 27.0,
+                "tier2": 34.0,
+                "tier3": 26.0,
+                "tier4": 10.0,
+                "tier5": 3.0
+            },
+            {
+                "itemLevel": 80,
+                "tier1": 14.0,
+                "tier2": 28.0,
+                "tier3": 35.0,
+                "tier4": 17.0,
+                "tier5": 6.0
+            },
+            {
+                "itemLevel": 100,
+                "tier1": 5.0,
+                "tier2": 20.0,
+                "tier3": 40.0,
+                "tier4": 25.0,
+                "tier5": 10.0
+            }
+        ],
+        "invariants": [
+            "Toda linha soma exatamente 100.",
+            "A camada 1 cai de forma monotonica do nivel 1 ao 100.",
+            "As camadas 3, 4 e 5 sobem de forma monotonica do nivel 1 ao 100.",
+            "A camada 2 sobe e depois desce, porque e a camada do meio e cede espaco para as de cima.",
+            "A camada de cada modificador e sorteada de forma independente, entao um item de seis modificadores pode ter camadas diferentes em cada um."
+        ]
+    },
+
+    "technology": {
+        "comment": "Quantos modificadores cada tecnologia carrega. A tecnologia so decide a quantidade, nunca a qualidade: quem decide a qualidade e a camada, e ela depende do nivel do item. E por isso que um item Convencional com dois modificadores de camada 5 pode valer mais que um Quantico com seis de camada 1, que e exatamente o que items.md promete. A quantidade sorteada e o maximo ou o maximo menos um, para que dois itens da mesma tecnologia nao sejam sempre iguais em tamanho.",
+        "lowerCountChance": 35.0,
+        "steps": [
+            { "id": "no-technology", "maxModifiers": 0 },
+            { "id": "rudimentary", "maxModifiers": 1 },
+            { "id": "conventional", "maxModifiers": 2 },
+            { "id": "optimized", "maxModifiers": 3 },
+            { "id": "advanced", "maxModifiers": 4 },
+            { "id": "nano", "maxModifiers": 5 },
+            { "id": "quantum", "maxModifiers": 6 },
+            { "id": "unique", "maxModifiers": null }
+        ],
+        "familyCap": 3,
+        "familyCapComment": "O teto de 3 por familia, ja em items.md. Um item Quantico de seis modificadores e obrigatoriamente 3 hardware e 3 software, porque nao existe outra divisao possivel. Abaixo disso a divisao e sorteada."
+    }
+}

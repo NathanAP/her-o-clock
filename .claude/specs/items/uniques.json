@@ -1,0 +1,65 @@
+{
+    "comment": "As regras que valem para todos os itens unicos. Cada item em si mora em um arquivo proprio dentro de uniques/. Este arquivo existe para que a raridade e o nivel minimo de um unico nao sejam escolhidos um a um: quem escolhe os dois e o powerTier declarado pelo item, e a tabela abaixo faz a traducao. Sem isso, nada impediria um unico que decide uma build inteira de cair no nivel 1.",
+
+    "powerTiers": [
+        {
+            "tier": 1,
+            "minItemLevel": 1,
+            "dropWeight": 100,
+            "intent": "Curiosidade. Muda como uma habilidade ou um subtipo se comporta, sem mudar o poder do heroi. E o unico que o jogador encontra cedo e guarda por gostar dele."
+        },
+        {
+            "tier": 2,
+            "minItemLevel": 20,
+            "dropWeight": 45,
+            "intent": "Melhora uma build que ja existe. O jogador reconhece na hora onde ele encaixa."
+        },
+        {
+            "tier": 3,
+            "minItemLevel": 40,
+            "dropWeight": 18,
+            "intent": "Define uma build. Vale reorganizar a arvore de passivas em volta dele, e e aqui que o respec deixa de ser conserto e vira jogada."
+        },
+        {
+            "tier": 4,
+            "minItemLevel": 65,
+            "dropWeight": 6,
+            "intent": "Vira a build inteira em volta de si. Costuma cobrar um preco alto em outro lugar, porque sem preco ele seria obrigatorio."
+        },
+        {
+            "tier": 5,
+            "minItemLevel": 85,
+            "dropWeight": 2,
+            "intent": "Objetivo de fim de jogo. O jogador sabe o nome dele antes de ver um, e continua jogando por causa disso."
+        }
+    ],
+
+    "rules": [
+        "O powerTier decide o peso de sorteio e o piso de nivel. Um item unico nao escolhe os dois de forma independente, porque ai nada garantiria que o mais forte e o mais raro.",
+        "Um item unico pode declarar um minItemLevel acima do piso do proprio tier, e nunca abaixo dele. Subir e uma decisao de conteudo valida; descer quebraria a promessa de que os melhores chegam depois.",
+        "Os pesos acima sao relativos entre unicos. A chance de um drop ser unico em vez de tecnologico nao mora aqui, ela e assunto do drop, na 0.10.2.0.",
+        "O nivel do item sai do nivel de quem dropou ele, entao o piso de nivel ja e um gate de fase por consequencia. Nao existe um segundo campo dizendo 'cai a partir da fase X-Y', porque seriam dois eixos medindo a mesma coisa e eles iriam divergir na primeira vez que uma fase mudasse de nivel.",
+        "O campo 'sources' e outra coisa e existe para outro proposito: ele restringe a origem, e nao o nivel. Um unico com 'sources' preenchido so cai daquelas origens, e e assim que um item fica amarrado a um vilao especifico. Nulo significa que ele cai de qualquer coisa que atenda o nivel.",
+        "Um unico continua sorteando o proprio nivel de item dentro da faixa dele, e os valores dos modificadores acompanham esse nivel. Dois exemplares do mesmo unico nunca sao identicos.",
+        "A escada de camadas de tiers.json nao se aplica a unico. Cada modificador de um unico ja traz a propria faixa pronta."
+    ],
+
+    "sourceKinds": {
+        "comment": "As formas validas de preencher 'sources'. A lista e curta de proposito: cada forma nova e uma consulta que o sorteio de drop precisa saber responder.",
+        "stage": "Um id de fase, como act1-stage4. O unico so cai naquela fase.",
+        "character": "Um id de personagem, como exposed-prototype. O unico so cai daquele personagem, em qualquer fase em que ele apareca."
+    },
+
+    "discovery": {
+        "comment": "Como um item unico novo entra no jogo. A resposta curta e: colocando o arquivo na pasta, e mais nada.",
+        "folder": "Assets/Items/Uniques",
+        "rules": [
+            "Todo arquivo .json na pasta e um item unico, e todo item unico esta na pasta. Nao existe uma segunda lista para manter em dia.",
+            "O catalogo continua sendo um ScriptableObject com referencias de TextAsset, como o StageDatabase ja faz, porque referencia de asset sobrevive a renomear e a mover arquivo. A diferenca e que a lista de unicos e preenchida sozinha por um AssetPostprocessor sempre que um arquivo entra, sai ou muda de lugar na pasta.",
+            "A ordem nao importa, ao contrario das fases. Quem decide a chance de cada um e o powerTier, e nao a posicao na lista.",
+            "Um teste confere que a quantidade de arquivos na pasta e a quantidade de entradas no catalogo batem, e que nenhuma entrada esta vazia. E ele que garante a promessa: se o preenchimento automatico falhar algum dia, o teste quebra em vez de o item sumir do jogo em silencio.",
+            "O mesmo teste confere que todo unico declara um powerTier valido, que o minItemLevel dele nao esta abaixo do piso do tier, e que todo id e unico."
+        ],
+        "addingComment": "Adicionar um unico e, entao: escrever o .json na pasta, escrever o nome e a lore no arquivo de strings, e rodar os testes. Nenhum codigo muda, e nenhuma lista precisa ser editada a mao."
+    }
+}

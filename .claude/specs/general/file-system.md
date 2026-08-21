@@ -12,6 +12,7 @@ Utilize este arquivo para visualizar e manter a estrutura geral do projeto organ
     - specs (arquivos de specs do projeto)
         - characters (arquivos de informações sobre cada personagem)
         - general (arquivos com detalhes gerais do projeto)
+        - items (números dos itens, separados por assunto: slots, subtipos, modificadores, camadas e um arquivo por item único)
         - stages (arquivos de informações sobre cada fase)
     - versions (resumo do que foi feito em cada versão)
 - Assets (tudo que a Unity importa)

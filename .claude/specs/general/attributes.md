@@ -57,10 +57,10 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 - AGI aumenta evasão, velocidade de ataque básico e velocidade de movimento do personagem.
     - Para cada 1 ponto de AGI, o personagem ganha 1% de velocidade de ataque quando estiver utilizando equipamentos leves.
-    - Para cada 1 ponto de AGI, o personagem ganha 0.5% de velocidade de ataque quando estiver utilizando equipamentos mágicos.
+    - Para cada 1 ponto de AGI, o personagem ganha 0.5% de velocidade de ataque quando estiver utilizando equipamentos especiais.
     - Para cada 1 ponto de AGI, o personagem ganha 0.2% de velocidade de ataque quando estiver utilizando equipamentos pesados.
     - Para cada 1 ponto de AGI, o personagem ganha 1% de velocidade de movimento quando estiver utilizando equipamentos leves.
-    - Para cada 1 ponto de AGI, o personagem ganha 0.75% de velocidade de movimento quando estiver utilizando equipamentos mágicos.
+    - Para cada 1 ponto de AGI, o personagem ganha 0.75% de velocidade de movimento quando estiver utilizando equipamentos especiais.
     - Para cada 1 ponto de AGI, o personagem ganha 0.5% de velocidade de movimento quando estiver utilizando equipamentos pesados.
     - AGI é a fonte principal de evasão, mas a conversão em chance de evasão é feita por rendimento decrescente e está descrita em "Evasão".
 - Personagens com mais AGI são capazes de utilizar equipamentos e armaduras mais leves.
@@ -72,7 +72,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
         - Até a 0.9.3.0 esta linha prometia "1 ponto de dano elemental por ponto de SPE". O jogo nunca fez isso: o valor era calculado, aparecia no Inspector e nenhum cálculo de combate o lia. A escala de habilidade sempre leu o SPE cru, através do bloco `scaling` da própria habilidade.
         - A promessa foi retirada em vez de implementada porque o modelo inteiro muda com os itens: dano de atributo vai deixar de ser um valor somado e passar a ser uma porcentagem sobre a base que o conteúdo fornece — a arma para o ataque básico, o rank para a habilidade. Implementar o valor antigo agora seria construir algo para apagar em seguida.
     - SPE é a fonte principal de redução de recarga, mas a conversão em porcentagem é feita por rendimento decrescente e está descrita em "Redução de recarga".
-- Personagens com mais SPE são capazes de utilizar equipamentos e armaduras mágicos.
+- Personagens com mais SPE são capazes de utilizar equipamentos e armaduras especiais.
 
 ### Constituição (CON)
 
@@ -162,14 +162,14 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - A chance de evasão é calculada por rendimento decrescente sobre o total de AGI do personagem:
     - `Chance de evasão = 100 × AGI ÷ (AGI + Constante)`
     - A constante é 100 enquanto o personagem estiver utilizando equipamentos leves.
-    - A constante é 200 enquanto o personagem estiver utilizando equipamentos mágicos.
+    - A constante é 200 enquanto o personagem estiver utilizando equipamentos especiais.
     - A constante é 500 enquanto o personagem estiver utilizando equipamentos pesados.
 - Por exemplo, utilizando equipamentos leves:
     - Um personagem com 25 de AGI possui 20% de evasão.
     - Um personagem com 100 de AGI possui 50% de evasão.
     - Um personagem com 300 de AGI possui 75% de evasão.
     - Um personagem com 900 de AGI possui 90% de evasão.
-- Por exemplo, utilizando equipamentos mágicos:
+- Por exemplo, utilizando equipamentos especiais:
     - Um personagem com 100 de AGI possui 33.3% de evasão.
     - Um personagem com 200 de AGI possui 50% de evasão.
     - Um personagem com 600 de AGI possui 75% de evasão.
@@ -210,9 +210,9 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - A redução de recarga é calculada por rendimento decrescente sobre o total de SPE do personagem:
     - `Redução de recarga = 60 × SPE ÷ (SPE + Constante)`
     - A constante é 60 enquanto o personagem estiver utilizando equipamentos leves.
-    - A constante é 40 enquanto o personagem estiver utilizando equipamentos mágicos.
+    - A constante é 40 enquanto o personagem estiver utilizando equipamentos especiais.
     - A constante é 300 enquanto o personagem estiver utilizando equipamentos pesados.
-- Por exemplo, utilizando equipamentos mágicos:
+- Por exemplo, utilizando equipamentos especiais:
     - Um personagem com 20 de SPE possui 20% de redução de recarga.
     - Um personagem com 40 de SPE possui 30% de redução de recarga.
     - Um personagem com 120 de SPE possui 45% de redução de recarga.

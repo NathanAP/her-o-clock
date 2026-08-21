@@ -1,0 +1,268 @@
+{
+    "comment": "Os subtipos de arma e de mao secundaria defensiva. Cascos nao aparecem aqui: o subtipo deles e nominal e sai da classe, em slots.json. Cada subtipo carrega quatro numeros e sao as diferencas entre eles que fazem build existir: maos, alcance, velocidade e faixa de dano. Trocar dois deles por outros dois e o que separa uma Claw de um Cannon.",
+
+    "damageBudget": {
+        "comment": "Cada familia de arma tem um orcamento de dano por segundo, e a faixa de dano de cada subtipo e derivada dele: dano medio vezes velocidade de ataque e igual ao orcamento. E isso que permite Piledriver e Claw serem escolhas, e nao uma estritamente melhor que a outra. Os numeros abaixo estao aqui para o teste conferir a derivacao, e nao para o jogo ler.",
+        "one-handed-melee": { "base": 9, "perLevel": 0.9 },
+        "two-handed-melee": { "base": 14, "perLevel": 1.4 },
+        "one-handed-ranged": { "base": 7, "perLevel": 0.7 },
+        "two-handed-ranged": { "base": 11, "perLevel": 1.1 },
+        "specialMultiplier": 0.75,
+        "reachMultiplier": 0.9,
+        "multiplierComment": "specialMultiplier e o desconto que Catalyst e Reactor pagam por serem armas de quem luta com habilidade e nao com ataque basico. reachMultiplier e o desconto que a Lance paga por alcancar duas casas sendo corpo a corpo.",
+        "tolerance": 0.08
+    },
+
+    "weapons": [
+        {
+            "id": "blade",
+            "family": "one-handed-melee",
+            "hands": 1,
+            "minRange": 1,
+            "maxRange": 1,
+            "attackSpeed": 1.3,
+            "damage": {
+                "min": { "base": 6, "perLevel": 0.6 },
+                "max": { "base": 8, "perLevel": 0.8 }
+            },
+            "naturalClass": "light",
+            "bases": [
+                { "minItemLevel": 1, "id": "shiv" },
+                { "minItemLevel": 20, "id": "edge" },
+                { "minItemLevel": 45, "id": "vibroblade" },
+                { "minItemLevel": 75, "id": "monoblade" }
+            ]
+        },
+        {
+            "id": "claw",
+            "family": "one-handed-melee",
+            "hands": 1,
+            "minRange": 1,
+            "maxRange": 1,
+            "attackSpeed": 1.7,
+            "damage": {
+                "min": { "base": 5, "perLevel": 0.5 },
+                "max": { "base": 6, "perLevel": 0.6 }
+            },
+            "naturalClass": "light",
+            "bases": [
+                { "minItemLevel": 1, "id": "talon" },
+                { "minItemLevel": 25, "id": "ripper" },
+                { "minItemLevel": 55, "id": "lacerator" }
+            ]
+        },
+        {
+            "id": "ram",
+            "family": "one-handed-melee",
+            "hands": 1,
+            "minRange": 1,
+            "maxRange": 1,
+            "attackSpeed": 0.8,
+            "damage": {
+                "min": { "base": 7, "perLevel": 0.7 },
+                "max": { "base": 15, "perLevel": 1.5 }
+            },
+            "naturalClass": "heavy",
+            "bases": [
+                { "minItemLevel": 1, "id": "piston" },
+                { "minItemLevel": 25, "id": "driver" },
+                { "minItemLevel": 55, "id": "impactor" }
+            ]
+        },
+        {
+            "id": "prod",
+            "family": "one-handed-melee",
+            "hands": 1,
+            "minRange": 1,
+            "maxRange": 1,
+            "attackSpeed": 1.0,
+            "damage": {
+                "min": { "base": 7, "perLevel": 0.7 },
+                "max": { "base": 11, "perLevel": 1.1 }
+            },
+            "naturalClass": "medium",
+            "bases": [
+                { "minItemLevel": 1, "id": "goad" },
+                { "minItemLevel": 25, "id": "prod" },
+                { "minItemLevel": 55, "id": "arc-prod" }
+            ]
+        },
+        {
+            "id": "catalyst",
+            "family": "one-handed-melee",
+            "hands": 1,
+            "minRange": 1,
+            "maxRange": 2,
+            "attackSpeed": 1.1,
+            "damage": {
+                "min": { "base": 5, "perLevel": 0.5 },
+                "max": { "base": 7, "perLevel": 0.7 }
+            },
+            "naturalClass": "special",
+            "bases": [
+                { "minItemLevel": 1, "id": "focus" },
+                { "minItemLevel": 25, "id": "catalyst" },
+                { "minItemLevel": 55, "id": "resonator" }
+            ]
+        },
+        {
+            "id": "emitter",
+            "family": "one-handed-ranged",
+            "hands": 1,
+            "minRange": 1,
+            "maxRange": 4,
+            "attackSpeed": 1.2,
+            "damage": {
+                "min": { "base": 5, "perLevel": 0.5 },
+                "max": { "base": 7, "perLevel": 0.7 }
+            },
+            "naturalClass": "light-special",
+            "bases": [
+                { "minItemLevel": 1, "id": "emitter" },
+                { "minItemLevel": 25, "id": "pulser" },
+                { "minItemLevel": 55, "id": "beam-projector" }
+            ]
+        },
+        {
+            "id": "greatblade",
+            "family": "two-handed-melee",
+            "hands": 2,
+            "minRange": 1,
+            "maxRange": 1,
+            "attackSpeed": 0.9,
+            "damage": {
+                "min": { "base": 12, "perLevel": 1.2 },
+                "max": { "base": 19, "perLevel": 1.9 }
+            },
+            "naturalClass": "medium",
+            "bases": [
+                { "minItemLevel": 1, "id": "cleaver" },
+                { "minItemLevel": 25, "id": "greatblade" },
+                { "minItemLevel": 55, "id": "warblade" }
+            ]
+        },
+        {
+            "id": "piledriver",
+            "family": "two-handed-melee",
+            "hands": 2,
+            "minRange": 1,
+            "maxRange": 1,
+            "attackSpeed": 0.5,
+            "damage": {
+                "min": { "base": 16, "perLevel": 1.6 },
+                "max": { "base": 40, "perLevel": 4.0 }
+            },
+            "naturalClass": "heavy",
+            "bases": [
+                { "minItemLevel": 1, "id": "sledge" },
+                { "minItemLevel": 25, "id": "piledriver" },
+                { "minItemLevel": 55, "id": "breaker" }
+            ]
+        },
+        {
+            "id": "lance",
+            "family": "two-handed-melee",
+            "hands": 2,
+            "minRange": 1,
+            "maxRange": 2,
+            "attackSpeed": 0.7,
+            "damage": {
+                "min": { "base": 14, "perLevel": 1.4 },
+                "max": { "base": 22, "perLevel": 2.2 }
+            },
+            "naturalClass": "heavy",
+            "bases": [
+                { "minItemLevel": 1, "id": "pike" },
+                { "minItemLevel": 25, "id": "lance" },
+                { "minItemLevel": 55, "id": "impaler" }
+            ]
+        },
+        {
+            "id": "rifle",
+            "family": "two-handed-ranged",
+            "hands": 2,
+            "minRange": 2,
+            "maxRange": 6,
+            "attackSpeed": 1.0,
+            "damage": {
+                "min": { "base": 9, "perLevel": 0.9 },
+                "max": { "base": 13, "perLevel": 1.3 }
+            },
+            "naturalClass": "light",
+            "bases": [
+                { "minItemLevel": 1, "id": "carbine" },
+                { "minItemLevel": 25, "id": "rifle" },
+                { "minItemLevel": 55, "id": "railgun" }
+            ]
+        },
+        {
+            "id": "cannon",
+            "family": "two-handed-ranged",
+            "hands": 2,
+            "minRange": 3,
+            "maxRange": 8,
+            "attackSpeed": 0.45,
+            "damage": {
+                "min": { "base": 14, "perLevel": 1.4 },
+                "max": { "base": 35, "perLevel": 3.5 }
+            },
+            "naturalClass": "heavy",
+            "bases": [
+                { "minItemLevel": 1, "id": "mortar" },
+                { "minItemLevel": 25, "id": "cannon" },
+                { "minItemLevel": 55, "id": "siege-cannon" }
+            ]
+        },
+        {
+            "id": "reactor",
+            "family": "two-handed-melee",
+            "hands": 2,
+            "minRange": 1,
+            "maxRange": 3,
+            "attackSpeed": 0.8,
+            "damage": {
+                "min": { "base": 10, "perLevel": 1.0 },
+                "max": { "base": 16, "perLevel": 1.6 }
+            },
+            "naturalClass": "special",
+            "bases": [
+                { "minItemLevel": 1, "id": "coil" },
+                { "minItemLevel": 25, "id": "reactor" },
+                { "minItemLevel": 55, "id": "singularity-core" }
+            ]
+        }
+    ],
+
+    "offHandDefensive": [
+        {
+            "id": "bulwark",
+            "grants": "armour",
+            "naturalClass": "heavy",
+            "bases": [
+                { "minItemLevel": 1, "id": "guard" },
+                { "minItemLevel": 25, "id": "bulwark" },
+                { "minItemLevel": 55, "id": "aegis" }
+            ]
+        },
+        {
+            "id": "deflector",
+            "grants": "evasion",
+            "naturalClass": "light",
+            "bases": [
+                { "minItemLevel": 1, "id": "baffle" },
+                { "minItemLevel": 25, "id": "deflector" },
+                { "minItemLevel": 55, "id": "phase-screen" }
+            ]
+        },
+        {
+            "id": "battery",
+            "grants": "elementalResistance",
+            "naturalClass": "special",
+            "bases": [
+                { "minItemLevel": 1, "id": "cell" },
+                { "minItemLevel": 25, "id": "battery" },
+                { "minItemLevel": 55, "id": "capacitor-bank" }
+            ]
+        }
+    ]
+}

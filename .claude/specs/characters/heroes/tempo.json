@@ -10,16 +10,16 @@
         "name": "Tempo",
         "type": "Robot",
         "description": "Tempo is a robot known for their ability to manipulate time and speed.",
-        "startingLore": "Tempo wakes up in the middle of the city after an explosion in a militar facility located in Halo.",
+        "startingLore": "Tempo wakes up in the middle of the city after an explosion in a military facility located in Halo.",
         "characteristics": {
             "age": 1,
             "gender": "Non-binary",
-            "body": "Tempo's body is slim and helps their move quickly. Their chest contains a clockwork mechanism that indicates their time manipulation abilities. Their limbs are designed for agility and speed, with reinforced joints and lightweight materials.",
+            "body": "Tempo's body is slim and helps them move quickly. Their chest contains a clockwork mechanism that indicates their time manipulation abilities. Their limbs are designed for agility and speed, with reinforced joints and lightweight materials.",
             "height": "165 cm",
             "weight": "55 kg"
         },
         "outfit": {
-            "description": "Tempo's costume helps their maintain their speed and agility, featuring a tight-fitting suit with aerodynamic designs and a visor that enhances their perception of time.",
+            "description": "Tempo's costume helps them maintain their speed and agility, featuring a tight-fitting suit with aerodynamic designs and a visor that enhances their perception of time.",
             "colors": [
                 "blue",
                 "silver",

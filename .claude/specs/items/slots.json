@@ -1,0 +1,132 @@
+{
+    "comment": "Os oito slots de equipamento. 'defenceWeight' distribui a defesa base entre eles: o peito carrega o peso cheio e o resto carrega uma fracao. Controlador e firmware nao tem defesa base, eles existem so para carregar modificadores. 'namingNoun' e a palavra que entra no nome do item, e e mais curta que o nome do slot de proposito, para o nome montado nao estourar a largura do tooltip.",
+    "slots": [
+        {
+            "id": "cranial-casing",
+            "kind": "defensive",
+            "defenceWeight": 0.6,
+            "namingNoun": "Casing"
+        },
+        {
+            "id": "chassis",
+            "kind": "defensive",
+            "defenceWeight": 1.0,
+            "namingNoun": "Chassis"
+        },
+        {
+            "id": "arm-servos",
+            "kind": "defensive",
+            "defenceWeight": 0.5,
+            "namingNoun": "Servos"
+        },
+        {
+            "id": "traction-units",
+            "kind": "defensive",
+            "defenceWeight": 0.6,
+            "namingNoun": "Struts"
+        },
+        {
+            "id": "main-hand",
+            "kind": "weapon",
+            "defenceWeight": 0.0,
+            "namingNoun": null
+        },
+        {
+            "id": "off-hand",
+            "kind": "weapon-or-defensive",
+            "defenceWeight": 0.7,
+            "namingNoun": null
+        },
+        {
+            "id": "controller",
+            "kind": "utility",
+            "defenceWeight": 0.0,
+            "namingNoun": "Controller"
+        },
+        {
+            "id": "firmware",
+            "kind": "utility",
+            "defenceWeight": 0.0,
+            "namingNoun": "Firmware"
+        }
+    ],
+    "defenceBudget": {
+        "comment": "A defesa base de um equipamento e 'base + perLevel x (nivel do item - 1)', multiplicada pelo peso do slot e pelo multiplicador da classe. 'perLevel' e igual a 'base' porque attributes.md diz que e assim que a mitigacao fica constante ao longo do jogo: a constante da curva e 50 x nivel do atacante, entao uma defesa parada apodrece. A evasao e o unico caso em que os dois numeros divergem, porque a constante dela nao cresce com o nivel - ver a secao 'Perguntas em aberto' de items.md.",
+        "armour": { "base": 12, "perLevel": 12 },
+        "evasion": { "base": 0.5, "perLevel": 0.45 },
+        "elementalResistance": { "base": 5, "perLevel": 5 }
+    },
+    "classDefence": {
+        "comment": "O que cada classe faz com o orcamento de defesa acima. Hibridos pagam 0.55 de cada lado, entao somam 1.1 de orcamento contra 1.0 dos puros: o premio por cobrir duas frentes e pequeno de proposito. A resistencia elemental vale para os tres elementos ao mesmo tempo, e e por isso que o orcamento dela e mais baixo que o da armadura.",
+        "heavy": { "armour": 1.0, "evasion": 0.0, "elementalResistance": 0.0 },
+        "light": { "armour": 0.0, "evasion": 1.0, "elementalResistance": 0.0 },
+        "special": {
+            "armour": 0.0,
+            "evasion": 0.0,
+            "elementalResistance": 1.0
+        },
+        "medium": {
+            "armour": 0.55,
+            "evasion": 0.55,
+            "elementalResistance": 0.0
+        },
+        "light-special": {
+            "armour": 0.0,
+            "evasion": 0.55,
+            "elementalResistance": 0.55
+        },
+        "heavy-special": {
+            "armour": 0.55,
+            "evasion": 0.0,
+            "elementalResistance": 0.55
+        }
+    },
+    "requirement": {
+        "comment": "O atributo exigido para o equipamento ficar ativo. 'perItemLevel' e multiplicado pelo nivel do item e arredondado para cima. Hibridos exigem os dois atributos, cada um a 0.6 do valor cheio, entao vestir hibrido custa mais no total mas menos em cada lado.",
+        "perItemLevel": 1.5,
+        "hybridShare": 0.6,
+        "attributeByClass": {
+            "heavy": ["pow"],
+            "light": ["agi"],
+            "special": ["spe"],
+            "medium": ["pow", "agi"],
+            "light-special": ["agi", "spe"],
+            "heavy-special": ["pow", "spe"]
+        }
+    },
+    "armourNaming": {
+        "comment": "O nome base de um casco e '<substantivo da classe> <substantivo do slot>'. Nao existe subtipo mecanico em casco: a classe ja ocupa esse eixo, e um segundo eixo faria os dois brigarem pelo mesmo espaco. A variante e sorteada pelo nivel do item, igual as bases de arma.",
+        "classNouns": {
+            "heavy": [
+                { "minItemLevel": 1, "noun": "Plate" },
+                { "minItemLevel": 30, "noun": "Barding" },
+                { "minItemLevel": 65, "noun": "Carapace" }
+            ],
+            "light": [
+                { "minItemLevel": 1, "noun": "Mesh" },
+                { "minItemLevel": 30, "noun": "Weave" },
+                { "minItemLevel": 65, "noun": "Filament" }
+            ],
+            "special": [
+                { "minItemLevel": 1, "noun": "Circuit" },
+                { "minItemLevel": 30, "noun": "Lattice" },
+                { "minItemLevel": 65, "noun": "Matrix" }
+            ],
+            "medium": [
+                { "minItemLevel": 1, "noun": "Composite" },
+                { "minItemLevel": 30, "noun": "Alloy" },
+                { "minItemLevel": 65, "noun": "Hardplate" }
+            ],
+            "light-special": [
+                { "minItemLevel": 1, "noun": "Circuitmesh" },
+                { "minItemLevel": 30, "noun": "Photoweave" },
+                { "minItemLevel": 65, "noun": "Fieldweave" }
+            ],
+            "heavy-special": [
+                { "minItemLevel": 1, "noun": "Ferrocircuit" },
+                { "minItemLevel": 30, "noun": "Ferrolattice" },
+                { "minItemLevel": 65, "noun": "Coreplate" }
+            ]
+        }
+    }
+}

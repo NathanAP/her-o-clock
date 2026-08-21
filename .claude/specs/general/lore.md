@@ -62,7 +62,7 @@ O jogo começa quando Tempo, um robô de origem desconhecida, acorda ao ouvir gr
 
 ## Ato 1 - Halo
 
-O foco deste ato é salvar Halo de uma invasão descontrolada. Tempo sabe que sua missão é proteger os humanos em Unia e logo no início ela encontra um parceiro de combate: Gadrat, um novato que está procurando seu pai. A dupla avança por Halo combatendo hordas de inimigos e logo encontram o pai, porém ele é brutalmente morto por um desconhecido que foge, deixando seu capanga cuidar dos dois. Tempo e seu novo parceiro percebem que algo maior está por vir e agora querem entender quem são seus verdadeiros inimigos.
+O foco deste ato é salvar Halo de uma invasão descontrolada. Tempo sabe que sua missão é proteger os humanos em Unia e logo no início encontra um parceiro de combate: Gadrat, um novato que está procurando seu pai. A dupla avança por Halo combatendo hordas de inimigos e logo encontram o pai, porém ele é brutalmente morto por um desconhecido que foge, deixando seu capanga cuidar dos dois. Tempo e seu novo parceiro percebem que algo maior está por vir e agora querem entender quem são seus verdadeiros inimigos.
 
 </public>
 
