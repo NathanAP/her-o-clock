@@ -24,9 +24,9 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
         - Tecnologia.
         - Modificadores conforme a tecnologia.
     - Os equipamentos defensivos possuem em comum:
-        - Armadura (POW) / Evasão (AGI) / Resistência elemental (SPE) base.
+        - Armadura (POW) / Evasão (AGI) / Resistência elemental (SPE) base escalado com o nível do item.
     - Os equipamentos ofensivos possuem em comum:
-        - Faixa de dano.
+        - Faixa de dano escalado com o nível do item.
 
 #### Casco superior
 
