@@ -17,27 +17,40 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 
 #### Casco superior
 
-- Correspondente à equipamentos da parte superior do corpo do herói.
+- Correspondente à equipamentos defensivos da parte superior do corpo do herói.
 
 #### Casco inferior
 
-- Correspondente à equipamentos da parte inferior do corpo do herói.
+- Correspondente à equipamentos defensivos da parte inferior do corpo do herói.
 
 #### Cascos braçais
 
-- Correspondente à equipamentos dos braços do herói.
+- Correspondente à equipamentos defensivos dos braços do herói.
 
 #### Casco corporal
 
-- Correspondente à equipamentos do corpo do herói.
+- Correspondente à equipamentos defensivos do corpo do herói.
 
 #### Mão primária
 
+- Corresponde a quais equipamentos ofensivos o herói usará para combater seus inimigos.
+- É a principal fonte de dano do herói.
+- O jogador pode escolher entre usar armas de uma ou duas mãos.
+    - No primeiro caso, o jogador pode utilizar duas armas de uma mão ou uma arma e mais um equipamento defensivo na mão secundária.
+    - No segundo caso, o jogador não poderá equipar itens na mão secundária.
+
 #### Mão secundária
+
+- Corresponde à equipamentos ofensivos, defensivos o herói usa, porém fica vazio caso o herói use uma arma de duas mãos na mão primária.
 
 #### Controlador
 
+- Corresponde a equipamentos utilitários do herói. É um slot que pode ser usado para ajudar nos ganhos ofensivos e defensivos pro herói.
+- É equivalente a um amuleto em jogos de RPG tradicionais.
+
 #### Firmware
+
+- Tem um papel parecido com o do controlador de fornecer um slot para ajudar a ganhar números ofensivos e defensivos.
 
 ### Classes
 
@@ -92,52 +105,53 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 #### Sem tecnologia
 
 - Itens que não trazem modificadores.
-- No inventário e baú possui a coloração de fundo transparente.
+- O nome e no ícone do inventário e baú possui a coloração transparente.
 
-#### Básica
+#### Rudimentar
 
 - Itens que trazem até 1 modificador.
-- No inventário e baú possui a coloração de fundo verde.
+- O nome e no ícone do inventário e baú possui a coloração cinza metálico.
 - Podem ser obtidos a partir da primeira passada no ato 1 e fase 1.
 
-#### Simples
+#### Convencional
 
 - Itens que trazem até 2 modificadores.
-- No inventário e baú possui a coloração de fundo azul.
+- O nome e no ícone do inventário e baú possui a coloração verde.
 - Podem ser obtidos a partir da primeira passada no ato 1 e fase 1.
 
 #### Otimizada
 
 - Itens que trazem até 3 modificadores.
-- No inventário e baú possui a coloração de fundo azul.
+- O nome e no ícone do inventário e baú possui a coloração azul elétrico.
 - Podem ser obtidos a partir da primeira passada no ato 2 e fase 1.
 
 #### Avançada
 
 - Itens que trazem até 4 modificadores.
-- No inventário e baú possui a coloração de fundo azul.
+- O nome e no ícone do inventário e baú possui a coloração violeta.
 - Podem ser obtidos a partir da segunda passada no ato 1 e fase 1.
 
-#### Complexa
+#### Nano
 
 - Itens que trazem até 5 modificadores.
-- No inventário e baú possui a coloração de fundo azul.
+- O nome e no ícone do inventário e baú possui a coloração ciano.
 - Podem ser obtidos a partir da segunda passada no ato 4 e fase 1.
 
-#### Antológica
+#### Quântica
 
 - Itens que trazem até 6 modificadores.
-- No inventário e baú possui a coloração de fundo azul.
+- O nome e no ícone do inventário e baú possui a coloração rosa energético.
 - Podem ser obtidos a partir da terceira passada no ato 1 e fase 1.
 
 #### Única
 
+- O nome e no ícone do inventário e baú possui a coloração dourada.
 - Itens que possuem modificadores completamente únicos e exclusivos.
 - A principal ideia é que esses itens tragam algo verdadeiramente único ao herói.
 - As principais referências de itens únicos é o Path of Exile e Diablo.
 - Itens melhores são mais raros.
 - Podem variar na quantidade total de modificadores.
-- No inventário e baú possui a coloração de fundo laranja.
+- O nome e no ícone do inventário e baú possui a coloração laranja.
 
 ### Modificadores
 
