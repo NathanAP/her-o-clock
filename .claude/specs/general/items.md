@@ -14,6 +14,19 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 ### Tipo de equipamento
 
 - Cada tipo de equipamento corresponde a um slot de equipamento que o herói pode utilizar.
+- Cada equipamento possui características básicas em comum.
+    - Todos os equipamentos possuem:
+        - Id gerado automaticamente.
+        - Nome gerado automaticamente.
+        - Nível de equipamento entre 1 e 100.
+        - Classe entre POW, AGI e/ou SPE.
+        - Subtipo.
+        - Tecnologia.
+        - Modificadores conforme a tecnologia.
+    - Os equipamentos defensivos possuem em comum:
+        - Armadura (POW) / Evasão (AGI) / Resistência elemental (SPE) base.
+    - Os equipamentos ofensivos possuem em comum:
+        - Faixa de dano.
 
 #### Casco superior
 
