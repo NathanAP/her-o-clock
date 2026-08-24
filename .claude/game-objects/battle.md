@@ -51,7 +51,10 @@ Essas validações existem porque quase nenhum desses casos gera erro da Unity. 
 **Aparência provisória**, dentro de `View Settings`. Todas as medidas são frações de uma casa, então `1` equivale à casa inteira. Podem ser ajustadas com o jogo rodando.
 
 - Body Size: `0.5` por `0.7`, e Body Offset Y `-0.1`. Retângulo em pé, porque o sprite de um robô dificilmente será quadrado.
-- Health Bar Size: `0.8` por `0.1`, e Health Bar Offset Y `0.4`. Fica no topo da casa, acima do corpo.
+    - **Só valem para quem ainda não tem desenho.** Um personagem com sprite ignora os dois: ele nasce do tamanho que os pixels por unidade da textura mandam e é posicionado por `Sprite Offset Y`. Ver `arte-de-personagem.md`.
+- Sprite Offset Y: `-0.5`. Meia casa para baixo, que é onde fica o chão. Só é lido por quem tem desenho.
+- Health Bar Size: `0.8` por `0.1`, e Health Bar Offset Y `0.55`. Fica no topo da casa, acima do corpo.
+    - Era `0.4` até a 0.10.1.0. Subiu porque um sprite de 32 pixels é bem mais alto que o retângulo que existia antes, e a barra passou a cair em cima da cabeça.
 - Flash Duration: `0.12`. Quanto tempo o corpo fica claro depois de levar um golpe.
 
 **Combate**

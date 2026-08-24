@@ -424,12 +424,14 @@ MonoBehaviour:
   viewSettings:
     BodySize: {x: 0.5, y: 0.7}
     BodyOffsetY: -0.1
+    SpriteOffsetY: -0.5
     HealthBarSize: {x: 0.8, y: 0.1}
-    HealthBarOffsetY: 0.4
+    HealthBarOffsetY: 0.55
     HealthBarBackground: {r: 0.08, g: 0.08, b: 0.1, a: 0.9}
     HealthBarFull: {r: 0.35, g: 0.85, b: 0.4, a: 1}
     HealthBarEmpty: {r: 0.85, g: 0.25, b: 0.25, a: 1}
     FlashColor: {r: 1, g: 1, b: 1, a: 1}
+    SpriteFlashColor: {r: 1, g: 0.42, b: 0.42, a: 1}
     FlashDuration: 0.12
   randomSeed: 0
   targetFrameRate: 30

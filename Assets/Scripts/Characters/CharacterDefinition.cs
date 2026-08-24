@@ -17,8 +17,13 @@ namespace HerOClock.Characters
 
         public CharacterKind Kind = CharacterKind.Hero;
 
-        [Tooltip("Placeholder colour. Blue for heroes, pink for minions, red for villains.")]
+        [Tooltip("Placeholder colour. Blue for heroes, pink for minions, red for villains. "
+            + "Only used while this character has no sprites.")]
         public Color Color = Color.white;
+
+        [Tooltip("Drawings of this character, one per direction. Leave empty to keep the "
+            + "placeholder rectangle.")]
+        public View.CharacterSprites Sprites = new View.CharacterSprites();
 
         [Header("Level")]
         [Tooltip("Level a hero starts at. Minions and villains ignore it, since the stage decides theirs.")]

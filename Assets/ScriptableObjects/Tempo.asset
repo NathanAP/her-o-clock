@@ -15,6 +15,11 @@ MonoBehaviour:
   Id: tempo
   Kind: 0
   Color: {r: 0.29411766, g: 0.60784316, b: 0.9019608, a: 1}
+  Sprites:
+    Down: {fileID: 21300000, guid: 482544ba1c0a9a134001e0e969609125, type: 3}
+    Up: {fileID: 21300000, guid: ca156983d66f9f57f5062317464e313f, type: 3}
+    Side: {fileID: 21300000, guid: c346404d39d9de1dbc53f0f039274e98, type: 3}
+    Dead: {fileID: 21300000, guid: bbfb4fa0ae67043652f54a7141b13848, type: 3}
   Level: 1
   MaxLevel: 100
   Growth:
@@ -47,12 +52,7 @@ MonoBehaviour:
   Abilities:
   - Id: no-time-to-waste
     Ranks: 5
-    RankAvailability:
-    - 1
-    - 6
-    - 14
-    - 25
-    - 40
+    RankAvailability: 01000000060000000e0000001900000028000000
     Preparation:
       PerRank:
       - 0
@@ -160,12 +160,7 @@ MonoBehaviour:
       Anchor: 0
   - Id: relax
     Ranks: 5
-    RankAvailability:
-    - 1
-    - 12
-    - 22
-    - 35
-    - 50
+    RankAvailability: 010000000c000000160000002300000032000000
     Preparation:
       PerRank:
       - 0.4
@@ -273,12 +268,7 @@ MonoBehaviour:
       Anchor: 0
   - Id: fast-and-furious
     Ranks: 5
-    RankAvailability:
-    - 1
-    - 10
-    - 20
-    - 32
-    - 45
+    RankAvailability: 010000000a00000014000000200000002d000000
     Preparation:
       PerRank:
       - 0

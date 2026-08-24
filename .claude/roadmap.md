@@ -315,24 +315,31 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Dezessete testes quebraram e **nenhum foi afrouxado** — cada valor esperado foi reescrito a partir da spec nova.
 - O resumo completo está em `.claude/versions/20260819_0.10.0.0.md`.
 
-## 0.10.1.0 (próxima)
+## 0.10.1.0 (feita)
 
-- Itens.
-- Ataques básicos variam de acordo com a arma equipada, que substitui o dano base do personagem.
+- A Tempo deixa de ser um retângulo. Oito verificações novas no EditMode.
+- **Entrou na frente dos itens** porque a folha de sprites apareceu pronta e havia uma pergunta que só se responde na tela: se a arte cabe na casa de 30 pixels. Descobrir erro de enquadramento depois de os itens dependerem dos mesmos números seria pior.
+- **A folha gerada não é uma animação.** Quadros vizinhos diferem de 34% a 50% dos pixels; um ciclo de verdade muda de 10% a 15%. Entraram quatro poses paradas, e animação espera uma folha feita para isso.
+- **A piscada de dano não funcionava em sprite** e ninguém teria percebido: a cor do `SpriteRenderer` multiplica, então o branco que lavava o retângulo é exatamente a cor que não muda nada.
+- O resumo completo está em `.claude/versions/20260824_0.10.1.0.md`.
+
+## 0.10.2.0 (próxima)
+
+- Itens. **As specs já estão escritas** em `.claude/specs/items/` e em `items.md`, esperando desde a conversa que virou a 0.10.1.0.
+- Ataques básicos variam de acordo com a arma equipada, que substitui o dano base, a velocidade de ataque e o alcance do personagem.
 - **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar.
 - Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico: com itens bons o bastante, redirecionar a árvore vira jogada e não conserto.
-- Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, o determinismo rodado de novo, e a varredura ganhando uma dimensão, já que o espaço deixa de ser só nível e build.
+- **Precisa decidir antes a escala da evasão**, que é a pergunta em aberto registrada no fim de `items.md`: ela é a única defesa cuja constante não cresce com o nível, e por isso os pontos de evasão de um item vivem duas ordens de grandeza abaixo dos de armadura.
+- Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, o determinismo rodado de novo, a varredura ganhando uma dimensão, e as invariantes de `tiers.json`.
 
-## 0.10.2.0
+## 0.10.3.0
 
 - **Drop de itens.** Versão própria e não parte do menu: taxa, raridade e sorteio têm superfície de balanceamento própria, e o `CLAUDE.md` já lista drop rate como coisa a testar.
 
-## 0.11.0.0
+## 0.11.0.0 (absorvida)
 
-- Items.
-- Ataques básicos agora variam de acordo com o item.
-- Uma mesma seed ainda define como a batalha vai ocorrer.
-- Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, e o teste de determinismo rodado de novo, já que o item passa a alterar o ataque básico. A própria linha "uma mesma seed ainda define como a batalha vai ocorrer" é uma assertiva.
+- Ela dizia "itens" e "ataque básico varia com o item", que é palavra por palavra o que a 0.10.2.0 já diz. Eram a mesma versão escrita duas vezes em momentos diferentes.
+- O número fica vago de propósito. Renumerar tudo abaixo dele quebraria as referências dos resumos em `.claude/versions/` para ganhar só arrumação.
 
 ## 0.12.0.0
 

@@ -24,6 +24,9 @@ namespace HerOClock.View
         private Color bodyColor;
         private float flashRemaining;
         private int shownLevel = -1;
+        private CharacterSprites sprites;
+        private bool usesSprites;
+        private Facing shownFacing = (Facing)(-1);
 
         public void Build(Character character, CharacterViewSettings settings, Color color, float cellSize)
         {
@@ -31,9 +34,16 @@ namespace HerOClock.View
             this.settings = settings;
             this.cellSize = cellSize;
 
-            bodyColor = color;
+            sprites = character.Definition.Sprites;
+            usesSprites = sprites != null && sprites.HasAny;
 
-            body = CreateSprite("Body", settings.BodySize, settings.BodyOffsetY, color, 0);
+            // A character with art is drawn in its own colours, so the placeholder tint has to
+            // become white or it would be multiplied over the sprite and muddy every pixel.
+            bodyColor = usesSprites ? Color.white : color;
+
+            body = usesSprites
+                ? CreateBodySprite()
+                : CreateSprite("Body", settings.BodySize, settings.BodyOffsetY, color, 0);
             healthBackground = CreateSprite("HealthBarBackground", settings.HealthBarSize, settings.HealthBarOffsetY, settings.HealthBarBackground, 1);
             healthFill = CreateSprite("HealthBarFill", settings.HealthBarSize, settings.HealthBarOffsetY, settings.HealthBarFull, 2);
             levelLabel = CreateLevelLabel();
@@ -58,6 +68,16 @@ namespace HerOClock.View
 
         private void Update()
         {
+            if (body == null)
+            {
+                return;
+            }
+
+            // Walking does not raise Changed, and raising it on every step would rebuild the
+            // stats and the health bar for a character that only turned. So the direction is
+            // read here instead, which costs one enum comparison per frame and nothing else.
+            UpdateFacing(character.IsAlive);
+
             if (flashRemaining <= 0f)
             {
                 return;
@@ -66,7 +86,8 @@ namespace HerOClock.View
             flashRemaining -= Time.deltaTime;
 
             float amount = Mathf.Clamp01(flashRemaining / settings.FlashDuration);
-            body.color = Color.Lerp(bodyColor, settings.FlashColor, amount);
+            Color target = usesSprites ? settings.SpriteFlashColor : settings.FlashColor;
+            body.color = Color.Lerp(bodyColor, target, amount);
         }
 
         private void Refresh()
@@ -82,6 +103,7 @@ namespace HerOClock.View
 
             UpdateHealthBar();
             UpdateLevelLabel();
+            UpdateFacing(alive);
 
             healthBackground.enabled = alive;
             healthFill.enabled = alive;
@@ -95,8 +117,10 @@ namespace HerOClock.View
 
             if (character.Kind == CharacterKind.Hero)
             {
-                // A fallen hero stays on the field, dimmed, so it can be revived in place.
-                body.color = bodyColor * 0.3f;
+                // A fallen hero stays on the field so it can be revived in place. With art it
+                // lies down; without it, the rectangle just dims.
+                bool fallen = usesSprites && sprites.Dead != null;
+                body.color = fallen ? bodyColor : bodyColor * 0.3f;
             }
             else
             {
@@ -154,6 +178,67 @@ namespace HerOClock.View
 
             shownLevel = character.Level;
             levelLabel.text = "Lv " + shownLevel;
+        }
+
+        /// <summary>
+        /// The body of a character that has art.
+        ///
+        /// The scale stays at one, unlike the placeholder rectangle. A sprite already knows how
+        /// big it is through the pixels per unit of its texture, so scaling it here would fight
+        /// the pixel grid and make the art shimmer as the character walks.
+        /// </summary>
+        private SpriteRenderer CreateBodySprite()
+        {
+            GameObject child = new GameObject("Body");
+            child.transform.SetParent(transform, false);
+            child.transform.localPosition = new Vector3(0f, settings.SpriteOffsetY * cellSize, 0f);
+
+            SpriteRenderer renderer = child.AddComponent<SpriteRenderer>();
+            renderer.color = Color.white;
+            renderer.sortingLayerName = "Characters";
+            renderer.sortingOrder = 0;
+
+            return renderer;
+        }
+
+        /// <summary>
+        /// Points the body the way the character is turned, and lays it down when it falls.
+        ///
+        /// Only touches the renderer when the direction actually changed, because a character
+        /// standing still would otherwise be assigned the same sprite on every event it raises.
+        /// </summary>
+        private void UpdateFacing(bool alive)
+        {
+            if (!usesSprites)
+            {
+                return;
+            }
+
+            if (!alive && sprites.Dead != null)
+            {
+                if (body.sprite != sprites.Dead)
+                {
+                    body.sprite = sprites.Dead;
+                    body.flipX = false;
+
+                    // Cleared so that reviving in place is seen as a change and puts the
+                    // character back on its feet, facing wherever it was facing.
+                    shownFacing = (Facing)(-1);
+                }
+
+                return;
+            }
+
+            Facing facing = character.Facing;
+
+            if (facing == shownFacing)
+            {
+                return;
+            }
+
+            shownFacing = facing;
+            body.sprite = sprites.For(facing);
+            body.flipX = CharacterSprites.IsMirrored(facing);
         }
 
         private SpriteRenderer CreateSprite(string name, Vector2 size, float offsetY, Color color, int order)

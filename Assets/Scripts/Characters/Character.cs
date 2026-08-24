@@ -18,6 +18,12 @@ namespace HerOClock.Characters
         public Team Team { get; private set; }
 
         public GridPosition Position { get; private set; }
+
+        /// <summary>
+        /// Which way the character is turned. Presentation only: nothing in combat reads it,
+        /// so a character can be attacked from behind exactly as it is from the front.
+        /// </summary>
+        public View.Facing Facing { get; private set; }
         public int CurrentHealth { get; private set; }
 
         /// <summary>
@@ -155,6 +161,7 @@ namespace HerOClock.Characters
             InitialPosition = position;
             CurrentHealth = Stats.MaxHealth;
             Position = position;
+            Facing = View.FacingResolver.Default(team);
 
             grid.Occupy(position, this);
             transform.position = grid.WorldPositionOf(position);
@@ -474,6 +481,7 @@ namespace HerOClock.Characters
         {
             Position = InitialPosition;
             TauntedBy = null;
+            Facing = View.FacingResolver.Default(Team);
 
             grid.Occupy(Position, this);
             transform.position = grid.WorldPositionOf(Position);
@@ -487,6 +495,10 @@ namespace HerOClock.Characters
         /// </summary>
         public void MoveTo(GridPosition destination)
         {
+            // The direction is read before the position changes, since it is the difference
+            // between the two that says which way the character turned.
+            Facing = View.FacingResolver.FromStep(Position, destination, Facing);
+
             grid.Release(Position);
             Position = destination;
             grid.Occupy(destination, this);
