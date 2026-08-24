@@ -21,9 +21,11 @@
         "outfit": {
             "description": "Tempo's costume helps them maintain their speed and agility, featuring a tight-fitting suit with aerodynamic designs and a visor that enhances their perception of time.",
             "colors": [
-                "blue",
-                "silver",
-                "yellow"
+                "anil blue",
+                "ivory",
+                "yellow",
+                "graphite",
+                "catharsis violet"
             ]
         }
     },

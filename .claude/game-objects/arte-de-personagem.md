@@ -71,6 +71,22 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
 - `HealthBarOffsetY` subiu de `0.4` para `0.55`. Um sprite de 32 pixels é bem mais alto que o retângulo de `0.7` casa que existia antes, e a barra ficava em cima da cabeça.
 - `SpriteFlashColor` nasceu separado do `FlashColor`. A piscada de dano do retângulo é para o branco, e **o branco não serve para sprite**: a cor do `SpriteRenderer` multiplica, então branco é exatamente a cor que não muda nada. Sprite pisca para um vermelho claro.
 
+## A paleta
+
+Os cinco valores saem da barra da folha de referência, `.claude/specs/characters/heroes/tempo-reference.png`, medidos pela média de cada quadradinho, já que eles são texturizados e não chapados.
+
+| Papel | Hex | Onde vive |
+| --- | --- | --- |
+| Anil | `#149ECA` | A cor da Tempo, e de mais ninguém. Peças grandes do corpo |
+| Marfim | `#EEE2D0` | Contraste. Peito, coxas, painéis vizinhos ao anil |
+| Amarelo | `#F3B738` | Sinalização. Crista, filete, visor. Sempre pouco |
+| Grafite | `#2E333C` | Articulação. Só onde o corpo dobra |
+| Violeta | `#B33EA3` | O Catarsis. Núcleo e capa. Reservado, não é de ninguém |
+
+- **O anil é exclusivo da Tempo.** A regra de identidade cromática está no `roadmap.md` e vale para o elenco inteiro: cor é do personagem, nunca do time.
+- **O campo `Color` da ficha não é decoração.** Ele deixou de pintar o corpo quando o sprite entrou, mas continua colorindo o **projétil do ataque à distância** no `OnBasicAttackLanded`. Ele precisa acompanhar o tom do personagem, senão um herói anil dispara tiros de outra cor.
+    - Foi exatamente o que aconteceu entre a 0.10.1.0 e a 0.10.2.2: a Tempo ficou ciano e o campo continuou cobalto, sem nada acusar, porque ela ainda não tinha arma de alcance para revelar.
+
 ## A folha de origem
 
 - Os seis desenhos foram recortados de `.claude/specs/characters/heroes/tempo sprites.png`, uma folha de 192×256 com 64 quadros de 24×32 gerada por ferramenta.

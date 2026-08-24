@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
   Id: tempo
   Kind: 0
-  Color: {r: 0.29411766, g: 0.60784316, b: 0.9019608, a: 1}
+  Color: {r: 0.078431375, g: 0.61960787, b: 0.7921569, a: 1}
   Sprites:
     Down: {fileID: 21300000, guid: 482544ba1c0a9a134001e0e969609125, type: 3}
     Up: {fileID: 21300000, guid: ca156983d66f9f57f5062317464e313f, type: 3}

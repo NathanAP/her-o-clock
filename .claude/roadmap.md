@@ -14,6 +14,18 @@ Até que toda a funcionalidade básica esteja pronta, vamos fazer o jogo funcion
 
 Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa para lacaios; tons de verde para cenário.
 
+**Essa regra vale apenas enquanto o personagem for um retângulo sem textura.** Assim que ele ganha desenho, a cor passa a ser dele e não do time, conforme a seção abaixo.
+
+# Identidade cromática
+
+- **Cada herói tem um tom exclusivo, e nenhum outro personagem pode usá-lo.**
+- A referência é Megaman e Zero, ou Sonic e Shadow: azul é o Megaman porque vermelho é o Zero. A leitura por cor só funciona porque cada um tem exclusividade sobre a sua — não é o tom em si que torna alguém memorável, é o tom ser dele e de mais ninguém.
+- A Tempo é o **anil**, `#149ECA`, desde a folha de referência em `.claude/specs/characters/heroes/tempo-reference.png`. Nenhum outro personagem usa esse tom, nem uma variação próxima dele.
+- **O time não é comunicado por cor**, e não precisa ser: a metade do tabuleiro que o personagem ocupa já diz de que lado ele está, e posição é informação mais forte que tonalidade. Se os cinco outros heróis também fossem azuis, a Tempo deixaria de ser "a anil" e viraria "a azul mais clara", que é exatamente o problema que a escolha dela resolveu.
+- As cores de apoio podem repetir entre personagens. O marfim, o grafite e o amarelo de sinalização são vocabulário comum da série, e é justamente isso que faz o tom exclusivo saltar.
+- O violeta do Catarsis é **reservado** e não pertence a herói nenhum. Ele indica a origem, e quem o usar está dizendo algo sobre a própria história.
+- Isso precisa ser decidido antes de o segundo personagem ganhar arte. Depois de três, virar essa regra é retrabalho.
+
 # Versões
 
 ## 0.1.0.0 (feita)
@@ -329,6 +341,13 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **O ataque é um estado e nunca uma sequência.** Cada golpe reinicia a pose e nunca enfileira: com 8x de velocidade sobrando em cima da velocidade de ataque, os golpes chegam em menos de quatro quadros e uma fila ficaria correndo atrás da luta.
 - **Duas coisas da 0.10.1.0 estavam erradas sem reclamar.** A direção não voltava ao normal depois de um passo lateral, então a heroína lutava de perfil contra quem estava acima dela; e a piscada de dano usava tempo escalado, ou seja nunca foi vista em velocidade alta.
 - O resumo completo está em `.claude/versions/20260824_0.10.2.0.md`.
+
+## 0.10.2.2 (feita)
+
+- A cor é do personagem e não do time. Nenhuma linha de lógica, nenhum teste tocado.
+- **A regra de cor do projeto estava trabalhando contra a identidade da Tempo.** "Tons de azul para heróis" foi escrito para retângulos sem textura; com ela ganhando o anil, cinco outros heróis azuis a transformariam em "a azul mais clara". Virou identidade cromática por herói, e o time passa a ser lido pela metade do tabuleiro.
+- **Um campo que parecia morto não estava.** `Definition.Color` deixou de pintar o corpo na 0.10.1.0 mas continua colorindo o projétil do ataque à distância. Ficou cobalto enquanto a Tempo virou ciano, e só apareceria no dia em que ela equipasse uma arma de alcance — muitas versões adiante e longe da causa.
+- O resumo completo está em `.claude/versions/20260824_0.10.2.2.md`.
 
 ## 0.10.3.0 (próxima)
 
