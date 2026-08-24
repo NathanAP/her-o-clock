@@ -493,6 +493,18 @@ namespace HerOClock.Characters
         /// Moves the character to another cell. The visual position is handled by the mover,
         /// which interpolates between the two cells.
         /// </summary>
+        /// <summary>
+        /// Turns the character back to face the enemy half of the board.
+        ///
+        /// Called when a step finishes, and it is what keeps a sideways step from leaving the
+        /// character standing in profile while it fights something above it. Facing sideways is
+        /// a state of travel, not a state of rest.
+        /// </summary>
+        public void SettleFacing()
+        {
+            Facing = View.FacingResolver.Default(Team);
+        }
+
         public void MoveTo(GridPosition destination)
         {
             // The direction is read before the position changes, since it is the difference

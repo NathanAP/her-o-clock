@@ -267,6 +267,10 @@ namespace HerOClock.Movement
                 stepCarry = (stepProgress - 1f) * stepDuration;
                 stepProgress = 1f;
                 isStepping = false;
+
+                // Arriving means the character is no longer travelling, so it stops looking the
+                // way it walked and goes back to looking at the other side of the board.
+                character.SettleFacing();
             }
 
             Vector3 from = grid.WorldPositionOf(stepFrom);

@@ -29,6 +29,12 @@ namespace HerOClock.View
         [Tooltip("Fallen. Optional: without it a dead character just dims.")]
         public Sprite Dead;
 
+        [Tooltip("Swinging. Used when this character's basic attack is melee.")]
+        public Sprite AttackMelee;
+
+        [Tooltip("Firing. Used when this character's basic attack is ranged.")]
+        public Sprite AttackRanged;
+
         /// <summary>Whether this character has any art at all.</summary>
         public bool HasAny
         {
@@ -55,6 +61,22 @@ namespace HerOClock.View
                 default:
                     return Down;
             }
+        }
+
+        /// <summary>
+        /// The drawing for swinging, or null when this character has none.
+        ///
+        /// Which one is picked comes from the character's own basic attack, and once weapons
+        /// exist that is the weapon speaking: a hero holding a cannon is ranged and a hero
+        /// holding a blade is melee, without either sprite having to be swapped.
+        ///
+        /// The pose faces right, like <see cref="Side"/>, and is shown whichever way the
+        /// character is turned. Drawing an attack for all four directions would cost four
+        /// times the art to correct something a player reads as a swing either way.
+        /// </summary>
+        public Sprite Attack(Characters.AutoAttackType type)
+        {
+            return type == Characters.AutoAttackType.Ranged ? AttackRanged : AttackMelee;
         }
 
         /// <summary>Whether the drawing has to be mirrored to face this way.</summary>

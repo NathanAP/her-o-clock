@@ -57,6 +57,8 @@ namespace HerOClock.EditorTools
                 if (Assign(definition.Id, "up", ref definition.Sprites.Up, found)) { linked++; }
                 if (Assign(definition.Id, "side", ref definition.Sprites.Side, found)) { linked++; }
                 if (Assign(definition.Id, "dead", ref definition.Sprites.Dead, found)) { linked++; }
+                if (Assign(definition.Id, "attack-melee", ref definition.Sprites.AttackMelee, found)) { linked++; }
+                if (Assign(definition.Id, "attack-ranged", ref definition.Sprites.AttackRanged, found)) { linked++; }
 
                 if (found.Count == 0)
                 {

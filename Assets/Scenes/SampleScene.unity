@@ -433,6 +433,7 @@ MonoBehaviour:
     FlashColor: {r: 1, g: 1, b: 1, a: 1}
     SpriteFlashColor: {r: 1, g: 0.42, b: 0.42, a: 1}
     FlashDuration: 0.12
+    AttackPoseDuration: 0.16
   randomSeed: 0
   targetFrameRate: 30
 --- !u!4 &1530138092

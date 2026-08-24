@@ -42,6 +42,16 @@ namespace HerOClock.View
         [Tooltip("Used by a character with art. It cannot be white: a sprite is tinted by "
             + "multiplication, so white is exactly the colour that changes nothing.")]
         public Color SpriteFlashColor = new Color(1f, 0.42f, 0.42f);
+
+        [Tooltip("In real seconds, not game seconds. At 8x the game runs eight times faster "
+            + "and a flash measured in game time would last two hundredths of a real second, "
+            + "which nobody ever saw.")]
         [Min(0.01f)] public float FlashDuration = 0.12f;
+
+        [Header("Attack pose")]
+        [Tooltip("How long the swinging drawing stays up after a blow, in real seconds. "
+            + "A blow landing before it runs out restarts it and never queues behind it, so at "
+            + "high speed the character simply holds the pose.")]
+        [Min(0.02f)] public float AttackPoseDuration = 0.16f;
     }
 }

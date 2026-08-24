@@ -27,6 +27,8 @@ namespace HerOClock.View
         private CharacterSprites sprites;
         private bool usesSprites;
         private Facing shownFacing = (Facing)(-1);
+        private float swingRemaining;
+        private bool showingSwing;
 
         public void Build(Character character, CharacterViewSettings settings, Color color, float cellSize)
         {
@@ -66,6 +68,27 @@ namespace HerOClock.View
             flashRemaining = settings.FlashDuration;
         }
 
+        /// <summary>
+        /// Puts the swinging drawing up. Called once for each basic attack thrown.
+        ///
+        /// It restarts the pose rather than queueing behind one already up, and that is the
+        /// whole design: with attack speed and an eightfold game speed on top, blows can arrive
+        /// faster than the screen refreshes. A queue would run behind the fight and eventually
+        /// play swings for blows that landed seconds ago.
+        ///
+        /// Holding instead degrades the right way. Past a certain speed the pose simply never
+        /// comes down, which is what somebody attacking without pause should look like.
+        /// </summary>
+        public void Swing()
+        {
+            if (!usesSprites)
+            {
+                return;
+            }
+
+            swingRemaining = settings.AttackPoseDuration;
+        }
+
         private void Update()
         {
             if (body == null)
@@ -76,6 +99,14 @@ namespace HerOClock.View
             // Walking does not raise Changed, and raising it on every step would rebuild the
             // stats and the health bar for a character that only turned. So the direction is
             // read here instead, which costs one enum comparison per frame and nothing else.
+            // Both timers run in real time on purpose. The game reaches eight times speed, and
+            // Time.deltaTime shrinks with it: a pose measured in game time would be gone before
+            // a single frame had drawn it.
+            if (swingRemaining > 0f)
+            {
+                swingRemaining -= Time.unscaledDeltaTime;
+            }
+
             UpdateFacing(character.IsAlive);
 
             if (flashRemaining <= 0f)
@@ -83,7 +114,7 @@ namespace HerOClock.View
                 return;
             }
 
-            flashRemaining -= Time.deltaTime;
+            flashRemaining -= Time.unscaledDeltaTime;
 
             float amount = Mathf.Clamp01(flashRemaining / settings.FlashDuration);
             Color target = usesSprites ? settings.SpriteFlashColor : settings.FlashColor;
@@ -224,20 +255,28 @@ namespace HerOClock.View
                     // Cleared so that reviving in place is seen as a change and puts the
                     // character back on its feet, facing wherever it was facing.
                     shownFacing = (Facing)(-1);
+                    showingSwing = false;
+                    swingRemaining = 0f;
                 }
 
                 return;
             }
 
             Facing facing = character.Facing;
+            Sprite swing = swingRemaining > 0f ? sprites.Attack(character.AutoAttack) : null;
+            bool wantsSwing = swing != null;
 
-            if (facing == shownFacing)
+            if (facing == shownFacing && wantsSwing == showingSwing)
             {
                 return;
             }
 
             shownFacing = facing;
-            body.sprite = sprites.For(facing);
+            showingSwing = wantsSwing;
+
+            // The swinging drawing replaces the standing one but does not replace the direction:
+            // a character turned left still swings to the left.
+            body.sprite = wantsSwing ? swing : sprites.For(facing);
             body.flipX = CharacterSprites.IsMirrored(facing);
         }
 

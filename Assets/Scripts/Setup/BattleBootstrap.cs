@@ -503,6 +503,14 @@ namespace HerOClock.Setup
         /// </summary>
         private void OnBasicAttackLanded(Character attacker, Character target)
         {
+            // The swinging pose belongs to whoever swung, and belongs to both kinds of attack.
+            CharacterView view = attacker.GetComponent<CharacterView>();
+
+            if (view != null)
+            {
+                view.Swing();
+            }
+
             if (attacker.AutoAttack != AutoAttackType.Ranged)
             {
                 return;

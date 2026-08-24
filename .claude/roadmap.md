@@ -323,16 +323,24 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **A piscada de dano não funcionava em sprite** e ninguém teria percebido: a cor do `SpriteRenderer` multiplica, então o branco que lavava o retângulo é exatamente a cor que não muda nada.
 - O resumo completo está em `.claude/versions/20260824_0.10.1.0.md`.
 
-## 0.10.2.0 (próxima)
+## 0.10.2.0 (feita)
+
+- A Tempo golpeia, e para de lutar de lado. Onze verificações no arquivo de direção, três novas.
+- **O ataque é um estado e nunca uma sequência.** Cada golpe reinicia a pose e nunca enfileira: com 8x de velocidade sobrando em cima da velocidade de ataque, os golpes chegam em menos de quatro quadros e uma fila ficaria correndo atrás da luta.
+- **Duas coisas da 0.10.1.0 estavam erradas sem reclamar.** A direção não voltava ao normal depois de um passo lateral, então a heroína lutava de perfil contra quem estava acima dela; e a piscada de dano usava tempo escalado, ou seja nunca foi vista em velocidade alta.
+- O resumo completo está em `.claude/versions/20260824_0.10.2.0.md`.
+
+## 0.10.3.0 (próxima)
 
 - Itens. **As specs já estão escritas** em `.claude/specs/items/` e em `items.md`, esperando desde a conversa que virou a 0.10.1.0.
 - Ataques básicos variam de acordo com a arma equipada, que substitui o dano base, a velocidade de ataque e o alcance do personagem.
+- A arma também passa a decidir se o ataque é corpo a corpo ou à distância, e com isso a pose de golpe certa aparece sozinha, sem troca manual de sprite.
 - **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar.
-- Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico: com itens bons o bastante, redirecionar a árvore vira jogada e não conserto.
-- **Precisa decidir antes a escala da evasão**, que é a pergunta em aberto registrada no fim de `items.md`: ela é a única defesa cuja constante não cresce com o nível, e por isso os pontos de evasão de um item vivem duas ordens de grandeza abaixo dos de armadura.
+- Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico.
+- **Precisa decidir antes a escala da evasão**, que é a pergunta em aberto registrada no fim de `items.md`.
 - Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, o determinismo rodado de novo, a varredura ganhando uma dimensão, e as invariantes de `tiers.json`.
 
-## 0.10.3.0
+## 0.10.4.0
 
 - **Drop de itens.** Versão própria e não parte do menu: taxa, raridade e sorteio têm superfície de balanceamento própria, e o `CLAUDE.md` já lista drop rate como coisa a testar.
 

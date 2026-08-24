@@ -20,6 +20,8 @@ MonoBehaviour:
     Up: {fileID: 21300000, guid: ca156983d66f9f57f5062317464e313f, type: 3}
     Side: {fileID: 21300000, guid: c346404d39d9de1dbc53f0f039274e98, type: 3}
     Dead: {fileID: 21300000, guid: bbfb4fa0ae67043652f54a7141b13848, type: 3}
+    AttackMelee: {fileID: 21300000, guid: 59829134401da584bb1713afaa618162, type: 3}
+    AttackRanged: {fileID: 21300000, guid: 92d93859e6b897c469fc189fb192ccc7, type: 3}
   Level: 1
   MaxLevel: 100
   Growth:

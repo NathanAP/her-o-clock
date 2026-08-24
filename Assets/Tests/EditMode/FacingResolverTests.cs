@@ -2,6 +2,7 @@ using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.View;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace HerOClock.Tests
 {
@@ -59,6 +60,16 @@ namespace HerOClock.Tests
         }
 
         [Test]
+        public void ArrivingTurnsTheCharacterBackTowardsTheEnemyHalf()
+        {
+            // A sideways step must not leave a hero standing in profile while it fights
+            // something above it. Facing sideways is a state of travel, not one of rest, and
+            // what a character settles back into is the same direction it started the battle in.
+            Assert.AreEqual(FacingResolver.Default(Team.Heroes), Facing.Up);
+            Assert.AreEqual(FacingResolver.Default(Team.Enemies), Facing.Down);
+        }
+
+        [Test]
         public void AStepThatGoesNowhereKeepsTheCurrentDirection()
         {
             // A character that stopped to attack should keep looking at whoever it walked to.
@@ -80,6 +91,54 @@ namespace HerOClock.Tests
             // This is what keeps Gadrat and the minions as coloured rectangles while Tempo has
             // a sprite, without either of them needing to know about the other.
             Assert.IsFalse(new CharacterSprites().HasAny);
+        }
+
+        [Test]
+        public void TheSwingIsPickedByTheKindOfBasicAttack()
+        {
+            // Once weapons exist this is the weapon speaking: a hero holding a cannon is ranged
+            // and one holding a blade is melee, and neither sprite has to be swapped by hand.
+            CharacterSprites sprites = new CharacterSprites();
+            Sprite melee = Pixel();
+            Sprite ranged = Pixel();
+
+            sprites.AttackMelee = melee;
+            sprites.AttackRanged = ranged;
+
+            try
+            {
+                Assert.AreSame(melee, sprites.Attack(AutoAttackType.Melee));
+                Assert.AreSame(ranged, sprites.Attack(AutoAttackType.Ranged));
+            }
+            finally
+            {
+                Discard(melee);
+                Discard(ranged);
+            }
+        }
+
+        [Test]
+        public void ACharacterWithoutASwingReportsNoneRatherThanBreaking()
+        {
+            // Gadrat and the minions have no art at all, and the view asks them for a swing on
+            // every blow they land.
+            CharacterSprites sprites = new CharacterSprites();
+
+            Assert.IsNull(sprites.Attack(AutoAttackType.Melee));
+            Assert.IsNull(sprites.Attack(AutoAttackType.Ranged));
+        }
+
+        private static Sprite Pixel()
+        {
+            Texture2D texture = new Texture2D(1, 1);
+            return Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f));
+        }
+
+        private static void Discard(Sprite sprite)
+        {
+            Texture2D texture = sprite.texture;
+            Object.DestroyImmediate(sprite);
+            Object.DestroyImmediate(texture);
         }
 
         [Test]
