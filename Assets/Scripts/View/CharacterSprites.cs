@@ -35,6 +35,10 @@ namespace HerOClock.View
         [Tooltip("Firing. Used when this character's basic attack is ranged.")]
         public Sprite AttackRanged;
 
+        [Tooltip("The running cycle, in order. Seen in profile facing right, like Side. "
+            + "Leave empty and the character keeps its standing drawing while it travels.")]
+        public Sprite[] Run = new Sprite[0];
+
         /// <summary>Whether this character has any art at all.</summary>
         public bool HasAny
         {
@@ -77,6 +81,12 @@ namespace HerOClock.View
         public Sprite Attack(Characters.AutoAttackType type)
         {
             return type == Characters.AutoAttackType.Ranged ? AttackRanged : AttackMelee;
+        }
+
+        /// <summary>Whether this character has a running cycle to play.</summary>
+        public bool HasRun
+        {
+            get { return Run != null && Run.Length > 0; }
         }
 
         /// <summary>Whether the drawing has to be mirrored to face this way.</summary>

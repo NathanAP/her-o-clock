@@ -349,6 +349,14 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Um campo que parecia morto não estava.** `Definition.Color` deixou de pintar o corpo na 0.10.1.0 mas continua colorindo o projétil do ataque à distância. Ficou cobalto enquanto a Tempo virou ciano, e só apareceria no dia em que ela equipasse uma arma de alcance — muitas versões adiante e longe da causa.
 - O resumo completo está em `.claude/versions/20260824_0.10.2.2.md`.
 
+## 0.10.2.3 (feita)
+
+- A Tempo corre. Ciclo de oito quadros dirigido por distância percorrida, três verificações novas.
+- **Desfaz uma conclusão errada da 0.10.1.0.** Eu tinha afirmado que a folha gerada não servia para animação; a linha 1 é uma corrida perfeitamente legível e o Nathan pegou olhando. Foram duas medições ruins: o filtro procurava tronco parado com pernas alternando, que é critério de caminhada e não de corrida, e o parâmetro de 10% a 15% de diferença entre quadros vale para sprite grande, não para 24×32.
+- **Churn de pixel não mede se uma folha anima.** O que mede é âncora dos pés, altura constante e paleta unificada — e as três já estavam medidas desde a 0.10.1.0.
+- **O 8x é ferramenta de desenvolvimento e não requisito de produto.** Eu vinha usando ele para justificar decisão de projeto em três versões seguidas, e o `battle.md` já dizia o contrário desde sempre.
+- O resumo completo está em `.claude/versions/20260824_0.10.2.3.md`.
+
 ## 0.10.3.0 (próxima)
 
 - Itens. **As specs já estão escritas** em `.claude/specs/items/` e em `items.md`, esperando desde a conversa que virou a 0.10.1.0.

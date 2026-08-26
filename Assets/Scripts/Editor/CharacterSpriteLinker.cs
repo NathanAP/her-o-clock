@@ -60,6 +60,8 @@ namespace HerOClock.EditorTools
                 if (Assign(definition.Id, "attack-melee", ref definition.Sprites.AttackMelee, found)) { linked++; }
                 if (Assign(definition.Id, "attack-ranged", ref definition.Sprites.AttackRanged, found)) { linked++; }
 
+                if (AssignRun(definition.Id, definition.Sprites, found)) { linked++; }
+
                 if (found.Count == 0)
                 {
                     continue;
@@ -137,6 +139,38 @@ namespace HerOClock.EditorTools
                 bool sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path) != null;
                 report.AppendLine("  rebuilt " + path + "  texture=" + texture + "  sprite=" + sprite);
             }
+        }
+
+        /// <summary>
+        /// Loads the running cycle, numbered from zero, and stops at the first gap.
+        ///
+        /// Stopping at the gap rather than scanning a fixed count means a cycle can be any
+        /// length, and a half delivered one plays as far as it goes instead of throwing.
+        /// </summary>
+        private static bool AssignRun(string id, View.CharacterSprites sprites, List<string> found)
+        {
+            List<Sprite> cycle = new List<Sprite>();
+
+            for (int i = 0; ; i++)
+            {
+                Sprite frame = AssetDatabase.LoadAssetAtPath<Sprite>(Folder + id + "-run-" + i + ".png");
+
+                if (frame == null)
+                {
+                    break;
+                }
+
+                cycle.Add(frame);
+            }
+
+            if (cycle.Count == 0)
+            {
+                return false;
+            }
+
+            sprites.Run = cycle.ToArray();
+            found.Add("run x" + cycle.Count);
+            return true;
         }
 
         /// <summary>

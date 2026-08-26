@@ -29,6 +29,10 @@ namespace HerOClock.View
         private Facing shownFacing = (Facing)(-1);
         private float swingRemaining;
         private bool showingSwing;
+        private Vector3 lastPosition;
+        private float cellsTravelled;
+        private bool moving;
+        private int shownRunFrame = -1;
 
         public void Build(Character character, CharacterViewSettings settings, Color color, float cellSize)
         {
@@ -49,6 +53,8 @@ namespace HerOClock.View
             healthBackground = CreateSprite("HealthBarBackground", settings.HealthBarSize, settings.HealthBarOffsetY, settings.HealthBarBackground, 1);
             healthFill = CreateSprite("HealthBarFill", settings.HealthBarSize, settings.HealthBarOffsetY, settings.HealthBarFull, 2);
             levelLabel = CreateLevelLabel();
+
+            lastPosition = transform.position;
 
             character.Changed += Refresh;
             Refresh();
@@ -99,6 +105,8 @@ namespace HerOClock.View
             // Walking does not raise Changed, and raising it on every step would rebuild the
             // stats and the health bar for a character that only turned. So the direction is
             // read here instead, which costs one enum comparison per frame and nothing else.
+            TrackMovement();
+
             // Both timers run in real time on purpose. The game reaches eight times speed, and
             // Time.deltaTime shrinks with it: a pose measured in game time would be gone before
             // a single frame had drawn it.
@@ -119,6 +127,38 @@ namespace HerOClock.View
             float amount = Mathf.Clamp01(flashRemaining / settings.FlashDuration);
             Color target = usesSprites ? settings.SpriteFlashColor : settings.FlashColor;
             body.color = Color.Lerp(bodyColor, target, amount);
+        }
+
+        /// <summary>
+        /// Measures ground covered since the last frame, which is what drives the running cycle.
+        ///
+        /// Read from the transform rather than asked of the mover, so the view stays a spectator
+        /// and the simulation keeps knowing nothing about drawings.
+        ///
+        /// A jump of more than half a cell in a single frame is not walking, it is being put
+        /// somewhere: restarting a battle, entering a stage, or the board sliding between waves.
+        /// Counting those would spin the legs for a journey nobody made.
+        /// </summary>
+        private void TrackMovement()
+        {
+            Vector3 now = transform.position;
+            float moved = Vector3.Distance(now, lastPosition);
+            lastPosition = now;
+
+            float cells = cellSize > 0f ? moved / cellSize : 0f;
+
+            if (cells > 0.5f)
+            {
+                moving = false;
+                return;
+            }
+
+            moving = cells > 0.0001f;
+
+            if (moving)
+            {
+                cellsTravelled += cells;
+            }
         }
 
         private void Refresh()
@@ -257,6 +297,7 @@ namespace HerOClock.View
                     shownFacing = (Facing)(-1);
                     showingSwing = false;
                     swingRemaining = 0f;
+                    shownRunFrame = -1;
                 }
 
                 return;
@@ -266,17 +307,37 @@ namespace HerOClock.View
             Sprite swing = swingRemaining > 0f ? sprites.Attack(character.AutoAttack) : null;
             bool wantsSwing = swing != null;
 
-            if (facing == shownFacing && wantsSwing == showingSwing)
+            // Swinging beats running, which beats standing. A character that stopped to strike
+            // should be seen striking, not caught mid stride.
+            bool wantsRun = !wantsSwing && moving && sprites.HasRun;
+            int runFrame = wantsRun
+                ? RunCycle.FrameAt(cellsTravelled, settings.RunCycleCells, sprites.Run.Length)
+                : -1;
+
+            if (facing == shownFacing && wantsSwing == showingSwing && runFrame == shownRunFrame)
             {
                 return;
             }
 
             shownFacing = facing;
             showingSwing = wantsSwing;
+            shownRunFrame = runFrame;
 
-            // The swinging drawing replaces the standing one but does not replace the direction:
-            // a character turned left still swings to the left.
-            body.sprite = wantsSwing ? swing : sprites.For(facing);
+            // None of the three replaces the direction: a character turned left swings to the
+            // left and runs to the left.
+            if (wantsSwing)
+            {
+                body.sprite = swing;
+            }
+            else if (wantsRun)
+            {
+                body.sprite = sprites.Run[runFrame];
+            }
+            else
+            {
+                body.sprite = sprites.For(facing);
+            }
+
             body.flipX = CharacterSprites.IsMirrored(facing);
         }
 

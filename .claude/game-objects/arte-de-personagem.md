@@ -13,6 +13,7 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
     - `tempo-dead.png` — caído.
     - `tempo-attack-melee.png` — golpeando com lâmina.
     - `tempo-attack-ranged.png` — disparando.
+    - `tempo-run-0.png` a `tempo-run-7.png` — o ciclo de corrida, em ordem.
 - Não existe desenho para a esquerda de propósito. Ele é o de perfil com `flipX`, o que custa um campo em vez de mais um desenho por personagem.
 
 ## Tamanho e ajustes de importação
@@ -44,6 +45,17 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
 - **Os dois cronômetros de apresentação correm em tempo não escalado**, tanto a pose quanto a piscada de dano. `Time.deltaTime` encolhe junto com a velocidade do jogo, então uma pose medida em tempo de jogo duraria dois centésimos de segundo real em 8x e nenhum quadro chegaria a desenhá-la.
     - Isso era um defeito já existente na piscada de dano, corrigido junto na 0.10.2.0.
 - A pose olha para a direita, como o perfil, e é mostrada com o personagem virado para qualquer lado. Desenhar ataque para as quatro direções custaria quatro vezes a arte para corrigir algo que o jogador lê como golpe de qualquer jeito.
+
+## O ciclo de corrida
+
+- São oito desenhos numerados a partir de zero. O linker lê até achar um buraco, então um ciclo pode ter qualquer tamanho e um entregue pela metade toca até onde vai.
+- **O ciclo é dirigido por distância percorrida, nunca por tempo.** Um ciclo no relógio anda no próprio ritmo enquanto a personagem anda no ritmo da AGI dela, e os dois se afastam até os pés patinarem no chão. Amarrado à distância, o pé encosta sempre no mesmo ponto do percurso.
+    - `RunCycleCells` diz quanto chão um ciclo inteiro cobre. Um significa um ciclo por casa.
+    - Como é posição e não relógio, o ciclo também não se importa com a velocidade em que o jogo está rodando.
+- A distância é medida no `CharacterView` comparando o `transform` entre quadros, e não perguntada ao `CharacterMover`. A view continua espectadora e a simulação segue sem saber que desenhos existem.
+- **Um salto maior que meia casa num quadro só não conta.** Isso não é andar, é ser colocado em algum lugar: reinício de batalha, entrada de fase, ou o chão deslizando entre ondas. Contar esses giraria as pernas por uma viagem que ninguém fez.
+- A prioridade entre desenhos é **golpe, depois corrida, depois parado**. Quem parou para bater deve ser visto batendo, e não pego no meio da passada.
+- O ciclo é de perfil, como o `Side`, e é usado mesmo subindo ou descendo o tabuleiro — a mesma concessão já aceita para a pose de ataque.
 
 ## Como o desenho chega no personagem
 
@@ -90,6 +102,10 @@ Os cinco valores saem da barra da folha de referência, `.claude/specs/character
 ## A folha de origem
 
 - Os seis desenhos foram recortados de `.claude/specs/characters/heroes/tempo sprites.png`, uma folha de 192×256 com 64 quadros de 24×32 gerada por ferramenta.
-- **Aquela folha não é uma animação.** A diferença entre quadros vizinhos fica entre 34% e 50% dos pixels em todas as oito linhas; um ciclo de caminhada de verdade muda de 10% a 15%. Tocar aqueles quadros em sequência seria tremida, não movimento.
-- Por isso o que entrou foram seis poses paradas. Animação depende de uma folha feita para isso, e é problema de outra versão.
+- **A linha 1 é um ciclo de corrida utilizável**, e virou os oito quadros de `tempo-run`.
+- Isso contraria o que este arquivo dizia até a 0.10.2.3, que era que a folha não servia para animação. Aquela conclusão saiu de duas medições erradas, e vale registrar as duas para não se repetirem:
+    - O filtro procurava **tronco parado com pernas alternando**, que é o critério de uma caminhada clássica. Corrida move o corpo inteiro por definição, então o filtro descartava justamente o que servia.
+    - O parâmetro citado, de 10% a 15% de diferença entre quadros vizinhos, vale para sprite grande. Num 24×32 a personagem tem umas 300 pixels e mover braços e pernas em 2 pixels muda quase tudo: medindo só onde há personagem, **todas** as oito linhas dão de 87% a 98%.
+- **Churn de pixel mede quanto mudou, não se a mudança faz sentido.** O que decide se uma folha anima são outras três coisas, e as três passam aqui: âncora dos pés igual nos 64 quadros, altura variando 1 pixel dentro da linha, e paleta unificada.
+- As demais linhas continuam sendo poses avulsas, e delas saíram os seis desenhos parados.
 - A paleta dos seis foi unificada em 15 cores. A folha original tinha 253 cores e **nenhuma delas aparecia nos 64 quadros**, ou seja, cada quadro tinha tons próprios e a Tempo mudaria de cor ao virar.

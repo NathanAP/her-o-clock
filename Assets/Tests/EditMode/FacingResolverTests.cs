@@ -128,6 +128,36 @@ namespace HerOClock.Tests
             Assert.IsNull(sprites.Attack(AutoAttackType.Ranged));
         }
 
+        [Test]
+        public void TheRunningCycleIsDrivenByGroundCoveredAndWraps()
+        {
+            // Eight drawings over one cell means a new drawing every eighth of a cell, and the
+            // ninth eighth is the first drawing again.
+            Assert.AreEqual(0, RunCycle.FrameAt(0f, 1f, 8));
+            Assert.AreEqual(1, RunCycle.FrameAt(0.125f, 1f, 8));
+            Assert.AreEqual(7, RunCycle.FrameAt(0.875f, 1f, 8));
+            Assert.AreEqual(0, RunCycle.FrameAt(1f, 1f, 8));
+            Assert.AreEqual(3, RunCycle.FrameAt(3.375f, 1f, 8));
+        }
+
+        [Test]
+        public void ALongerCycleSpreadsTheSameDrawingsOverMoreGround()
+        {
+            // This is the knob that decides how often the legs move for the same journey, and
+            // it is ground and never seconds: a character with high agility crosses the cell
+            // faster and its feet land at the same points regardless.
+            Assert.AreEqual(0, RunCycle.FrameAt(0.125f, 2f, 8));
+            Assert.AreEqual(1, RunCycle.FrameAt(0.25f, 2f, 8));
+            Assert.AreEqual(4, RunCycle.FrameAt(1f, 2f, 8));
+        }
+
+        [Test]
+        public void ACharacterWithoutACycleAsksForNothingAndGetsZero()
+        {
+            Assert.AreEqual(0, RunCycle.FrameAt(5f, 1f, 0));
+            Assert.AreEqual(0, RunCycle.FrameAt(5f, 0f, 8));
+        }
+
         private static Sprite Pixel()
         {
             Texture2D texture = new Texture2D(1, 1);

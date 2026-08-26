@@ -22,6 +22,15 @@ MonoBehaviour:
     Dead: {fileID: 21300000, guid: bbfb4fa0ae67043652f54a7141b13848, type: 3}
     AttackMelee: {fileID: 21300000, guid: 59829134401da584bb1713afaa618162, type: 3}
     AttackRanged: {fileID: 21300000, guid: 92d93859e6b897c469fc189fb192ccc7, type: 3}
+    Run:
+    - {fileID: 21300000, guid: ce6aefec80b5b7b43aee87b63b270784, type: 3}
+    - {fileID: 21300000, guid: 9b6c335b14ba43043987be139d7ae285, type: 3}
+    - {fileID: 21300000, guid: 00f749b19a9a4214bbc3028be2a10207, type: 3}
+    - {fileID: 21300000, guid: e51700b05e3facf448e2499856c6e58f, type: 3}
+    - {fileID: 21300000, guid: d1f7ca3551c383045bc3fca4048be554, type: 3}
+    - {fileID: 21300000, guid: f074e40b0c3fd364db702fe0362704e1, type: 3}
+    - {fileID: 21300000, guid: 2d439102fee35a941a8972de7010c2ed, type: 3}
+    - {fileID: 21300000, guid: eb57d19d85292854083133e8a282d0d5, type: 3}
   Level: 1
   MaxLevel: 100
   Growth:

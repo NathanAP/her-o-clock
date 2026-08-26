@@ -53,5 +53,11 @@ namespace HerOClock.View
             + "A blow landing before it runs out restarts it and never queues behind it, so at "
             + "high speed the character simply holds the pose.")]
         [Min(0.02f)] public float AttackPoseDuration = 0.16f;
+
+        [Header("Running")]
+        [Tooltip("How much ground one full running cycle covers, in cells. Lower makes the legs "
+            + "move more often for the same distance. Measured in ground and not in seconds, so "
+            + "a fast character never slides over the floor.")]
+        [Min(0.1f)] public float RunCycleCells = 1f;
     }
 }
