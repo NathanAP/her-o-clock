@@ -11,9 +11,9 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
     - `tempo-up.png` — virado para cima, o jogador vê as costas.
     - `tempo-side.png` — de perfil, olhando para a **direita**. A esquerda é este mesmo desenho espelhado.
     - `tempo-dead.png` — caído.
-    - `tempo-attack-melee.png` — golpeando com lâmina.
-    - `tempo-attack-ranged.png` — disparando.
-    - `tempo-run-0.png` a `tempo-run-7.png` — o ciclo de corrida, em ordem.
+    - `tempo-attack-melee-0.png` a `-2.png` — o golpe de lâmina: preparação, corte, recuperação.
+    - `tempo-attack-ranged-0.png` a `-2.png` — o disparo: carga, tiro, recuperação.
+    - `tempo-run-0.png` a `tempo-run-4.png` — o ciclo de corrida, em ordem.
 - Não existe desenho para a esquerda de propósito. Ele é o de perfil com `flipX`, o que custa um campo em vez de mais um desenho por personagem.
 
 ## Tamanho e ajustes de importação
@@ -38,8 +38,9 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
 
 ## A pose de ataque
 
-- Vale para as duas mãos: `AttackMelee` é usada quando o ataque básico do personagem é corpo a corpo e `AttackRanged` quando é à distância. Quem escolhe é o `AutoAttack` da ficha, e quando os itens chegarem é a arma que passa a mandar nesse valor — sem que nenhum dos dois sprites precise mudar.
-- **A pose é um estado, nunca uma sequência.** Cada ataque básico liga a pose e arma um cronômetro; um ataque novo reinicia o cronômetro e nunca entra numa fila.
+- Vale para as duas mãos: `AttackMelee` é usada quando o ataque básico do personagem é corpo a corpo e `AttackRanged` quando é à distância. As duas são **sequências**, e uma sequência de um desenho só é permitida e lê como pose. Quem escolhe é o `AutoAttack` da ficha, e quando os itens chegarem é a arma que passa a mandar nesse valor — sem que nenhum dos dois sprites precise mudar.
+- **O golpe toca uma vez e acaba**, ao contrário do ciclo de corrida, que repete. É por isso que são duas classes: `SwingSequence` devolve `-1` quando o golpe terminou, e o `-1` é o que devolve o desenho parado à tela. Um golpe em laço viraria moinho de vento.
+- Um ataque novo **reinicia** a sequência do primeiro desenho e nunca entra numa fila.
     - O motivo é a velocidade. Com velocidade de ataque somada aos 8x do jogo, os golpes chegam mais rápido que os quadros na tela. Uma fila ficaria correndo atrás da luta e acabaria tocando golpes que aconteceram segundos antes.
     - A degradação em velocidade alta sai correta de graça: a pose simplesmente não desce mais, que é como alguém atacando sem parar deve parecer.
 - **Os dois cronômetros de apresentação correm em tempo não escalado**, tanto a pose quanto a piscada de dano. `Time.deltaTime` encolhe junto com a velocidade do jogo, então uma pose medida em tempo de jogo duraria dois centésimos de segundo real em 8x e nenhum quadro chegaria a desenhá-la.
@@ -48,14 +49,29 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
 
 ## O ciclo de corrida
 
-- São oito desenhos numerados a partir de zero. O linker lê até achar um buraco, então um ciclo pode ter qualquer tamanho e um entregue pela metade toca até onde vai.
+- São cinco desenhos numerados a partir de zero. O linker lê até achar um buraco, então um ciclo pode ter qualquer tamanho e um entregue pela metade toca até onde vai.
 - **O ciclo é dirigido por distância percorrida, nunca por tempo.** Um ciclo no relógio anda no próprio ritmo enquanto a personagem anda no ritmo da AGI dela, e os dois se afastam até os pés patinarem no chão. Amarrado à distância, o pé encosta sempre no mesmo ponto do percurso.
-    - `RunCycleCells` diz quanto chão um ciclo inteiro cobre. Um significa um ciclo por casa.
+    - `RunCycleCells` diz quanto chão um ciclo inteiro cobre. Um significa um ciclo por casa, o que com cinco quadros dá cerca de 10 quadros por segundo — dentro da faixa de 8 a 12 em que ciclo de corrida em pixel art costuma ficar legível.
+    - **Não vale afrouxar mais que isso.** Um passo no combate leva 0,46 s, então o ciclo inteiro mal cabe nele. Esticar o ciclo faz a personagem mostrar três quadros e meio de uma passada, o que lê como quebrado e não como devagar.
+- **A caminhada do combate é sempre um vislumbre, e isso é fato de design e não defeito.** Uma casa é atravessada em menos de meio segundo. O lugar onde a animação realmente aparece é a rolagem entre ondas: três segundos seguidos, umas trinta trocas de desenho. É lá que vale julgar o ciclo.
     - Como é posição e não relógio, o ciclo também não se importa com a velocidade em que o jogo está rodando.
 - A distância é medida no `CharacterView` comparando o `transform` entre quadros, e não perguntada ao `CharacterMover`. A view continua espectadora e a simulação segue sem saber que desenhos existem.
 - **Um salto maior que meia casa num quadro só não conta.** Isso não é andar, é ser colocado em algum lugar: reinício de batalha, entrada de fase, ou o chão deslizando entre ondas. Contar esses giraria as pernas por uma viagem que ninguém fez.
+- **O chão deslizando entre ondas conta como caminhada.** Na transição ninguém move o próprio `transform`: o `BoardScroller` desliza o tabuleiro e os personagens ficam parados em cima dele.
+    - O próprio `BoardScroller` já dizia isso no comentário — "o que a ficção diz que está acontecendo é que os heróis estão caminhando" — e a arte mostrava todo mundo em pose de descanso. Com qualquer sprite parado ali, a cena lê como esteira rolante e não como o grupo atravessando a cidade.
+    - A view recebe o `Transform` do tabuleiro e mede o deslocamento dele do mesmo jeito que mede o do personagem. Continua sendo espectadora: tudo que ela sabe vem de `transform`.
+    - **Durante a rolagem todo mundo fica de perfil.** O ciclo é desenhado de perfil, e esse é o único momento em que ninguém tem inimigo para encarar, então virar de lado não custa nada. É também a leitura de auto-scroller que o `CLAUDE.md` pede.
 - A prioridade entre desenhos é **golpe, depois corrida, depois parado**. Quem parou para bater deve ser visto batendo, e não pego no meio da passada.
 - O ciclo é de perfil, como o `Side`, e é usado mesmo subindo ou descendo o tabuleiro — a mesma concessão já aceita para a pose de ataque.
+
+## O que ainda falta, e é sabido
+
+Esta base foi aceita como provisória em 0.10.2.3. Ela serve para existir código e para se ter noção do que funciona, e não como arte final.
+
+- **Não existe caminhada de costas.** Entre uma onda e outra o grupo deveria avançar de costas para o jogador, e as únicas costas da folha, os quadros `06` e `07`, estão paradas. Os quadros `52` e `53` parecem costas e não são: o visor aparece, são três-quartos. Por enquanto todo mundo vira de perfil durante a rolagem, que é o menos ruim e não o certo.
+- **O ciclo de corrida não é um ciclo projetado.** A abertura das pernas ao longo dos oito quadros originais dá 16, 15, 15, 15, 12, 15, 13, 16; um ciclo desenhado de propósito oscilaria largo-estreito-largo-estreito. São poses avulsas que leem bem juntas, e cinco delas leem melhor que oito.
+- **As duas sequências de ataque vieram de poses avulsas também**, escolhidas por leitura e não desenhadas como golpe.
+- O caminho combinado é gerar as animações a partir de um sprite único, a ser testado primeiro com o Gadrat. Quando vierem, o que se mede antes de entrar é: âncora dos pés, altura por quadro, paleta comum entre quadros, e a oscilação das pernas ao longo do ciclo.
 
 ## Como o desenho chega no personagem
 

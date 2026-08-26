@@ -102,13 +102,14 @@ namespace HerOClock.Tests
             Sprite melee = Pixel();
             Sprite ranged = Pixel();
 
-            sprites.AttackMelee = melee;
-            sprites.AttackRanged = ranged;
+            sprites.AttackMelee = new[] { melee };
+            sprites.AttackRanged = new[] { ranged };
 
             try
             {
-                Assert.AreSame(melee, sprites.Attack(AutoAttackType.Melee));
-                Assert.AreSame(ranged, sprites.Attack(AutoAttackType.Ranged));
+                Assert.AreSame(melee, sprites.Attack(AutoAttackType.Melee)[0]);
+                Assert.AreSame(ranged, sprites.Attack(AutoAttackType.Ranged)[0]);
+                Assert.IsTrue(sprites.HasAttack(AutoAttackType.Melee));
             }
             finally
             {
@@ -124,8 +125,37 @@ namespace HerOClock.Tests
             // every blow they land.
             CharacterSprites sprites = new CharacterSprites();
 
-            Assert.IsNull(sprites.Attack(AutoAttackType.Melee));
-            Assert.IsNull(sprites.Attack(AutoAttackType.Ranged));
+            Assert.IsFalse(sprites.HasAttack(AutoAttackType.Melee));
+            Assert.IsFalse(sprites.HasAttack(AutoAttackType.Ranged));
+        }
+
+        [Test]
+        public void TheSwingPlaysOnceAndThenGivesUpTheScreen()
+        {
+            // Three drawings over three tenths of a second: one each tenth, and nothing at all
+            // once the swing is done. Minus one is what puts the standing drawing back.
+            Assert.AreEqual(0, SwingSequence.FrameAt(0f, 0.3f, 3));
+            Assert.AreEqual(0, SwingSequence.FrameAt(0.09f, 0.3f, 3));
+            Assert.AreEqual(1, SwingSequence.FrameAt(0.1f, 0.3f, 3));
+            Assert.AreEqual(2, SwingSequence.FrameAt(0.25f, 0.3f, 3));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.3f, 0.3f, 3));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(5f, 0.3f, 3));
+        }
+
+        [Test]
+        public void TheSwingNeverLoops()
+        {
+            // The difference from the running cycle, and the reason they are two classes: a
+            // swing has an end. Looping one would turn a single blow into a windmill.
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.31f, 0.3f, 3));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.6f, 0.3f, 3));
+        }
+
+        [Test]
+        public void ACharacterWithoutASwingAsksForNothingAndGetsNothing()
+        {
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.1f, 0.3f, 0));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.1f, 0f, 3));
         }
 
         [Test]

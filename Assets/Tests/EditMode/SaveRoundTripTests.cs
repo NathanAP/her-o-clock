@@ -73,6 +73,63 @@ namespace HerOClock.Tests
             return reborn;
         }
 
+        // --- The level the character itself believes in ---
+
+        /// <summary>
+        /// A reloaded hero has to agree with itself about what level it is.
+        ///
+        /// The level lives in two places: <c>Progress.Level</c>, which is what the save carries,
+        /// and the character's own level, which is what every stat is computed from. Restoring
+        /// only the first leaves the two disagreeing, and nothing complains — the party looks
+        /// like it is level 1 and fights like it, while the file says otherwise.
+        ///
+        /// The rest of this file only ever asserted <c>Progress.Level</c>, which is exactly the
+        /// gap the bug walked through.
+        /// </summary>
+        [Test]
+        public void AReloadedHeroAgreesWithItselfAboutItsLevel()
+        {
+            CharacterDefinition sheet = battle.Sheet("armoured-hero", CharacterKind.Hero,
+                power: 10, agility: 5, specialty: 3, constitution: 20, physicalArmor: 20);
+            sheet.Stats.PhysicalArmorPerLevel = 20;
+
+            Character hero = battle.Spawn(sheet, Team.Heroes, 2, 1, level: 9);
+            int armourAtNine = hero.Stats.PhysicalArmor;
+
+            SaveReadResult read;
+            Character reborn = SaveAndReload(hero, out read);
+
+            Assert.AreEqual(9, reborn.Progress.Level, "The save lost the level.");
+            Assert.AreEqual(9, reborn.Level,
+                "The save brought the level back but the character kept believing it was level 1.");
+
+            // The consequence, and the reason this is not a cosmetic bug: armour and base damage
+            // grow with the level, so a hero that thinks it is level 1 fights with level 1 defence
+            // while carrying the attribute points of level 9.
+            Assert.AreEqual(armourAtNine, reborn.Stats.PhysicalArmor,
+                "The reloaded hero came back with the armour of a level 1 character.");
+        }
+
+        /// <summary>
+        /// A loaded party starts whole.
+        ///
+        /// The format carries no current health. A hero is spawned with the maximum health of
+        /// whatever level it was built at, and restoring the save then raises that maximum to the
+        /// level it really is — so without topping it up, every session would begin with the party
+        /// wounded by the difference, by damage nobody ever took.
+        /// </summary>
+        [Test]
+        public void AReloadedHeroStartsAtFullHealth()
+        {
+            Character hero = battle.Spawn(Sheet(), Team.Heroes, 2, 1, level: 9);
+
+            SaveReadResult read;
+            Character reborn = SaveAndReload(hero, out read);
+
+            Assert.AreEqual(reborn.Stats.MaxHealth, reborn.CurrentHealth,
+                "The party came back already hurt by the health it gained while loading.");
+        }
+
         // --- The whole party ---
 
         /// <summary>

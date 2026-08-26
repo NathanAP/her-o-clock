@@ -185,7 +185,9 @@ namespace HerOClock.Persistence
 
         private static void Restore(Character hero, HeroSave entry)
         {
-            hero.Progress.Restore(entry.level, entry.currentXp, entry.skillPoints);
+            // Goes through the character and not straight into Progress, so the level the
+            // stats are built from moves with the level the save carries. See RestoreProgress.
+            hero.RestoreProgress(entry.level, entry.currentXp, entry.skillPoints);
 
             hero.Attributes.Restore(
                 entry.automaticAttributes,
@@ -196,6 +198,15 @@ namespace HerOClock.Persistence
             // Tops up anything the save is short of, which is what reconciles a file whose points
             // do not add up to the level it claims.
             hero.Attributes.GrantFor(hero.Progress.Level);
+
+            // A loaded party starts whole.
+            //
+            // The format carries no current health, so there is nothing to put back: the hero was
+            // built with the maximum health of the level it was spawned at, and the restore above
+            // then raises that maximum to the level it really is. Left alone, every session would
+            // begin with the party already wounded by the difference, which is invisible in the
+            // file and looks like damage nobody took.
+            hero.Heal(hero.Stats.MaxHealth);
         }
 
         /// <summary>Puts the buckets of the last hour back, exactly as they were.</summary>

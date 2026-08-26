@@ -57,10 +57,9 @@ namespace HerOClock.EditorTools
                 if (Assign(definition.Id, "up", ref definition.Sprites.Up, found)) { linked++; }
                 if (Assign(definition.Id, "side", ref definition.Sprites.Side, found)) { linked++; }
                 if (Assign(definition.Id, "dead", ref definition.Sprites.Dead, found)) { linked++; }
-                if (Assign(definition.Id, "attack-melee", ref definition.Sprites.AttackMelee, found)) { linked++; }
-                if (Assign(definition.Id, "attack-ranged", ref definition.Sprites.AttackRanged, found)) { linked++; }
-
-                if (AssignRun(definition.Id, definition.Sprites, found)) { linked++; }
+                if (AssignSequence(definition.Id, "attack-melee", ref definition.Sprites.AttackMelee, found)) { linked++; }
+                if (AssignSequence(definition.Id, "attack-ranged", ref definition.Sprites.AttackRanged, found)) { linked++; }
+                if (AssignSequence(definition.Id, "run", ref definition.Sprites.Run, found)) { linked++; }
 
                 if (found.Count == 0)
                 {
@@ -142,34 +141,45 @@ namespace HerOClock.EditorTools
         }
 
         /// <summary>
-        /// Loads the running cycle, numbered from zero, and stops at the first gap.
+        /// Loads a numbered sequence and stops at the first gap.
         ///
-        /// Stopping at the gap rather than scanning a fixed count means a cycle can be any
-        /// length, and a half delivered one plays as far as it goes instead of throwing.
+        /// Stopping at the gap rather than scanning a fixed count means a sequence can be any
+        /// length, and a half delivered one plays as far as it goes instead of throwing. A single
+        /// unnumbered file is accepted too, so a one drawing swing needs no `-0` on the end.
         /// </summary>
-        private static bool AssignRun(string id, View.CharacterSprites sprites, List<string> found)
+        private static bool AssignSequence(string id, string name, ref Sprite[] field, List<string> found)
         {
-            List<Sprite> cycle = new List<Sprite>();
+            List<Sprite> frames = new List<Sprite>();
 
             for (int i = 0; ; i++)
             {
-                Sprite frame = AssetDatabase.LoadAssetAtPath<Sprite>(Folder + id + "-run-" + i + ".png");
+                Sprite frame = AssetDatabase.LoadAssetAtPath<Sprite>(Folder + id + "-" + name + "-" + i + ".png");
 
                 if (frame == null)
                 {
                     break;
                 }
 
-                cycle.Add(frame);
+                frames.Add(frame);
             }
 
-            if (cycle.Count == 0)
+            if (frames.Count == 0)
+            {
+                Sprite single = AssetDatabase.LoadAssetAtPath<Sprite>(Folder + id + "-" + name + ".png");
+
+                if (single != null)
+                {
+                    frames.Add(single);
+                }
+            }
+
+            if (frames.Count == 0)
             {
                 return false;
             }
 
-            sprites.Run = cycle.ToArray();
-            found.Add("run x" + cycle.Count);
+            field = frames.ToArray();
+            found.Add(name + " x" + frames.Count);
             return true;
         }
 

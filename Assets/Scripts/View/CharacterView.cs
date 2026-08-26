@@ -27,18 +27,22 @@ namespace HerOClock.View
         private CharacterSprites sprites;
         private bool usesSprites;
         private Facing shownFacing = (Facing)(-1);
-        private float swingRemaining;
-        private bool showingSwing;
+        private float swingElapsed = -1f;
+        private int shownSwingFrame = -1;
         private Vector3 lastPosition;
         private float cellsTravelled;
         private bool moving;
         private int shownRunFrame = -1;
+        private Transform board;
+        private Vector3 lastBoardPosition;
+        private bool travelling;
 
-        public void Build(Character character, CharacterViewSettings settings, Color color, float cellSize)
+        public void Build(Character character, CharacterViewSettings settings, Color color, float cellSize, Transform board)
         {
             this.character = character;
             this.settings = settings;
             this.cellSize = cellSize;
+            this.board = board;
 
             sprites = character.Definition.Sprites;
             usesSprites = sprites != null && sprites.HasAny;
@@ -55,6 +59,11 @@ namespace HerOClock.View
             levelLabel = CreateLevelLabel();
 
             lastPosition = transform.position;
+
+            if (board != null)
+            {
+                lastBoardPosition = board.localPosition;
+            }
 
             character.Changed += Refresh;
             Refresh();
@@ -87,12 +96,13 @@ namespace HerOClock.View
         /// </summary>
         public void Swing()
         {
-            if (!usesSprites)
+            if (!usesSprites || !sprites.HasAttack(character.AutoAttack))
             {
                 return;
             }
 
-            swingRemaining = settings.AttackPoseDuration;
+            // Restarted, never queued: what is shown is always the most recent blow.
+            swingElapsed = 0f;
         }
 
         private void Update()
@@ -110,9 +120,14 @@ namespace HerOClock.View
             // Both timers run in real time on purpose. The game reaches eight times speed, and
             // Time.deltaTime shrinks with it: a pose measured in game time would be gone before
             // a single frame had drawn it.
-            if (swingRemaining > 0f)
+            if (swingElapsed >= 0f)
             {
-                swingRemaining -= Time.unscaledDeltaTime;
+                swingElapsed += Time.unscaledDeltaTime;
+
+                if (swingElapsed >= settings.AttackPoseDuration)
+                {
+                    swingElapsed = -1f;
+                }
             }
 
             UpdateFacing(character.IsAlive);
@@ -145,19 +160,35 @@ namespace HerOClock.View
             float moved = Vector3.Distance(now, lastPosition);
             lastPosition = now;
 
-            float cells = cellSize > 0f ? moved / cellSize : 0f;
+            // The ground sliding is the party walking. Between waves nobody's own transform
+            // moves: the board is what slides, and standing still on top of it reads as being
+            // carried on a conveyor belt rather than as advancing through the city.
+            float boardMoved = 0f;
 
-            if (cells > 0.5f)
+            if (board != null)
             {
-                moving = false;
-                return;
+                Vector3 boardNow = board.localPosition;
+                boardMoved = Vector3.Distance(boardNow, lastBoardPosition);
+                lastBoardPosition = boardNow;
             }
 
-            moving = cells > 0.0001f;
+            float cells = cellSize > 0f ? moved / cellSize : 0f;
+            float boardCells = cellSize > 0f ? boardMoved / cellSize : 0f;
 
-            if (moving)
+            // A jump of more than half a cell in one frame is not walking, it is being placed:
+            // a battle restarting, a stage beginning, or the board snapping back after a slide.
+            bool ownStep = cells > 0.0001f && cells <= 0.5f;
+            travelling = boardCells > 0.0001f && boardCells <= 0.5f;
+
+            moving = ownStep || travelling;
+
+            if (ownStep)
             {
                 cellsTravelled += cells;
+            }
+            else if (travelling)
+            {
+                cellsTravelled += boardCells;
             }
         }
 
@@ -295,17 +326,24 @@ namespace HerOClock.View
                     // Cleared so that reviving in place is seen as a change and puts the
                     // character back on its feet, facing wherever it was facing.
                     shownFacing = (Facing)(-1);
-                    showingSwing = false;
-                    swingRemaining = 0f;
+                    shownSwingFrame = -1;
+                    swingElapsed = -1f;
                     shownRunFrame = -1;
                 }
 
                 return;
             }
 
-            Facing facing = character.Facing;
-            Sprite swing = swingRemaining > 0f ? sprites.Attack(character.AutoAttack) : null;
-            bool wantsSwing = swing != null;
+            // While the ground carries the party forward, everyone is shown in profile. The
+            // running cycle is drawn in profile, and travelling is the one moment where nobody
+            // has an enemy to face, so nothing is lost by turning sideways.
+            Facing facing = travelling ? Facing.Right : character.Facing;
+
+            Sprite[] swing = sprites.Attack(character.AutoAttack);
+            int swingFrame = swingElapsed >= 0f && swing != null
+                ? SwingSequence.FrameAt(swingElapsed, settings.AttackPoseDuration, swing.Length)
+                : -1;
+            bool wantsSwing = swingFrame >= 0;
 
             // Swinging beats running, which beats standing. A character that stopped to strike
             // should be seen striking, not caught mid stride.
@@ -314,20 +352,20 @@ namespace HerOClock.View
                 ? RunCycle.FrameAt(cellsTravelled, settings.RunCycleCells, sprites.Run.Length)
                 : -1;
 
-            if (facing == shownFacing && wantsSwing == showingSwing && runFrame == shownRunFrame)
+            if (facing == shownFacing && swingFrame == shownSwingFrame && runFrame == shownRunFrame)
             {
                 return;
             }
 
             shownFacing = facing;
-            showingSwing = wantsSwing;
+            shownSwingFrame = swingFrame;
             shownRunFrame = runFrame;
 
             // None of the three replaces the direction: a character turned left swings to the
             // left and runs to the left.
             if (wantsSwing)
             {
-                body.sprite = swing;
+                body.sprite = swing[swingFrame];
             }
             else if (wantsRun)
             {

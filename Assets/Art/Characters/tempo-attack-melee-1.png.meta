@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: eb57d19d85292854083133e8a282d0d5
+guid: eb91b38394f35884ab64c67e95eca129
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1154049302171524624
-    second: tempo-run-7_0
+      213: 2615100831674549192
+    second: tempo-attack-melee-1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,12 +100,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tempo-run-7_0
+      name: tempo-attack-melee-1_0
       rect:
         serializedVersion: 2
-        x: 1
+        x: 0
         y: 1
-        width: 23
+        width: 24
         height: 28
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0f167ca264efbffe0800000000000000
-      internalID: -1154049302171524624
+      spriteID: 8c34acbd954ba4420800000000000000
+      internalID: 2615100831674549192
       vertices: []
       indices: 
       edges: []

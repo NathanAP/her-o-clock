@@ -355,7 +355,25 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Desfaz uma conclusão errada da 0.10.1.0.** Eu tinha afirmado que a folha gerada não servia para animação; a linha 1 é uma corrida perfeitamente legível e o Nathan pegou olhando. Foram duas medições ruins: o filtro procurava tronco parado com pernas alternando, que é critério de caminhada e não de corrida, e o parâmetro de 10% a 15% de diferença entre quadros vale para sprite grande, não para 24×32.
 - **Churn de pixel não mede se uma folha anima.** O que mede é âncora dos pés, altura constante e paleta unificada — e as três já estavam medidas desde a 0.10.1.0.
 - **O 8x é ferramenta de desenvolvimento e não requisito de produto.** Eu vinha usando ele para justificar decisão de projeto em três versões seguidas, e o `battle.md` já dizia o contrário desde sempre.
+- **O chão deslizando entre ondas passou a contar como caminhada.** O comentário do `BoardScroller` já dizia que a ficção é que os heróis estão andando, e a arte mostrava todo mundo parado enquanto o mundo passava por baixo. Durante a rolagem todos ficam de perfil, que é a leitura de auto-scroller.
+- **O golpe virou sequência de três desenhos** em vez de um interruptor ligado e desligado. E o desenho único que eu tinha escolhido antes era a preparação do golpe, não o golpe: o quadro com o arco da lâmina estava na folha o tempo todo.
+- **A base de animação foi aceita como provisória.** Nenhuma das três veio de arte feita para animar, e falta caminhada de costas para a transição entre ondas. O caminho combinado é gerar as animações a partir de um sprite único, a testar primeiro com o Gadrat.
 - O resumo completo está em `.claude/versions/20260824_0.10.2.3.md`.
+
+## 0.10.2.4 (feita)
+
+- **O herói não sabia o próprio nível.** O nível morava em dois lugares: `Progress.Level`, que o save carrega, e o campo do `Character`, que todo cálculo usa. A restauração mexia só no primeiro.
+- Não era cosmético: armadura e dano base crescem por nível, então um herói de nível 9 lutava com defesa de nível 1 enquanto carregava os pontos de atributo do nível 9. Com 20 de base e 20 por nível, 180 esperados contra 20 entregues.
+- **A suíte não pegou porque afirmava `Progress.Level` e nunca `Character.Level`** — olhava só o lado bom da fresta onde o bug morava.
+- Achado no caminho: o formato do save não carrega vida atual, então um grupo carregado passa a começar inteiro. Guardar a vida no arquivo fica como escolha em aberto.
+- O resumo completo está em `.claude/versions/20260824_0.10.2.4.md`.
+
+## 0.10.2.5 (feita)
+
+- Uma janela no editor com todas as fichas lado a lado no mesmo nível, em `Her-o-clock` → `Character sheets`. Nenhum teste tocado.
+- **Faltava comparar duas fichas no nível em que elas se encontram.** O Inspector responde por uma ficha e o `snapshot.md` responde no nível inicial de cada uma; nenhum dos dois responde isso.
+- **Cada habilidade mostra o alcance por extenso, com `CATCHES ALLIES` em toda área.** Era a informação que não existia em lugar nenhum do editor e que fez o fogo amigo do Gadrat parecer bug.
+- O resumo completo está em `.claude/versions/20260824_0.10.2.5.md`.
 
 ## 0.10.3.0 (próxima)
 

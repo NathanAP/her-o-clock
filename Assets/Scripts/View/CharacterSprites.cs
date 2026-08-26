@@ -29,11 +29,12 @@ namespace HerOClock.View
         [Tooltip("Fallen. Optional: without it a dead character just dims.")]
         public Sprite Dead;
 
-        [Tooltip("Swinging. Used when this character's basic attack is melee.")]
-        public Sprite AttackMelee;
+        [Tooltip("The swing, in order: wind up, strike, follow through. Used when this "
+            + "character's basic attack is melee. One drawing is allowed and reads as a pose.")]
+        public Sprite[] AttackMelee = new Sprite[0];
 
-        [Tooltip("Firing. Used when this character's basic attack is ranged.")]
-        public Sprite AttackRanged;
+        [Tooltip("The shot, in order. Used when this character's basic attack is ranged.")]
+        public Sprite[] AttackRanged = new Sprite[0];
 
         [Tooltip("The running cycle, in order. Seen in profile facing right, like Side. "
             + "Leave empty and the character keeps its standing drawing while it travels.")]
@@ -78,9 +79,16 @@ namespace HerOClock.View
         /// character is turned. Drawing an attack for all four directions would cost four
         /// times the art to correct something a player reads as a swing either way.
         /// </summary>
-        public Sprite Attack(Characters.AutoAttackType type)
+        public Sprite[] Attack(Characters.AutoAttackType type)
         {
             return type == Characters.AutoAttackType.Ranged ? AttackRanged : AttackMelee;
+        }
+
+        /// <summary>Whether this character has a swing to play at all.</summary>
+        public bool HasAttack(Characters.AutoAttackType type)
+        {
+            Sprite[] frames = Attack(type);
+            return frames != null && frames.Length > 0;
         }
 
         /// <summary>Whether this character has a running cycle to play.</summary>

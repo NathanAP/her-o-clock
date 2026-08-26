@@ -206,6 +206,34 @@ namespace HerOClock.Characters
         }
 
         /// <summary>
+        /// Puts a saved level, experience and skill points back on this character.
+        ///
+        /// It exists because the level lives in two places: <see cref="Progress"/>, which is what
+        /// the save carries, and this instance's own level, which is what every stat is computed
+        /// from. Restoring only the first leaves the two disagreeing and nothing complains — the
+        /// hero reads as level 1, fights with the armour and base damage of level 1, and holds
+        /// the attribute points of the level it really is.
+        ///
+        /// So the two are only ever moved together, and only from in here.
+        /// </summary>
+        public void RestoreProgress(int savedLevel, long currentXp, int skillPoints)
+        {
+            if (Progress == null)
+            {
+                return;
+            }
+
+            Progress.Restore(savedLevel, currentXp, skillPoints);
+
+            // Read back rather than reused: Progress clamps to 1 and to the maximum, and this
+            // level has to be the clamped one.
+            level = Progress.Level;
+
+            // Every derived number is built from the level, so they are all stale until now.
+            OnAttributesChanged();
+        }
+
+        /// <summary>
         /// Applies a level that was just gained.
         ///
         /// Maximum health goes up because it comes from POW and CON, but **current health is

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 92d93859e6b897c469fc189fb192ccc7
+guid: 82924825a7a159642bb99efd441e9892
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8556369839826353808
-    second: tempo-attack-ranged_0
+      213: -2002817714062588266
+    second: tempo-attack-ranged-1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tempo-attack-ranged_0
+      name: tempo-attack-ranged-1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 09e37b529055eb670800000000000000
-      internalID: 8556369839826353808
+      spriteID: 696807386ef8434e0800000000000000
+      internalID: -2002817714062588266
       vertices: []
       indices: 
       edges: []

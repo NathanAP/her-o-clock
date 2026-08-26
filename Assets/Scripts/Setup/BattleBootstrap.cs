@@ -62,6 +62,12 @@ namespace HerOClock.Setup
         [SerializeField] private int targetFrameRate = 30;
 
         private BattleGrid grid;
+
+        /// <summary>
+        /// The ground. Handed to every character view so it can tell that the party is walking
+        /// while the board slides beneath it between waves.
+        /// </summary>
+        private Transform board;
         private BattleDirector director;
         private PlayerWallet wallet;
         private ActivityLog activity;
@@ -124,7 +130,7 @@ namespace HerOClock.Setup
             }
 
             grid = new BattleGrid(gridConfig);
-            Transform board = BoardRenderer.Build(grid, transform);
+            board = BoardRenderer.Build(grid, transform);
             damageNumbers = new DamageNumberPool(transform, gridConfig.CellSize);
             projectiles = new ProjectilePool(transform, gridConfig.CellSize, projectileSettings);
 
@@ -793,7 +799,7 @@ namespace HerOClock.Setup
             // The body and the health bar are children of the character, so the scaling lives
             // on them and not on the object that travels across the board.
             CharacterView view = instance.AddComponent<CharacterView>();
-            view.Build(character, viewSettings, definition.Color, gridConfig.CellSize);
+            view.Build(character, viewSettings, definition.Color, gridConfig.CellSize, board);
 
             return character;
         }
