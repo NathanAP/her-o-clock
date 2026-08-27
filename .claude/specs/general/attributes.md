@@ -48,7 +48,7 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
     - O jogador colocando pontos à mão.
     - O botão de resetar.
     - Ligar ou desligar o interruptor do automático.
-- **O automático não é exceção.** Ele decide *onde* o ponto vai sem decidir *quando* ele vale, exatamente como o jogador.
+- **O automático não é exceção.** Ele decide _onde_ o ponto vai sem decidir _quando_ ele vale, exatamente como o jogador.
 - É a mesma regra que item, equipe, ordem e formação seguem, descrita em "O grupo é montado no começo de cada fase" em `gameplay.md`.
 - **A vida máxima, portanto, nunca muda no meio de uma fase**, já que ela vem apenas de CON.
 
@@ -84,7 +84,7 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
     - Para cada 1 ponto de AGI, o personagem ganha 1% de velocidade de movimento quando estiver utilizando equipamentos leves.
     - Para cada 1 ponto de AGI, o personagem ganha 0.75% de velocidade de movimento quando estiver utilizando equipamentos especiais.
     - Para cada 1 ponto de AGI, o personagem ganha 0.5% de velocidade de movimento quando estiver utilizando equipamentos pesados.
-    - AGI é a fonte principal de evasão, mas a conversão em chance de evasão é feita por rendimento decrescente e está descrita em "Evasão".
+    - AGI é a fonte de evasão, mas a conversão em chance de evasão é feita por rendimento decrescente e está descrita em "Evasão".
 - Personagens com mais AGI são capazes de utilizar equipamentos e armaduras mais leves.
 
 ### Especialidade (SPE)
@@ -92,7 +92,7 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 - SPE aumenta ataques elementais e redução de recarga do personagem.
     - SPE aumenta o dano das habilidades do personagem. **Quanto ele aumenta ainda não está definido**, e é decidido junto com os itens.
         - A promessa foi retirada em vez de implementada porque o modelo inteiro muda com os itens: dano de atributo vai deixar de ser um valor somado e passar a ser uma porcentagem sobre a base que o conteúdo fornece — a arma para o ataque básico, o rank para a habilidade. Implementar o valor antigo agora seria construir algo para apagar em seguida.
-    - SPE é a fonte principal de redução de recarga, mas a conversão em porcentagem é feita por rendimento decrescente e está descrita em "Redução de recarga".
+    - SPE é a fonte de redução de recarga, mas a conversão em porcentagem é feita por rendimento decrescente e está descrita em "Redução de recarga".
 - Personagens com mais SPE são capazes de utilizar equipamentos e armaduras especiais.
 
 ### Constituição (CON)
