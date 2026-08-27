@@ -32,6 +32,10 @@ Uma área é centrada em quem usa e pega todo mundo dentro dela, aliado incluíd
 
 Foi assim que se descobriu que o Gadrat tirava um terço da vida da Tempo por caste sem ninguém ter errado nada.
 
+### Quando ela relê o projeto
+
+A lista de fichas é lida ao abrir a janela, ao voltar o foco para ela e quando o editor avisa que um asset mudou — nunca dentro do `OnGUI`. `OnGUI` roda a cada repintura, inclusive com o mouse só passando por cima, então buscar as fichas de lá custaria uma varredura do projeto inteiro por quadro para montar uma lista que quase nunca muda. Uma ficha destruída debaixo da janela é pulada em vez de estourar.
+
 ### O que ela não faz
 
 - **Não escreve nada.** Tudo é lido pelas mesmas propriedades que o jogo lê, então não pode divergir do que acontece de verdade.

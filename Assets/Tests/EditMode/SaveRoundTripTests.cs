@@ -52,7 +52,15 @@ namespace HerOClock.Tests
                 power: 10, agility: 5, specialty: 3, constitution: 20);
         }
 
-        /// <summary>Writes a party and reads it back into a party built the way a new session builds one.</summary>
+        /// <summary>
+        /// Writes a party and reads it back into a party built the way a new session builds one.
+        ///
+        /// It finishes by starting a stage, because that is what a new session does: a save says
+        /// which stage the player is on and never where inside it, so loading is always followed
+        /// by <c>StartStage</c>. Leaving it out would test a state the game never shows anybody —
+        /// and would miss the point that a rebuild left pending when the game was closed lands on
+        /// the reload, exactly where it would have landed had the player kept playing.
+        /// </summary>
         private Character SaveAndReload(Character hero, out SaveReadResult read)
         {
             PlayerWallet wallet = new PlayerWallet();
@@ -69,6 +77,10 @@ namespace HerOClock.Tests
             Assert.IsTrue(read.Found, "The save that was just written could not be read back.");
 
             SaveMapper.ApplyHeroes(read.Payload, new[] { reborn });
+
+            // The stage the save pointed at, beginning. This is where the restored points start
+            // counting and where the party is put back to full health.
+            reborn.ResetForBattle();
 
             return reborn;
         }
@@ -111,12 +123,15 @@ namespace HerOClock.Tests
         }
 
         /// <summary>
-        /// A loaded party starts whole.
+        /// A loaded party starts whole, and it is the stage starting that makes it so.
         ///
-        /// The format carries no current health. A hero is spawned with the maximum health of
-        /// whatever level it was built at, and restoring the save then raises that maximum to the
-        /// level it really is — so without topping it up, every session would begin with the party
-        /// wounded by the difference, by damage nobody ever took.
+        /// The format carries no current health and does not need to. A hero is spawned with the
+        /// maximum of whatever level it was built at, the save then restores the real level and
+        /// the real points, and the stage beginning is what puts both into effect and fills the
+        /// health to the maximum they produce.
+        ///
+        /// The interesting part is what is **not** here: `SaveMapper` does not touch health at
+        /// all. It used to, and that was a second answer to a question that already had one.
         /// </summary>
         [Test]
         public void AReloadedHeroStartsAtFullHealth()
@@ -147,6 +162,12 @@ namespace HerOClock.Tests
             hero.Attributes.Spend(Attribute.Power, 20);
 
             hero.AwardExperience(ExperienceTable.XpToNextLevel(10) + 7);
+
+            // The stage after the rebuild, which is when points the player moved start counting.
+            // The reloaded hero goes through that same door on its way back, so this is the
+            // earliest moment the two are comparable at all — without it, this would be reading a
+            // hero with a pending rebuild against one that has already applied it.
+            hero.ResetForBattle();
 
             int expectedMaxHealth = hero.Stats.MaxHealth;
 

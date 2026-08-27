@@ -89,6 +89,19 @@ Never read stats straight from the definition again. Doing so makes every charac
 
 The player's six heroes are fixed designs; what varies is the instance the player builds. Levels, attributes and equipment belong to the instance.
 
+### Attributes are two states, not one
+
+`AttributeAllocation` holds two `AttributeSplit`s and they are not interchangeable:
+
+- `edited` — what the player has been doing. The profile shows it, the save writes it.
+- `inEffect` — what the stats read. `WriteTo` is the only member that touches it.
+
+`Commit()` is the only passage between them, and it runs in exactly two places: `Character.Initialize` (being born is the start of a character's first stage — without it a minion handed level 40 fights with level 1 attributes) and `Character.ResetForBattle`.
+
+In `ResetForBattle` it must run **before** the health is put back. The maximum the commit produces is the one that gets filled, so committing afterwards fills the old maximum and leaves the character short by whatever the new points were worth — silently, since nothing compares the two.
+
+The rule this serves is in `design-decisions.md`.
+
 ## ScriptableObjects must hold no runtime state
 
 This project runs with Domain Reload disabled, which makes entering Play Mode almost instant. The price is that nothing is cleared between sessions: static fields keep their values, and so do the fields of any ScriptableObject, because the asset stays loaded.
@@ -183,6 +196,14 @@ Damage, healing, life steal and thorns use the language's default rounding, wher
 
 Besides being the native behaviour, it accumulates no bias: always rounding halves up would push totals upward over thousands of blows.
 
+### A test must never assert on a boundary a float cannot hold
+
+Anything of the shape `(int)(elapsed / duration * count)` splits a span into equal parts, and a test naturally wants to assert exactly where one part ends and the next begins. Most decimal boundaries do not survive that: `3 x 0.1f` is smaller than `0.3f`, so a third of the way through three tenths reads as `0.99999994` and lands one step early.
+
+Pick a span whose parts are powers of two — three eighths splits at `0.125` and `0.25`, both exact — and say in the comment why the odd-looking number is there, or the next person rounds it back and reintroduces the failure. The running cycle tests got this right by luck; the swing tests did not, and 0.10.2.6 exists because of it.
+
+The rule itself is fine either way. In game these counters are sums of frame deltas and never land on a boundary at all — it is only a test that goes looking for one.
+
 ## The target chain serves two purposes
 
 `TargetSelector.Select` takes a `respectRange` parameter:
@@ -201,6 +222,17 @@ The camera resolution and the board size have to change together:
 - The orthographic size `5.33` comes from `320 / 30 / 2`.
 
 Changing one without recalculating the others misaligns the pixel art silently.
+
+## A threshold measured against one thing does not transfer to another
+
+`CharacterView` decides what counts as walking twice over, on purpose, and the two must not be merged:
+
+- **A character** is judged by a half cell per frame. More than that in one frame is not a step, it is being placed — a battle restarting or a stage beginning.
+- **The board** is judged by direction, with no threshold at all. `BoardScroller` slides it down for the whole transition and snaps it back up to the origin in one frame, so the sign alone tells the walk from the snap.
+
+Half a cell was chosen against a character, which covers about two cells a second. The board covers the whole transition's rows, which at eight times speed is several times faster, and reusing the number there meant a machine that could not hold the frame rate silently discarded the entire slide as a jump. That was 0.10.2.7.
+
+The general shape is worth keeping: a threshold carries the speed of whatever it was measured against, and moving it to something faster turns it into a filter that removes the real signal.
 
 ## Sorting layers used by code
 

@@ -53,7 +53,7 @@ A formação de heróis é a do asset. O tempo é só de combate, sem as transi�
 
 | Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |
 |---|---|---|---|---|---|
-| act1-stage1 | 1 | 1 | 23.3 s | 160 | 16 |
+| act1-stage1 | 1 | 1 | 23.4 s | 160 | 16 |
 | act1-stage2 | 2 | 3 | 38.8 s | 800 | 20 |
 | act1-stage3 | 4 | 4 | 45.9 s | 3280 | 28 |
 | act1-stage4 | 3 | 5 | 43.6 s | 2250 | 25 |

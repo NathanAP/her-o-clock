@@ -345,3 +345,17 @@ With the attribute multiplying instead of adding, **the level stops raising dama
 
 So the damage base declares a gain per level, the same shape defence already used, and for the same reason: a number that never moves is worth less every level, because what it is measured against keeps rising. Heroes leave the gain at zero; minions and villains use it.
 
+
+## A point placed only counts from the next stage
+
+Placing an attribute point and the point taking effect are two different moments. It applies to every way of placing one, and **the automatic distribution is not an exception** — it decides *where* a point goes, never *when* it counts.
+
+Without it there is a whole exploit: taking points back is free, instant and unlimited by design, so a player could rebuild mid fight — CON while being hit, POW for the killing blow — and meet every enemy with the build made for that enemy. A choice that can be undone at any moment stops being a choice.
+
+It is the same rule item, team, order and formation already followed under "the party is composed when a stage begins". Attributes were the only thing escaping it.
+
+**What it removed for free**, and this is the part worth remembering: maximum health comes only from CON, so with points frozen inside a stage the maximum cannot move mid stage at all. Two cases stopped existing rather than being handled — the maximum rising while a character is wounded, which made levelling up leave a hero proportionally *more* hurt, and the maximum falling under the current health, which needed a clamp. A planned fix for the first became code that does not need to exist.
+
+The clamp in `OnAttributesChanged` stays, and still earns its place: a debuff on CON lowers the maximum mid fight, where no stage boundary is coming to tidy up.
+
+**What does not wait: the level itself.** Armour, elemental resistance and base damage per level arrive immediately. Those growths exist so a character does not rot against stronger enemies — the diminishing returns constant is `50 x attacker level` — so holding them back would work against the reason they exist. `TheArmourALevelBuysArrivesImmediately` guards that boundary, because it looks like an inconsistency and somebody will eventually try to "fix" it.

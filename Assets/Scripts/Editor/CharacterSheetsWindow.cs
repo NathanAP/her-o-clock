@@ -33,6 +33,16 @@ namespace HerOClock.EditorTools
         private bool showAbilities = true;
         private Vector2 scroll;
 
+        /// <summary>
+        /// The sheets on screen, held rather than looked up again.
+        ///
+        /// <c>OnGUI</c> runs on every repaint, which includes the mouse simply moving across the
+        /// window, so searching the project from in there means a project wide query per frame
+        /// for a set that changes only when somebody adds or edits an asset. Reading it on the
+        /// three moments it can actually have changed costs nothing and stays just as live.
+        /// </summary>
+        private List<CharacterDefinition> sheets;
+
         [MenuItem("Her-o-clock/Character sheets")]
         public static void Open()
         {
@@ -45,13 +55,36 @@ namespace HerOClock.EditorTools
             level = EditorPrefs.GetInt(LevelKey, 1);
             multiplier = EditorPrefs.GetFloat(MultiplierKey, 1f);
             showAbilities = EditorPrefs.GetBool(AbilitiesKey, true);
+
+            Reload();
+        }
+
+        /// <summary>Coming back to the window is the cheapest place to notice a sheet was added.</summary>
+        private void OnFocus()
+        {
+            Reload();
+        }
+
+        /// <summary>Fires when an asset is created, deleted, moved or reimported.</summary>
+        private void OnProjectChange()
+        {
+            Reload();
+        }
+
+        private void Reload()
+        {
+            sheets = LoadSheets();
         }
 
         private void OnGUI()
         {
             DrawControls();
 
-            List<CharacterDefinition> sheets = LoadSheets();
+            // A domain reload can leave the window alive with the list gone.
+            if (sheets == null)
+            {
+                Reload();
+            }
 
             if (sheets.Count == 0)
             {
@@ -122,6 +155,14 @@ namespace HerOClock.EditorTools
 
             for (int i = 0; i < sheets.Count; i++)
             {
+                // A held sheet can be destroyed under the window between one repaint and the
+                // next, by a delete or by undoing a creation. Comparing against null uses
+                // Unity's own operator, which is what reports a destroyed object as gone.
+                if (sheets[i] == null)
+                {
+                    continue;
+                }
+
                 if (sheets[i].Kind == kind)
                 {
                     ofKind.Add(sheets[i]);

@@ -144,6 +144,12 @@ namespace HerOClock.Characters
             Attributes = new AttributeAllocation(definition.Growth);
             Attributes.GrantFor(this.level);
 
+            // Being created is the start of this character's first stage, so the points it was
+            // born with count from the first step. Without this a minion handed level 40 by a
+            // stage would fight with the attributes of a level 1, since granting alone never
+            // puts anything into effect.
+            Attributes.Commit();
+
             Modifiers = new StatModifiers();
             Statuses = new CharacterStatuses();
 
@@ -449,7 +455,8 @@ namespace HerOClock.Characters
         }
 
         /// <summary>
-        /// Puts the character back on its starting cell at full health. Second half of a restart.
+        /// Puts the character back on its starting cell at full health, with every attribute
+        /// point placed since the last stage now counting. Second half of a restart.
         ///
         /// Must run only after everyone has left the board. Otherwise a character standing on
         /// someone else's starting cell would make both claim the same cell.
@@ -461,6 +468,12 @@ namespace HerOClock.Characters
             Modifiers.Clear();
             Statuses.Clear();
             TauntedBy = null;
+
+            // Every point placed since the last stage starts counting here, and nowhere else.
+            // It must come before the health is put back: the maximum this produces is the one
+            // that gets filled, so committing afterwards would fill the old maximum and leave
+            // the character short by whatever the new points were worth.
+            Attributes.Commit();
 
             CurrentHealth = Stats.MaxHealth;
             ReturnToStart();

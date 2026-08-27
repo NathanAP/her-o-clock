@@ -151,8 +151,8 @@ namespace HerOClock.View
         /// and the simulation keeps knowing nothing about drawings.
         ///
         /// A jump of more than half a cell in a single frame is not walking, it is being put
-        /// somewhere: restarting a battle, entering a stage, or the board sliding between waves.
-        /// Counting those would spin the legs for a journey nobody made.
+        /// somewhere: restarting a battle or entering a stage. Counting those would spin the
+        /// legs for a journey nobody made.
         /// </summary>
         private void TrackMovement()
         {
@@ -163,22 +163,39 @@ namespace HerOClock.View
             // The ground sliding is the party walking. Between waves nobody's own transform
             // moves: the board is what slides, and standing still on top of it reads as being
             // carried on a conveyor belt rather than as advancing through the city.
-            float boardMoved = 0f;
+            //
+            // Only the downward half of the board's movement counts, and there is no threshold
+            // on it. BoardScroller slides the ground down for the whole transition and then
+            // snaps it back up to the origin in a single frame, so the sign alone tells the walk
+            // from the snap.
+            //
+            // The half cell rule below cannot be reused here, and that is the reason this is
+            // measured differently rather than shared. Half a cell was chosen against a
+            // character, which covers about two cells a second. The board covers six in one
+            // transition, which is sixteen cells a second at eight times speed: a machine that
+            // fails to hold the frame rate there would push every frame of the slide past the
+            // threshold, and the party would stand still through the entire walk with nothing
+            // reporting it.
+            float boardCells = 0f;
 
             if (board != null)
             {
                 Vector3 boardNow = board.localPosition;
-                boardMoved = Vector3.Distance(boardNow, lastBoardPosition);
+
+                if (cellSize > 0f)
+                {
+                    boardCells = Mathf.Max(0f, (lastBoardPosition.y - boardNow.y) / cellSize);
+                }
+
                 lastBoardPosition = boardNow;
             }
 
             float cells = cellSize > 0f ? moved / cellSize : 0f;
-            float boardCells = cellSize > 0f ? boardMoved / cellSize : 0f;
 
             // A jump of more than half a cell in one frame is not walking, it is being placed:
-            // a battle restarting, a stage beginning, or the board snapping back after a slide.
+            // a battle restarting or a stage beginning.
             bool ownStep = cells > 0.0001f && cells <= 0.5f;
-            travelling = boardCells > 0.0001f && boardCells <= 0.5f;
+            travelling = boardCells > 0.0001f;
 
             moving = ownStep || travelling;
 

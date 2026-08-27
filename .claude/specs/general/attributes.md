@@ -29,7 +29,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
     - **Colocar pontos à mão**, um a um, nos atributos que quiser.
     - **Um interruptor de distribuição automática**, por herói.
     - **Um botão de resetar**, que devolve todos os pontos daquele herói.
-- Com o automático **ligado**, os pontos entram sozinhos seguindo a distribuição declarada na ficha, no instante em que o nível sobe. Nunca sobra ponto parado.
+- Com o automático **ligado**, os pontos são distribuídos sozinhos seguindo a distribuição declarada na ficha, no instante em que o nível sobe. Nunca sobra ponto parado. Passar a valer é outra coisa, e está logo abaixo.
     - É o estado inicial de todo herói. Em um jogo idle, voltar de uma ausência longa e encontrar o time do mesmo tamanho de antes seria o oposto do que a progressão offline promete.
 - Com o automático **desligado**, os pontos se acumulam como disponíveis e esperam o jogador.
 - **Ligar o automático gasta apenas os pontos que estavam disponíveis.** Ele não redistribui o que o jogador colocou à mão, pois desfazer uma build inteira deve exigir o botão de resetar, e não um clique em um interruptor.
@@ -37,6 +37,41 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Redefinir os pontos é livre e pode ser feito a qualquer momento, sem custo.
 - Lacaios e vilões são personagens com o automático permanentemente ligado. Não existe ninguém distribuindo pontos por eles.
 - Em qualquer momento vale a regra: **pontos colocados à mão + pontos colocados automaticamente + pontos disponíveis = 5 × (nível − 1)**.
+
+### Um ponto colocado só passa a valer na próxima fase
+
+Esta é a regra mais importante desta seção, e ela **não tem exceção**.
+
+- **Colocar um ponto e o ponto fazer efeito são dois momentos diferentes.** O ponto é colocado na hora, e aparece no perfil na hora. O que ele faz nos atributos só entra em vigor quando a próxima fase começa.
+- Vale para **todas** as formas de colocar ponto, sem distinguir quem colocou:
+    - O automático distribuindo os pontos de um nível que acabou de subir.
+    - O jogador colocando pontos à mão.
+    - O botão de resetar.
+    - Ligar ou desligar o interruptor do automático.
+- **O automático não é exceção.** Ele decide *onde* o ponto vai sem decidir *quando* ele vale, exatamente como o jogador.
+
+#### Por que
+
+- **Sem isso existe um exploit inteiro.** Redefinir pontos é livre e sem custo, então um jogador poderia trocar a build no meio de uma luta — encher CON ao levar dano, encher POW para o golpe final — e jogar contra cada inimigo com a build ideal para aquele inimigo. Uma escolha que pode ser desfeita a qualquer momento deixa de ser escolha.
+- É a mesma regra que item, equipe, ordem e formação já seguem, conforme "O grupo é montado no começo de cada fase" em `gameplay.md`. Atributo era o único que fugia dela.
+- Como consequência, a **vida máxima nunca muda no meio de uma fase**, e isso resolve um problema sozinho: não existe momento em que o máximo sobe com o personagem ferido, nem em que ele desce e a vida atual precisa ser cortada. Toda fase começa com o grupo inteiro.
+
+#### O que continua valendo na hora
+
+**O nível em si, e tudo que cresce por nível sem passar por atributo.** É o caso da armadura física e das resistências elementais, descritas em "Atributos limitados crescem com o nível", e do dano base por nível.
+
+Isso é de propósito. Aqueles crescimentos existem para o personagem não apodrecer contra inimigos mais fortes, e segurá-los até a próxima fase iria contra o motivo pelo qual eles existem. Subir de nível no meio de uma fase continua deixando o personagem mais resistente na hora — o que espera é a distribuição de pontos.
+
+#### Exemplos
+
+**Ganhando um nível no automático.** Um herói com distribuição de 100% em CON está no nível 4, com 15 de CON, portanto 150 de vida máxima. No meio de uma fase, com 120 de vida atual, ele sobe para o nível 5:
+
+- Os 5 pontos do nível são creditados e distribuídos na mesma hora: no perfil, o CON já lê 20.
+- Durante o resto da fase ele continua com **150 de máxima e 120 de atual**. Nada mudou nos atributos.
+- A armadura, que cresce por nível, sobe imediatamente.
+- Na fase seguinte os pontos entram em vigor: 20 de CON, **200 de máxima**, e como toda fase começa com o grupo inteiro, ele entra com 200/200.
+
+**Redefinindo no meio da fase.** O mesmo herói, com o automático desligado e 20 pontos disponíveis, coloca todos em CON durante uma fase. A vida máxima continua onde estava até aquela fase terminar. Os pontos não foram perdidos e não voltam atrás — eles só ainda não valem.
 
 ### Poder (POW)
 

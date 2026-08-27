@@ -199,14 +199,16 @@ namespace HerOClock.Persistence
             // do not add up to the level it claims.
             hero.Attributes.GrantFor(hero.Progress.Level);
 
-            // A loaded party starts whole.
+            // Nothing is done about health here on purpose, and it is worth saying why so nobody
+            // adds it back.
             //
-            // The format carries no current health, so there is nothing to put back: the hero was
-            // built with the maximum health of the level it was spawned at, and the restore above
-            // then raises that maximum to the level it really is. Left alone, every session would
-            // begin with the party already wounded by the difference, which is invisible in the
-            // file and looks like damage nobody took.
-            hero.Heal(hero.Stats.MaxHealth);
+            // The format carries no current health, and it does not need to. Loading is always
+            // followed by a stage starting — a save says which stage the player is on and never
+            // where inside it — and a stage starting runs ResetForBattle on every hero, which
+            // commits the points and fills the health to the maximum they produce.
+            //
+            // Topping up here as well would be a second answer to a question that already has
+            // one, and the two would drift the day the first one changes.
         }
 
         /// <summary>Puts the buckets of the last hour back, exactly as they were.</summary>

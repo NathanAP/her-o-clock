@@ -132,14 +132,23 @@ namespace HerOClock.Tests
         [Test]
         public void TheSwingPlaysOnceAndThenGivesUpTheScreen()
         {
-            // Three drawings over three tenths of a second: one each tenth, and nothing at all
-            // once the swing is done. Minus one is what puts the standing drawing back.
-            Assert.AreEqual(0, SwingSequence.FrameAt(0f, 0.3f, 3));
-            Assert.AreEqual(0, SwingSequence.FrameAt(0.09f, 0.3f, 3));
-            Assert.AreEqual(1, SwingSequence.FrameAt(0.1f, 0.3f, 3));
-            Assert.AreEqual(2, SwingSequence.FrameAt(0.25f, 0.3f, 3));
-            Assert.AreEqual(-1, SwingSequence.FrameAt(0.3f, 0.3f, 3));
-            Assert.AreEqual(-1, SwingSequence.FrameAt(5f, 0.3f, 3));
+            // Three drawings share the pose in equal thirds, and nothing at all is shown once
+            // the swing is done. Minus one is what puts the standing drawing back.
+            //
+            // The duration is three eighths of a second rather than a rounder number so that the
+            // thirds land on 0.125 and 0.25, which a float holds exactly. Three tenths does not:
+            // 3 x 0.1f is smaller than 0.3f, so a third of the way through reads as 0.99999994
+            // of a frame and the cast lands one drawing early. That is a property of the
+            // assertion and not of the rule — a real swing accumulates deltas and never lands on
+            // a boundary — but a test written on a boundary has to pick one it can name.
+            Assert.AreEqual(0, SwingSequence.FrameAt(0f, 0.375f, 3));
+            Assert.AreEqual(0, SwingSequence.FrameAt(0.124f, 0.375f, 3));
+            Assert.AreEqual(1, SwingSequence.FrameAt(0.125f, 0.375f, 3));
+            Assert.AreEqual(1, SwingSequence.FrameAt(0.2f, 0.375f, 3));
+            Assert.AreEqual(2, SwingSequence.FrameAt(0.25f, 0.375f, 3));
+            Assert.AreEqual(2, SwingSequence.FrameAt(0.374f, 0.375f, 3));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.375f, 0.375f, 3));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(5f, 0.375f, 3));
         }
 
         [Test]
@@ -147,15 +156,15 @@ namespace HerOClock.Tests
         {
             // The difference from the running cycle, and the reason they are two classes: a
             // swing has an end. Looping one would turn a single blow into a windmill.
-            Assert.AreEqual(-1, SwingSequence.FrameAt(0.31f, 0.3f, 3));
-            Assert.AreEqual(-1, SwingSequence.FrameAt(0.6f, 0.3f, 3));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.4f, 0.375f, 3));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.75f, 0.375f, 3));
         }
 
         [Test]
         public void ACharacterWithoutASwingAsksForNothingAndGetsNothing()
         {
-            Assert.AreEqual(-1, SwingSequence.FrameAt(0.1f, 0.3f, 0));
-            Assert.AreEqual(-1, SwingSequence.FrameAt(0.1f, 0f, 3));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.125f, 0.375f, 0));
+            Assert.AreEqual(-1, SwingSequence.FrameAt(0.125f, 0f, 3));
         }
 
         [Test]

@@ -122,8 +122,9 @@ Este é o fluxo principal do jogo.
     - o **limite de heróis daquela fase**;
     - a **equipe escalada** e a ordem dela;
     - a **formação**, que diz em que casa cada herói começa;
+    - os **pontos de atributo** colocados desde a última fase, conforme "Um ponto colocado só passa a valer na próxima fase" em `attributes.md`;
     - e futuramente o **equipamento** de cada um.
-- A consequência prática é a regra que o jogador percebe: **trocar item, mexer na equipe ou mudar a formação só tem efeito quando a próxima fase começar.** Nada disso muda no meio de uma fase em andamento.
+- A consequência prática é a regra que o jogador percebe: **trocar item, mexer na equipe, mudar a formação ou redistribuir pontos só tem efeito quando a próxima fase começar.** Nada disso muda no meio de uma fase em andamento.
 - Os heróis em si **não são recriados** entre fases. É a mesma instância que atravessa a sessão inteira, então o nível e a experiência ganhos numa fase seguem para a próxima. O que muda é quem está no tabuleiro e onde.
 
 ### Eventos de fase

@@ -363,7 +363,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 ## 0.10.2.4 (feita)
 
 - **O herói não sabia o próprio nível.** O nível morava em dois lugares: `Progress.Level`, que o save carrega, e o campo do `Character`, que todo cálculo usa. A restauração mexia só no primeiro.
-- Não era cosmético: armadura e dano base crescem por nível, então um herói de nível 9 lutava com defesa de nível 1 enquanto carregava os pontos de atributo do nível 9. Com 20 de base e 20 por nível, 180 esperados contra 20 entregues.
+- Não era cosmético: armadura e dano base crescem por nível, então um herói de nível 9 lutava com defesa de nível 1 enquanto carregava os pontos de atributo do nível 9. A ficha do teste entregava só a base, sem nenhum dos oito crescimentos que o nível devia ter pago.
 - **A suíte não pegou porque afirmava `Progress.Level` e nunca `Character.Level`** — olhava só o lado bom da fresta onde o bug morava.
 - Achado no caminho: o formato do save não carrega vida atual, então um grupo carregado passa a começar inteiro. Guardar a vida no arquivo fica como escolha em aberto.
 - O resumo completo está em `.claude/versions/20260824_0.10.2.4.md`.
@@ -374,6 +374,47 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Faltava comparar duas fichas no nível em que elas se encontram.** O Inspector responde por uma ficha e o `snapshot.md` responde no nível inicial de cada uma; nenhum dos dois responde isso.
 - **Cada habilidade mostra o alcance por extenso, com `CATCHES ALLIES` em toda área.** Era a informação que não existia em lugar nenhum do editor e que fez o fogo amigo do Gadrat parecer bug.
 - O resumo completo está em `.claude/versions/20260824_0.10.2.5.md`.
+
+## 0.10.2.6 (feita)
+
+- **A suíte da 0.10.2.5 tinha sido entregue vermelha.** A assertiva do golpe pousava numa fronteira que o float não tem: `3 × 0.1f` é menor que `0.3f`, então um terço do caminho lê como um tiquinho a menos e o quadro sai um cedo demais.
+- A regra estava certa e o jogo também — em jogo o cronômetro é soma de deltas e nunca cai em cima de uma fronteira. Quem escolheu mal foi o teste.
+- A duração da assertiva virou três oitavos de segundo, cujos terços são potências de dois.
+- O resumo completo está em `.claude/versions/20260827_0.10.2.6.md`.
+
+## 0.10.2.7 (feita)
+
+- **A caminhada entre ondas podia simplesmente não acontecer, e sem avisar.** O guarda de meia casa, medido para personagem, foi reaproveitado para o tabuleiro, que anda oito vezes mais rápido em 8x. Numa máquina que não segure a taxa de quadros, a rolagem inteira era descartada como salto.
+- O tabuleiro passou a ser julgado pelo **sinal** e não por limiar: ele só desce durante a transição e só sobe no retorno à origem, então a direção separa os dois sem depender de quantos quadros foram desenhados.
+- O resumo completo está em `.claude/versions/20260827_0.10.2.7.md`.
+
+## 0.10.2.8 (feita)
+
+- A janela `Character sheets` buscava as fichas dentro do `OnGUI`, ou seja, varria o projeto a cada repintura. Virou campo, relido ao abrir, ao focar e quando o editor avisa que um asset mudou.
+- O resumo completo está em `.claude/versions/20260827_0.10.2.8.md`.
+
+## 0.10.2.9 (feita)
+
+- **Uma frase envelheceu no mesmo commit que a criou.** A promessa de que o ataque em velocidade alta degrada bem valia para o desenho único; com sequência, o que trava na tela é a preparação — o mesmo erro que a 0.10.2.3 corrigiu na escolha do desenho, voltando pelo ritmo.
+- **Cinco números de saída tinham virado prosa**, contra a regra de "Onde cada número mora". Todos corretos no dia em que foram escritos, que é exatamente o risco. Reescritos pela regra, com o valor de hoje mandado para o `snapshot.md`.
+- O resumo completo está em `.claude/versions/20260827_0.10.2.9.md`.
+
+## 0.10.2.10 (feita)
+
+- **Um ponto colocado só passa a valer na próxima fase**, escrito em `attributes.md` antes de existir interface de atributos — senão ela nasceria errada.
+- **O automático não é exceção.** Ele decide onde o ponto vai sem decidir quando ele conta.
+- Sem a regra existe um exploit inteiro: redefinir pontos é livre e sem custo, então dava para trocar a build no meio da luta e enfrentar cada inimigo com a build feita para ele.
+- **Resolveu um problema de graça:** como a vida máxima só vem de CON, ela deixa de poder mudar no meio de uma fase. A correção que estava planejada para a vida virou código que não precisa existir.
+- O nível em si continua imediato: armadura, resistências e dano base por nível existem para o personagem não apodrecer, e segurá-los iria contra isso.
+- O resumo completo está em `.claude/versions/20260827_0.10.2.10.md`.
+
+## 0.10.3.0 (feita)
+
+- A regra acima em vigor. `AttributeAllocation` passou a ter dois `AttributeSplit`: o que o jogador edita e o que os atributos leem. `Commit` é a única passagem entre os dois, e acontece ao nascer e ao começar uma fase.
+- Saiu o `Heal` que a 0.10.2.4 tinha colocado no `SaveMapper`: era código morto, e o comentário que o justificava afirmava algo falso sobre o sistema.
+- **587 testes, 0 falhas.** Quatro novos sobre a regra, um guardando a fronteira da armadura, e quatro que mudaram de significado de propósito.
+- **Impacto no balanceamento:** uma linha do snapshot, `act1-stage1` de 23.3 s para 23.4 s. Nenhum nível mínimo mudou.
+- O resumo completo está em `.claude/versions/20260827_0.10.3.0.md`.
 
 ## 0.11.0.0 (próxima)
 
