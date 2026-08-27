@@ -331,6 +331,24 @@ The cost is real and was accepted knowingly: five points per level become half a
 
 An ability's `scaling` block is a **weight on that rate**, and not damage per point, for the same reason one level up: flat damage per point would make the rank stop mattering once a character had enough points.
 
+## A worn set has a class, and it is a mix rather than a winner
+
+Four formulas need one number that depends on the class being worn, and a character wears up to eight items across six possible classes. Each active piece hands in one slice, a hybrid hands in half to each side, and the formula's value is its three class values averaged by the slices.
+
+The alternatives and why they lost:
+
+- **One anchor slot decides.** Seven slots become decoration for these four formulas, and "your chest decides your evasion, your legs do not" cannot be explained to a player.
+- **Majority wins.** One swapped item flips the evasion constant from 100 to 500 with nothing in between, and ties need a tie-breaker that is pure invention.
+- **Drop the character class entirely**, fixing the constants and letting items grant points directly. It is the cleanest on paper and it deletes a design axis the whole spec is built on: AGI would stop paying differently depending on what is worn.
+
+The mix is what lets attributes.md keep knowing three classes while an item can be one of six — the three hybrids are literally half of two pure ones, so they need no constants of their own.
+
+### The constant is mixed, never the result
+
+Mixing results would stop evasion being `100 x AGI / (AGI + constant)` for any single constant, and everything the spec hangs on that shape — the evasion points equipment grants above all — would have nowhere to enter.
+
+The side effect is that mixing pays slightly less than averaging the results, because the curve is convex: 26.09% against 33.3% in the spec's own example. That is the intended statement — specialising pays, and mixing buys two defences at the price of being best at neither.
+
 ## POW is offence only, CON is survival only
 
 POW gives damage and nothing else. CON gives maximum health and multiplies regeneration. AGI gives evasion and speed. SPE gives ability damage and cooldown reduction.

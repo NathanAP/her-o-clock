@@ -14,6 +14,52 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - Enquanto a vida atual estiver em 0, o personagem é considerado morto.
 - É possível burlar a morte através de habilidades ou buffs.
 
+## A classe do personagem
+
+- Quatro fórmulas deste arquivo mudam conforme a classe de equipamento que o personagem está usando: a constante de evasão, a constante de redução de recarga, e os ganhos de velocidade de ataque e de velocidade de movimento por ponto de AGI.
+- As classes que essas fórmulas conhecem são três: **leve**, **especial** e **pesado**.
+- Um personagem, porém, veste até oito equipamentos, e cada um deles tem a classe dele, escolhida entre as seis de `items.md`. **A classe do personagem é a mistura das classes do que ele veste.**
+
+### Cada equipamento vale uma fatia
+
+- Um equipamento de classe pura entrega uma fatia inteira à classe dele. Um equipamento de classe híbrida entrega meia fatia para cada um dos dois lados.
+
+| Classe do equipamento | Fatia leve | Fatia especial | Fatia pesada |
+| --------------------- | ---------- | -------------- | ------------ |
+| Leve                  | 1          | —              | —            |
+| Especial              | —          | 1              | —            |
+| Pesado                | —          | —              | 1            |
+| Médio                 | 0.5        | —              | 0.5          |
+| Leve especial         | 0.5        | 0.5            | —            |
+| Pesado especial       | —          | 0.5            | 0.5          |
+
+- O valor de cada uma das quatro fórmulas é a média dos três valores dela, ponderada pelas fatias:
+    - `Valor = (Fatia leve × Valor leve + Fatia especial × Valor especial + Fatia pesada × Valor pesado) ÷ Total de fatias`
+- **Slot vazio não conta.** Um personagem com dois equipamentos é a mistura daqueles dois, e não uma mistura de dois com seis vazios.
+- **Equipamento inativo por requerimento também não conta**, pois ele está sendo desconsiderado por inteiro, conforme `items.md`.
+- **Um personagem sem nenhum equipamento ativo usa a classe declarada na ficha dele.** É o caso de todo lacaio, vilão e NPC, que nunca vestem nada, e o de um herói que ainda não tem itens.
+- A mistura é feita quando a fase começa, junto de todo o resto que constrói quem luta. Trocar um item no meio de uma fase mexe no herói e não em quem está no tabuleiro, conforme `gameplay.md`.
+
+### O que é misturado é a constante, nunca o resultado
+
+- A mistura acontece sobre o valor que entra na fórmula, e não sobre o valor que sai dela.
+- O motivo é que a evasão precisa continuar sendo `100 × AGI ÷ (AGI + Constante)` para uma constante só. Misturando os resultados, a evasão do personagem deixaria de ser uma curva de rendimento decrescente sobre um total de pontos, e tudo que este arquivo pendura nessa forma — inclusive os pontos de evasão que vêm de equipamento — ficaria sem onde entrar.
+- A consequência é que **misturar classes rende um pouco menos que a média dos resultados**, porque a curva é convexa. Isso é proposital: especializar paga, e misturar compra as duas defesas ao custo de não ser ótimo em nenhuma.
+
+### Exemplo
+
+- Um herói vestindo seis equipamentos: dois cascos pesados, dois cascos leves, uma arma média e um controlador especial.
+- As fatias ficam: **leve 2.5**, **especial 1**, **pesada 2.5**, somando **6**.
+
+| Fórmula                          | Leve | Especial | Pesado | Resultado do herói |
+| -------------------------------- | ---- | -------- | ------ | ------------------ |
+| Constante de evasão              | 100  | 200      | 500    | 283.33             |
+| Constante de redução de recarga  | 60   | 40       | 300    | 156.67             |
+| Velocidade de ataque por AGI     | 1%   | 0.5%     | 0.2%   | 0.5833%            |
+| Velocidade de movimento por AGI  | 1%   | 0.75%    | 0.5%   | 0.75%              |
+
+- Com 100 de AGI, esse herói tem 26.09% de evasão. Um herói leve puro teria 50% e um pesado puro teria 16.67%.
+
 ## Atributos principais
 
 - Os atributos principais estão presentes em todos os personagens.
@@ -84,6 +130,7 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
     - Para cada 1 ponto de AGI, o personagem ganha 1% de velocidade de movimento quando estiver utilizando equipamentos leves.
     - Para cada 1 ponto de AGI, o personagem ganha 0.75% de velocidade de movimento quando estiver utilizando equipamentos especiais.
     - Para cada 1 ponto de AGI, o personagem ganha 0.5% de velocidade de movimento quando estiver utilizando equipamentos pesados.
+    - Os seis valores acima são os três de cada fórmula, e um personagem que mistura classes fica entre eles, conforme "A classe do personagem".
     - AGI é a fonte de evasão, mas a conversão em chance de evasão é feita por rendimento decrescente e está descrita em "Evasão".
 - Personagens com mais AGI são capazes de utilizar equipamentos e armaduras mais leves.
 
@@ -182,9 +229,10 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 - Atributo defensivo capaz de fazer com que o personagem desvie parcialmente um ataque, seja ele físico ou elemental.
 - A chance de evasão é calculada por rendimento decrescente sobre o total de AGI do personagem:
     - `Chance de evasão = 100 × AGI ÷ (AGI + Constante)`
-    - A constante é 100 enquanto o personagem estiver utilizando equipamentos leves.
-    - A constante é 200 enquanto o personagem estiver utilizando equipamentos especiais.
-    - A constante é 500 enquanto o personagem estiver utilizando equipamentos pesados.
+    - A constante é 100 para um personagem leve puro.
+    - A constante é 200 para um personagem especial puro.
+    - A constante é 500 para um personagem pesado puro.
+    - Um personagem que mistura classes tem uma constante entre essas três, conforme "A classe do personagem".
 - Por exemplo, utilizando equipamentos leves:
     - Um personagem com 25 de AGI possui 20% de evasão.
     - Um personagem com 100 de AGI possui 50% de evasão.
@@ -230,9 +278,10 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 - Atributo ofensivo que indica o quão rápido um personagem utiliza suas habilidades.
 - A redução de recarga é calculada por rendimento decrescente sobre o total de SPE do personagem:
     - `Redução de recarga = 60 × SPE ÷ (SPE + Constante)`
-    - A constante é 60 enquanto o personagem estiver utilizando equipamentos leves.
-    - A constante é 40 enquanto o personagem estiver utilizando equipamentos especiais.
-    - A constante é 300 enquanto o personagem estiver utilizando equipamentos pesados.
+    - A constante é 60 para um personagem leve puro.
+    - A constante é 40 para um personagem especial puro.
+    - A constante é 300 para um personagem pesado puro.
+    - Um personagem que mistura classes tem uma constante entre essas três, conforme "A classe do personagem".
 - Por exemplo, utilizando equipamentos especiais:
     - Um personagem com 20 de SPE possui 20% de redução de recarga.
     - Um personagem com 40 de SPE possui 30% de redução de recarga.

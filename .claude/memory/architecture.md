@@ -108,6 +108,18 @@ Two things this deleted rather than fixed, worth knowing so nobody reintroduces 
 
 The rules these serve are in `design-decisions.md`.
 
+## The per class tables read a mix, and null is the answer rather than a gap
+
+`CharacterStats` has four values that depend on the equipment class, and each is now one call to `EquipmentComposition.Blend` with the three numbers attributes.md writes for that formula.
+
+The composition field is null until something is equipped, and **null is not a missing value, it is the fallback**: a character wearing nothing uses the class on its sheet. That covers every minion, villain and NPC, since none of them ever wears anything, and a hero before it has items.
+
+The fallback lives in the private `Composition` getter rather than being filled in during `ApplyInstance`, and that placement matters. The stats living on a `CharacterDefinition` never have `ApplyInstance` called on them, and they are read directly — the balance snapshot's sheet table is one caller. Initialising in `ApplyInstance` would leave those reading an empty composition and dividing by zero.
+
+`Clone` clears it, for the reason it already clears the buff list: equipment belongs to whoever wears it.
+
+`ItemClass` (six) and `EquipmentClass` (three) are deliberately different types. The first is what an item can be, the second is what attributes.md writes numbers for, and `EquipmentComposition` is the only place that translates between them.
+
 ## ScriptableObjects must hold no runtime state
 
 This project runs with Domain Reload disabled, which makes entering Play Mode almost instant. The price is that nothing is cleared between sessions: static fields keep their values, and so do the fields of any ScriptableObject, because the asset stays loaded.

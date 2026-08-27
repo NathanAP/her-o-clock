@@ -442,15 +442,74 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Ela lê registros e nunca combatentes, então torna visível a regra da 0.10.4.0: durante uma fase os dois podem discordar de nível, e isso é regra e não defeito.
 - O resumo completo está em `.claude/versions/20260827_0.10.4.3.md`.
 
-## 0.11.0.0 (próxima)
+## 0.10.4.4 (feita)
 
-- Itens. **As specs já estão escritas** em `.claude/specs/items/` e em `items.md`, esperando desde a conversa que virou a 0.10.1.0.
-- Ataques básicos variam de acordo com a arma equipada, que substitui o dano base, a velocidade de ataque e o alcance do personagem.
-- A arma também passa a decidir se o ataque é corpo a corpo ou à distância, e com isso a pose de golpe certa aparece sozinha, sem troca manual de sprite.
+- Quatro bugs achados ao levantar o que os itens pedem do motor, corrigidos antes de qualquer código de item.
+- `EquipmentClass.Magic` virou `Special`, que é a palavra que as specs e o arquivo de strings sempre usaram. O enum guarda número e não nome, então nenhum asset mudou.
+- `modifiers.json` e `slots.json` falavam vocabulários diferentes de slot. Os dois papéis da mão secundária agora são declarados no slot, e o `slotGroups` aponta para lá.
+- **O desconto de alcance não era aplicado a quem devia.** A Lance pagava por alcançar duas casas sendo corpo a corpo; Catalyst e Reactor alcançavam duas e três de graça. A regra passou a valer para os três, e as velocidades de Catalyst e Reactor caíram para fechar o orçamento sem quebrar os rótulos da tabela de `items.md`.
+- `+X de armadura neste equipamento` ganhou a nota de que a soma é direta e de que não existe multiplicador local em lugar nenhum. Nenhum número mudou: a frase é que prometia um comportamento que o jogo não tem.
+- O resumo completo está em `.claude/versions/20260827_0.10.4.4.md`.
+
+## 0.10.4.5 (feita)
+
+- AGI e SPE deixaram de ser descritos como a fonte **principal** de evasão e de redução de recarga. Com o equipamento chegando, essa palavra passaria a ser falsa.
+
+## 0.10.5.0 (feita)
+
+- **A classe do personagem passou a ser a mistura das classes do que ele veste.** Cada equipamento ativo entrega uma fatia, um híbrido entrega meia para cada lado, e as quatro fórmulas por classe leem a média ponderada.
+- Era o buraco que travava a versão de itens: `attributes.md` escrevia número para três classes e `items.md` dava seis, uma por item, em oito slots, sem nada dizendo como oito viram um.
+- **As seis classes de item cabem nas três da ficha sem constante nova**, porque cada híbrido é literalmente metade de duas puras.
+- **É a constante que mistura, nunca o resultado**, senão a evasão deixaria de ser uma curva sobre um total de pontos e os pontos de evasão do equipamento ficariam sem onde entrar.
+- Sem nada vestido vale a classe da ficha, que é todo lacaio, vilão e NPC, e todo herói de hoje.
+- **599 testes, 0 falhas. O snapshot não mudou um dígito**, que é a afirmação central da versão.
+- O resumo completo está em `.claude/versions/20260827_0.10.5.0.md`.
+
+## 0.10.6.0 (próxima)
+
+- **A evasão passa a ser a mesma fórmula das outras duas defesas.** Hoje ela é a única que não apodrece com o nível, e isso a torna estritamente melhor no fim do jogo sem ninguém ter decidido isso.
+- O AGI deixa de ser o denominador da curva e vira **fonte de pontos de evasão**, com multiplicador por classe: 10 para leve, 5 para especial e 2 para pesado. A constante passa a ser `50 × nível do atacante`, igual à da armadura e à da resistência.
+- Os multiplicadores foram escolhidos para o AGI crescendo 5 por nível cancelar exatamente a constante crescendo 50 por nível. Uma build inteiramente em AGI fica em **50%, 33.3% ou 16.7%** conforme a classe, em qualquer nível — que são exatamente os três números que os exemplos de `attributes.md` já publicavam.
+- Fecha a pergunta em aberto de `items.md`, e os números de evasão de `slots.json` e `modifiers.json` passam a ser da mesma ordem que os de armadura.
+- Testes: os exemplos de evasão mudam de valor de propósito, e o snapshot se move.
+
+## 0.10.7.0
+
+- **O golpe passa a variar.** O dano base vira mínimo e máximo em todas as fichas, e o sorteio sai do `BattleRandom`.
+- Vale para lacaio e vilão também. Hoje um Discarded Prototype bate exatamente 2, sempre.
+- **Habilidade continua fixa.** A habilidade é o dano com que se pode contar e o ataque básico é o que balança, e essa diferença é textura de graça.
+- É aqui que as seeds antigas param de reproduzir as batalhas que reproduziam, sozinho, sem nada de item no diff.
+
+## 0.11.0.0
+
+- **A base do item, só dados.** Os cinco JSON de `.claude/specs/items/` carregados, modelo de dados, validador no molde do `StageValidator`, catálogo e strings. Nada é vestível ainda.
+- Paga a maior dívida de teste do projeto: hoje nenhuma linha daquela pasta é conferida por nada.
+- Testes: as invariantes de `tiers.json`, a derivação do orçamento de dano de `subtypes.json`, as tabelas de nomenclatura, e todo id tendo texto no arquivo de strings.
+
+## 0.11.1.0
+
+- **Vestir.** Equipamento no `HeroRecord`, a fotografia no `Character`, o item como fonte nova dentro do `TotalOf` e das defesas, e a composição de classe da 0.10.5.0 recebendo enfim entrada de verdade.
+- **O requerimento é conferido contra o total, com tudo que está vestido emprestando atributo.** Dois itens que se sustentam mutuamente ficam os dois ativos, e tirar um derruba o outro para a borda vermelha. Recombinar depois é problema do jogador, como no Path of Exile.
+- Entram as entradas novas de `ModifiableStat` para dano de habilidade por elemento e para resistência ignorada, que hoje não têm onde pousar.
+- O save ganha o primeiro campo que não é escalar: itens já sorteados, que precisam sobreviver intactos.
+- Ferramenta de editor que entrega item a um herói, já que drop é 0.12.0.0 e inventário é 0.14.0.0.
+
+## 0.11.2.0
+
+- **A arma.** Substitui dano base, velocidade de ataque, alcance e corpo a corpo/à distância.
+- Tira `MinRange`, `MaxRange` e `AutoAttack` de dentro do `CharacterDefinition` compartilhado, que é onde eles moram hoje.
+- **Armas duplas alternam as mãos**: golpe 1 na primária, golpe 2 na secundária, e cada golpe usa os modificadores da arma que golpeou.
 - **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar.
+
+## 0.11.3.0
+
+- **O gerador.** Tecnologia, quantidade, divisão hardware/software, pesos, camadas, valores e a montagem do nome.
+- C# puro, sem Unity, com teste de distribuição.
+
+## 0.11.4.0
+
+- **Únicos.** A pasta `Assets/Items/Uniques/`, o `AssetPostprocessor` de autodescoberta e o teste que sustenta a promessa de que um arquivo novo entra sozinho.
 - Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico.
-- **Precisa decidir antes a escala da evasão**, que é a pergunta em aberto registrada no fim de `items.md`.
-- Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, o determinismo rodado de novo, a varredura ganhando uma dimensão, e as invariantes de `tiers.json`.
 
 ## 0.12.0.0
 
@@ -536,4 +595,6 @@ Coisas decididas conscientemente como "não agora". Elas não têm versão marca
 - As habilidades ficam por último de propósito, pois são o sistema que mais mexe em todos os outros. Fazer habilidade antes do combate estar estável significa refazer habilidade.
 - Enquanto toda a funcionalidade básica não estiver pronta, o jogo continua em game objects lisos e coloridos.
 - O bloco 0.5.x é a revisão sendo aplicada, e a ordem dele é por dependência e não por gravidade: primeiro o passo fixo, que torna o combate verificável; depois os testes, que tornam as mudanças seguintes verificáveis; só então as mudanças de regra.
+- **O bloco 0.10.5.0 a 0.10.7.0 é preparação para os itens, e nenhuma das três precisa de uma linha de código de item.** A classe efetiva, a escala da evasão e o dano com faixa são mudanças de regra que valem para todo personagem, inclusive os que nunca vão vestir nada. Separá-las é o que faz cada uma mover o snapshot sozinha, com diff legível, e o que faz o bloco de itens encontrar todas as costuras já abertas e verificadas.
+- **O bloco 0.11.x vai da menor superfície de risco para a maior**: dados primeiro, depois vestir, depois a arma, depois o gerador, e os únicos por último. Só a terceira mexe em combate, e ela chega com as três de preparação já pagas.
 - A 0.5.2.0 é a única versão que existe só para testar, e é a última vez que isso acontece. Ela paga a dívida acumulada até a 0.4.0.6. Dali em diante o teste faz parte da versão que muda o comportamento, conforme "# Testes automatizados" no `CLAUDE.md`.

@@ -1,4 +1,5 @@
-﻿using HerOClock.Characters;
+﻿using System.Collections.Generic;
+using HerOClock.Characters;
 using NUnit.Framework;
 
 namespace HerOClock.Tests
@@ -148,6 +149,52 @@ namespace HerOClock.Tests
         public void EvasionChance_NeverReachesOneHundred()
         {
             Assert.Less(Sheet(0, 1000000, 0, 0, EquipmentClass.Light).EvasionChance, 100f);
+        }
+
+        /// <summary>
+        /// attributes.md: with equipment worn, the constant is the mix rather than the sheet's own
+        /// class. The example there — two heavy casings, two light, one medium weapon and one
+        /// special controller — gives a constant of 283.33, and 26.09% of evasion at 100 AGI.
+        ///
+        /// The sheet says Heavy here on purpose. Wearing something has to beat what the sheet
+        /// declares, otherwise equipment would never change a hero at all.
+        /// </summary>
+        [Test]
+        public void EvasionChance_FollowsTheEquipmentWornRatherThanTheSheet()
+        {
+            CharacterStats stats = Sheet(0, 100, 0, 0, EquipmentClass.Heavy);
+
+            stats.UseEquipment(EquipmentComposition.Of(
+                new List<ItemClass>
+                {
+                    ItemClass.Heavy,
+                    ItemClass.Heavy,
+                    ItemClass.Light,
+                    ItemClass.Light,
+                    ItemClass.Medium,
+                    ItemClass.Special
+                },
+                EquipmentClass.Heavy));
+
+            Assert.AreEqual(26.09f, stats.EvasionChance, Tolerance);
+        }
+
+        /// <summary>
+        /// A clone belongs to another character, so it must not arrive already wearing somebody
+        /// else's equipment. It starts from its own sheet class, exactly like the buff list does.
+        /// </summary>
+        [Test]
+        public void AClone_DoesNotInheritTheEquipment()
+        {
+            CharacterStats stats = Sheet(0, 100, 0, 0, EquipmentClass.Heavy);
+            stats.UseEquipment(EquipmentComposition.Of(
+                new List<ItemClass> { ItemClass.Light }, EquipmentClass.Heavy));
+
+            CharacterStats copy = stats.Clone();
+            copy.ApplyInstance(1, new AttributeGrowth(), 1f);
+
+            Assert.AreEqual(50.0f, stats.EvasionChance, Tolerance, "The original is wearing light.");
+            Assert.AreEqual(16.7f, copy.EvasionChance, Tolerance, "The copy falls back to its heavy sheet.");
         }
 
         // --- Cooldown reduction: 60 x SPE / (SPE + constant), constant 60 / 40 / 300 ---

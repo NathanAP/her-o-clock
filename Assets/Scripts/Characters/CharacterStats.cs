@@ -91,6 +91,18 @@ namespace HerOClock.Characters
         /// </summary>
         [NonSerialized] private StatModifiers modifiers;
 
+        /// <summary>
+        /// What this character is actually wearing, mixed into the three classes attributes.md
+        /// knows about, or null while nothing has been equipped.
+        ///
+        /// Null is not a missing value, it is the answer: a character wearing nothing uses the
+        /// class written on its sheet, which is every minion, villain and NPC, and a hero before
+        /// it has items. Falling back in <see cref="Composition"/> rather than filling this in
+        /// keeps that rule in one place, and keeps the sheet's own stats correct even though
+        /// nobody calls <see cref="ApplyInstance(int, int[], float)"/> on them.
+        /// </summary>
+        [NonSerialized] private EquipmentComposition equipment;
+
         /// <summary>Base attack speed of every character, in attacks per second.</summary>
         public const float BaseAttacksPerSecond = 1f;
 
@@ -114,6 +126,10 @@ namespace HerOClock.Characters
             // would let one character's slow land on somebody else.
             copy.modifiers = null;
 
+            // Same reasoning: equipment belongs to whoever is wearing it. A copy starts from its
+            // own sheet class until somebody hands it a set of its own.
+            copy.equipment = null;
+
             return copy;
         }
 
@@ -121,6 +137,27 @@ namespace HerOClock.Characters
         public void UseModifiers(StatModifiers value)
         {
             modifiers = value;
+        }
+
+        /// <summary>
+        /// Hands this instance the equipment it is wearing, already mixed into slices.
+        ///
+        /// Called once, when the stage builds the combatant, for the same reason the attribute
+        /// points are copied once: what fights is a photograph, and a player re-equipping a hero
+        /// mid stage must not reach the board until the next one.
+        /// </summary>
+        public void UseEquipment(EquipmentComposition value)
+        {
+            equipment = value;
+        }
+
+        /// <summary>
+        /// The class mix every per class table below reads, falling back to the sheet's own class
+        /// while nothing is worn.
+        /// </summary>
+        private EquipmentComposition Composition
+        {
+            get { return equipment ?? EquipmentComposition.Of(Equipment); }
         }
 
         /// <summary>Runs a computed value through the buffs touching that stat, if there are any.</summary>
@@ -401,57 +438,30 @@ namespace HerOClock.Characters
         }
 
         // --- Per equipment class tables ---
+        //
+        // These four are the whole reason EquipmentComposition exists. Each one is three numbers
+        // from attributes.md — one per pure class — and the character's own value is those three
+        // averaged by what it wears. A character in a single class lands exactly on that class's
+        // number, which is why nothing moved when the mixing arrived.
 
         private float AttackSpeedPerAgility
         {
-            get
-            {
-                switch (Equipment)
-                {
-                    case EquipmentClass.Light: return 0.01f;
-                    case EquipmentClass.Special: return 0.005f;
-                    default: return 0.002f;
-                }
-            }
+            get { return Composition.Blend(0.01f, 0.005f, 0.002f); }
         }
 
         private float MoveSpeedPerAgility
         {
-            get
-            {
-                switch (Equipment)
-                {
-                    case EquipmentClass.Light: return 0.01f;
-                    case EquipmentClass.Special: return 0.0075f;
-                    default: return 0.005f;
-                }
-            }
+            get { return Composition.Blend(0.01f, 0.0075f, 0.005f); }
         }
 
         private float EvasionConstant
         {
-            get
-            {
-                switch (Equipment)
-                {
-                    case EquipmentClass.Light: return 100f;
-                    case EquipmentClass.Special: return 200f;
-                    default: return 500f;
-                }
-            }
+            get { return Composition.Blend(100f, 200f, 500f); }
         }
 
         private float CooldownConstant
         {
-            get
-            {
-                switch (Equipment)
-                {
-                    case EquipmentClass.Light: return 60f;
-                    case EquipmentClass.Special: return 40f;
-                    default: return 300f;
-                }
-            }
+            get { return Composition.Blend(60f, 40f, 300f); }
         }
     }
 }

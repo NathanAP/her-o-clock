@@ -154,6 +154,8 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 
 - Todo equipamento pertence a uma das classes abaixo.
 - A classe do equipamento define como os atributos principais do herói são convertidos em atributos secundários, conforme descrito em `attributes.md`.
+- **Nenhum equipamento decide isso sozinho.** Cada um entrega uma fatia, e a classe do herói é a mistura das fatias de tudo que ele veste — um herói de quatro cascos pesados e uma arma leve fica entre pesado e leve, e não em nenhum dos dois. A regra e o exemplo numérico estão em "A classe do personagem", em `attributes.md`.
+    - As três classes híbridas entram lá como meia fatia para cada lado, e é por isso que `attributes.md` continua conhecendo apenas três classes enquanto os equipamentos têm seis.
 - Cada classe é liberada por um atributo principal diferente, então a escolha do equipamento acompanha naturalmente a build do herói.
 - **O requerimento de atributo cresce com o nível do item**, e a fórmula está em `slots.json`, no bloco `requirement`.
     - Classes híbridas exigem os dois atributos, cada um a uma fração do valor cheio. Vestir híbrido custa mais no total e menos em cada lado, e é isso que faz a escolha existir.
