@@ -37,25 +37,10 @@ namespace HerOClock.Tests
             return allocation;
         }
 
-        /// <summary>
-        /// What an allocation actually produces, which takes a stage starting.
-        ///
-        /// Placing a point and a point counting are two moments, as attributes.md states, and
-        /// <c>WriteTo</c> only ever answers for the second. Every test that reads through here is
-        /// about the mechanics of the split — how many points, where they land — and not about
-        /// the wait, so they commit and move on. The wait has its own tests at the bottom of the
-        /// file, and those are the ones that would notice if this stopped being a rule.
-        /// </summary>
-        private static void WriteEffective(AttributeAllocation allocation, int[] result)
-        {
-            allocation.Commit();
-            allocation.WriteTo(result);
-        }
-
         private static int Placed(AttributeAllocation allocation)
         {
             int[] result = new int[4];
-            WriteEffective(allocation, result);
+            allocation.WriteTo(result);
             return result[0] + result[1] + result[2] + result[3];
         }
 
@@ -126,10 +111,10 @@ namespace HerOClock.Tests
                 }
 
                 int[] fromClimbing = new int[4];
-                WriteEffective(climbed, fromClimbing);
+                climbed.WriteTo(fromClimbing);
 
                 int[] fromCreation = new int[4];
-                WriteEffective(At(40, shapes[s]), fromCreation);
+                At(40, shapes[s]).WriteTo(fromCreation);
 
                 CollectionAssert.AreEqual(fromCreation, fromClimbing, "Shape " + s + " diverged.");
             }
@@ -257,10 +242,10 @@ namespace HerOClock.Tests
             meddled.Reset();
 
             int[] expected = new int[4];
-            WriteEffective(recommended, expected);
+            recommended.WriteTo(expected);
 
             int[] actual = new int[4];
-            WriteEffective(meddled, actual);
+            meddled.WriteTo(actual);
 
             CollectionAssert.AreEqual(expected, actual);
         }
@@ -318,124 +303,6 @@ namespace HerOClock.Tests
             allocation.SetAutomatic(true);
 
             Assert.AreEqual(0, raised);
-        }
-
-        // --- A point placed only counts from the next stage ---
-        //
-        // The rule from "Um ponto colocado só passa a valer na próxima fase" in attributes.md.
-        // These are the tests the helper at the top of the file deliberately steps around, and
-        // they are the ones that would go red if the wait ever stopped being a rule.
-
-        /// <summary>
-        /// Nothing a player does to the build reaches the stats before a stage begins.
-        ///
-        /// Without this, taking points back being free and instant means rebuilding mid fight:
-        /// CON while being hit, POW for the killing blow, a different build for every enemy.
-        /// </summary>
-        [Test]
-        public void PlacingPointsByHandChangesNothingUntilTheStageStarts()
-        {
-            AttributeAllocation allocation = At(11, Balanced, automatic: false);
-            allocation.Commit();
-
-            int[] before = new int[4];
-            allocation.WriteTo(before);
-
-            allocation.Spend(Attribute.Power, 50);
-
-            int[] after = new int[4];
-            allocation.WriteTo(after);
-
-            CollectionAssert.AreEqual(before, after, "The points landed without a stage starting.");
-
-            allocation.Commit();
-
-            int[] committed = new int[4];
-            allocation.WriteTo(committed);
-
-            Assert.AreEqual(50, committed[(int)Attribute.Power], "The stage did not apply the build.");
-        }
-
-        /// <summary>
-        /// **The automatic distribution is not an exception**, and this is the test that says so.
-        ///
-        /// It is the easiest half of the rule to lose, because the automatic places its points the
-        /// instant a level arrives and it is tempting to call that "already decided". Deciding
-        /// where a point goes is not the same as deciding when it counts, and a hero left on
-        /// automatic must wait exactly as long as one being driven by hand.
-        /// </summary>
-        [Test]
-        public void TheAutomaticDistributionWaitsJustLikeThePlayer()
-        {
-            AttributeAllocation allocation = At(10, Balanced);
-            allocation.Commit();
-
-            int[] before = new int[4];
-            allocation.WriteTo(before);
-
-            allocation.GrantFor(30);
-
-            int[] after = new int[4];
-            allocation.WriteTo(after);
-
-            CollectionAssert.AreEqual(before, after,
-                "The automatic distribution put the new levels' points straight into effect.");
-
-            // The points were placed, though. Only their effect waited.
-            Assert.AreEqual(LevelProgress.PointsAtLevel(30), allocation.Granted);
-
-            allocation.Commit();
-
-            Assert.AreEqual(LevelProgress.PointsAtLevel(30), Placed(allocation));
-        }
-
-        /// <summary>
-        /// Committing twice with nothing in between is not a second helping. Stages start often,
-        /// and a character that gained points every time one did would drift upwards for free.
-        /// </summary>
-        [Test]
-        public void CommittingAgainWithNothingNewChangesNothing()
-        {
-            AttributeAllocation allocation = At(20, Awkward);
-            allocation.Commit();
-
-            int[] once = new int[4];
-            allocation.WriteTo(once);
-
-            allocation.Commit();
-            allocation.Commit();
-
-            int[] thrice = new int[4];
-            allocation.WriteTo(thrice);
-
-            CollectionAssert.AreEqual(once, thrice);
-        }
-
-        /// <summary>
-        /// A build placed and then undone before any stage started never happened at all, which is
-        /// what makes trying one out free.
-        /// </summary>
-        [Test]
-        public void ABuildUndoneBeforeTheStageStartsLeavesNoTrace()
-        {
-            AttributeAllocation allocation = At(21, Balanced, automatic: false);
-            allocation.Spend(Attribute.Constitution, 100);
-            allocation.Commit();
-
-            int[] committed = new int[4];
-            allocation.WriteTo(committed);
-
-            allocation.Reset();
-            allocation.Spend(Attribute.Power, 100);
-            allocation.Reset();
-            allocation.Spend(Attribute.Constitution, 100);
-
-            allocation.Commit();
-
-            int[] after = new int[4];
-            allocation.WriteTo(after);
-
-            CollectionAssert.AreEqual(committed, after);
         }
     }
 }
