@@ -375,7 +375,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Cada habilidade mostra o alcance por extenso, com `CATCHES ALLIES` em toda área.** Era a informação que não existia em lugar nenhum do editor e que fez o fogo amigo do Gadrat parecer bug.
 - O resumo completo está em `.claude/versions/20260824_0.10.2.5.md`.
 
-## 0.10.3.0 (próxima)
+## 0.11.0.0 (próxima)
 
 - Itens. **As specs já estão escritas** em `.claude/specs/items/` e em `items.md`, esperando desde a conversa que virou a 0.10.1.0.
 - Ataques básicos variam de acordo com a arma equipada, que substitui o dano base, a velocidade de ataque e o alcance do personagem.
@@ -385,16 +385,11 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Precisa decidir antes a escala da evasão**, que é a pergunta em aberto registrada no fim de `items.md`.
 - Testes: o item entrando como nova fonte dentro do `TotalOf` sem que nada fora dele mude, o determinismo rodado de novo, a varredura ganhando uma dimensão, e as invariantes de `tiers.json`.
 
-## 0.10.4.0
+## 0.12.0.0
 
 - **Drop de itens.** Versão própria e não parte do menu: taxa, raridade e sorteio têm superfície de balanceamento própria, e o `CLAUDE.md` já lista drop rate como coisa a testar.
 
-## 0.11.0.0 (absorvida)
-
-- Ela dizia "itens" e "ataque básico varia com o item", que é palavra por palavra o que a 0.10.2.0 já diz. Eram a mesma versão escrita duas vezes em momentos diferentes.
-- O número fica vago de propósito. Renumerar tudo abaixo dele quebraria as referências dos resumos em `.claude/versions/` para ganhar só arrumação.
-
-## 0.12.0.0
+## 0.13.0.0
 
 - Menus.
 - **Leva junto o que a janela sem borda deixou pendente**, já que ela chegou na 0.5.9.0:
@@ -409,40 +404,40 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Leva junto a tela de volta ao jogo**, que a 0.6.0.0 deixou pendente. Os números da ausência já são calculados e escritos no Console; falta mostrá-los. Eles saem inteiros do `OfflineCredit`, então é só apresentação.
 - Testes: praticamente nenhum. Interface é a única parte do jogo em que o custo de testar não se paga.
 
-## 0.13.0.0
+## 0.14.0.0
 
 - Inventário.
 - Baús.
 - Testes: as regras de espaço e de empilhamento, que são aritmética e não interface.
 
-## 0.14.0.0
+## 0.15.0.0
 
 - Mapa dos atos.
 
-## 0.15.0.0
+## 0.16.0.0
 
 - Árvore de progressão.
 - Dinheiro.
 - Testes: a curva de custo dos nós, que por `progress.md` depende de quantos nós já foram comprados e não de qual nó é. E a projeção de espera de cada trecho da árvore, pelo mesmo motivo da tabela de horas: é um número publicado na spec.
 
-## 0.16.0.0
+## 0.17.0.0
 
 - Classes.
 - Testes: a classe entrando como mais uma fonte no `TotalOf`.
 
-## 0.17.0.0
+## 0.18.0.0
 
 - Árvore de habilidades
 - Testes: superfície de regra grande de novo, e ela multiplica com as habilidades da 0.7.0.0. É a versão em que a suíte existente mais paga o próprio custo.
 
-## 0.18.0.0
+## 0.19.0.0
 
 - Criar uma timeline da fase para mostrar o atual progresso.
 - Adicionar um timer ao começar a fase e finalizar ela.
     - Assim o jogador poderia ver quanto tempo demora pra completar uma fase ou ter uma noção de qual build é mais rápida.
 - Quem sabe da pra colocar uma espécie de "ranking" próprio pra saber qual foi a melho run da pessoa em cada fase.
 
-## 0.19.0.0
+## 0.20.0.0
 
 - Adicionar diário
 
