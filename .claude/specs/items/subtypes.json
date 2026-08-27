@@ -9,7 +9,7 @@
         "two-handed-ranged": { "base": 11, "perLevel": 1.1 },
         "specialMultiplier": 0.75,
         "reachMultiplier": 0.9,
-        "multiplierComment": "specialMultiplier e o desconto que Catalyst e Reactor pagam por serem armas de quem luta com habilidade e nao com ataque basico. reachMultiplier e o desconto que a Lance paga por alcancar duas casas sendo corpo a corpo.",
+        "multiplierComment": "specialMultiplier e o desconto que Catalyst e Reactor pagam por serem armas de quem luta com habilidade e nao com ataque basico. reachMultiplier e o desconto que toda arma de familia corpo a corpo paga quando alcanca mais de uma casa, porque ela ataca de longe sem abrir mao de atacar colado: hoje sao Lance, Catalyst e Reactor. Os dois multiplicadores se acumulam, entao Catalyst e Reactor pagam 0.675 do orcamento da familia.",
         "tolerance": 0.08
     },
 
@@ -93,7 +93,7 @@
             "hands": 1,
             "minRange": 1,
             "maxRange": 2,
-            "attackSpeed": 1.1,
+            "attackSpeed": 1.0,
             "damage": {
                 "min": { "base": 5, "perLevel": 0.5 },
                 "max": { "base": 7, "perLevel": 0.7 }
@@ -219,7 +219,7 @@
             "hands": 2,
             "minRange": 1,
             "maxRange": 3,
-            "attackSpeed": 0.8,
+            "attackSpeed": 0.7,
             "damage": {
                 "min": { "base": 10, "perLevel": 1.0 },
                 "max": { "base": 16, "perLevel": 1.6 }

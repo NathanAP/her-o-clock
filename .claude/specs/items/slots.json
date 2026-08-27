@@ -35,7 +35,9 @@
             "id": "off-hand",
             "kind": "weapon-or-defensive",
             "defenceWeight": 0.7,
-            "namingNoun": null
+            "namingNoun": null,
+            "roles": ["off-hand-weapon", "off-hand-defensive"],
+            "rolesComment": "E o unico slot que aceita duas coisas diferentes, entao ele e o unico com papeis. Um modificador que so pode cair em arma ou so pode cair em equipamento defensivo precisa distinguir os dois, e e por esses ids que modifiers.json chama a mao secundaria. Nenhum outro slot tem papel, porque nenhum outro muda de natureza conforme o que esta vestido nele."
         },
         {
             "id": "controller",

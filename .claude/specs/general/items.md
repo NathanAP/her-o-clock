@@ -139,6 +139,7 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
     - É isso que permite Piledriver e Claw serem escolhas de verdade, e não uma delas ser estritamente melhor. Quem escolhe a arma lenta compra picos grandes e sofre mais com evasão; quem escolhe a rápida compra consistência e se beneficia mais de roubo de vida.
 - **Arma de duas mãos rende mais dano por segundo que uma de uma mão**, e o que ela paga é a mão secundária inteira.
 - **Arma à distância rende menos dano por segundo que a corpo a corpo**, e o que ela compra é não precisar atravessar o tabuleiro.
+- **Uma arma corpo a corpo que alcança mais de uma casa paga um desconto por isso**, porque ela ataca de longe sem abrir mão de atacar colado, e isso não tem contrapartida nenhuma. São Lance, Catalyst e Reactor, e o desconto se acumula com o das especiais.
 - **Catalyst e Reactor rendem menos que o resto**, porque quem carrega eles não luta com ataque básico. O retorno deles vem da classe especial e dos modificadores de habilidade.
 - **A classe natural é uma tendência e não uma trava.** Um Cannon leve é possível e deve ser possível, porque é exatamente esse tipo de item fora do padrão que torna uma build fora do meta viável.
 
@@ -341,6 +342,8 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
     - +X de armadura neste equipamento.
     - +X de evasão neste equipamento.
     - +X% do dano físico recebido devolvido ao atacante.
+- **"Neste equipamento" é soma direta sobre a defesa base daquele item, e nada além disso.** Um casco com 100 de armadura base e o modificador em 20 passa a ter 120, e é esse 120 que entra na soma do personagem.
+    - Não existe multiplicador local, ou seja, nenhum modificador multiplica a defesa base de um item. O que "neste equipamento" carrega é a restrição de slot: ele só cai em equipamento defensivo, e é isso que impede uma Blade de sortear armadura.
 - **As resistências são pontos e não porcentagem.** `attributes.md` calcula mitigação elemental por rendimento decrescente sobre um total de pontos, e a constante da curva é `50 × nível do atacante`. Um modificador em porcentagem não teria onde entrar nessa conta.
     - Fontes que somam porcentagem depois da curva existem, mas `attributes.md` as reserva a itens únicos e nós específicos, justamente porque são as únicas capazes de passar dos 75%.
 

@@ -5,9 +5,12 @@
 
     "affixRule": "O prefixo do nome vem do modificador de hardware de maior camada, e o sufixo vem do modificador de software de maior camada. Empate de camada e resolvido pela ordem em que foram sorteados. Um item sem hardware nao ganha prefixo e um item sem software nao ganha sufixo.",
 
+    "localComment": "'local-armour' e 'local-evasion' somam direto na defesa base do proprio item: 100 de armadura base com o modificador em 20 viram 120, e e esse 120 que entra na soma do personagem. Nao existe multiplicador local em lugar nenhum do jogo, entao 'neste equipamento' nao promete escalonamento, ele so descreve onde o valor pousa. O que esses dois modificadores carregam de verdade e a restricao de slot: eles caem so em equipamento defensivo, e e isso que impede uma Blade de sortear armadura.",
+
     "percentageComment": "Modificadores que sao porcentagem do dano tem perLevel zero. Nao e esquecimento: attributes.md diz que porcentagens de dano nao decaem com o nivel porque acompanham o dano por definicao, entao dar ganho por nivel a elas seria contar o crescimento duas vezes.",
 
     "slotGroups": {
+        "comment": "Os conjuntos de slot em que um modificador pode cair. Sao ids de slot de slots.json, com uma excecao: 'off-hand-weapon' e 'off-hand-defensive' sao os dois papeis do slot 'off-hand', declarados no campo 'roles' dele. A mao secundaria e o unico slot que muda de natureza conforme o que esta vestido nela, e um modificador de armadura nao pode cair numa arma so porque ela esta na mao esquerda.",
         "all": [
             "cranial-casing",
             "chassis",

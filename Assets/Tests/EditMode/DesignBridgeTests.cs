@@ -87,7 +87,7 @@ namespace HerOClock.Tests
         private static readonly Dictionary<string, EquipmentClass> Equipment = new Dictionary<string, EquipmentClass>
         {
             { "light", EquipmentClass.Light },
-            { "magic", EquipmentClass.Magic },
+            { "special", EquipmentClass.Special },
             { "heavy", EquipmentClass.Heavy }
         };
 

@@ -74,7 +74,7 @@ namespace HerOClock.Tests
         // --- Attack speed: base 1, plus 1% / 0.5% / 0.2% per AGI by equipment class ---
 
         [TestCase(EquipmentClass.Light, 100, 2.00f)]
-        [TestCase(EquipmentClass.Magic, 100, 1.50f)]
+        [TestCase(EquipmentClass.Special, 100, 1.50f)]
         [TestCase(EquipmentClass.Heavy, 100, 1.20f)]
         public void AttacksPerSecond_FollowsTheEquipmentTable(EquipmentClass equipment, int agility, float expected)
         {
@@ -90,7 +90,7 @@ namespace HerOClock.Tests
         // --- Movement speed: base 2 cells per second, plus 1% / 0.75% / 0.5% per AGI ---
 
         [TestCase(EquipmentClass.Light, 100, 4.00f)]
-        [TestCase(EquipmentClass.Magic, 100, 3.50f)]
+        [TestCase(EquipmentClass.Special, 100, 3.50f)]
         [TestCase(EquipmentClass.Heavy, 100, 3.00f)]
         public void CellsPerSecond_FollowsTheEquipmentTable(EquipmentClass equipment, int agility, float expected)
         {
@@ -123,9 +123,9 @@ namespace HerOClock.Tests
         [TestCase(EquipmentClass.Light, 100, 50.0f)]
         [TestCase(EquipmentClass.Light, 300, 75.0f)]
         [TestCase(EquipmentClass.Light, 900, 90.0f)]
-        [TestCase(EquipmentClass.Magic, 100, 33.3f)]
-        [TestCase(EquipmentClass.Magic, 200, 50.0f)]
-        [TestCase(EquipmentClass.Magic, 600, 75.0f)]
+        [TestCase(EquipmentClass.Special, 100, 33.3f)]
+        [TestCase(EquipmentClass.Special, 200, 50.0f)]
+        [TestCase(EquipmentClass.Special, 600, 75.0f)]
         [TestCase(EquipmentClass.Heavy, 100, 16.7f)]
         [TestCase(EquipmentClass.Heavy, 500, 50.0f)]
         [TestCase(EquipmentClass.Heavy, 1500, 75.0f)]
@@ -152,10 +152,10 @@ namespace HerOClock.Tests
 
         // --- Cooldown reduction: 60 x SPE / (SPE + constant), constant 60 / 40 / 300 ---
 
-        [TestCase(EquipmentClass.Magic, 20, 20.0f)]
-        [TestCase(EquipmentClass.Magic, 40, 30.0f)]
-        [TestCase(EquipmentClass.Magic, 120, 45.0f)]
-        [TestCase(EquipmentClass.Magic, 360, 54.0f)]
+        [TestCase(EquipmentClass.Special, 20, 20.0f)]
+        [TestCase(EquipmentClass.Special, 40, 30.0f)]
+        [TestCase(EquipmentClass.Special, 120, 45.0f)]
+        [TestCase(EquipmentClass.Special, 360, 54.0f)]
         [TestCase(EquipmentClass.Light, 20, 15.0f)]
         [TestCase(EquipmentClass.Light, 60, 30.0f)]
         [TestCase(EquipmentClass.Light, 180, 45.0f)]
@@ -171,7 +171,7 @@ namespace HerOClock.Tests
         [Test]
         public void CooldownReduction_NeverReachesSixty()
         {
-            Assert.Less(Sheet(0, 0, 1000000, 0, EquipmentClass.Magic).CooldownReduction, 60f);
+            Assert.Less(Sheet(0, 0, 1000000, 0, EquipmentClass.Special).CooldownReduction, 60f);
         }
 
         // --- Physical mitigation: 75 x armour / (armour + 50 x attacker level) ---

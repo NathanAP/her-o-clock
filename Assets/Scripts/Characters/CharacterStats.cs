@@ -409,7 +409,7 @@ namespace HerOClock.Characters
                 switch (Equipment)
                 {
                     case EquipmentClass.Light: return 0.01f;
-                    case EquipmentClass.Magic: return 0.005f;
+                    case EquipmentClass.Special: return 0.005f;
                     default: return 0.002f;
                 }
             }
@@ -422,7 +422,7 @@ namespace HerOClock.Characters
                 switch (Equipment)
                 {
                     case EquipmentClass.Light: return 0.01f;
-                    case EquipmentClass.Magic: return 0.0075f;
+                    case EquipmentClass.Special: return 0.0075f;
                     default: return 0.005f;
                 }
             }
@@ -435,7 +435,7 @@ namespace HerOClock.Characters
                 switch (Equipment)
                 {
                     case EquipmentClass.Light: return 100f;
-                    case EquipmentClass.Magic: return 200f;
+                    case EquipmentClass.Special: return 200f;
                     default: return 500f;
                 }
             }
@@ -448,7 +448,7 @@ namespace HerOClock.Characters
                 switch (Equipment)
                 {
                     case EquipmentClass.Light: return 60f;
-                    case EquipmentClass.Magic: return 40f;
+                    case EquipmentClass.Special: return 40f;
                     default: return 300f;
                 }
             }
