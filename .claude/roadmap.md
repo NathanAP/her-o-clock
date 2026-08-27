@@ -416,6 +416,32 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Impacto no balanceamento:** uma linha do snapshot, `act1-stage1` de 23.3 s para 23.4 s. Nenhum nível mínimo mudou.
 - O resumo completo está em `.claude/versions/20260827_0.10.3.0.md`.
 
+## 0.10.4.0 (feita)
+
+- **O herói e o que luta viraram duas coisas.** `HeroRecord` guarda nível, experiência, pontos e atributos; `Character` é construído dele quando a fase começa e destruído no fim. Ideia do Nathan.
+- **Quatro problemas eram o mesmo problema.** O nível em dois lugares (0.10.2.4), a redistribuição no meio da luta (0.10.3.0), a vida máxima se mexendo debaixo de um ferido, e a lista à mão do `ResetForBattle` — todos deixaram de existir em vez de serem tratados.
+- **A lista já estava incompleta:** o `regenerationCarry` atravessava fases sem ninguém notar.
+- Lacaios, vilões e NPCs sempre foram recriados por fase. O herói era a exceção, e a exceção era o bug.
+- **Apagados:** o `AttributeSplit` da 0.10.3.0, o `ResetForBattle`, o `SpawnHeroes` (código morto), e o rótulo de nível embaixo do personagem.
+- Achado no caminho: o `SaveService` recebia a lista de heróis uma vez, então um herói desbloqueado no meio da sessão nunca era salvo.
+- **583 testes, 0 falhas.** Impacto no balanceamento: `act1-stage1` de 23.4 s para 24.3 s, sem mexer em nenhum nível mínimo nem parede.
+- **Fica em aberto:** não existe mais lugar para ver o nível de um herói durante o desenvolvimento.
+- O resumo completo está em `.claude/versions/20260827_0.10.4.0.md`.
+
+## 0.10.4.2 (feita)
+
+- **As specs pararam de contar história.** Saíram três citações de versão e cinco seções de justificativa, todas transportadas para `.claude/memory/design-decisions.md`.
+- O critério: sai seção dedicada a justificar, comparação com alternativa não adotada, história de calibração e número derivado. Fica a cláusula curta que impede a regra de ser mal entendida.
+- As duas seções do `save.md` tinham regra junto do argumento, e a regra ficou.
+- O resumo completo está em `.claude/versions/20260827_0.10.4.2.md`.
+
+## 0.10.4.3 (feita)
+
+- Aba **Heroes in play** na janela `Character sheets`, com nível, experiência, pontos de habilidade e atributos dos heróis da sessão rodando. Devolve a quem desenvolve o que o rótulo de nível mostrava, sem devolver nada à tela do jogo.
+- **Não é o menu e não vira o menu.** O perfil do herói é conteúdo de versão futura e serve ao jogador; esta aba serve a quem desenvolve, e continua útil depois que o menu existir.
+- Ela lê registros e nunca combatentes, então torna visível a regra da 0.10.4.0: durante uma fase os dois podem discordar de nível, e isso é regra e não defeito.
+- O resumo completo está em `.claude/versions/20260827_0.10.4.3.md`.
+
 ## 0.11.0.0 (próxima)
 
 - Itens. **As specs já estão escritas** em `.claude/specs/items/` e em `items.md`, esperando desde a conversa que virou a 0.10.1.0.

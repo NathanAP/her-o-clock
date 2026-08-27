@@ -77,13 +77,28 @@ namespace HerOClock.Setup
         private readonly List<string> clearedStages = new List<string>();
 
         /// <summary>
-        /// One instance per hero the player owns, alive for the whole session.
-        ///
-        /// Heroes are **not** rebuilt between stages: destroying and recreating them would throw
-        /// away the level and the experience they just earned. What changes per stage is which of
-        /// them stand on the board.
+        /// What the game knows about each hero between stages. Survives every stage, and is what
+        /// the save reads and writes.
         /// </summary>
-        private readonly Dictionary<string, Character> heroesById = new Dictionary<string, Character>();
+        private readonly Dictionary<string, HeroRecord> recordsById = new Dictionary<string, HeroRecord>();
+
+        /// <summary>
+        /// The records that exist right now, for the editor window to read while playing.
+        ///
+        /// Nothing in the game reads this, and it deliberately does **not** go through
+        /// <c>RecordFor</c>: asking for a hero that has no record yet would create one, and a
+        /// window that looks at the game must not change it by looking.
+        /// </summary>
+        public IReadOnlyCollection<HeroRecord> LiveRecords
+        {
+            get { return recordsById.Values; }
+        }
+
+        /// <summary>
+        /// The combatants of the stage currently being played, so the next stage can destroy them
+        /// before building its own. Nothing outside a stage should be holding one of these.
+        /// </summary>
+        private readonly List<Character> partyOnBoard = new List<Character>();
 
         private StageDatabase stages;
 
@@ -147,8 +162,15 @@ namespace HerOClock.Setup
 
             stages = stageDatabase;
 
-            List<Character> heroes = BuildParty(stage);
-            if (heroes.Count == 0)
+            // The records come first and the combatants come last, with the save in between.
+            //
+            // The order is the point. A combatant is a photograph of a record, so every record has
+            // to be finished — restored from the file, credited for the time away — before the
+            // first photograph is taken. Building the party up front and patching it afterwards is
+            // what used to make loading a save a sequence of corrections, each one having to undo
+            // what the previous step had already computed.
+            List<HeroRecord> records = OwnedRecords();
+            if (records.Count == 0)
             {
                 Debug.LogError("BattleBootstrap: no hero was created, so the stage cannot be played. Check the hero formation.", this);
                 return;
@@ -163,12 +185,12 @@ namespace HerOClock.Setup
 
             if (save.Found)
             {
-                SaveMapper.ApplyHeroes(save.Payload, heroes);
+                SaveMapper.ApplyHeroes(save.Payload, records);
                 SaveMapper.ApplyActivity(save.Payload, activity);
                 wallet.Restore(save.Payload.money);
                 integrity = save.Payload.integrity;
 
-                CreditTimeAway(save.Payload, heroes);
+                CreditTimeAway(save.Payload, records);
             }
 
             int seed = randomSeed != 0 ? randomSeed : Environment.TickCount;
@@ -216,7 +238,7 @@ namespace HerOClock.Setup
             // Subscribed only now, so the write below is the first one and already carries the
             // loaded state and whatever the absence was worth.
             SaveService saves = gameObject.AddComponent<SaveService>();
-            saves.Configure(store, runner, heroes, wallet, activity, integrity, roster, clearedStages);
+            saves.Configure(store, runner, OwnedRecords, wallet, activity, integrity, roster, clearedStages);
 
             // **This write is what consumes the absence.** The time away is measured from the
             // instant in the file that was loaded, so crediting it and then falling over before
@@ -277,7 +299,7 @@ namespace HerOClock.Setup
         /// away, then the ceilings. See "A progressão offline é um cálculo, nunca uma simulação" in
         /// progress.md, and note that the credit deliberately never goes back into the buckets.
         /// </summary>
-        private void CreditTimeAway(SavePayload payload, IReadOnlyList<Character> heroes)
+        private void CreditTimeAway(SavePayload payload, IReadOnlyList<HeroRecord> records)
         {
             DateTime savedAt;
 
@@ -299,15 +321,15 @@ namespace HerOClock.Setup
 
             wallet.Add(credit.Money);
 
-            for (int i = 0; i < heroes.Count; i++)
+            for (int i = 0; i < records.Count; i++)
             {
-                Character hero = heroes[i];
+                HeroRecord record = records[i];
 
-                hero.AwardExperience(OfflineProgress.ExperienceFor(
+                record.AwardExperience(OfflineProgress.ExperienceFor(
                     credit.ExperienceOffered,
-                    hero.Progress.Level,
-                    hero.Progress.CurrentXp,
-                    hero.Definition.MaxLevel));
+                    record.Progress.Level,
+                    record.Progress.CurrentXp,
+                    record.Definition.MaxLevel));
             }
 
             Debug.Log("BattleBootstrap: away for " + hours.ToString("F1", CultureInfo.InvariantCulture)
@@ -570,23 +592,21 @@ namespace HerOClock.Setup
         {
             List<string> party = roster.PartyFor(forStage.heroLimit);
 
-            // Everybody steps off first, so a hero moving to another cell cannot collide with
-            // whoever was standing there.
-            foreach (KeyValuePair<string, Character> entry in heroesById)
-            {
-                if (entry.Value != null)
-                {
-                    entry.Value.LeaveStage();
-                }
-            }
+            // The combatants of the last stage are destroyed rather than reused, and that is the
+            // whole design. A fresh one cannot carry a buff, a taunt, a regeneration remainder or
+            // any other state somebody forgot to put on a reset list — there is no reset list.
+            //
+            // It also has to happen before the new ones are placed, or a hero built on a cell the
+            // previous stage was still holding would make both claim it.
+            DisbandParty();
 
             List<Character> going = new List<Character>();
 
             for (int i = 0; i < party.Count; i++)
             {
-                Character hero = HeroFor(party[i]);
+                HeroRecord record = RecordFor(party[i]);
 
-                if (hero == null)
+                if (record == null)
                 {
                     continue;
                 }
@@ -600,19 +620,79 @@ namespace HerOClock.Setup
                     continue;
                 }
 
-                hero.EnterStageAt(cell);
+                Character hero = CreateHero(record, cell);
+
+                // Checked on the instance rather than by reading the sheet: deriving anything from
+                // the shared definition is what architecture.md forbids, and a character born with
+                // no health never acts while Unity reports nothing about it.
+                if (!hero.IsAlive)
+                {
+                    Debug.LogError("BattleBootstrap: " + record.Id
+                        + " has 0 maximum health at level " + hero.Level
+                        + ", so it is born dead and never acts. "
+                        + "Maximum health is Power x 5 plus Constitution x 10.",
+                        record.Definition);
+
+                    hero.ClearFromGrid();
+                    Destroy(hero.gameObject);
+                    continue;
+                }
+
+                partyOnBoard.Add(hero);
                 going.Add(hero);
             }
 
             return going;
         }
 
-        /// <summary>The instance of a hero, created the first time that hero is needed.</summary>
-        private Character HeroFor(string id)
+        /// <summary>Takes the party of the stage that just ended off the board for good.</summary>
+        private void DisbandParty()
         {
-            Character existing;
+            for (int i = 0; i < partyOnBoard.Count; i++)
+            {
+                if (partyOnBoard[i] == null)
+                {
+                    continue;
+                }
 
-            if (heroesById.TryGetValue(id, out existing) && existing != null)
+                partyOnBoard[i].ClearFromGrid();
+                Destroy(partyOnBoard[i].gameObject);
+            }
+
+            partyOnBoard.Clear();
+        }
+
+        /// <summary>
+        /// A record for every hero the player owns, whether or not this stage fields them.
+        ///
+        /// All of them and not just the party, because a hero left on the bench still has a level,
+        /// still has a build and still has to come back from the file with both. Restoring only
+        /// who happens to be fighting today would drop the rest on the floor.
+        /// </summary>
+        private List<HeroRecord> OwnedRecords()
+        {
+            List<HeroRecord> records = new List<HeroRecord>();
+            IReadOnlyList<string> owned = roster.Owned;
+
+            for (int i = 0; i < owned.Count; i++)
+            {
+                HeroRecord record = RecordFor(owned[i]);
+
+                if (record != null)
+                {
+                    records.Add(record);
+                }
+            }
+
+            return records;
+        }
+
+        /// <summary>The record of a hero, created the first time that hero is needed.</summary>
+        private HeroRecord RecordFor(string id)
+        {
+            HeroRecord existing;
+
+            if (recordsById.TryGetValue(id, out existing) && existing != null)
             {
                 return existing;
             }
@@ -626,14 +706,8 @@ namespace HerOClock.Setup
                 return null;
             }
 
-            GridPosition cell;
-            if (!FormationCellFor(id, out cell))
-            {
-                return null;
-            }
-
-            Character created = CreateCharacter(definition, Team.Heroes, cell, definition.Level, 1f);
-            heroesById[id] = created;
+            HeroRecord created = new HeroRecord(definition);
+            recordsById[id] = created;
 
             return created;
         }
@@ -726,82 +800,46 @@ namespace HerOClock.Setup
             }
         }
 
-        private List<Character> SpawnHeroes(List<string> party)
+        private Character CreateCharacter(CharacterDefinition definition, Team team, GridPosition position, int level, float multiplier)
         {
-            List<Character> heroes = new List<Character>();
+            Character character = NewCombatant(definition);
+            character.Initialize(definition, team, position, grid, level, multiplier);
 
-            for (int i = 0; i < heroFormation.Placements.Count; i++)
-            {
-                BattleFormation.Placement placement = heroFormation.Placements[i];
-
-                if (placement.Character != null && !party.Contains(placement.Character.Id))
-                {
-                    continue;
-                }
-
-                if (placement.Character == null)
-                {
-                    Debug.LogWarning("Formation " + heroFormation.name + ": entry " + i + " has no character.", heroFormation);
-                    continue;
-                }
-
-                GridPosition position = new GridPosition(placement.Column, placement.Row);
-
-                if (!grid.IsInside(position))
-                {
-                    Debug.LogWarning("Formation " + heroFormation.name + ": " + placement.Character.Id
-                        + " sits on cell " + position + ", which is outside the board.", heroFormation);
-                    continue;
-                }
-
-                if (!grid.IsFree(position))
-                {
-                    Debug.LogWarning("Formation " + heroFormation.name + ": " + placement.Character.Id
-                        + " wants cell " + position + ", which is already taken.", heroFormation);
-                    continue;
-                }
-
-                Character hero = CreateCharacter(placement.Character, Team.Heroes, position, placement.Character.Level, 1f);
-
-                // Checked after the fact, on the instance, rather than by reading the sheet.
-                // Deriving anything from the shared definition is what architecture.md forbids,
-                // and the old check got it wrong anyway: it assumed level 1 and so misjudged any
-                // hero whose sheet starts higher. A character born with no health never acts,
-                // and Unity reports nothing about it.
-                if (!hero.IsAlive)
-                {
-                    Debug.LogError("BattleBootstrap: " + placement.Character.Id
-                        + " has 0 maximum health at level " + hero.Level
-                        + ", so it is born dead and never acts. "
-                        + "Maximum health is Power x 5 plus Constitution x 10.",
-                        placement.Character);
-
-                    hero.ClearFromGrid();
-                    Destroy(hero.gameObject);
-                    continue;
-                }
-
-                heroes.Add(hero);
-            }
-
-            return heroes;
+            Dress(character, definition);
+            return character;
         }
 
-        private Character CreateCharacter(CharacterDefinition definition, Team team, GridPosition position, int level, float multiplier)
+        /// <summary>
+        /// The combatant a hero sends into this stage, built from its record.
+        ///
+        /// A new object every stage, and never the record itself. The record keeps being levelled
+        /// and rebuilt while this one fights, and none of it reaches the board until the stage
+        /// after builds a fresh photograph.
+        /// </summary>
+        private Character CreateHero(HeroRecord record, GridPosition position)
+        {
+            Character character = NewCombatant(record.Definition);
+            character.InitializeFrom(record, Team.Heroes, position, grid, 1f);
+
+            Dress(character, record.Definition);
+            return character;
+        }
+
+        private Character NewCombatant(CharacterDefinition definition)
         {
             // Named by id: the Hierarchy is a developer tool, and the id is stable and not translated.
             GameObject instance = new GameObject(definition.Id);
             instance.transform.SetParent(transform, false);
 
-            Character character = instance.AddComponent<Character>();
-            character.Initialize(definition, team, position, grid, level, multiplier);
+            return instance.AddComponent<Character>();
+        }
 
+        private void Dress(Character character, CharacterDefinition definition)
+        {
             // The body and the health bar are children of the character, so the scaling lives
             // on them and not on the object that travels across the board.
-            CharacterView view = instance.AddComponent<CharacterView>();
+            CharacterView view = character.gameObject.AddComponent<CharacterView>();
             view.Build(character, viewSettings, definition.Color, gridConfig.CellSize, board);
-
-            return character;
         }
     }
 }

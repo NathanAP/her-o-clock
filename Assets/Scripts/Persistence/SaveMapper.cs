@@ -15,7 +15,7 @@ namespace HerOClock.Persistence
     {
         /// <summary>Reads the current state of the game into a payload ready to be written.</summary>
         public static SavePayload Capture(
-            IReadOnlyList<Character> heroes,
+            IReadOnlyList<HeroRecord> heroes,
             PlayerWallet wallet,
             ActivityLog activity,
             string stageId,
@@ -35,7 +35,7 @@ namespace HerOClock.Persistence
             return payload;
         }
 
-        private static HeroSave[] CaptureHeroes(IReadOnlyList<Character> heroes)
+        private static HeroSave[] CaptureHeroes(IReadOnlyList<HeroRecord> heroes)
         {
             if (heroes == null)
             {
@@ -46,10 +46,10 @@ namespace HerOClock.Persistence
 
             for (int i = 0; i < heroes.Count; i++)
             {
-                Character hero = heroes[i];
+                HeroRecord hero = heroes[i];
                 HeroSave entry = new HeroSave();
 
-                entry.id = hero.Definition.Id;
+                entry.id = hero.Id;
                 entry.level = hero.Progress.Level;
                 entry.currentXp = hero.Progress.CurrentXp;
                 entry.skillPoints = hero.Progress.SkillPoints;
@@ -102,7 +102,7 @@ namespace HerOClock.Persistence
         }
 
         /// <summary>
-        /// Puts a payload back into heroes that have already been created.
+        /// Puts a payload back into the hero records.
         ///
         /// Matching is by the sheet's id, because a save cannot hold an asset reference, and **each
         /// saved entry is used once**: the second hero of a given sheet takes the second entry with
@@ -115,10 +115,14 @@ namespace HerOClock.Persistence
         /// its sheet says. Both happen while the game is being built, and neither is the player's
         /// fault.
         ///
+        /// It runs before any combatant exists, and that is required rather than incidental. A
+        /// combatant is a photograph of a record, so every record has to be finished before the
+        /// first one is taken.
+        ///
         /// The level goes in before the attribute points, since it is the level that decides how
         /// many points the character is owed.
         /// </summary>
-        public static void ApplyHeroes(SavePayload payload, IReadOnlyList<Character> heroes)
+        public static void ApplyHeroes(SavePayload payload, IReadOnlyList<HeroRecord> heroes)
         {
             if (payload == null || payload.heroes == null || heroes == null)
             {
@@ -129,8 +133,8 @@ namespace HerOClock.Persistence
 
             for (int i = 0; i < heroes.Count; i++)
             {
-                Character hero = heroes[i];
-                string id = hero.Definition.Id;
+                HeroRecord hero = heroes[i];
+                string id = hero.Id;
 
                 Queue<HeroSave> queue;
 
@@ -149,8 +153,7 @@ namespace HerOClock.Persistence
                 if (left.Value.Count > 0)
                 {
                     Debug.LogWarning("Save: " + left.Value.Count + " saved hero(es) with the id '"
-                        + left.Key + "' have nobody in the party to go to, so their progress was left"
-                        + " aside.");
+                        + left.Key + "' have no record to go to, so their progress was left aside.");
                 }
             }
         }
@@ -183,11 +186,9 @@ namespace HerOClock.Persistence
             return waiting;
         }
 
-        private static void Restore(Character hero, HeroSave entry)
+        private static void Restore(HeroRecord hero, HeroSave entry)
         {
-            // Goes through the character and not straight into Progress, so the level the
-            // stats are built from moves with the level the save carries. See RestoreProgress.
-            hero.RestoreProgress(entry.level, entry.currentXp, entry.skillPoints);
+            hero.Restore(entry.level, entry.currentXp, entry.skillPoints);
 
             hero.Attributes.Restore(
                 entry.automaticAttributes,
@@ -199,16 +200,9 @@ namespace HerOClock.Persistence
             // do not add up to the level it claims.
             hero.Attributes.GrantFor(hero.Progress.Level);
 
-            // Nothing is done about health here on purpose, and it is worth saying why so nobody
-            // adds it back.
-            //
-            // The format carries no current health, and it does not need to. Loading is always
-            // followed by a stage starting — a save says which stage the player is on and never
-            // where inside it — and a stage starting runs ResetForBattle on every hero, which
-            // commits the points and fills the health to the maximum they produce.
-            //
-            // Topping up here as well would be a second answer to a question that already has
-            // one, and the two would drift the day the first one changes.
+            // There is no health here, and there is nothing to leave out either: a record has
+            // none. Health belongs to a combatant, and a combatant is built after this runs,
+            // already whole, at the maximum the restored level and points produce.
         }
 
         /// <summary>Puts the buckets of the last hour back, exactly as they were.</summary>

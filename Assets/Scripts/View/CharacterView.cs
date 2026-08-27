@@ -1,6 +1,5 @@
-using HerOClock.Characters;
+﻿using HerOClock.Characters;
 using HerOClock.Common;
-using TMPro;
 using UnityEngine;
 
 namespace HerOClock.View
@@ -20,10 +19,8 @@ namespace HerOClock.View
         private SpriteRenderer body;
         private SpriteRenderer healthBackground;
         private SpriteRenderer healthFill;
-        private TextMeshPro levelLabel;
         private Color bodyColor;
         private float flashRemaining;
-        private int shownLevel = -1;
         private CharacterSprites sprites;
         private bool usesSprites;
         private Facing shownFacing = (Facing)(-1);
@@ -56,7 +53,6 @@ namespace HerOClock.View
                 : CreateSprite("Body", settings.BodySize, settings.BodyOffsetY, color, 0);
             healthBackground = CreateSprite("HealthBarBackground", settings.HealthBarSize, settings.HealthBarOffsetY, settings.HealthBarBackground, 1);
             healthFill = CreateSprite("HealthBarFill", settings.HealthBarSize, settings.HealthBarOffsetY, settings.HealthBarFull, 2);
-            levelLabel = CreateLevelLabel();
 
             lastPosition = transform.position;
 
@@ -221,7 +217,6 @@ namespace HerOClock.View
             }
 
             UpdateHealthBar();
-            UpdateLevelLabel();
             UpdateFacing(alive);
 
             healthBackground.enabled = alive;
@@ -261,42 +256,6 @@ namespace HerOClock.View
             healthFill.transform.localPosition = new Vector3(-fullWidth * (1f - fraction) * 0.5f, position.y, position.z);
 
             healthFill.color = Color.Lerp(settings.HealthBarEmpty, settings.HealthBarFull, fraction);
-        }
-
-        /// <summary>
-        /// The level shown under the character.
-        ///
-        /// Provisional: it exists so progression is visible while there is no interface, and it
-        /// is meant to come out later. A tiny screen sitting in the corner cannot afford to
-        /// carry a number that the player only cares about once in a while.
-        /// </summary>
-        private TextMeshPro CreateLevelLabel()
-        {
-            GameObject child = new GameObject("LevelLabel");
-            child.transform.SetParent(transform, false);
-            child.transform.localPosition = new Vector3(0f, -0.5f * cellSize, 0f);
-
-            TextMeshPro label = child.AddComponent<TextMeshPro>();
-            label.alignment = TextAlignmentOptions.Center;
-            label.fontSize = 1.6f * cellSize;
-            label.color = new Color(0.85f, 0.85f, 0.9f, 0.8f);
-            label.textWrappingMode = TextWrappingModes.NoWrap;
-            label.sortingLayerID = SortingLayer.NameToID("Characters");
-            label.sortingOrder = 3;
-            label.rectTransform.sizeDelta = new Vector2(2f * cellSize, 0.4f * cellSize);
-
-            return label;
-        }
-
-        private void UpdateLevelLabel()
-        {
-            if (levelLabel == null || shownLevel == character.Level)
-            {
-                return;
-            }
-
-            shownLevel = character.Level;
-            levelLabel.text = "Lv " + shownLevel;
         }
 
         /// <summary>

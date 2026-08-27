@@ -89,18 +89,24 @@ Never read stats straight from the definition again. Doing so makes every charac
 
 The player's six heroes are fixed designs; what varies is the instance the player builds. Levels, attributes and equipment belong to the instance.
 
-### Attributes are two states, not one
+### Record and combatant are separate too
 
-`AttributeAllocation` holds two `AttributeSplit`s and they are not interchangeable:
+There are three layers, not two, and each changes on its own clock:
 
-- `edited` — what the player has been doing. The profile shows it, the save writes it.
-- `inEffect` — what the stats read. `WriteTo` is the only member that touches it.
+- the **sheet** (`CharacterDefinition`) is a shared asset and never changes;
+- the **record** (`HeroRecord`) is what the player builds up across a save: level, experience, skill points, attribute allocation, and later equipment. C# only, no MonoBehaviour;
+- the **combatant** (`Character`) is built from a record when a stage begins and destroyed when it ends.
 
-`Commit()` is the only passage between them, and it runs in exactly two places: `Character.Initialize` (being born is the start of a character's first stage — without it a minion handed level 40 fights with level 1 attributes) and `Character.ResetForBattle`.
+`Character.InitializeFrom(record, …)` takes the photograph: it copies the level and the four attribute points and keeps nothing live. `Character.Record` exists for one direction only — experience earned flows to the record — and **nothing on the combatant follows the record afterwards**.
 
-In `ResetForBattle` it must run **before** the health is put back. The maximum the commit produces is the one that gets filled, so committing afterwards fills the old maximum and leaves the character short by whatever the new points were worth — silently, since nothing compares the two.
+Minions, villains and NPCs have no record and were always built per stage. Heroes used to be the exception, and every "what if this changes mid stage?" problem came from that exception. 0.10.4.0 removed it.
 
-The rule this serves is in `design-decisions.md`.
+Two things this deleted rather than fixed, worth knowing so nobody reintroduces them:
+
+- `Character.ResetForBattle`, a hand written list of state to clear between stages. It was already incomplete — the regeneration carry crossed stages unnoticed. A constructed object needs no such list.
+- `AttributeSplit` and its `Commit`, the mechanism 0.10.3.0 used to hold points back. Where the object sits now does that for free, and does it for equipment too without equipment asking.
+
+The rules these serve are in `design-decisions.md`.
 
 ## ScriptableObjects must hold no runtime state
 
@@ -240,7 +246,7 @@ Four layers are referenced by name, and renaming any of them breaks rendering wi
 
 - `Background` — the board cells, in `BoardRenderer`.
 - `Ground` — the area divider, in `BoardRenderer`.
-- `Characters` — the body, the health bar and the level label, in `CharacterView`.
+- `Characters` — the body and the health bar, in `CharacterView`.
 - `VFX` — the floating damage numbers, in `DamageNumber`.
 
 The list matters because of the trap described in the next section: a layer that the global light does not target renders black, silently.

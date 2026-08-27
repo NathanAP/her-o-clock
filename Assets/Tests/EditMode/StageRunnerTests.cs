@@ -69,14 +69,17 @@ namespace HerOClock.Tests
             };
         }
 
-        private Character Hero(int power = 10)
+        /// <summary>A hero record, which is what a stage builds its party from.</summary>
+        private HeroRecord Hero(int power = 10)
         {
-            return battle.Spawn(
-                battle.Sheet("hero", CharacterKind.Hero, power: power, agility: 40, constitution: 20),
-                Team.Heroes, 2, 1);
+            return new HeroRecord(
+                battle.Sheet("hero", CharacterKind.Hero, power: power, agility: 40, constitution: 20));
         }
 
-        private StageRunner Runner(IReadOnlyList<Character> heroes)
+        /// <summary>The combatants the last <c>StartStage</c> built, in the order it built them.</summary>
+        private readonly List<Character> lastParty = new List<Character>();
+
+        private StageRunner Runner(IReadOnlyList<HeroRecord> heroes)
         {
             Dictionary<string, CharacterDefinition> sheets = new Dictionary<string, CharacterDefinition>
             {
@@ -110,7 +113,34 @@ namespace HerOClock.Tests
                 },
                 Destroy = target => Object.DestroyImmediate(target)
                 ,
-                BuildParty = forStage => new List<Character>(heroes),
+                // Builds the party the way the game does, from records, and never hands back
+                // the same objects twice. A fake that returned a cached list would quietly test an
+                // architecture the game does not have any more.
+                BuildParty = forStage =>
+                {
+                    for (int i = 0; i < lastParty.Count; i++)
+                    {
+                        if (lastParty[i] != null)
+                        {
+                            lastParty[i].ClearFromGrid();
+                            Object.DestroyImmediate(lastParty[i].gameObject);
+                        }
+                    }
+
+                    lastParty.Clear();
+
+                    for (int i = 0; i < heroes.Count; i++)
+                    {
+                        GameObject instance = new GameObject(heroes[i].Id);
+                        Character character = instance.AddComponent<Character>();
+                        character.InitializeFrom(heroes[i], Team.Heroes, new GridPosition(2, 1 + i), battle.Grid, 1f);
+
+                        owned.Add(instance);
+                        lastParty.Add(character);
+                    }
+
+                    return new List<Character>(lastParty);
+                },
                 NextStage = (current, cleared) => current
             });
 
@@ -133,18 +163,29 @@ namespace HerOClock.Tests
         /// The attrition of gameplay.md is a rule about the inside of a stage: damage carries from
         /// wave to wave, and a stage that starts over starts whole. Being reopened uses this same
         /// entry, so closing the game is worth exactly what losing is worth.
+        ///
+        /// Since 0.10.4.0 nothing arranges this. The party of a stage that ends is destroyed and
+        /// the next stage builds its own, so a fresh combatant has no damage to undo — it has
+        /// never been hit. The assertion is kept because the **rule** is what matters, and a later
+        /// change that started reusing combatants would break it exactly here.
         /// </summary>
         [Test]
         public void StartingAStageBringsEverybodyBackToFullHealth()
         {
-            Character hero = Hero();
-            hero.TakeDamage(hero.Stats.MaxHealth - 3);
+            StageRunner runner = Runner(new[] { Hero() });
+            runner.StartStage(Stage());
 
-            Assert.AreEqual(3, hero.CurrentHealth, "The setup did not hurt the hero.");
+            Character wounded = lastParty[0];
+            wounded.TakeDamage(wounded.Stats.MaxHealth - 3);
 
-            Runner(new[] { hero }).StartStage(Stage());
+            Assert.AreEqual(3, wounded.CurrentHealth, "The setup did not hurt the hero.");
 
-            Assert.AreEqual(hero.Stats.MaxHealth, hero.CurrentHealth);
+            runner.StartStage(Stage());
+
+            Character fresh = lastParty[0];
+
+            Assert.AreNotSame(wounded, fresh, "The stage reused the combatant of the last one.");
+            Assert.AreEqual(fresh.Stats.MaxHealth, fresh.CurrentHealth);
         }
 
         // --- When a save is asked for ---

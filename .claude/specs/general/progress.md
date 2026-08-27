@@ -32,12 +32,6 @@ xpPorLacaio(nível do lacaio)  = 10 × nível^2
 - A experiência de um inimigo depende do **nível dele**, nunca do nível de quem o derrotou.
     - É isso que impede o jogador de farmar eternamente no ato 1 e o obriga a avançar para continuar evoluindo.
 
-### Por que existe um expoente (e por que é 3.55)
-
-- O que controla o ritmo do jogo inteiro não são as constantes, é a **diferença entre os dois expoentes**. Ela define quantos inimigos do próprio nível são necessários para subir um nível, e essa quantidade cresce conforme o jogador avança.
-- O valor foi calibrado contra o Task Bar Hero numa progressão gratuita, que é a referência mais próxima do gênero: lá, 250 horas de jogo levam ao nível 70 de 80, ou seja **87% do máximo**. Com 3.55, as mesmas 250 horas levam ao nível 86 de 100.
-- Com esse expoente, os últimos 14 níveis custam mais de 100 horas sozinhos. O nível 100 existe, mas ninguém precisa alcançá-lo, que é o comportamento desejado.
-
 ### Quem ganha experiência
 
 - **Só herói ganha experiência.** Lacaio, vilão e NPC não acumulam experiência nenhuma, em nenhuma circunstância.

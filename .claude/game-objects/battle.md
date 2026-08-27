@@ -54,7 +54,6 @@ Essas validações existem porque quase nenhum desses casos gera erro da Unity. 
     - **Só valem para quem ainda não tem desenho.** Um personagem com sprite ignora os dois: ele nasce do tamanho que os pixels por unidade da textura mandam e é posicionado por `Sprite Offset Y`. Ver `arte-de-personagem.md`.
 - Sprite Offset Y: `-0.5`. Meia casa para baixo, que é onde fica o chão. Só é lido por quem tem desenho.
 - Health Bar Size: `0.8` por `0.1`, e Health Bar Offset Y `0.55`. Fica no topo da casa, acima do corpo.
-    - Era `0.4` até a 0.10.1.0. Subiu porque um sprite de 32 pixels é bem mais alto que o retângulo que existia antes, e a barra passou a cair em cima da cabeça.
 - Flash Duration: `0.12`. Quanto tempo o corpo fica claro depois de levar um golpe.
 
 **Combate**
@@ -111,7 +110,8 @@ Ao entrar em Play, a hierarquia abaixo do `Battle` fica assim:
 
 - `Board` — um filho por casa, cada um com um `SpriteRenderer` verde na sorting layer `Background`. É este objeto que desliza para baixo entre as ondas, representando o grupo avançando pela cidade. Ele desenha nove fileiras além da área jogável em cada ponta (`BoardScroller.RowsPerTransition + 3`), para que a rolagem nunca revele um vazio.
 - `AreaDivider` — a linha fina que marca onde termina a área dos heróis. É irmã do tabuleiro, e não filha, para ficar parada enquanto o chão desliza.
-- Um filho por personagem, nomeado com o `Id` da ficha, com os componentes `Character` e `CharacterView`. Cada personagem tem quatro filhos próprios: `Body`, `HealthBarBackground`, `HealthBarFill` e `LevelLabel`.
+- Um filho por personagem, nomeado com o `Id` da ficha, com os componentes `Character` e `CharacterView`. Cada personagem tem três filhos próprios: `Body`, `HealthBarBackground` e `HealthBarFill`.
+    - **Os heróis são criados no começo de cada fase e destruídos no fim dela**, então esses objetos não sobrevivem à transição entre fases. O que sobrevive é o progresso do herói, que não é `GameObject` nenhum.
 - `DamageNumber` — os números que sobem e somem. São criados sob demanda e **reaproveitados**, não destruídos: num jogo que fica aberto o dia inteiro, criar um TextMeshPro por golpe seria alocação contínua.
 
 ## SaveService
@@ -181,12 +181,12 @@ O projétil é **puramente decorativo**. O dano já foi aplicado quando ele sai,
 
 Os valores ficam no bloco `Projectile Settings` do componente `BattleBootstrap`, e são para serem mexidos com o jogo rodando:
 
-| Campo | Valor inicial | O que faz |
-|---|---|---|
-| Size | 0.36 x 0.08 | Tamanho do tiro em fração de casa. Comprido e baixo para ler como algo viajando, e não como um ponto. |
-| Cells Per Second | 14 | Velocidade do desenho, em casas por segundo. |
-| Max Lifetime | 1.5 | Rede de segurança, em segundos. Só importa se a velocidade for posta absurdamente baixa. |
-| Color From Shooter | 0.65 | Quanto o tiro puxa a cor de quem atirou. 0 é branco, 1 é a cor exata do corpo. |
+| Campo              | Valor inicial | O que faz                                                                                             |
+| ------------------ | ------------- | ----------------------------------------------------------------------------------------------------- |
+| Size               | 0.36 x 0.08   | Tamanho do tiro em fração de casa. Comprido e baixo para ler como algo viajando, e não como um ponto. |
+| Cells Per Second   | 14            | Velocidade do desenho, em casas por segundo.                                                          |
+| Max Lifetime       | 1.5           | Rede de segurança, em segundos. Só importa se a velocidade for posta absurdamente baixa.              |
+| Color From Shooter | 0.65          | Quanto o tiro puxa a cor de quem atirou. 0 é branco, 1 é a cor exata do corpo.                        |
 
 **Estes valores são um chute inicial e nunca foram vistos rodando.** Ajuste sem cerimônia. Os dois que mais provavelmente estão errados são a velocidade, que pode fazer o tiro sumir antes de ser visto, e o tamanho.
 

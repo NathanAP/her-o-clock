@@ -32,6 +32,15 @@ Uma área é centrada em quem usa e pega todo mundo dentro dela, aliado incluíd
 
 Foi assim que se descobriu que o Gadrat tirava um terço da vida da Tempo por caste sem ninguém ter errado nada.
 
+### Aba `Heroes in play`
+
+A segunda aba mostra os **heróis da sessão que está rodando**: nível, experiência para o próximo, pontos de habilidade, atributos e pontos não gastos. Fora do Play ela avisa que não há nada para mostrar.
+
+- Ela lê **registros** e nunca combatentes. Uma ficha é conteúdo e um registro é save, então esta é uma informação que a aba de fichas não pode dar.
+- Durante uma fase, o nível aqui pode ser maior que o do personagem no tabuleiro. Isso é a regra descrita em `gameplay.md`, e a aba diz isso em texto para que a diferença não seja lida como defeito.
+- Ela existe porque o rótulo de nível saiu de cima do personagem, e ele era o único lugar onde esse número aparecia. **Não é o perfil do herói**, que é conteúdo de versão futura e serve ao jogador.
+- `BattleBootstrap.LiveRecords` devolve o que existe e nunca cria registro, senão abrir a aba mudaria o jogo. A aba se repinta sozinha, só durante o Play e só quando está selecionada.
+
 ### Quando ela relê o projeto
 
 A lista de fichas é lida ao abrir a janela, ao voltar o foco para ela e quando o editor avisa que um asset mudou — nunca dentro do `OnGUI`. `OnGUI` roda a cada repintura, inclusive com o mouse só passando por cima, então buscar as fichas de lá custaria uma varredura do projeto inteiro por quadro para montar uma lista que quase nunca muda. Uma ficha destruída debaixo da janela é pulada em vez de estourar.

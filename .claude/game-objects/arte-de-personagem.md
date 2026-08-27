@@ -24,15 +24,15 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
     - Escrever o `.meta` na mão foi descartado: o formato dele muda entre versões da Unity, e apagar um `.meta` desfaria os ajustes em silêncio.
     - São seis ajustes, e cada um deles falha calado quando esquecido: filtro bilinear borra a arte, compressão inventa cor que não estava na paleta, e os 100 pixels por unidade padrão fazem um sprite de 24×32 nascer com um terço do tamanho da casa.
 
-| Ajuste | Valor | Por quê |
-| --- | --- | --- |
-| Texture Type | Sprite | |
-| Sprite Mode | Single | Um arquivo por desenho |
-| Pixels Per Unit | 30 | O mesmo número do `Pixel Perfect Camera`, que é o que faz uma casa medir 30×30 |
-| Filter Mode | Point | Qualquer outro borra |
-| Compression | Uncompressed | Compressão cria cores fora da paleta |
-| Generate Mip Maps | desligado | Não existe câmera se afastando |
-| Pivot | Custom `(0.5, 0.0625)` | Põe os pés no chão da casa |
+| Ajuste            | Valor                  | Por quê                                                                        |
+| ----------------- | ---------------------- | ------------------------------------------------------------------------------ |
+| Texture Type      | Sprite                 |                                                                                |
+| Sprite Mode       | Single                 | Um arquivo por desenho                                                         |
+| Pixels Per Unit   | 30                     | O mesmo número do `Pixel Perfect Camera`, que é o que faz uma casa medir 30×30 |
+| Filter Mode       | Point                  | Qualquer outro borra                                                           |
+| Compression       | Uncompressed           | Compressão cria cores fora da paleta                                           |
+| Generate Mip Maps | desligado              | Não existe câmera se afastando                                                 |
+| Pivot             | Custom `(0.5, 0.0625)` | Põe os pés no chão da casa                                                     |
 
 - **O `30` aqui e o `Assets Pixels Per Unit` do `main-camera.md` são o mesmo número.** Se um mudar, o outro muda junto, e o tamanho do sprite muda com eles.
 
@@ -42,10 +42,9 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
 - **O golpe toca uma vez e acaba**, ao contrário do ciclo de corrida, que repete. É por isso que são duas classes: `SwingSequence` devolve `-1` quando o golpe terminou, e o `-1` é o que devolve o desenho parado à tela. Um golpe em laço viraria moinho de vento.
 - Um ataque novo **reinicia** a sequência do primeiro desenho e nunca entra numa fila.
     - O motivo é a velocidade. Com velocidade de ataque somada aos 8x do jogo, os golpes chegam mais rápido que os quadros na tela. Uma fila ficaria correndo atrás da luta e acabaria tocando golpes que aconteceram segundos antes.
-    - **Em velocidade alta a sequência trava no primeiro desenho, e isso é custo conhecido e não vantagem.** Enquanto o ataque era um desenho só, reiniciar sem parar deixava a pose de pé, que era exatamente a leitura desejada. Com três desenhos deixou de ser: um golpe que reinicia antes de terminar nunca passa da preparação, que é o mesmo erro que a 0.10.2.3 corrigiu na escolha do desenho único, agora chegando pelo ritmo em vez da escolha.
+    - **Em velocidade alta a sequência trava no primeiro desenho, e isso é custo conhecido e não vantagem.**
     - Quanto mais rápido o ataque, menos da sequência aparece, e ela se perde de trás para frente: a recuperação some primeiro e o corte depois. Fila continua fora de questão pelo motivo acima. O que resolveria de verdade é a pose durar o intervalo entre golpes em vez de uma duração fixa, e isso fica em aberto.
 - **Os dois cronômetros de apresentação correm em tempo não escalado**, tanto a pose quanto a piscada de dano. `Time.deltaTime` encolhe junto com a velocidade do jogo, então uma pose medida em tempo de jogo duraria dois centésimos de segundo real em 8x e nenhum quadro chegaria a desenhá-la.
-    - Isso era um defeito já existente na piscada de dano, corrigido junto na 0.10.2.0.
 - A pose olha para a direita, como o perfil, e é mostrada com o personagem virado para qualquer lado. Desenhar ataque para as quatro direções custaria quatro vezes a arte para corrigir algo que o jogador lê como golpe de qualquer jeito.
 
 ## O ciclo de corrida
@@ -67,7 +66,7 @@ Descrever como um personagem deixa de ser um retângulo colorido e passa a ter d
 
 ## O que ainda falta, e é sabido
 
-Esta base foi aceita como provisória em 0.10.2.3. Ela serve para existir código e para se ter noção do que funciona, e não como arte final.
+Esta base foi aceita como provisória. Ela serve para existir código e para se ter noção do que funciona, e não como arte final.
 
 - **Não existe caminhada de costas.** Entre uma onda e outra o grupo deveria avançar de costas para o jogador, e as únicas costas da folha, os quadros `06` e `07`, estão paradas. Os quadros `52` e `53` parecem costas e não são: o visor aparece, são três-quartos. Por enquanto todo mundo vira de perfil durante a rolagem, que é o menos ruim e não o certo.
 - **O ciclo de corrida não é um ciclo projetado.** A abertura das pernas ao longo dos oito quadros originais dá 16, 15, 15, 15, 12, 15, 13, 16; um ciclo desenhado de propósito oscilaria largo-estreito-largo-estreito. São poses avulsas que leem bem juntas, e cinco delas leem melhor que oito.
@@ -104,17 +103,17 @@ Esta base foi aceita como provisória em 0.10.2.3. Ela serve para existir códig
 
 Os cinco valores saem da barra da folha de referência, `.claude/specs/characters/heroes/tempo-reference.png`, medidos pela média de cada quadradinho, já que eles são texturizados e não chapados.
 
-| Papel | Hex | Onde vive |
-| --- | --- | --- |
-| Anil | `#149ECA` | A cor da Tempo, e de mais ninguém. Peças grandes do corpo |
-| Marfim | `#EEE2D0` | Contraste. Peito, coxas, painéis vizinhos ao anil |
-| Amarelo | `#F3B738` | Sinalização. Crista, filete, visor. Sempre pouco |
-| Grafite | `#2E333C` | Articulação. Só onde o corpo dobra |
-| Violeta | `#B33EA3` | O Catarsis. Núcleo e capa. Reservado, não é de ninguém |
+| Papel   | Hex       | Onde vive                                                 |
+| ------- | --------- | --------------------------------------------------------- |
+| Anil    | `#149ECA` | A cor da Tempo, e de mais ninguém. Peças grandes do corpo |
+| Marfim  | `#EEE2D0` | Contraste. Peito, coxas, painéis vizinhos ao anil         |
+| Amarelo | `#F3B738` | Sinalização. Crista, filete, visor. Sempre pouco          |
+| Grafite | `#2E333C` | Articulação. Só onde o corpo dobra                        |
+| Violeta | `#B33EA3` | O Catarsis. Núcleo e capa. Reservado, não é de ninguém    |
 
 - **O anil é exclusivo da Tempo.** A regra de identidade cromática está no `roadmap.md` e vale para o elenco inteiro: cor é do personagem, nunca do time.
 - **O campo `Color` da ficha não é decoração.** Ele deixou de pintar o corpo quando o sprite entrou, mas continua colorindo o **projétil do ataque à distância** no `OnBasicAttackLanded`. Ele precisa acompanhar o tom do personagem, senão um herói anil dispara tiros de outra cor.
-    - Foi exatamente o que aconteceu entre a 0.10.1.0 e a 0.10.2.2: a Tempo ficou ciano e o campo continuou cobalto, sem nada acusar, porque ela ainda não tinha arma de alcance para revelar.
+    - Foi exatamente o que aconteceu: a Tempo ficou ciano e o campo continuou cobalto, sem nada acusar, porque ela ainda não tinha arma de alcance para revelar.
 
 ## A folha de origem
 

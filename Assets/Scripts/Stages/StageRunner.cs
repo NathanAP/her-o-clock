@@ -194,7 +194,7 @@ namespace HerOClock.Stages
         }
 
         /// <summary>
-        /// Starts a stage from the first wave, with everybody back at full health.
+        /// Starts a stage from the first wave, with a party built from scratch.
         ///
         /// The only way in, and that is the point: a stage is entered from the top whether it is the
         /// first attempt, the restart after a defeat, or the game being reopened. There is no
@@ -210,25 +210,15 @@ namespace HerOClock.Stages
             DespawnEnemies();
             DespawnAllies();
 
-            // Everyone the last stage used leaves the board before the new party is read, so a
-            // hero who is not in this one cannot keep holding a cell.
-            for (int i = 0; i < heroes.Count; i++)
-            {
-                heroes[i].ClearFromGrid();
-            }
-
+            // The party is built fresh, and whoever built it is responsible for taking the last
+            // stage's combatants off the board first. Nothing is put back here because nothing
+            // was carried over: a combatant that has never fought has no buff to clear, no taunt
+            // to drop and no damage to undo.
             BuildParty();
 
             for (int i = 0; i < regroupMovers.Count; i++)
             {
                 regroupMovers[i].Reset();
-            }
-
-            // The party arrives already standing on its cells, placed by whoever built it, so
-            // this only puts the health back.
-            for (int i = 0; i < heroes.Count; i++)
-            {
-                heroes[i].ResetForBattle();
             }
 
             context.Scroller.ResetPosition();

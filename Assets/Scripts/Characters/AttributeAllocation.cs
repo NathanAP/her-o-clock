@@ -21,6 +21,20 @@ namespace HerOClock.Characters
     /// handing out 195 once, because the leftover of the percentages is resolved by largest
     /// remainder. A minion created straight at level 40 has to match one that climbed there, and
     /// it only does because the automatic share is recomputed whole every time.
+    ///
+    /// ## Nothing here waits, and it does not have to
+    ///
+    /// Every method takes effect the instant it is called, which looks like it contradicts
+    /// attributes.md — "um ponto colocado só passa a valer na próxima fase" — and does not.
+    ///
+    /// This lives on a <see cref="HeroRecord"/>, and **no fight ever reads a record**. A combatant
+    /// copies the points once, when a stage builds it, and fights with that copy. So a player can
+    /// rebuild in the middle of a battle and the battle simply does not notice: the wait is a
+    /// consequence of where this object sits, not a mechanism it has to implement.
+    ///
+    /// 0.10.3.0 did implement it here, as a second split held back until a commit. 0.10.4.0
+    /// deleted that, because separating the record from the combatant gives the same rule for
+    /// free — and gives it to equipment and everything else later, without any of them asking.
     /// </summary>
     public class AttributeAllocation
     {

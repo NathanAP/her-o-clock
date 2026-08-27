@@ -125,7 +125,9 @@ Este é o fluxo principal do jogo.
     - os **pontos de atributo** colocados desde a última fase, conforme "Um ponto colocado só passa a valer na próxima fase" em `attributes.md`;
     - e futuramente o **equipamento** de cada um.
 - A consequência prática é a regra que o jogador percebe: **trocar item, mexer na equipe, mudar a formação ou redistribuir pontos só tem efeito quando a próxima fase começar.** Nada disso muda no meio de uma fase em andamento.
-- Os heróis em si **não são recriados** entre fases. É a mesma instância que atravessa a sessão inteira, então o nível e a experiência ganhos numa fase seguem para a próxima. O que muda é quem está no tabuleiro e onde.
+- **O que atravessa a sessão é o progresso do herói, não o personagem no tabuleiro.** Nível, experiência, pontos e, futuramente, equipamento pertencem ao herói e seguem de uma fase para a outra. Quem luta é construído no começo de cada fase a partir disso, e descartado no fim dela.
+    - Ganhar um nível, redistribuir pontos ou trocar um item durante uma fase mexe no herói, e não em quem está no tabuleiro.
+    - Uma fase que recomeça começa inteira porque o time que entra é outro, e não porque a vida de alguém foi reposta.
 
 ### Eventos de fase
 
@@ -234,7 +236,6 @@ Habilidades são descritas por inteiro em `abilities.md`. O que vale registrar a
 - Uma habilidade em área é **sempre centrada em quem a usou**, e não procura o melhor lugar do tabuleiro.
     - O motivo é a proposta do jogo: ele é minúsculo e vive num cantinho da tela, então o jogador precisa conseguir prever a briga olhando de relance. Uma área aparecendo onde uma conta invisível decidiu destrói essa leitura, pelo mesmo motivo que não existe atributo de aggro.
     - O efeito colateral é que posicionar o herói vira parte da decisão, em vez de uma otimização que o jogo faz sozinho por trás.
-    - Uma versão anterior desta página descrevia uma pontuação que procurava o melhor local do tabuleiro. Ela foi removida na 0.6.0.3, junto com a âncora `bestPlacement` que a selecionava.
 
 ### Morte no campo de batalha
 

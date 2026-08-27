@@ -145,14 +145,21 @@ namespace HerOClock.Characters
         }
 
         /// <summary>
-        /// The same, but taking the split from a character's own allocation, which may mix points
-        /// the player placed by hand with points spent automatically.
+        /// The same, but taking a split that was already decided elsewhere — a hero's build,
+        /// which mixes points placed by hand with points spent automatically.
+        ///
+        /// It takes the four numbers and not the <see cref="AttributeAllocation"/> they came from,
+        /// on purpose. A combatant copies its build once, when the stage builds it, and holding
+        /// the live object instead would let a rebuild reach into a fight already running.
         /// </summary>
-        public void ApplyInstance(int level, AttributeAllocation allocation, float multiplier)
+        public void ApplyInstance(int level, int[] points, float multiplier)
         {
             ApplyLevel(level, multiplier);
 
-            allocation.WriteTo(levelPoints);
+            for (int i = 0; i < 4; i++)
+            {
+                levelPoints[i] = points != null && i < points.Length ? points[i] : 0;
+            }
         }
 
         private void ApplyLevel(int level, float multiplier)

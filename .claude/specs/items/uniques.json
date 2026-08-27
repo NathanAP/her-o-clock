@@ -37,7 +37,6 @@
     "rules": [
         "O powerTier decide o peso de sorteio e o piso de nivel. Um item unico nao escolhe os dois de forma independente, porque ai nada garantiria que o mais forte e o mais raro.",
         "Um item unico pode declarar um minItemLevel acima do piso do proprio tier, e nunca abaixo dele. Subir e uma decisao de conteudo valida; descer quebraria a promessa de que os melhores chegam depois.",
-        "Os pesos acima sao relativos entre unicos. A chance de um drop ser unico em vez de tecnologico nao mora aqui, ela e assunto do drop, na 0.10.2.0.",
         "O nivel do item sai do nivel de quem dropou ele, entao o piso de nivel ja e um gate de fase por consequencia. Nao existe um segundo campo dizendo 'cai a partir da fase X-Y', porque seriam dois eixos medindo a mesma coisa e eles iriam divergir na primeira vez que uma fase mudasse de nivel.",
         "O campo 'sources' e outra coisa e existe para outro proposito: ele restringe a origem, e nao o nivel. Um unico com 'sources' preenchido so cai daquelas origens, e e assim que um item fica amarrado a um vilao especifico. Nulo significa que ele cai de qualquer coisa que atenda o nivel.",
         "Um unico continua sorteando o proprio nivel de item dentro da faixa dele, e os valores dos modificadores acompanham esse nivel. Dois exemplares do mesmo unico nunca sao identicos.",

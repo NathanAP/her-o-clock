@@ -357,7 +357,7 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
     - +X% ao dano de habilidades elétricas.
     - +X% ao dano de habilidades físicas.
     - +X% de resistência ignorada ao atacar.
-- **Nenhum modificador aumenta o rank de uma habilidade.** É a decisão registrada no roadmap da 0.10.1.0, e ela vale para item único também.
+- **Nenhum modificador aumenta o rank de uma habilidade.**
 
 #### Camada de modificadores
 
@@ -393,4 +393,4 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 
 ### Drop e disponibilidade
 
-- Nada aqui define com que frequência cada tecnologia, subtipo ou classe aparece. Isso é `0.10.2.0` no roadmap e tem superfície de balanceamento própria.
+- O drop será configurado futuramente.

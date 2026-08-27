@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using HerOClock.Abilities;
 using HerOClock.Characters;
+using HerOClock.Progression;
+using HerOClock.Setup;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,6 +29,19 @@ namespace HerOClock.EditorTools
         private const string LevelKey = "HerOClock.Sheets.Level";
         private const string MultiplierKey = "HerOClock.Sheets.Multiplier";
         private const string AbilitiesKey = "HerOClock.Sheets.Abilities";
+        private const string TabKey = "HerOClock.Sheets.Tab";
+
+        /// <summary>The two questions this window answers, which are not the same question.</summary>
+        private enum Tab
+        {
+            /// <summary>What a sheet produces at a level you pick. True whether or not the game is running.</summary>
+            Sheets = 0,
+
+            /// <summary>What the heroes of the session running right now actually are.</summary>
+            Heroes = 1
+        }
+
+        private Tab tab = Tab.Sheets;
 
         private int level = 1;
         private float multiplier = 1f;
@@ -55,6 +70,7 @@ namespace HerOClock.EditorTools
             level = EditorPrefs.GetInt(LevelKey, 1);
             multiplier = EditorPrefs.GetFloat(MultiplierKey, 1f);
             showAbilities = EditorPrefs.GetBool(AbilitiesKey, true);
+            tab = (Tab)EditorPrefs.GetInt(TabKey, (int)Tab.Sheets);
 
             Reload();
         }
@@ -76,8 +92,30 @@ namespace HerOClock.EditorTools
             sheets = LoadSheets();
         }
 
+        /// <summary>
+        /// Repaints while the game runs, because a record moves without the editor being told.
+        ///
+        /// Only while playing and only on the live tab: an editor window that repaints forever
+        /// costs frames that the person using the editor paid for.
+        /// </summary>
+        private void Update()
+        {
+            if (tab == Tab.Heroes && EditorApplication.isPlaying)
+            {
+                Repaint();
+            }
+        }
+
         private void OnGUI()
         {
+            DrawTabs();
+
+            if (tab == Tab.Heroes)
+            {
+                DrawLiveHeroes();
+                return;
+            }
+
             DrawControls();
 
             // A domain reload can leave the window alive with the list gone.
@@ -103,6 +141,148 @@ namespace HerOClock.EditorTools
 
             EditorGUILayout.EndScrollView();
         }
+
+        private void DrawTabs()
+        {
+            EditorGUILayout.Space(4f);
+
+            EditorGUI.BeginChangeCheck();
+
+            tab = (Tab)GUILayout.Toolbar((int)tab, new[] { "Sheets", "Heroes in play" });
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorPrefs.SetInt(TabKey, (int)tab);
+            }
+        }
+
+        // --- The heroes of the session running right now ---
+
+        /// <summary>
+        /// What each hero **is** at this moment, which no sheet can answer.
+        ///
+        /// A sheet is content and a record is a save. Since a hero and the thing that fights are
+        /// two objects, the record is the only place the real level lives — and it stopped being
+        /// visible anywhere once the level label came off the character.
+        ///
+        /// It reads and never writes, like the rest of this window.
+        /// </summary>
+        private void DrawLiveHeroes()
+        {
+            if (!EditorApplication.isPlaying)
+            {
+                EditorGUILayout.HelpBox(
+                    "A hero only exists while the game is running. Press Play and come back.",
+                    MessageType.Info);
+                return;
+            }
+
+            // Any and not First: there is exactly one bootstrap in the scene, so asking for "the
+            // first" would be asking for an ordering that does not matter — which is the reason
+            // FindFirstObjectByType is deprecated.
+            BattleBootstrap bootstrap = FindAnyObjectByType<BattleBootstrap>();
+
+            if (bootstrap == null)
+            {
+                EditorGUILayout.HelpBox("No BattleBootstrap in the scene.", MessageType.Warning);
+                return;
+            }
+
+            List<HeroRecord> records = new List<HeroRecord>(bootstrap.LiveRecords);
+
+            if (records.Count == 0)
+            {
+                EditorGUILayout.HelpBox(
+                    "No hero has a record yet. They are created as the party is first built.",
+                    MessageType.Info);
+                return;
+            }
+
+            records.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));
+
+            EditorGUILayout.Space(2f);
+            EditorGUILayout.HelpBox(
+                "What each hero is right now. The combatant on the board was built from this when "
+                + "the stage began, so during a stage the two can differ — that is the rule, not a "
+                + "fault.",
+                MessageType.None);
+
+            EditorGUILayout.Space(4f);
+
+            scroll = EditorGUILayout.BeginScrollView(scroll);
+
+            DrawLiveHeader();
+
+            for (int i = 0; i < records.Count; i++)
+            {
+                DrawLiveRow(records[i]);
+            }
+
+            EditorGUILayout.EndScrollView();
+        }
+
+        private static readonly float[] LiveWidths = { 150f, 52f, 150f, 62f, 120f, 90f };
+
+        private static readonly string[] LiveHeaders =
+        {
+            "Hero", "Level", "To next level", "Skill pts", "POW/AGI/SPE/CON", "Unspent"
+        };
+
+        private static void DrawLiveHeader()
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            for (int i = 0; i < LiveHeaders.Length; i++)
+            {
+                EditorGUILayout.LabelField(LiveHeaders[i], EditorStyles.miniBoldLabel,
+                    GUILayout.Width(LiveWidths[i]));
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private static void DrawLiveRow(HeroRecord record)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button(record.Id, EditorStyles.linkLabel, GUILayout.Width(LiveWidths[0])))
+            {
+                Selection.activeObject = record.Definition;
+                EditorGUIUtility.PingObject(record.Definition);
+            }
+
+            LevelProgress progress = record.Progress;
+
+            EditorGUILayout.LabelField(progress.Level.ToString(), GUILayout.Width(LiveWidths[1]));
+
+            // The maximum level has nothing to count towards, and a bar filling to nowhere reads
+            // as a hero stuck one level short.
+            string towards = progress.IsMaxLevel
+                ? "max level"
+                : progress.CurrentXp + " / " + ExperienceTable.XpToNextLevel(progress.Level);
+
+            EditorGUILayout.LabelField(towards, GUILayout.Width(LiveWidths[2]));
+            EditorGUILayout.LabelField(progress.SkillPoints.ToString(), GUILayout.Width(LiveWidths[3]));
+
+            AttributeAllocation attributes = record.Attributes;
+
+            string split = attributes.SpentOn(Attribute.Power)
+                + "/" + attributes.SpentOn(Attribute.Agility)
+                + "/" + attributes.SpentOn(Attribute.Specialty)
+                + "/" + attributes.SpentOn(Attribute.Constitution);
+
+            EditorGUILayout.LabelField(split, GUILayout.Width(LiveWidths[4]));
+
+            string unspent = attributes.IsAutomatic
+                ? "automatic"
+                : attributes.Unspent.ToString();
+
+            EditorGUILayout.LabelField(unspent, GUILayout.Width(LiveWidths[5]));
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        // --- The sheets ---
 
         private void DrawControls()
         {

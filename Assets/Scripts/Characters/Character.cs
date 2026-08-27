@@ -14,6 +14,14 @@ namespace HerOClock.Characters
         private float regenerationCarry;
         private int level;
 
+        /// <summary>
+        /// The attribute points this combatant fights with, frozen at construction.
+        ///
+        /// A copy and never a live reference. Everything that made a mid stage rebuild dangerous
+        /// came from these being shared with something the player could edit.
+        /// </summary>
+        private readonly int[] points = new int[4];
+
         public CharacterDefinition Definition { get; private set; }
         public Team Team { get; private set; }
 
@@ -61,23 +69,17 @@ namespace HerOClock.Characters
         public CharacterStats Stats { get; private set; }
 
         /// <summary>
-        /// Level and experience of this instance, and **only heroes have one**.
+        /// The hero this combatant was built from, or null for everybody else.
         ///
-        /// A minion, villain or NPC takes its level from the stage it appears in and never
-        /// accumulates any experience, so a progress bar on them would be a number nothing reads
-        /// and nothing feeds. See "### Quem ganha experiência" in progress.md.
+        /// It is here for one reason only: experience earned in a fight has to reach the hero who
+        /// earned it, and the combatant is who the fight is talking to. **Nothing else reads it,
+        /// and nothing here follows it.** A record levelling up mid stage changes nothing about
+        /// this object, which is the whole point of them being two things.
         ///
-        /// Null on everybody else. Read <see cref="Level"/> instead, which works for all four.
+        /// A minion, villain or NPC takes its level from the stage it appears in and never earns
+        /// any experience, so it has no record. See "### Quem ganha experiência" in progress.md.
         /// </summary>
-        public LevelProgress Progress { get; private set; }
-
-        /// <summary>
-        /// Where this instance's level points went.
-        ///
-        /// Heroes can place them by hand, leave the sheet's distribution doing it, or take them
-        /// all back. Minions and villains are left on automatic and never touch it.
-        /// </summary>
-        public AttributeAllocation Attributes { get; private set; }
+        public HeroRecord Record { get; private set; }
 
         /// <summary>
         /// This instance's level. Heroes take their starting level from the sheet, minions and
@@ -123,32 +125,49 @@ namespace HerOClock.Characters
         /// <summary>Raised once when the character falls, so rewards can be handed out.</summary>
         public event System.Action<Character> Died;
 
+        /// <summary>
+        /// Builds a combatant that answers to nobody: a minion, a villain or an NPC, handed a
+        /// level by the stage it appears in. Its points come straight from the sheet.
+        /// </summary>
         public void Initialize(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid, int level, float multiplier)
         {
+            Build(definition, team, position, grid, level, multiplier, null);
+        }
+
+        /// <summary>
+        /// Builds the combatant a hero sends into a stage — a photograph of the record, taken now.
+        ///
+        /// The level and the points are read once, here. After this the record and the combatant
+        /// have nothing to do with each other except experience flowing one way, so the player can
+        /// level, rebuild and later re-equip the hero without any of it reaching the fight in
+        /// progress. That is the rule "um ponto colocado só passa a valer na próxima fase" in
+        /// attributes.md, and it costs no mechanism at all: the next stage takes a new photograph.
+        /// </summary>
+        public void InitializeFrom(HeroRecord record, Team team, GridPosition position, BattleGrid grid, float multiplier)
+        {
+            Build(record.Definition, team, position, grid, record.Level, multiplier, record);
+        }
+
+        private void Build(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid, int level, float multiplier, HeroRecord record)
+        {
             Definition = definition;
+            Record = record;
             Team = team;
             this.grid = grid;
             this.multiplier = multiplier;
 
             this.level = level < 1 ? 1 : level > definition.MaxLevel ? definition.MaxLevel : level;
 
-            // Only a hero carries experience. Everybody else is handed a level by the stage and
-            // never earns another one, so there is nothing for a progress bar to hold.
-            if (definition.Kind == CharacterKind.Hero)
+            // The points are copied, never referenced. From here on this combatant fights with
+            // the build it was born with, whatever happens to the hero it came from.
+            if (record != null)
             {
-                Progress = new LevelProgress(this.level, definition.MaxLevel);
-                Progress.LevelGained += OnLevelGained;
+                record.WritePointsTo(points);
             }
-
-            // Granted before subscribing, because the stats do not exist yet to be rebuilt.
-            Attributes = new AttributeAllocation(definition.Growth);
-            Attributes.GrantFor(this.level);
-
-            // Being created is the start of this character's first stage, so the points it was
-            // born with count from the first step. Without this a minion handed level 40 by a
-            // stage would fight with the attributes of a level 1, since granting alone never
-            // puts anything into effect.
-            Attributes.Commit();
+            else
+            {
+                AttributeGrowth.Distribute(LevelProgress.PointsAtLevel(this.level), definition.Growth, points);
+            }
 
             Modifiers = new StatModifiers();
             Statuses = new CharacterStatuses();
@@ -158,11 +177,9 @@ namespace HerOClock.Characters
             // Handed over before the first calculation, so every derived value already counts
             // buffs from the very first step.
             Stats.UseModifiers(Modifiers);
-            Stats.ApplyInstance(this.level, Attributes, multiplier);
+            Stats.ApplyInstance(this.level, points, multiplier);
 
             Modifiers.Changed += OnStatsSourceChanged;
-
-            Attributes.Changed += OnAttributesChanged;
 
             InitialPosition = position;
             CurrentHealth = Stats.MaxHealth;
@@ -197,69 +214,25 @@ namespace HerOClock.Characters
         }
 
         /// <summary>
-        /// Adds experience to this character, applying every level it earns.
+        /// Hands experience to the hero this combatant came from.
         ///
-        /// Does nothing on a minion, villain or NPC, which never gain any.
+        /// It passes straight through: what it earns lands on the record, and **this object does
+        /// not change** — not its level, not its points, not its maximum health. A level gained
+        /// halfway through a stage is real, it is saved, and it arrives on the board when the next
+        /// stage builds its combatants.
+        ///
+        /// Does nothing on a minion, villain or NPC, which have no record and never gain any.
         /// </summary>
         public void AwardExperience(long amount)
         {
-            if (Progress == null)
+            if (Record == null)
             {
                 return;
             }
 
-            Progress.Award(amount);
+            Record.AwardExperience(amount);
         }
 
-        /// <summary>
-        /// Puts a saved level, experience and skill points back on this character.
-        ///
-        /// It exists because the level lives in two places: <see cref="Progress"/>, which is what
-        /// the save carries, and this instance's own level, which is what every stat is computed
-        /// from. Restoring only the first leaves the two disagreeing and nothing complains — the
-        /// hero reads as level 1, fights with the armour and base damage of level 1, and holds
-        /// the attribute points of the level it really is.
-        ///
-        /// So the two are only ever moved together, and only from in here.
-        /// </summary>
-        public void RestoreProgress(int savedLevel, long currentXp, int skillPoints)
-        {
-            if (Progress == null)
-            {
-                return;
-            }
-
-            Progress.Restore(savedLevel, currentXp, skillPoints);
-
-            // Read back rather than reused: Progress clamps to 1 and to the maximum, and this
-            // level has to be the clamped one.
-            level = Progress.Level;
-
-            // Every derived number is built from the level, so they are all stale until now.
-            OnAttributesChanged();
-        }
-
-        /// <summary>
-        /// Applies a level that was just gained.
-        ///
-        /// Maximum health goes up because it comes from POW and CON, but **current health is
-        /// left alone**. Levelling up in the middle of a stage must not work as a free potion,
-        /// otherwise it would undo the damage carried between waves, which is what makes the
-        /// player need to farm in the first place.
-        /// </summary>
-        private void OnLevelGained(int newLevel)
-        {
-            level = newLevel;
-
-            // Granting raises Changed, which rebuilds the stats through OnAttributesChanged.
-            Attributes.GrantFor(newLevel);
-            Changed?.Invoke();
-        }
-
-        /// <summary>
-        /// Rebuilds the stats after the level points moved, whether that was a level arriving, the
-        /// player placing a point, the automatic distribution being toggled, or a reset.
-        /// </summary>
         /// <summary>
         /// A buff arrived or ran out, so everything derived from the stats has to be recomputed.
         ///
@@ -269,7 +242,7 @@ namespace HerOClock.Characters
         /// </summary>
         private void OnStatsSourceChanged()
         {
-            OnAttributesChanged();
+            RebuildStats();
         }
 
         /// <summary>
@@ -308,16 +281,22 @@ namespace HerOClock.Characters
             Changed?.Invoke();
         }
 
-        private void OnAttributesChanged()
+        /// <summary>
+        /// Recomputes everything derived from the stats, from the level and points this combatant
+        /// was born with.
+        ///
+        /// Only buffs and debuffs reach here now. The level and the points cannot move on a
+        /// combatant at all, so the one caller left is a modifier arriving or running out.
+        /// </summary>
+        private void RebuildStats()
         {
-            Stats.ApplyInstance(Level, Attributes, multiplier);
+            Stats.ApplyInstance(level, points, multiplier);
 
-            // "A vida atual nunca pode ultrapassar a vida máxima", in attributes.md. Points only
-            // ever arrive while levelling, so the maximum only ever goes up and this does nothing —
-            // until the player takes their points back to rebuild, which drops the maximum with the
-            // current health still sitting above it. The health bar then draws past its own end.
+            // "A vida atual nunca pode ultrapassar a vida máxima", in attributes.md. A debuff on
+            // CON lowers the maximum in the middle of a fight, with the current health still
+            // sitting above it, and the health bar would draw past its own end.
             //
-            // Only ever downwards: a rebuild must not hand out health either.
+            // Only ever downwards: a buff wearing on must not hand out health either.
             CurrentHealth = Mathf.Min(CurrentHealth, Stats.MaxHealth);
 
             Changed?.Invoke();
@@ -452,61 +431,6 @@ namespace HerOClock.Characters
             {
                 grid.Release(Position);
             }
-        }
-
-        /// <summary>
-        /// Puts the character back on its starting cell at full health, with every attribute
-        /// point placed since the last stage now counting. Second half of a restart.
-        ///
-        /// Must run only after everyone has left the board. Otherwise a character standing on
-        /// someone else's starting cell would make both claim the same cell.
-        /// </summary>
-        public void ResetForBattle()
-        {
-            // A stage starting over is a clean slate. Carrying a buff across it would make the
-            // restart depend on what was happening at the moment of the wipe.
-            Modifiers.Clear();
-            Statuses.Clear();
-            TauntedBy = null;
-
-            // Every point placed since the last stage starts counting here, and nowhere else.
-            // It must come before the health is put back: the maximum this produces is the one
-            // that gets filled, so committing afterwards would fill the old maximum and leave
-            // the character short by whatever the new points were worth.
-            Attributes.Commit();
-
-            CurrentHealth = Stats.MaxHealth;
-            ReturnToStart();
-        }
-
-        /// <summary>
-        /// Sends the character into a stage from a cell, which becomes its new starting cell.
-        ///
-        /// A hero is not rebuilt between stages: the same instance keeps its level, its experience
-        /// and the points it spent. What changes from one stage to the next is whether it is on the
-        /// board at all and where it stands, and that is read fresh every time a stage begins, so a
-        /// change to the formation only takes effect on the next one.
-        ///
-        /// Like the other placements, it must run only after everyone has left the board.
-        /// </summary>
-        public void EnterStageAt(GridPosition cell)
-        {
-            InitialPosition = cell;
-            Position = cell;
-            TauntedBy = null;
-
-            gameObject.SetActive(true);
-            grid.Occupy(cell, this);
-            transform.position = grid.WorldPositionOf(cell);
-
-            Changed?.Invoke();
-        }
-
-        /// <summary>Takes the character off the board entirely, for a stage it is not part of.</summary>
-        public void LeaveStage()
-        {
-            ClearFromGrid();
-            gameObject.SetActive(false);
         }
 
         /// <summary>

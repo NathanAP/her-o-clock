@@ -147,16 +147,7 @@ Nenhum desses casos apaga progresso do jogador, e todos são consequência de o 
 - **Na abertura**, conforme o passo 6 de "Carregar".
 - **Ao fechar o jogo**, como cortesia e nunca como garantia. Fechar pela janela avisa o jogo, matar o processo não.
 
-### Por que não existe save periódico
-
-- O save não guarda posição nenhuma dentro de uma fase, então um save no meio de uma onda não gravaria nada que o save da fronteira de onda já não tenha.
-- A fronteira de onda é frequente. As transições entre ondas duram alguns segundos, então o save nunca está longe.
-- Uma morte súbita do processo custa, no máximo, o que a onda em andamento ia pagar.
-
-### Por que não existe save ao mexer nos atributos
-
-- O jogo nunca para. Enquanto o jogador distribui pontos, o grupo continua enfrentando ondas, e a próxima fronteira de onda chega em segundos.
-- O preço é uma janela pequena: quem redistribuir pontos e tiver o processo **morto** nos segundos seguintes perde a redistribuição.
+**Esses são os únicos momentos.** Não existe save periódico e não existe save ao mexer nos atributos. Uma morte súbita do processo custa, no máximo, o que a onda em andamento ia pagar.
 
 ### O jogador nunca vê o jogo parar para salvar
 

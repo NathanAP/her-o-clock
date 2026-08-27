@@ -49,18 +49,12 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
     - O botão de resetar.
     - Ligar ou desligar o interruptor do automático.
 - **O automático não é exceção.** Ele decide *onde* o ponto vai sem decidir *quando* ele vale, exatamente como o jogador.
-
-#### Por que
-
-- **Sem isso existe um exploit inteiro.** Redefinir pontos é livre e sem custo, então um jogador poderia trocar a build no meio de uma luta — encher CON ao levar dano, encher POW para o golpe final — e jogar contra cada inimigo com a build ideal para aquele inimigo. Uma escolha que pode ser desfeita a qualquer momento deixa de ser escolha.
-- É a mesma regra que item, equipe, ordem e formação já seguem, conforme "O grupo é montado no começo de cada fase" em `gameplay.md`. Atributo era o único que fugia dela.
-- Como consequência, a **vida máxima nunca muda no meio de uma fase**, e isso resolve um problema sozinho: não existe momento em que o máximo sobe com o personagem ferido, nem em que ele desce e a vida atual precisa ser cortada. Toda fase começa com o grupo inteiro.
+- É a mesma regra que item, equipe, ordem e formação seguem, descrita em "O grupo é montado no começo de cada fase" em `gameplay.md`.
+- **A vida máxima, portanto, nunca muda no meio de uma fase**, já que ela vem apenas de CON.
 
 #### O que continua valendo na hora
 
-**O nível em si, e tudo que cresce por nível sem passar por atributo.** É o caso da armadura física e das resistências elementais, descritas em "Atributos limitados crescem com o nível", e do dano base por nível.
-
-Isso é de propósito. Aqueles crescimentos existem para o personagem não apodrecer contra inimigos mais fortes, e segurá-los até a próxima fase iria contra o motivo pelo qual eles existem. Subir de nível no meio de uma fase continua deixando o personagem mais resistente na hora — o que espera é a distribuição de pontos.
+**O nível em si, e tudo que cresce por nível sem passar por atributo**: a armadura física e as resistências elementais, descritas em "Atributos limitados crescem com o nível", e o dano base por nível. Subir de nível no meio de uma fase deixa o personagem mais resistente na hora; o que espera é a distribuição de pontos.
 
 #### Exemplos
 
@@ -81,13 +75,6 @@ Isso é de propósito. Aqueles crescimentos existem para o personagem não apodr
 - POW não dá vida, não dá regeneração e não dá nada além de dano. Quem quer vida investe em CON.
 - Personagens com mais POW são capazes de utilizar equipamentos e armaduras mais pesados.
 
-#### Por que o atributo multiplica em vez de somar
-
-- Com o teto de 500 pontos, um atributo que desse 1 ponto de dano por ponto entregaria 500 de dano de graça. Nenhuma arma vale quinhentos de coisa alguma, então **o item deixaria de importar** — e item é metade do jogo.
-- Multiplicando, os dois crescem juntos: uma arma melhor é sempre melhor, e mais POW faz toda arma render mais. É isso que mantém procurar item valendo a pena do começo ao fim.
-- A porcentagem é pequena de propósito. Um POW extremo, no teto, dá +50%. O personagem é reconhecidamente forte, e mesmo assim a arma continua sendo o que decide o dano dele.
-- **Isso tem um custo que é aceito conscientemente:** 5 pontos por nível passam a valer 0.5% de dano, então subir de nível quase não é sentido na ofensiva. Quem carrega essa sensação é o item e a árvore de habilidades, e não o nível.
-
 ### Agilidade (AGI)
 
 - AGI aumenta evasão, velocidade de ataque básico e velocidade de movimento do personagem.
@@ -104,7 +91,6 @@ Isso é de propósito. Aqueles crescimentos existem para o personagem não apodr
 
 - SPE aumenta ataques elementais e redução de recarga do personagem.
     - SPE aumenta o dano das habilidades do personagem. **Quanto ele aumenta ainda não está definido**, e é decidido junto com os itens.
-        - Até a 0.9.3.0 esta linha prometia "1 ponto de dano elemental por ponto de SPE". O jogo nunca fez isso: o valor era calculado, aparecia no Inspector e nenhum cálculo de combate o lia. A escala de habilidade sempre leu o SPE cru, através do bloco `scaling` da própria habilidade.
         - A promessa foi retirada em vez de implementada porque o modelo inteiro muda com os itens: dano de atributo vai deixar de ser um valor somado e passar a ser uma porcentagem sobre a base que o conteúdo fornece — a arma para o ataque básico, o rank para a habilidade. Implementar o valor antigo agora seria construir algo para apagar em seguida.
     - SPE é a fonte principal de redução de recarga, mas a conversão em porcentagem é feita por rendimento decrescente e está descrita em "Redução de recarga".
 - Personagens com mais SPE são capazes de utilizar equipamentos e armaduras especiais.

@@ -346,6 +346,21 @@ With the attribute multiplying instead of adding, **the level stops raising dama
 So the damage base declares a gain per level, the same shape defence already used, and for the same reason: a number that never moves is worth less every level, because what it is measured against keeps rising. Heroes leave the gain at zero; minions and villains use it.
 
 
+## A hero and the thing that fights are two objects
+
+What the player builds up — level, experience, skill points, attribute allocation, later equipment — belongs to a **record**. What stands on the board belongs to a **combatant**, built from the record when a stage begins and destroyed when it ends. Experience flows from the combatant to the record and nothing flows back.
+
+This is the answer to a question that kept being asked one system at a time: *what happens if this changes mid stage?* Attributes needed a mechanism for it in 0.10.3.0, and equipment would have needed its own. Now nothing does, because a combatant is a photograph and the record can be edited freely while a fight is running.
+
+Four things stopped existing rather than being handled:
+
+- **The level in two places**, which could disagree with itself. It lives on the record only.
+- **A rebuild reaching a fight in progress.** The fight is not reading the record.
+- **Maximum health moving under a wounded character.** It comes only from CON, which only changes between stages.
+- **A hand written list of state to clear between stages.** There is no list, because there is nothing to clear. That list was already incomplete: the regeneration carry crossed stages unnoticed for a long time.
+
+Minions, villains and NPCs were always built per stage and thrown away. Heroes were the exception, and the exception was the bug.
+
 ## A point placed only counts from the next stage
 
 Placing an attribute point and the point taking effect are two different moments. It applies to every way of placing one, and **the automatic distribution is not an exception** — it decides *where* a point goes, never *when* it counts.
@@ -354,8 +369,48 @@ Without it there is a whole exploit: taking points back is free, instant and unl
 
 It is the same rule item, team, order and formation already followed under "the party is composed when a stage begins". Attributes were the only thing escaping it.
 
-**What it removed for free**, and this is the part worth remembering: maximum health comes only from CON, so with points frozen inside a stage the maximum cannot move mid stage at all. Two cases stopped existing rather than being handled — the maximum rising while a character is wounded, which made levelling up leave a hero proportionally *more* hurt, and the maximum falling under the current health, which needed a clamp. A planned fix for the first became code that does not need to exist.
+**How it is enforced changed in 0.10.4.0 and the rule did not.** 0.10.3.0 implemented it with a second allocation held back until a commit. Separating the record from the combatant gives the same rule for free — a fight reads a copy — so the mechanism was deleted. If a future change ever reunites the two objects, this rule needs its mechanism back.
 
-The clamp in `OnAttributesChanged` stays, and still earns its place: a debuff on CON lowers the maximum mid fight, where no stage boundary is coming to tidy up.
+The clamp in `RebuildStats` stays, and still earns its place: a debuff on CON lowers the maximum mid fight, where no stage boundary is coming to tidy up. That is the only case left that can move a maximum during a fight.
 
 **What does not wait: the level itself.** Armour, elemental resistance and base damage per level arrive immediately. Those growths exist so a character does not rot against stronger enemies — the diminishing returns constant is `50 x attacker level` — so holding them back would work against the reason they exist. `TheArmourALevelBuysArrivesImmediately` guards that boundary, because it looks like an inconsistency and somebody will eventually try to "fix" it.
+
+## Why the rank step exists
+
+Moved out of `abilities.md` in 0.10.4.2: the spec states that ranks unlock at levels the sheet declares, and this is the reasoning behind it.
+
+It is what allows **low damage at rank 1 without condemning the ability to be weak forever**.
+
+Without the step, an ability's damage curve has to be smooth from end to end, because nothing stops a player from reaching the top rank early. One that starts strong enough to be useful becomes absurd a few levels later; one that starts weak enough not to break anything never stops being weak.
+
+With it, the sheet decides when the jump enters the game, not the pace at which the player accumulates points. That is what makes a curve like `15, 50, 90, 120, 150` calibratable at all.
+
+**It does not replace attribute scaling.** The step controls when the jump happens; the attribute fraction is what makes the ability answer to the build between one step and the next.
+
+## Why an attribute multiplies instead of adding
+
+Moved out of `attributes.md` in 0.10.4.2. The rule itself is stated there; this is why it was chosen over the alternative.
+
+With the 500 point cap, an attribute giving one point of damage per point would hand out five hundred damage for free. No weapon is worth five hundred of anything, so **the item would stop mattering** — and items are half the game.
+
+Multiplying makes the two grow together: a better weapon is always better, and more POW makes every weapon better. That is what keeps hunting for items worthwhile from beginning to end.
+
+The percentage is deliberately small, so even an extreme POW leaves the weapon deciding the damage. **The cost was accepted knowingly:** five points per level is a fraction of a percent, so levelling is barely felt on offence. Items and the skill tree carry that feeling, never the level. The current numbers are in `.claude/balance/snapshot.md`.
+
+## Why the experience exponent is what it is
+
+Moved out of `progress.md` in 0.10.4.2. The formula lives there; this is the calibration behind the number.
+
+What controls the pace of the whole game is not the constants, it is the **difference between the two exponents**. It decides how many same-level enemies one level costs, and that count grows as the player advances.
+
+It was calibrated against Task Bar Hero on a free progression, the closest reference in the genre, aiming to land at a comparable share of the maximum level after a long time played. The intent is that the last stretch of levels costs more than everything before it: level 100 exists, but nobody needs to reach it.
+
+The hours this actually produces are in `.claude/balance/snapshot.md` and never in prose, because they move whenever the exponent or the enemy rate moves.
+
+## Why saving happens only at those four moments
+
+Moved out of `save.md` in 0.10.4.2.
+
+**No periodic save**, because the save holds no position inside a stage — one taken mid-wave would record nothing the wave boundary does not already hold. Wave boundaries are frequent, so a save is never far away.
+
+**No save when attributes are touched**, because the game never stops: while the player is placing points the party keeps clearing waves, and the next boundary arrives in seconds. The price is a small window, and since 0.10.4.0 it is smaller still — points only take effect on the next stage anyway.

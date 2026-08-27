@@ -14,7 +14,7 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - O jogo não lê estes arquivos. Ele lê os `CharacterDefinition` em `Assets/ScriptableObjects/`, e os arquivos daqui são a **fonte da intenção** que aqueles assets espelham.
 - É por isso que eles guardam coisas que um asset não guarda: história, características físicas, o bloco `hidden` e as habilidades, que ainda nem existem no código.
 - O texto que o jogador lê **não fica na ficha nem no asset**. Ele mora em `Assets/Strings/`, na chave `character.{id}.name`, conforme descrito em `attributes.md`.
-- As quatro fichas que existem hoje em `Assets/ScriptableObjects/` são de teste e não correspondem a nenhuma ficha desta pasta. Os personagens de verdade do ato 1 chegam na 0.9.0.0.
+- As quatro fichas que existem hoje em `Assets/ScriptableObjects/` são de teste e não correspondem a nenhuma ficha desta pasta.
 
 ### Lacaios e vilões também têm atributos principais
 

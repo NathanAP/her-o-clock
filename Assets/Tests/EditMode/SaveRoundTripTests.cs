@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using HerOClock.Characters;
 using HerOClock.Persistence;
@@ -52,16 +52,31 @@ namespace HerOClock.Tests
                 power: 10, agility: 5, specialty: 3, constitution: 20);
         }
 
+        /// <summary>A record at a given level, the way experience would have got it there.</summary>
+        private HeroRecord RecordAt(CharacterDefinition sheet, int level)
+        {
+            HeroRecord record = battle.Record(sheet);
+
+            // From wherever the sheet starts, so a sheet that begins above level 1 does not
+            // overshoot. The table is cumulative, so the difference is what is owed.
+            long owed = ExperienceTable.TotalXpTo(level) - ExperienceTable.TotalXpTo(record.Level);
+
+            if (owed > 0L)
+            {
+                record.AwardExperience(owed);
+            }
+
+            return record;
+        }
+
         /// <summary>
-        /// Writes a party and reads it back into a party built the way a new session builds one.
+        /// Writes a record and reads it back into one built the way a new session builds it.
         ///
-        /// It finishes by starting a stage, because that is what a new session does: a save says
-        /// which stage the player is on and never where inside it, so loading is always followed
-        /// by <c>StartStage</c>. Leaving it out would test a state the game never shows anybody —
-        /// and would miss the point that a rebuild left pending when the game was closed lands on
-        /// the reload, exactly where it would have landed had the player kept playing.
+        /// Records and not combatants, because that is the whole of what a save holds. A combatant
+        /// is built afterwards, from whatever the record ended up saying, and it is built whole --
+        /// so there is no health in the file and nothing is missing by its absence.
         /// </summary>
-        private Character SaveAndReload(Character hero, out SaveReadResult read)
+        private HeroRecord SaveAndReload(HeroRecord hero, out SaveReadResult read)
         {
             PlayerWallet wallet = new PlayerWallet();
             wallet.Add(4321);
@@ -71,77 +86,74 @@ namespace HerOClock.Tests
 
             store.Write(payload, Noon);
 
-            Character reborn = battle.Spawn(hero.Definition, Team.Heroes, 4, 2);
+            HeroRecord reborn = battle.Record(hero.Definition);
 
             read = store.Load();
             Assert.IsTrue(read.Found, "The save that was just written could not be read back.");
 
             SaveMapper.ApplyHeroes(read.Payload, new[] { reborn });
 
-            // The stage the save pointed at, beginning. This is where the restored points start
-            // counting and where the party is put back to full health.
-            reborn.ResetForBattle();
-
             return reborn;
         }
 
-        // --- The level the character itself believes in ---
+        // --- What the reloaded hero fights with ---
 
         /// <summary>
-        /// A reloaded hero has to agree with itself about what level it is.
+        /// A reloaded hero fights at the level the file says.
         ///
-        /// The level lives in two places: <c>Progress.Level</c>, which is what the save carries,
-        /// and the character's own level, which is what every stat is computed from. Restoring
-        /// only the first leaves the two disagreeing, and nothing complains — the party looks
-        /// like it is level 1 and fights like it, while the file says otherwise.
-        ///
-        /// The rest of this file only ever asserted <c>Progress.Level</c>, which is exactly the
-        /// gap the bug walked through.
+        /// This was 0.10.2.4: the level lived in two places and the restore moved only one, so the
+        /// party fought with the armour of level 1 while holding the points of level 9. The bug
+        /// cannot be written any more, since the level lives only on the record and the combatant
+        /// is built from it. The assertion stays anyway, because the consequence is what matters
+        /// and a later refactor could reintroduce the gap by another route.
         /// </summary>
         [Test]
-        public void AReloadedHeroAgreesWithItselfAboutItsLevel()
+        public void AReloadedHeroFightsAtTheLevelTheFileSays()
         {
             CharacterDefinition sheet = battle.Sheet("armoured-hero", CharacterKind.Hero,
                 power: 10, agility: 5, specialty: 3, constitution: 20, physicalArmor: 20);
             sheet.Stats.PhysicalArmorPerLevel = 20;
 
-            Character hero = battle.Spawn(sheet, Team.Heroes, 2, 1, level: 9);
-            int armourAtNine = hero.Stats.PhysicalArmor;
+            HeroRecord hero = RecordAt(sheet, 9);
+
+            Character before = battle.SpawnHero(hero, Team.Heroes, 2, 1);
+            int armourAtNine = before.Stats.PhysicalArmor;
+            battle.Disband(before);
 
             SaveReadResult read;
-            Character reborn = SaveAndReload(hero, out read);
+            HeroRecord reborn = SaveAndReload(hero, out read);
 
-            Assert.AreEqual(9, reborn.Progress.Level, "The save lost the level.");
-            Assert.AreEqual(9, reborn.Level,
-                "The save brought the level back but the character kept believing it was level 1.");
+            Assert.AreEqual(9, reborn.Level, "The save lost the level.");
 
-            // The consequence, and the reason this is not a cosmetic bug: armour and base damage
-            // grow with the level, so a hero that thinks it is level 1 fights with level 1 defence
-            // while carrying the attribute points of level 9.
-            Assert.AreEqual(armourAtNine, reborn.Stats.PhysicalArmor,
+            Character fighting = battle.SpawnHero(reborn, Team.Heroes, 2, 1);
+
+            Assert.AreEqual(9, fighting.Level,
+                "The combatant was built at a level the record does not claim.");
+            Assert.AreEqual(armourAtNine, fighting.Stats.PhysicalArmor,
                 "The reloaded hero came back with the armour of a level 1 character.");
         }
 
         /// <summary>
-        /// A loaded party starts whole, and it is the stage starting that makes it so.
+        /// A loaded party starts whole, and nothing had to arrange that.
         ///
-        /// The format carries no current health and does not need to. A hero is spawned with the
-        /// maximum of whatever level it was built at, the save then restores the real level and
-        /// the real points, and the stage beginning is what puts both into effect and fills the
-        /// health to the maximum they produce.
+        /// The format carries no current health and does not need to: health belongs to a
+        /// combatant, and the combatant a loaded record sends into its stage has never been hit.
         ///
-        /// The interesting part is what is **not** here: `SaveMapper` does not touch health at
-        /// all. It used to, and that was a second answer to a question that already had one.
+        /// The interesting part is what is **not** here. There is no top up anywhere. 0.10.2.4
+        /// added one to `SaveMapper` and 0.10.3.0 found it was a second answer to a question that
+        /// already had one. Now there is not even a question.
         /// </summary>
         [Test]
         public void AReloadedHeroStartsAtFullHealth()
         {
-            Character hero = battle.Spawn(Sheet(), Team.Heroes, 2, 1, level: 9);
+            HeroRecord hero = RecordAt(Sheet(), 9);
 
             SaveReadResult read;
-            Character reborn = SaveAndReload(hero, out read);
+            HeroRecord reborn = SaveAndReload(hero, out read);
 
-            Assert.AreEqual(reborn.Stats.MaxHealth, reborn.CurrentHealth,
+            Character fighting = battle.SpawnHero(reborn, Team.Heroes, 2, 1);
+
+            Assert.AreEqual(fighting.Stats.MaxHealth, fighting.CurrentHealth,
                 "The party came back already hurt by the health it gained while loading.");
         }
 
@@ -154,7 +166,7 @@ namespace HerOClock.Tests
         [Test]
         public void AHeroComesBackExactlyAsItWasSaved()
         {
-            Character hero = battle.Spawn(Sheet(), Team.Heroes, 2, 1, level: 10);
+            HeroRecord hero = RecordAt(Sheet(), 10);
 
             // Both origins of the points are exercised: some placed by hand, the rest still waiting.
             hero.Attributes.SetAutomatic(false);
@@ -163,20 +175,20 @@ namespace HerOClock.Tests
 
             hero.AwardExperience(ExperienceTable.XpToNextLevel(10) + 7);
 
-            // The stage after the rebuild, which is when points the player moved start counting.
-            // The reloaded hero goes through that same door on its way back, so this is the
-            // earliest moment the two are comparable at all — without it, this would be reading a
-            // hero with a pending rebuild against one that has already applied it.
-            hero.ResetForBattle();
-
-            int expectedMaxHealth = hero.Stats.MaxHealth;
+            Character before = battle.SpawnHero(hero, Team.Heroes, 2, 1);
+            int expectedMaxHealth = before.Stats.MaxHealth;
+            battle.Disband(before);
 
             SaveReadResult read;
-            Character reborn = SaveAndReload(hero, out read);
+            HeroRecord reborn = SaveAndReload(hero, out read);
 
             Assert.AreEqual(11, reborn.Progress.Level, "The level was lost.");
             Assert.AreEqual(7L, reborn.Progress.CurrentXp, "The experience towards the next level was lost.");
-            Assert.AreEqual(1, reborn.Progress.SkillPoints, "The skill point earned by levelling was lost.");
+            // Ten, and not one: this hero climbed from level 1 to level 11, and progress.md grants
+            // one skill point per level. The old expectation of one belonged to a hero that was
+            // *created* at level 10 and then gained a single level, which is not a thing a record
+            // can be any more — a hero gets to a level by earning it.
+            Assert.AreEqual(10, reborn.Progress.SkillPoints, "The skill points earned by levelling were lost.");
 
             Assert.IsFalse(reborn.Attributes.IsAutomatic, "The automatic distribution came back switched on.");
             Assert.AreEqual(20, reborn.Attributes.ManualOn(Attribute.Power), "The build placed by hand was lost.");
@@ -191,8 +203,10 @@ namespace HerOClock.Tests
                     "The points on " + attribute + " came back different.");
             }
 
-            Assert.AreEqual(expectedMaxHealth, reborn.Stats.MaxHealth,
-                "The stats were not rebuilt from the restored level, so every derived number is wrong.");
+            Character fighting = battle.SpawnHero(reborn, Team.Heroes, 2, 1);
+
+            Assert.AreEqual(expectedMaxHealth, fighting.Stats.MaxHealth,
+                "The combatant built from the restored record does not match the one saved.");
 
             Assert.AreEqual(4321L, read.Payload.money, "The money was lost.");
             Assert.AreEqual("act1-stage2", read.Payload.stage.id);
@@ -206,8 +220,12 @@ namespace HerOClock.Tests
         [Test]
         public void TheSaveHoldsNoHealthAndNoPositionInsideAStage()
         {
-            Character hero = battle.Spawn(Sheet(), Team.Heroes, 2, 1, level: 5);
-            hero.TakeDamage(hero.Stats.MaxHealth - 1);
+            HeroRecord hero = RecordAt(Sheet(), 5);
+
+            // The combatant is hurt and the record is what gets written, which is the point: a
+            // record has no health to leak into the file even if somebody wanted it to.
+            Character fighting = battle.SpawnHero(hero, Team.Heroes, 2, 1);
+            fighting.TakeDamage(fighting.Stats.MaxHealth - 1);
 
             SavePayload payload = SaveMapper.Capture(
                 new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
@@ -230,25 +248,26 @@ namespace HerOClock.Tests
         [Test]
         public void ARestoredHeroMatchesOneThatClimbedToTheSameLevel()
         {
-            Character climbed = battle.Spawn(Sheet(), Team.Heroes, 2, 1);
+            HeroRecord climbed = battle.Record(Sheet());
             climbed.AwardExperience(ExperienceTable.TotalXpTo(40));
 
-            Assert.AreEqual(40, climbed.Progress.Level, "The setup did not reach level 40.");
+            Assert.AreEqual(40, climbed.Level, "The setup did not reach level 40.");
 
             SaveReadResult read;
-            Character reborn = SaveAndReload(climbed, out read);
+            HeroRecord reborn = SaveAndReload(climbed, out read);
 
             Character bornAtForty = battle.Spawn(Sheet(), Team.Heroes, 5, 3, level: 40);
+            Character restored = battle.SpawnHero(reborn, Team.Heroes, 2, 1);
 
             for (int i = 0; i < 4; i++)
             {
                 Attribute attribute = (Attribute)i;
 
-                Assert.AreEqual(bornAtForty.Attributes.SpentOn(attribute), reborn.Attributes.SpentOn(attribute),
+                Assert.AreEqual(bornAtForty.Stats.TotalOf(attribute), restored.Stats.TotalOf(attribute),
                     "A restored level 40 hero and one created at level 40 differ on " + attribute + ".");
             }
 
-            Assert.AreEqual(bornAtForty.Stats.MaxHealth, reborn.Stats.MaxHealth);
+            Assert.AreEqual(bornAtForty.Stats.MaxHealth, restored.Stats.MaxHealth);
         }
 
         /// <summary>
@@ -262,26 +281,25 @@ namespace HerOClock.Tests
         {
             CharacterDefinition sheet = Sheet();
 
-            Character first = battle.Spawn(sheet, Team.Heroes, 1, 1, level: 10);
-            Character second = battle.Spawn(sheet, Team.Heroes, 2, 1, level: 10);
+            HeroRecord first = RecordAt(sheet, 10);
+            HeroRecord second = RecordAt(sheet, 10);
 
             second.AwardExperience(ExperienceTable.TotalXpTo(20) - ExperienceTable.TotalXpTo(10));
-            first.TakeDamage(10);
 
-            Assert.AreEqual(20, second.Progress.Level, "The setup did not tell the two heroes apart.");
+            Assert.AreEqual(20, second.Level, "The setup did not tell the two heroes apart.");
 
             SavePayload payload = SaveMapper.Capture(
                 new[] { first, second }, new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
 
             store.Write(payload, Noon);
 
-            Character rebornFirst = battle.Spawn(sheet, Team.Heroes, 3, 1);
-            Character rebornSecond = battle.Spawn(sheet, Team.Heroes, 4, 1);
+            HeroRecord rebornFirst = battle.Record(sheet);
+            HeroRecord rebornSecond = battle.Record(sheet);
 
             SaveMapper.ApplyHeroes(store.Load().Payload, new[] { rebornFirst, rebornSecond });
 
-            Assert.AreEqual(10, rebornFirst.Progress.Level, "The first hero took the second one's progress.");
-            Assert.AreEqual(20, rebornSecond.Progress.Level, "The second hero of the same sheet was never restored.");
+            Assert.AreEqual(10, rebornFirst.Level, "The first hero took the second one's progress.");
+            Assert.AreEqual(20, rebornSecond.Level, "The second hero of the same sheet was never restored.");
         }
 
         // --- When the save and the content disagree ---
@@ -296,15 +314,15 @@ namespace HerOClock.Tests
             CharacterDefinition known = Sheet();
             CharacterDefinition added = battle.Sheet("hero-new", CharacterKind.Hero, power: 5, constitution: 10);
 
-            Character hero = battle.Spawn(known, Team.Heroes, 2, 1, level: 10);
+            HeroRecord hero = RecordAt(known, 10);
 
             SavePayload payload = SaveMapper.Capture(
                 new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
 
-            Character newcomer = battle.Spawn(added, Team.Heroes, 3, 1);
+            HeroRecord newcomer = battle.Record(added);
             SaveMapper.ApplyHeroes(payload, new[] { newcomer });
 
-            Assert.AreEqual(1, newcomer.Progress.Level, "A hero missing from the save was given somebody else's level.");
+            Assert.AreEqual(1, newcomer.Level, "A hero missing from the save was given somebody else's level.");
         }
 
         /// <summary>
@@ -315,7 +333,7 @@ namespace HerOClock.Tests
         [Test]
         public void ASavedHeroWhoseSheetIsGoneDoesNotStopTheRest()
         {
-            Character hero = battle.Spawn(Sheet(), Team.Heroes, 2, 1, level: 10);
+            HeroRecord hero = RecordAt(Sheet(), 10);
 
             SavePayload payload = SaveMapper.Capture(
                 new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
@@ -325,10 +343,10 @@ namespace HerOClock.Tests
             withAGhost[1] = payload.heroes[0];
             payload.heroes = withAGhost;
 
-            Character reborn = battle.Spawn(hero.Definition, Team.Heroes, 3, 1);
+            HeroRecord reborn = battle.Record(hero.Definition);
 
             Assert.DoesNotThrow(() => SaveMapper.ApplyHeroes(payload, new[] { reborn }));
-            Assert.AreEqual(10, reborn.Progress.Level, "The hero that does exist was not restored.");
+            Assert.AreEqual(10, reborn.Level, "The hero that does exist was not restored.");
         }
 
         // --- The buckets ---
@@ -346,7 +364,7 @@ namespace HerOClock.Tests
             activity.Advance(ActivityLog.BucketSeconds * 2f);
 
             SavePayload payload = SaveMapper.Capture(
-                new Character[0], new PlayerWallet(), activity, "act1-stage1", null);
+                new HeroRecord[0], new PlayerWallet(), activity, "act1-stage1", null);
 
             store.Write(payload, Noon);
 
@@ -376,7 +394,7 @@ namespace HerOClock.Tests
         public void TheMarkOfABrokenSaveIsCarriedIntoTheNextOne()
         {
             SavePayload payload = SaveMapper.Capture(
-                new Character[0], new PlayerWallet(), new ActivityLog(),
+                new HeroRecord[0], new PlayerWallet(), new ActivityLog(),
                 "act1-stage1", SavePayload.IntegrityBroken);
 
             store.Write(payload, Noon);
@@ -391,7 +409,7 @@ namespace HerOClock.Tests
         public void AFreshSaveIsMarkedAsIntact()
         {
             SavePayload payload = SaveMapper.Capture(
-                new Character[0], new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
+                new HeroRecord[0], new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
 
             store.Write(payload, Noon);
 

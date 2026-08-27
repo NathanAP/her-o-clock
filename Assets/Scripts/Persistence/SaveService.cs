@@ -23,7 +23,14 @@ namespace HerOClock.Persistence
     {
         private SaveStore store;
         private StageRunner runner;
-        private IReadOnlyList<Character> heroes;
+        /// <summary>
+        /// Asked for the records rather than handed them once.
+        ///
+        /// A hero unlocked mid session gets a record the moment it is first needed, and a list
+        /// captured at startup would not have it — so that hero's progress would never be written
+        /// down, silently, until the next launch.
+        /// </summary>
+        private Func<IReadOnlyList<HeroRecord>> heroes;
         private PlayerWallet wallet;
         private ActivityLog activity;
 
@@ -40,7 +47,7 @@ namespace HerOClock.Persistence
         public void Configure(
             SaveStore store,
             StageRunner runner,
-            IReadOnlyList<Character> heroes,
+            Func<IReadOnlyList<HeroRecord>> heroes,
             PlayerWallet wallet,
             ActivityLog activity,
             string integrity,
@@ -89,7 +96,7 @@ namespace HerOClock.Persistence
             }
 
             SavePayload payload = SaveMapper.Capture(
-                heroes,
+                heroes != null ? heroes() : null,
                 wallet,
                 activity,
                 runner.Stage.id,

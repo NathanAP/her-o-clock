@@ -49,6 +49,11 @@ Utilize essas regras ao alterar arquivos de especificação neste projeto:
 - Siga os padrões e convenções.
 - Mantenha o idioma.
 - Seja claro.
+- O objetivo principal da pasta `.claude/specs/` é ser uma grande documentação do que o projeto é. Dito isso:
+    - Ela é nossa principal fonte de entendimento de como o jogo está projetado atualmente.
+    - Evite escrever que um trecho foi alterado por conta de uma versão específica, prefira substituir o texto anterior por como está agora de uma forma clara e objetiva.
+    - Evite escrever detalhes extras do por que uma decisão foi tomada para chegar até aquela especificação.
+    - Prefira que essa informação adicional esteja dentro da pasta `.claude/memory/` ou em `.claude/versions/`.
 
 # Fluxo de desenvolvimento
 

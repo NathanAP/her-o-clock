@@ -90,6 +90,48 @@ namespace HerOClock.Tests
             return character;
         }
 
+        /// <summary>
+        /// A hero record: what the player builds up between stages, and what a combatant is a
+        /// photograph of.
+        /// </summary>
+        public HeroRecord Record(CharacterDefinition definition)
+        {
+            return new HeroRecord(definition);
+        }
+
+        /// <summary>
+        /// The combatant a record sends into a stage, built now.
+        ///
+        /// Calling it again is what "the next stage begins" means in a test: a brand new object,
+        /// reading whatever the record says at that moment. It is deliberately the only way a
+        /// test can make a build take effect, for the same reason it is the only way the game can.
+        /// </summary>
+        public Character SpawnHero(HeroRecord record, Team team, int column, int row, float multiplier = 1f)
+        {
+            GameObject instance = new GameObject(record.Id);
+            Character character = instance.AddComponent<Character>();
+            character.InitializeFrom(record, team, new GridPosition(column, row), Grid, multiplier);
+
+            owned.Add(instance);
+            return character;
+        }
+
+        /// <summary>
+        /// Takes a combatant off the board, the way a stage ending does.
+        ///
+        /// Needed before building the next one on the same cell, or both would claim it.
+        /// </summary>
+        public void Disband(Character character)
+        {
+            if (character == null)
+            {
+                return;
+            }
+
+            character.ClearFromGrid();
+            Object.DestroyImmediate(character.gameObject);
+        }
+
         /// <summary>A director already running the given fight.</summary>
         public BattleDirector Direct(BattleRandom random, params Character[] characters)
         {

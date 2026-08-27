@@ -57,7 +57,13 @@ namespace HerOClock.Tests
             public long ExperienceAwarded;
             public long MoneyAwarded;
 
-            /// <summary>Level of the first hero at the end, which is where the experience went.</summary>
+            /// <summary>
+            /// Level of the first hero at the end, which is where the experience went.
+            ///
+            /// Read from the **record** and never from the combatant. A combatant is frozen at the
+            /// level it entered with, so asking it would answer "what did this stage fight at",
+            /// while what the walls table needs is "what does the player walk out with".
+            /// </summary>
             public int FirstHeroLevel;
 
             /// <summary>True when a wave ran past the time limit instead of being decided.</summary>
@@ -81,7 +87,7 @@ namespace HerOClock.Tests
         /// addition on top of the automatic one. Leftovers from the division go to the attribute
         /// with the largest weight, so the total placed is always exactly what the level granted.
         /// </summary>
-        private static void ApplyBuild(Character hero, int[] weights)
+        private static void ApplyBuild(HeroRecord hero, int[] weights)
         {
             if (weights == null || weights.Length != 4)
             {
@@ -160,10 +166,15 @@ namespace HerOClock.Tests
                 {
                     Placement placement = formation[i];
 
-                    Character hero = Spawn(spawned, grid, placement.Sheet, Team.Heroes,
-                        new GridPosition(placement.Column, placement.Row), heroLevel, 1f);
+                    // The record carries the build, and the combatant is built from it.
+                    // Doing it the other way round is not possible any more, which is the point:
+                    // a build cannot be applied to somebody already fighting.
+                    HeroRecord record = RecordAt(placement.Sheet, heroLevel);
+                    ApplyBuild(record, placement.Build);
 
-                    ApplyBuild(hero, placement.Build);
+                    Character hero = SpawnHero(spawned, grid, record,
+                        new GridPosition(placement.Column, placement.Row), 1f);
+
                     heroes.Add(hero);
                 }
 
@@ -227,7 +238,9 @@ namespace HerOClock.Tests
                 outcome.ExperienceAwarded = experience;
                 outcome.MoneyAwarded = wallet.Money;
                 outcome.WavesCleared = wavesCleared;
-                outcome.FirstHeroLevel = heroes[0].Level;
+                outcome.FirstHeroLevel = heroes[0].Record != null
+                    ? heroes[0].Record.Level
+                    : heroes[0].Level;
                 outcome.TimedOut = !cleared.HasValue;
                 outcome.Cleared = cleared.HasValue && cleared.Value;
 
@@ -277,6 +290,39 @@ namespace HerOClock.Tests
             GameObject instance = new GameObject(definition.Id);
             Character character = instance.AddComponent<Character>();
             character.Initialize(definition, team, position, grid, level, multiplier);
+
+            spawned.Add(instance);
+            return character;
+        }
+
+        /// <summary>A hero record already at the level this run is measuring.</summary>
+        private static HeroRecord RecordAt(CharacterDefinition sheet, int level)
+        {
+            HeroRecord record = new HeroRecord(sheet);
+
+            // From wherever the sheet starts, so a sheet that begins above level 1 does not
+            // overshoot. The table is cumulative, so the difference is what is owed.
+            long owed = ExperienceTable.TotalXpTo(level) - ExperienceTable.TotalXpTo(record.Level);
+
+            if (owed > 0L)
+            {
+                record.AwardExperience(owed);
+            }
+
+            return record;
+        }
+
+        /// <summary>The combatant a record sends into the stage being measured.</summary>
+        private static Character SpawnHero(
+            List<GameObject> spawned,
+            BattleGrid grid,
+            HeroRecord record,
+            GridPosition position,
+            float multiplier)
+        {
+            GameObject instance = new GameObject(record.Id);
+            Character character = instance.AddComponent<Character>();
+            character.InitializeFrom(record, Team.Heroes, position, grid, multiplier);
 
             spawned.Add(instance);
             return character;

@@ -1,3 +1,4 @@
+﻿using HerOClock.Abilities;
 using HerOClock.Characters;
 using NUnit.Framework;
 
@@ -7,10 +8,16 @@ namespace HerOClock.Tests
     /// The one rule about health that has no exceptions: "a vida atual nunca pode ultrapassar a vida
     /// máxima", in attributes.md.
     ///
-    /// Damage and healing always respected it. What did not was the maximum **moving**, which is a
-    /// case that only exists because a hero can take its attribute points back and place them again.
-    /// Found while building the save in 0.6.0.0, of all places, by a test whose setup rebuilt a hero
-    /// and then could not explain the health it was looking at.
+    /// Damage and healing always respected it. What did not was the maximum **moving**, and this
+    /// file is the history of that case shrinking:
+    ///
+    /// - it was found in 0.6.0.0, because a hero could take its points back and place them again;
+    /// - 0.10.3.0 made points wait for the next stage, so a rebuild stopped moving it mid stage;
+    /// - 0.10.4.0 made a combatant a photograph of a record, and the case stopped existing at all.
+    ///
+    /// What is left is the case that never went away and never will: **a debuff on CON lowers the
+    /// maximum in the middle of a fight**, where no stage boundary is coming to tidy up. That is
+    /// what the clamp in `RebuildStats` is for now, and the tests below are what say so.
     /// </summary>
     public class CharacterHealthTests
     {
@@ -28,141 +35,134 @@ namespace HerOClock.Tests
             battle.Dispose();
         }
 
-        private Character Hero(int level)
+        private CharacterDefinition Sheet()
         {
-            return battle.Spawn(
-                battle.Sheet("hero", CharacterKind.Hero, power: 10, constitution: 20),
-                Team.Heroes, 2, 1, level);
+            return battle.Sheet("hero", CharacterKind.Hero, power: 10, constitution: 20);
         }
 
         /// <summary>
-        /// Taking every point back does nothing until the next stage, and then the health that
-        /// comes back is the health the new maximum allows.
-        ///
-        /// The clamp in <c>OnAttributesChanged</c> is still what guarantees the second half, and
-        /// it is still needed — a debuff on CON can lower the maximum in the middle of a fight,
-        /// where no stage boundary is coming to tidy up.
+        /// Rebuilding does not reach a fight in progress, because the fight is not reading the
+        /// record. Nothing holds it back — there is simply nothing connecting the two.
         /// </summary>
         [Test]
-        public void TakingAttributePointsBackWaitsForTheNextStage()
+        public void RebuildingTheRecordNeverTouchesTheCombatantFighting()
         {
-            Character hero = Hero(20);
+            HeroRecord record = battle.Record(Sheet());
+            record.AwardExperience(Progression.ExperienceTable.TotalXpTo(20));
+
+            Character fighting = battle.SpawnHero(record, Team.Heroes, 2, 1);
+
+            int maximum = fighting.Stats.MaxHealth;
+            fighting.TakeDamage(maximum - 10);
+
+            record.Attributes.SetAutomatic(false);
+            record.Attributes.Reset();
+
+            Assert.AreEqual(maximum, fighting.Stats.MaxHealth,
+                "Taking every point back reached a combatant already fighting.");
+            Assert.AreEqual(10, fighting.CurrentHealth, "The rebuild moved the health bar.");
+
+            record.Attributes.Spend(Attribute.Constitution, record.Attributes.Unspent);
+
+            Assert.AreEqual(maximum, fighting.Stats.MaxHealth,
+                "Placing the points again reached it either.");
+            Assert.AreEqual(10, fighting.CurrentHealth);
+        }
+
+        /// <summary>
+        /// The next stage is what applies a rebuild, and the combatant it builds starts whole —
+        /// not because anybody healed it, but because it has never been hit.
+        /// </summary>
+        [Test]
+        public void TheNextStageBuildsTheRebuiltHero()
+        {
+            HeroRecord record = battle.Record(Sheet());
+            record.AwardExperience(Progression.ExperienceTable.TotalXpTo(20));
+
+            Character first = battle.SpawnHero(record, Team.Heroes, 2, 1);
+            int before = first.Stats.MaxHealth;
+            first.TakeDamage(before - 10);
+
+            record.Attributes.SetAutomatic(false);
+            record.Attributes.Reset();
+
+            battle.Disband(first);
+            Character second = battle.SpawnHero(record, Team.Heroes, 2, 1);
+
+            Assert.Less(second.Stats.MaxHealth, before, "The next stage did not apply the rebuild.");
+            Assert.AreEqual(second.Stats.MaxHealth, second.CurrentHealth,
+                "A stage starts with the party whole.");
+        }
+
+        /// <summary>
+        /// Levelling up mid stage changes the record and not the fight, so nothing about the
+        /// combatant moves — not its level, not its points, not its maximum health.
+        ///
+        /// It replaces a test that asserted the maximum rising on the spot, which was the
+        /// behaviour before any of this existed.
+        /// </summary>
+        [Test]
+        public void LevellingUpMidStageLeavesTheCombatantExactlyAsItWas()
+        {
+            HeroRecord record = battle.Record(Sheet());
+            Character fighting = battle.SpawnHero(record, Team.Heroes, 2, 1);
+
+            fighting.TakeDamage(20);
+
+            int hurt = fighting.CurrentHealth;
+            int maximum = fighting.Stats.MaxHealth;
+
+            fighting.AwardExperience(Progression.ExperienceTable.TotalXpTo(10));
+
+            Assert.AreEqual(10, record.Level, "The experience did not reach the record.");
+            Assert.AreEqual(1, fighting.Level, "The combatant followed the record's level.");
+            Assert.AreEqual(maximum, fighting.Stats.MaxHealth, "The new levels reached the fight.");
+            Assert.AreEqual(hurt, fighting.CurrentHealth, "Levelling up healed the hero.");
+
+            battle.Disband(fighting);
+            Character next = battle.SpawnHero(record, Team.Heroes, 2, 1);
+
+            Assert.AreEqual(10, next.Level);
+            Assert.Greater(next.Stats.MaxHealth, maximum, "The next stage did not apply the levels.");
+            Assert.AreEqual(next.Stats.MaxHealth, next.CurrentHealth);
+        }
+
+        /// <summary>
+        /// The clamp that is still load bearing, and the only case left that can move a maximum
+        /// mid fight: a debuff on CON, which no stage boundary is coming to reconcile.
+        /// </summary>
+        [Test]
+        public void ADebuffOnConstitutionNeverLeavesHealthAboveTheMaximum()
+        {
+            HeroRecord record = battle.Record(Sheet());
+            Character hero = battle.SpawnHero(record, Team.Heroes, 2, 1);
 
             int before = hero.Stats.MaxHealth;
 
-            hero.Attributes.SetAutomatic(false);
-            hero.Attributes.Reset();
+            hero.Modifiers.Apply("test-debuff", ModifiableStat.Constitution, StatModifierMode.Percent, -50f, 10f);
 
-            Assert.AreEqual(before, hero.Stats.MaxHealth,
-                "The rebuild took effect in the middle of a stage.");
-            Assert.AreEqual(before, hero.CurrentHealth,
-                "The rebuild moved the health it was not allowed to touch yet.");
-
-            hero.ResetForBattle();
-
-            Assert.Less(hero.Stats.MaxHealth, before, "The next stage did not apply the rebuild.");
+            Assert.Less(hero.Stats.MaxHealth, before, "The setup did not actually lower the maximum.");
             Assert.AreEqual(hero.Stats.MaxHealth, hero.CurrentHealth);
             Assert.LessOrEqual(hero.HealthFraction, 1f);
         }
 
         /// <summary>
-        /// Placing the points again raises the maximum, and it raises it on the same schedule:
-        /// not now, next stage.
+        /// The clamp only bites when it has to. A hero already below the new maximum keeps exactly
+        /// the health it had, so a debuff never doubles as extra damage.
         /// </summary>
         [Test]
-        public void PlacingPointsAgainAlsoWaitsForTheNextStage()
+        public void AHeroAlreadyBelowTheNewMaximumIsLeftAlone()
         {
-            Character hero = Hero(20);
+            HeroRecord record = battle.Record(Sheet());
+            Character hero = battle.SpawnHero(record, Team.Heroes, 2, 1);
 
-            hero.Attributes.SetAutomatic(false);
-            hero.Attributes.Reset();
-            hero.ResetForBattle();
-
-            int afterReset = hero.Stats.MaxHealth;
-
-            hero.Attributes.Spend(Attribute.Constitution, hero.Attributes.Unspent);
-
-            Assert.AreEqual(afterReset, hero.Stats.MaxHealth,
-                "Spending the points raised the maximum in the middle of a stage.");
-
-            hero.ResetForBattle();
-
-            Assert.Greater(hero.Stats.MaxHealth, afterReset, "The next stage did not apply the build.");
-        }
-
-        /// <summary>
-        /// Damage taken during a stage survives everything the player does to the build during
-        /// that stage. A rebuild is neither a potion nor a punishment while the fight is on.
-        /// </summary>
-        [Test]
-        public void RebuildingMidStageNeverMovesTheHealthBar()
-        {
-            Character hero = Hero(20);
             hero.TakeDamage(hero.Stats.MaxHealth - 10);
-
             Assert.AreEqual(10, hero.CurrentHealth, "The setup did not leave the hero on 10 health.");
 
-            hero.Attributes.SetAutomatic(false);
-            hero.Attributes.Reset();
-            hero.Attributes.Spend(Attribute.Constitution, hero.Attributes.Unspent);
+            hero.Modifiers.Apply("test-debuff", ModifiableStat.Constitution, StatModifierMode.Percent, -50f, 10f);
 
+            Assert.Greater(hero.Stats.MaxHealth, 10, "The setup needs a maximum that stays above the health.");
             Assert.AreEqual(10, hero.CurrentHealth);
-        }
-
-        /// <summary>
-        /// Levelling up mid stage does not move a single attribute, and therefore does not move
-        /// the maximum health either.
-        ///
-        /// This is the automatic distribution obeying the same rule as the player, which is the
-        /// part of "Um ponto colocado só passa a valer na próxima fase" that is easiest to forget:
-        /// the automatic decides *where* a point goes, never *when* it counts.
-        ///
-        /// It replaces an older test that asserted the maximum rising on the spot. That was the
-        /// behaviour before the rule existed, and the change is deliberate.
-        /// </summary>
-        [Test]
-        public void LevellingUpMidStageLeavesTheAttributesWhereTheyWere()
-        {
-            Character hero = Hero(1);
-            hero.TakeDamage(20);
-
-            int hurt = hero.CurrentHealth;
-            int before = hero.Stats.MaxHealth;
-
-            hero.AwardExperience(Progression.ExperienceTable.TotalXpTo(10));
-
-            Assert.AreEqual(10, hero.Level, "The setup did not actually reach level 10.");
-            Assert.AreEqual(before, hero.Stats.MaxHealth,
-                "The points of the new levels took effect in the middle of a stage.");
-            Assert.AreEqual(hurt, hero.CurrentHealth, "Levelling up healed the hero.");
-
-            hero.ResetForBattle();
-
-            Assert.Greater(hero.Stats.MaxHealth, before, "The next stage did not apply the new levels.");
-            Assert.AreEqual(hero.Stats.MaxHealth, hero.CurrentHealth, "A stage starts with the party whole.");
-        }
-
-        /// <summary>
-        /// The armour a level buys arrives immediately, unlike the points.
-        ///
-        /// The two halves of a level up are on different schedules on purpose, per attributes.md:
-        /// growth per level exists so a character does not rot against stronger enemies, and
-        /// holding it back to the next stage would work against the reason it exists.
-        /// </summary>
-        [Test]
-        public void TheArmourALevelBuysArrivesImmediately()
-        {
-            CharacterDefinition sheet = battle.Sheet("armoured", CharacterKind.Hero,
-                power: 10, constitution: 20, physicalArmor: 20);
-            sheet.Stats.PhysicalArmorPerLevel = 20;
-
-            Character hero = battle.Spawn(sheet, Team.Heroes, 2, 1, level: 1);
-            int before = hero.Stats.PhysicalArmor;
-
-            hero.AwardExperience(Progression.ExperienceTable.TotalXpTo(10));
-
-            Assert.Greater(hero.Stats.PhysicalArmor, before,
-                "Armour that grows per level waited for the next stage, which it must not.");
         }
     }
 }

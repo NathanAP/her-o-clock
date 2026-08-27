@@ -1,5 +1,5 @@
 {
-    "comment": "Todo texto de item que o jogador le, no mesmo formato de 1-1.strings.json. Nenhuma dessas palavras mora nos outros arquivos de item: la ficam ids e numeros, aqui fica a lingua. Na 0.10.1.0 estas entradas migram para Assets/Strings/en.json, que e de onde o StringTable le.",
+    "comment": "Todo texto de item que o jogador le, no mesmo formato de 1-1.strings.json. Nenhuma dessas palavras mora nos outros arquivos de item: la ficam ids e numeros, aqui fica a lingua.",
     "language": "en",
     "entries": [
         { "key": "item.slot.cranial-casing.name", "value": "Cranial Casing" },
