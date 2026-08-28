@@ -533,25 +533,39 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Ferramenta de editor que entrega item a um herói, já que drop é 0.12.0.0 e inventário é 0.14.0.0.
 - **Esta versão trava o avanço natural do jogo, e isso é aceito.** O herói fica com as defesas da ficha somadas às do item, sem drop para equilibrar. O foco é o teste e o balanceamento medido; quem resolve a experiência é a 0.12.0.0.
 
-### O que precisa ser decidido antes de começar
+### O que já foi decidido
 
-Levantado ao planejar a 0.11.0.0. Nenhum é código: são buracos de spec, e cada um trava a implementação se aparecer no meio dela.
+Levantado ao planejar a 0.11.0.0 e respondido pelo Nathan antes de a versão começar. Nenhum destes é código: são regras, e cada um travaria a implementação no meio se chegasse lá em aberto.
 
-- **"Resistência ignorada" não tem regra em lugar nenhum.** O `items.md` lista `+X% de resistência ignorada ao atacar` como modificador de software, e `attributes.md` não tem uma linha sobre isso: nem fórmula, nem exemplo. E não é óbvio:
-    - **Cortar os pontos antes da curva.** Um alvo com 1000 de resistência é tratado como 800, e a curva recalcula. Contra um alvo saturado o ganho é pequeno.
-    - **Cortar a mitigação depois da curva.** Um alvo com 60% de mitigação passa a ter 48%. Contra um alvo saturado o ganho é enorme, e é assim que o modificador vira obrigatório.
-    - Pela filosofia do projeto, rendimento decrescente em tudo que é limitado, a primeira é a correta. Mas isso precisa estar escrito com exemplo numérico antes de virar código, senão o teste não tem de onde tirar o valor esperado.
-    - **São dois campos e não um.** O `TargetResistanceBonus` que já existe no `DamageInput` é resistência **do alvo** vinda de fonte especial. Resistência ignorada é do **atacante**.
-- **A regra de requerimento tem uma esquisitice, e existe uma saída melhor.** O combinado é "soma tudo que está vestido, ativo ou não", e isso permite um item **inativo** sustentar outro com o `+POW` dele. A alternativa é um laço: começa com todos ativos, recalcula, desativa quem falhou, repete até nada mudar.
-    - O conjunto ativo só encolhe, então termina em no máximo oito passadas e é determinístico sem depender de ordem de slot.
-    - Ele entrega o mesmo comportamento desejado: dois itens que se sustentam mutuamente ficam os dois ativos, e tirar um derruba o outro em cascata.
-- **`+X à vida total` não cabe na fórmula de vida.** `MaxHealth` é `CON x 10`, e `attributes.md` afirma duas vezes que a vida vem só de CON, inclusive "a vida máxima nunca muda no meio de uma fase, já que ela vem apenas de CON". A conclusão continua válida, mas a fórmula precisa ganhar o termo e a frase precisa ser reescrita.
-- **Onde o item entra no `TotalOf` não está decidido.** Hoje a ordem é base mais pontos de nível, depois multiplicador de fase, depois buffs. Antes do multiplicador significa que o ajuste fino de fase amplifica o equipamento do herói, o que quase certamente não é a intenção. Vale para as defesas e para a composição de classe também.
-- **O save ganha o primeiro campo que não é escalar.** Um item equipado é uma estrutura com valores já sorteados que precisam voltar idênticos: re-sortear na carga faria o item mudar toda vez que o jogo abrisse.
-    - O item precisa de **identidade própria**, porque o inventário da 0.14.0.0 vai movê-lo entre herói e baú.
-    - O **nome não é guardado**, ele é derivado dos modificadores conforme `items.md`. Guardá-lo criaria a segunda cópia de novo.
-    - O `SaveMigration` já resolve campo novo sem conversão, então **não precisa subir a versão do formato**, e o `SaveEnvelope` assina o texto verbatim, então nada disso quebra a assinatura.
-- **Os testes de balanceamento precisam de uma decisão.** Toda a suíte mede um time sem item. Ou ela continua medindo sem item e o equipamento fica sem cobertura, ou a varredura ganha um eixo "equipado", que é o certo e multiplica o tempo da parte já mais lenta da suíte.
+- **Resistência ignorada corta os pontos antes da curva.** Um alvo com 1000 de resistência contra um atacante que ignora 20% é tratado como tendo 800, e a curva de rendimento decrescente recalcula em cima disso.
+    - Contra um alvo saturado o ganho fica pequeno, e é esse o ponto: cortar a mitigação **depois** da curva transformaria o modificador em obrigatório.
+    - **Os valores ficam baixos de propósito**, para que ignorar 100% nunca aconteça.
+    - **São dois campos e não um.** O `TargetResistanceBonus` que já existe no `DamageInput` é resistência **do alvo** vinda de fonte especial. Resistência ignorada é do **atacante**, e precisa de campo próprio.
+- **Um item só conta quando está ativo, e a ativação cresce do zero.** Comece com nenhum item ativo, ative todo item vestido cujo requerimento é atendido pelos atributos de base mais os itens **já ativos**, e repita até nada mais ativar.
+    - **Dois itens que dependem um do outro ficam os dois inativos.** Nenhum tem de onde tirar o requerimento sozinho, então nenhum liga. Cabe ao jogador arrumar os atributos para conseguir vestir os dois.
+    - A regra equivale a perguntar "daria para equipar um de cada vez, em alguma ordem?", que é o que o Path of Exile faz na prática — lá cada equipar é validado no instante em que acontece, então o estado mútuo nunca é alcançável.
+    - Ela é determinística e não depende da ordem dos slots, porque o conjunto ativo só cresce e o resultado é o mesmo qualquer que seja a ordem em que se tente.
+- **Vida máxima passa a ser `CON × 10 + vida vinda do equipamento`.** A soma do item entra depois da conversão, e `attributes.md` precisa ter a frase "a vida vem apenas de CON" reescrita.
+- **O item entra no `TotalOf` depois do multiplicador de fase**, e antes dos buffs: `(base + pontos de nível) × multiplicador + item`.
+    - Com 20 de POW de ficha e nível, um item de +10 e uma fase de multiplicador 1.5, o total é **40** e não 45.
+    - O multiplicador existe para uma fase ajustar **a ficha** de um personagem. Equipamento não é ficha, é o que o jogador construiu, e deixar a fase amplificá-lo faria uma fase difícil punir mais quem tem item bom.
+    - E o motivo geral, que vale além desta decisão: **tudo que é multiplicado corre risco excessivo de sair de controle.** Somar depois mantém a contribuição do equipamento previsível, qualquer que seja o multiplicador que uma fase futura resolva usar.
+    - Hoje isso não muda nenhum número, porque herói tem multiplicador 1 e só herói veste item. A regra existe para quando isso deixar de ser verdade.
+    - Vale igual para as defesas e para a composição de classe.
+- **O save ganha o primeiro campo que não é escalar.** Não é um problema, é uma forma nova, com quatro consequências:
+    - Os valores sorteados **voltam idênticos**. Re-sortear na carga faria o item mudar toda vez que o jogo abre.
+    - O item tem **identidade própria**, porque o inventário da 0.14.0.0 vai movê-lo entre herói e baú.
+    - **Onde o item está é dado, e ele tem mais de uma forma.** Equipado é `(herói, slot)`; guardado é `(aba, posição)`. O jogador arruma o baú e espera encontrar tudo onde deixou, então a posição é save e não enfeite.
+    - Por isso a recomendação de forma: **o item mora uma vez só, numa lista com id**, e o lugar dele é uma referência a esse id. Mover um item entre herói e baú passa a ser reescrever a referência, e nunca o item — que é o que impede o mesmo item de existir duas vezes com valores diferentes.
+    - Vale desenhar assim já na 0.11.1.0, mesmo com só o equipado existindo, para a 0.14.0.0 não ter que reestruturar o formato.
+    - **O nome não é guardado**, ele é derivado dos modificadores conforme `items.md`. Guardá-lo criaria a segunda cópia de novo.
+    - **Não sobe a versão do formato**: a regra do `SaveMigration` já cobre campo novo, e ausente significa "sem equipamento". O `SaveEnvelope` assina o texto verbatim, então nada disso quebra a assinatura.
+    - Tamanho: equipado são no máximo 8 itens por herói, algo como 20 KB. **Quem enche o arquivo é o baú da 0.14.0.0**, onde algumas centenas de itens viram 150 a 200 KB por arquivo — e cada save é um arquivo novo com retenção.
+- **Os testes de balanceamento usam itens de mock determinísticos, nunca sorteados.** Um teste cujo valor esperado depende de um sorteio não afirma nada.
+    - Dois kits derivados das próprias tabelas: um **médio**, com cada modificador no meio da faixa de camada 1, e um **forte**, no máximo da camada 5. Como saem dos dados, eles se movem quando os dados se movem, que é o certo.
+    - A varredura ganha o eixo "equipado", mas **só com sem-item e o kit médio**. Ela já é a parte mais lenta da suíte e um terceiro valor multiplica isso.
+    - O kit forte e as perguntas pontuais ficam num teste separado, fora do conjunto padrão.
+    - Fica aberta uma entrada parametrizável para a pergunta "o que acontece na fase X-Y com o time A, B, C, D usando os itens N, M, O, P?". É o tipo de conta que ninguém consegue prever no papel e que a simulação responde em segundos.
 - Entram as entradas novas de `ModifiableStat` para dano de habilidade por elemento, que hoje não têm onde pousar: o `AbilityResolver` não passa por modificador nenhum.
 - Detalhe pequeno: `game-objects/ferramentas-do-editor.md` afirma que a janela de fichas "não considera itens, que ainda não existem". A frase fica falsa nesta versão.
 
@@ -619,7 +633,12 @@ Levantado ao planejar a 0.11.0.0. Nenhum é código: são buracos de spec, e cad
 
 - Inventário.
 - Baús.
-- Testes: as regras de espaço e de empilhamento, que são aritmética e não interface.
+- **Abas no baú e no inventário**, para o jogador organizar. É o que torna um baú grande utilizável em vez de uma lista infinita.
+- **A posição de cada item é guardada**, dentro da aba. O jogador arruma o baú e espera encontrar tudo onde deixou; um baú que reordena sozinho a cada carga desfaz o trabalho dele.
+    - A forma para isso é decidida na 0.11.1.0, quando o save ganha itens: o item mora uma vez só numa lista com id, e o lugar dele é uma referência.
+- **É aqui que o arquivo de save cresce de verdade.** Equipado são no máximo 8 itens por herói; um baú com algumas centenas de itens vira 150 a 200 KB por arquivo, e cada save é um arquivo novo com retenção. "Quantos itens o baú guarda" deixa de ser só design e passa a ser também um número de disco.
+- **Ponto em aberto:** se o jogador puder nomear as abas, o save passa a guardar texto escrito por ele. É a primeira vez que isso acontece, e a regra de idioma do projeto não se aplica — ela vale para o texto que o jogo mostra, e não para o que o jogador digitou.
+- Testes: as regras de espaço e de empilhamento, que são aritmética e não interface. A posição sobreviver a um ciclo de salvar e carregar também é aritmética, e entra junto.
 
 ## 0.15.0.0
 

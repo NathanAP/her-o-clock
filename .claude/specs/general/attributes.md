@@ -99,7 +99,7 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
     - Ligar ou desligar o interruptor do automático.
 - **O automático não é exceção.** Ele decide _onde_ o ponto vai sem decidir _quando_ ele vale, exatamente como o jogador.
 - É a mesma regra que item, equipe, ordem e formação seguem, descrita em "O grupo é montado no começo de cada fase" em `gameplay.md`.
-- **A vida máxima, portanto, nunca muda no meio de uma fase**, já que ela vem apenas de CON.
+- **A vida máxima, portanto, nunca muda no meio de uma fase.** Ela vem de CON e de equipamento, e os dois são decididos antes de a fase começar.
 
 #### O que continua valendo na hora
 
@@ -149,6 +149,10 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 
 - CON é a **única** fonte de vida máxima que um atributo oferece.
     - Para cada 1 ponto de CON, o personagem ganha 10 pontos de vida máxima.
+    - Equipamento e árvore de habilidades somam vida por cima disso, e não passam por CON:
+        - `Vida máxima = CON × 10 + vida vinda de outras fontes`
+        - Por exemplo, um personagem com 40 de CON e um equipamento dando 50 de vida tem 450 de vida máxima.
+    - A frase acima continua exata como está escrita: nenhum **atributo** além de CON dá vida. O que outras fontes fazem é somar, e nunca converter.
     - Para cada 1 ponto de CON, o personagem ganha 0.5% de velocidade de regeneração de vida.
 - Concentrar a vida em um atributo só é proposital. Enquanto o POW dava vida **e** dano, ele era o único dos quatro que pagava dos dois lados da luta, e nenhuma build que o ignorasse era viável.
 
@@ -367,6 +371,20 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
     - Se o personagem possuir -100% de resistência ao elemento A e recebe 1000 de dano do elemento A, ele vai receber 2000 pontos de dano.
 - A resistência elemental nunca fica abaixo de -100%, para que o acúmulo de debuffs não gere dano infinito.
 - Receber vida por possuir mais de 100% de resistência elemental é considerada uma cura.
+
+### Resistência ignorada
+
+- Atributo ofensivo que faz o atacante desconsiderar parte da defesa do alvo. Vem de equipamento e de nós da árvore de habilidades, nunca de atributo principal.
+- **Ela corta os pontos do alvo antes da curva, e nunca a mitigação depois dela.**
+    - `Pontos considerados = Pontos do alvo × (1 − Resistência ignorada ÷ 100)`
+    - A curva de rendimento decrescente é então calculada normalmente em cima do valor cortado.
+- Por exemplo, um atacante de nível 10 (constante 500) com 20% de resistência ignorada, contra um alvo com 1000 de resistência:
+    - Os pontos considerados são 800.
+    - A mitigação passa a ser `75 × 800 ÷ (800 + 500)`, ou seja **46.2%**, contra os 50% que o alvo teria sem o corte.
+- **Cortar depois da curva foi recusado.** Naquele formato, os mesmos 20% levariam a mitigação de 50% para 40%, e o ganho cresceria quanto mais defendido fosse o alvo — o que transformaria o modificador em obrigatório contra qualquer inimigo resistente. Cortando antes, o rendimento decrescente continua valendo e o ganho contra um alvo saturado é pequeno.
+- **Os valores são baixos de propósito**, para que ignorar 100% da defesa não seja alcançável por acúmulo.
+- Ela vale para armadura física e para as três resistências elementais, pois todas passam pela mesma curva.
+- Resistência ignorada é do **atacante**, e não deve ser confundida com as fontes especiais de resistência descritas acima, que pertencem ao **alvo** e são somadas depois da curva.
 
 ### Roubo de vida
 
