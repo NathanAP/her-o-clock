@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70f564b9156a14b4c9e655894eeb1fbd, type: 3}
+  m_Name: ItemDatabase
+  m_EditorClassIdentifier:
+  Slots: {fileID: 4900000, guid: 71f6f49df110e6b46912e361f40e9050, type: 3}
+  Subtypes: {fileID: 4900000, guid: a7be3a35ebbdddb4f8ffa7fc9b78456c, type: 3}
+  Modifiers: {fileID: 4900000, guid: 4ccfe833a5a7adc4094c4d3078a6f1e7, type: 3}
+  Tiers: {fileID: 4900000, guid: 0d4cb6420d5c5dd419439e8615184c10, type: 3}
+  Uniques: {fileID: 4900000, guid: 9ceb8b7c398429e478dbbf0465a3acd3, type: 3}
+  Strings: {fileID: 4900000, guid: af038f2b2cbb3e14ba31e896d6882cd6, type: 3}

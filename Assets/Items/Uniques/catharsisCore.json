@@ -1,8 +1,7 @@
 {
     "comment": "Exemplo do formato de item unico. Um unico e escrito a mao inteiro: ele nao sorteia quais modificadores tem, apenas os valores dentro de cada faixa. E a diferenca entre ele e todo o resto do jogo, e e por isso que ele mora em um arquivo proprio em vez de sair do gerador.",
-
-    "id": "catharsis-core",
-    "slot": "main-hand",
+    "id": "catharsisCore",
+    "slot": "mainHand",
     "subtype": "reactor",
     "class": "special",
     "powerTier": 4,
@@ -10,41 +9,62 @@
     "maxItemLevel": 100,
     "sources": null,
     "gateComment": "O powerTier decide o peso de sorteio e o nivel minimo, conforme uniques.json. O minItemLevel repetido aqui e o piso do proprio tier: ele pode ser escrito mais alto que o piso, nunca mais baixo. 'sources' nulo significa que ele cai de qualquer lugar que atenda o nivel.",
-
     "baseOverrides": {
         "comment": "Um unico parte da base do proprio subtipo e sobrescreve so o que precisa. Deixar em null significa herdar. Aqui o dano de arma e sacrificado de proposito, porque quem carrega este item nao ataca, ele conjura.",
         "attackSpeed": null,
         "minRange": null,
         "maxRange": null,
         "damage": {
-            "min": { "base": 4, "perLevel": 0.4 },
-            "max": { "base": 6, "perLevel": 0.6 }
+            "min": {
+                "base": 4,
+                "perLevel": 0.4
+            },
+            "max": {
+                "base": 6,
+                "perLevel": 0.6
+            }
         }
     },
-
     "modifiers": [
         {
             "id": "spe",
             "family": "software",
             "shared": true,
             "sharedComment": "Modificador que existe em modifiers.json. O unico so fixa a faixa dele, ignorando a escada de camadas.",
-            "min": { "base": 8, "perLevel": 0.16 },
-            "max": { "base": 12, "perLevel": 0.24 }
+            "min": {
+                "base": 8,
+                "perLevel": 0.16
+            },
+            "max": {
+                "base": 12,
+                "perLevel": 0.24
+            }
         },
         {
-            "id": "catharsis-exposure",
+            "id": "catharsisExposure",
             "family": "software",
             "shared": false,
             "sharedComment": "Modificador exclusivo. Ele mora aqui e em nenhum outro lugar, porque um modificador que existe em exatamente um item nao tem o que fazer em uma tabela compartilhada.",
             "text": "Your elemental resistances are set to 0. Your ability damage is increased by {value}%.",
-            "min": { "base": 80, "perLevel": 0 },
-            "max": { "base": 120, "perLevel": 0 },
+            "min": {
+                "base": 80,
+                "perLevel": 0
+            },
+            "max": {
+                "base": 120,
+                "perLevel": 0
+            },
             "effects": [
-                { "kind": "set-elemental-resistance", "value": 0 },
-                { "kind": "increase-ability-damage", "value": "{value}" }
+                {
+                    "kind": "setElementalResistance",
+                    "value": 0
+                },
+                {
+                    "kind": "increaseAbilityDamage",
+                    "value": "{value}"
+                }
             ]
         }
     ],
-
     "designNote": "A referencia e a Tabula Rasa: poder enorme comprado com uma janela aberta na defesa. Zerar as tres resistencias custa mais do que parece, porque attributes.md diz que resistencia acima de 100% vira cura, entao este item fecha uma build inteira ao mesmo tempo que abre outra."
 }

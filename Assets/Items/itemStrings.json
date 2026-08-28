@@ -1,0 +1,590 @@
+{
+    "comment": "Todo texto de item que o jogador le, no mesmo formato de 1-1.strings.json. Nenhuma dessas palavras mora nos outros arquivos de item: la ficam ids e numeros, aqui fica a lingua.",
+    "language": "en",
+    "entries": [
+        {
+            "key": "item.slot.cranialCasing.name",
+            "value": "Cranial Casing"
+        },
+        {
+            "key": "item.slot.chassis.name",
+            "value": "Chassis"
+        },
+        {
+            "key": "item.slot.armServos.name",
+            "value": "Arm Servos"
+        },
+        {
+            "key": "item.slot.tractionUnits.name",
+            "value": "Traction Units"
+        },
+        {
+            "key": "item.slot.mainHand.name",
+            "value": "Main Hand"
+        },
+        {
+            "key": "item.slot.offHand.name",
+            "value": "Off Hand"
+        },
+        {
+            "key": "item.slot.controller.name",
+            "value": "Controller"
+        },
+        {
+            "key": "item.slot.firmware.name",
+            "value": "Firmware"
+        },
+        {
+            "key": "item.slot.cranialCasing.noun",
+            "value": "Casing"
+        },
+        {
+            "key": "item.slot.chassis.noun",
+            "value": "Chassis"
+        },
+        {
+            "key": "item.slot.armServos.noun",
+            "value": "Servos"
+        },
+        {
+            "key": "item.slot.tractionUnits.noun",
+            "value": "Struts"
+        },
+        {
+            "key": "item.slot.controller.noun",
+            "value": "Controller"
+        },
+        {
+            "key": "item.slot.firmware.noun",
+            "value": "Firmware"
+        },
+        {
+            "key": "item.class.heavy.name",
+            "value": "Heavy"
+        },
+        {
+            "key": "item.class.light.name",
+            "value": "Light"
+        },
+        {
+            "key": "item.class.special.name",
+            "value": "Special"
+        },
+        {
+            "key": "item.class.medium.name",
+            "value": "Medium"
+        },
+        {
+            "key": "item.class.lightSpecial.name",
+            "value": "Light Special"
+        },
+        {
+            "key": "item.class.heavySpecial.name",
+            "value": "Heavy Special"
+        },
+        {
+            "key": "item.technology.noTechnology.name",
+            "value": "No Technology"
+        },
+        {
+            "key": "item.technology.rudimentary.name",
+            "value": "Rudimentary"
+        },
+        {
+            "key": "item.technology.conventional.name",
+            "value": "Conventional"
+        },
+        {
+            "key": "item.technology.optimized.name",
+            "value": "Optimized"
+        },
+        {
+            "key": "item.technology.advanced.name",
+            "value": "Advanced"
+        },
+        {
+            "key": "item.technology.nano.name",
+            "value": "Nano"
+        },
+        {
+            "key": "item.technology.quantum.name",
+            "value": "Quantum"
+        },
+        {
+            "key": "item.technology.unique.name",
+            "value": "Unique"
+        },
+        {
+            "key": "item.subtype.blade.name",
+            "value": "Blade"
+        },
+        {
+            "key": "item.subtype.claw.name",
+            "value": "Claw"
+        },
+        {
+            "key": "item.subtype.ram.name",
+            "value": "Ram"
+        },
+        {
+            "key": "item.subtype.prod.name",
+            "value": "Prod"
+        },
+        {
+            "key": "item.subtype.catalyst.name",
+            "value": "Catalyst"
+        },
+        {
+            "key": "item.subtype.emitter.name",
+            "value": "Emitter"
+        },
+        {
+            "key": "item.subtype.greatblade.name",
+            "value": "Greatblade"
+        },
+        {
+            "key": "item.subtype.piledriver.name",
+            "value": "Piledriver"
+        },
+        {
+            "key": "item.subtype.lance.name",
+            "value": "Lance"
+        },
+        {
+            "key": "item.subtype.rifle.name",
+            "value": "Rifle"
+        },
+        {
+            "key": "item.subtype.cannon.name",
+            "value": "Cannon"
+        },
+        {
+            "key": "item.subtype.reactor.name",
+            "value": "Reactor"
+        },
+        {
+            "key": "item.subtype.bulwark.name",
+            "value": "Bulwark"
+        },
+        {
+            "key": "item.subtype.deflector.name",
+            "value": "Deflector"
+        },
+        {
+            "key": "item.subtype.battery.name",
+            "value": "Battery"
+        },
+        {
+            "key": "item.base.shiv.name",
+            "value": "Shiv"
+        },
+        {
+            "key": "item.base.edge.name",
+            "value": "Edge"
+        },
+        {
+            "key": "item.base.vibroblade.name",
+            "value": "Vibroblade"
+        },
+        {
+            "key": "item.base.monoblade.name",
+            "value": "Monoblade"
+        },
+        {
+            "key": "item.base.talon.name",
+            "value": "Talon"
+        },
+        {
+            "key": "item.base.ripper.name",
+            "value": "Ripper"
+        },
+        {
+            "key": "item.base.lacerator.name",
+            "value": "Lacerator"
+        },
+        {
+            "key": "item.base.piston.name",
+            "value": "Piston"
+        },
+        {
+            "key": "item.base.driver.name",
+            "value": "Driver"
+        },
+        {
+            "key": "item.base.impactor.name",
+            "value": "Impactor"
+        },
+        {
+            "key": "item.base.goad.name",
+            "value": "Goad"
+        },
+        {
+            "key": "item.base.prod.name",
+            "value": "Prod"
+        },
+        {
+            "key": "item.base.arcProd.name",
+            "value": "Arc Prod"
+        },
+        {
+            "key": "item.base.focus.name",
+            "value": "Focus"
+        },
+        {
+            "key": "item.base.catalyst.name",
+            "value": "Catalyst"
+        },
+        {
+            "key": "item.base.resonator.name",
+            "value": "Resonator"
+        },
+        {
+            "key": "item.base.emitter.name",
+            "value": "Emitter"
+        },
+        {
+            "key": "item.base.pulser.name",
+            "value": "Pulser"
+        },
+        {
+            "key": "item.base.beamProjector.name",
+            "value": "Beam Projector"
+        },
+        {
+            "key": "item.base.cleaver.name",
+            "value": "Cleaver"
+        },
+        {
+            "key": "item.base.greatblade.name",
+            "value": "Greatblade"
+        },
+        {
+            "key": "item.base.warblade.name",
+            "value": "Warblade"
+        },
+        {
+            "key": "item.base.sledge.name",
+            "value": "Sledge"
+        },
+        {
+            "key": "item.base.piledriver.name",
+            "value": "Piledriver"
+        },
+        {
+            "key": "item.base.breaker.name",
+            "value": "Breaker"
+        },
+        {
+            "key": "item.base.pike.name",
+            "value": "Pike"
+        },
+        {
+            "key": "item.base.lance.name",
+            "value": "Lance"
+        },
+        {
+            "key": "item.base.impaler.name",
+            "value": "Impaler"
+        },
+        {
+            "key": "item.base.carbine.name",
+            "value": "Carbine"
+        },
+        {
+            "key": "item.base.rifle.name",
+            "value": "Rifle"
+        },
+        {
+            "key": "item.base.railgun.name",
+            "value": "Railgun"
+        },
+        {
+            "key": "item.base.mortar.name",
+            "value": "Mortar"
+        },
+        {
+            "key": "item.base.cannon.name",
+            "value": "Cannon"
+        },
+        {
+            "key": "item.base.siegeCannon.name",
+            "value": "Siege Cannon"
+        },
+        {
+            "key": "item.base.coil.name",
+            "value": "Coil"
+        },
+        {
+            "key": "item.base.reactor.name",
+            "value": "Reactor"
+        },
+        {
+            "key": "item.base.singularityCore.name",
+            "value": "Singularity Core"
+        },
+        {
+            "key": "item.base.guard.name",
+            "value": "Guard"
+        },
+        {
+            "key": "item.base.bulwark.name",
+            "value": "Bulwark"
+        },
+        {
+            "key": "item.base.aegis.name",
+            "value": "Aegis"
+        },
+        {
+            "key": "item.base.baffle.name",
+            "value": "Baffle"
+        },
+        {
+            "key": "item.base.deflector.name",
+            "value": "Deflector"
+        },
+        {
+            "key": "item.base.phaseScreen.name",
+            "value": "Phase Screen"
+        },
+        {
+            "key": "item.base.cell.name",
+            "value": "Cell"
+        },
+        {
+            "key": "item.base.battery.name",
+            "value": "Battery"
+        },
+        {
+            "key": "item.base.capacitorBank.name",
+            "value": "Capacitor Bank"
+        },
+        {
+            "key": "item.base.plate.name",
+            "value": "Plate"
+        },
+        {
+            "key": "item.base.barding.name",
+            "value": "Barding"
+        },
+        {
+            "key": "item.base.carapace.name",
+            "value": "Carapace"
+        },
+        {
+            "key": "item.base.mesh.name",
+            "value": "Mesh"
+        },
+        {
+            "key": "item.base.weave.name",
+            "value": "Weave"
+        },
+        {
+            "key": "item.base.filament.name",
+            "value": "Filament"
+        },
+        {
+            "key": "item.base.circuit.name",
+            "value": "Circuit"
+        },
+        {
+            "key": "item.base.lattice.name",
+            "value": "Lattice"
+        },
+        {
+            "key": "item.base.matrix.name",
+            "value": "Matrix"
+        },
+        {
+            "key": "item.base.composite.name",
+            "value": "Composite"
+        },
+        {
+            "key": "item.base.alloy.name",
+            "value": "Alloy"
+        },
+        {
+            "key": "item.base.hardplate.name",
+            "value": "Hardplate"
+        },
+        {
+            "key": "item.base.circuitmesh.name",
+            "value": "Circuitmesh"
+        },
+        {
+            "key": "item.base.photoweave.name",
+            "value": "Photoweave"
+        },
+        {
+            "key": "item.base.fieldweave.name",
+            "value": "Fieldweave"
+        },
+        {
+            "key": "item.base.ferrocircuit.name",
+            "value": "Ferrocircuit"
+        },
+        {
+            "key": "item.base.ferrolattice.name",
+            "value": "Ferrolattice"
+        },
+        {
+            "key": "item.base.coreplate.name",
+            "value": "Coreplate"
+        },
+        {
+            "key": "item.affix.con.value",
+            "value": "Hardened"
+        },
+        {
+            "key": "item.affix.life.value",
+            "value": "Vital"
+        },
+        {
+            "key": "item.affix.fireResistance.value",
+            "value": "Insulated"
+        },
+        {
+            "key": "item.affix.waterResistance.value",
+            "value": "Sealed"
+        },
+        {
+            "key": "item.affix.electricResistance.value",
+            "value": "Grounded"
+        },
+        {
+            "key": "item.affix.allResistance.value",
+            "value": "Shielded"
+        },
+        {
+            "key": "item.affix.localArmour.value",
+            "value": "Reinforced"
+        },
+        {
+            "key": "item.affix.localEvasion.value",
+            "value": "Streamlined"
+        },
+        {
+            "key": "item.affix.thorns.value",
+            "value": "Barbed"
+        },
+        {
+            "key": "item.affix.pow.value",
+            "value": "of Force"
+        },
+        {
+            "key": "item.affix.agi.value",
+            "value": "of Reflex"
+        },
+        {
+            "key": "item.affix.spe.value",
+            "value": "of Focus"
+        },
+        {
+            "key": "item.affix.weaponDamage.value",
+            "value": "of Impact"
+        },
+        {
+            "key": "item.affix.fireAbilityDamage.value",
+            "value": "of the Furnace"
+        },
+        {
+            "key": "item.affix.waterAbilityDamage.value",
+            "value": "of the Tide"
+        },
+        {
+            "key": "item.affix.electricAbilityDamage.value",
+            "value": "of the Storm"
+        },
+        {
+            "key": "item.affix.physicalAbilityDamage.value",
+            "value": "of Mass"
+        },
+        {
+            "key": "item.affix.resistanceIgnored.value",
+            "value": "of Piercing"
+        },
+        {
+            "key": "item.modifier.con.text",
+            "value": "+{value} CON"
+        },
+        {
+            "key": "item.modifier.life.text",
+            "value": "+{value} to maximum life"
+        },
+        {
+            "key": "item.modifier.fireResistance.text",
+            "value": "+{value} fire resistance"
+        },
+        {
+            "key": "item.modifier.waterResistance.text",
+            "value": "+{value} water resistance"
+        },
+        {
+            "key": "item.modifier.electricResistance.text",
+            "value": "+{value} electric resistance"
+        },
+        {
+            "key": "item.modifier.allResistance.text",
+            "value": "+{value} to all elemental resistances"
+        },
+        {
+            "key": "item.modifier.localArmour.text",
+            "value": "+{value} armour on this item"
+        },
+        {
+            "key": "item.modifier.localEvasion.text",
+            "value": "+{value} evasion on this item"
+        },
+        {
+            "key": "item.modifier.thorns.text",
+            "value": "Return {value}% of physical damage taken to the attacker"
+        },
+        {
+            "key": "item.modifier.pow.text",
+            "value": "+{value} POW"
+        },
+        {
+            "key": "item.modifier.agi.text",
+            "value": "+{value} AGI"
+        },
+        {
+            "key": "item.modifier.spe.text",
+            "value": "+{value} SPE"
+        },
+        {
+            "key": "item.modifier.weaponDamage.text",
+            "value": "+{min}-{max} to weapon base damage"
+        },
+        {
+            "key": "item.modifier.fireAbilityDamage.text",
+            "value": "+{value}% to fire ability damage"
+        },
+        {
+            "key": "item.modifier.waterAbilityDamage.text",
+            "value": "+{value}% to water ability damage"
+        },
+        {
+            "key": "item.modifier.electricAbilityDamage.text",
+            "value": "+{value}% to electric ability damage"
+        },
+        {
+            "key": "item.modifier.physicalAbilityDamage.text",
+            "value": "+{value}% to physical ability damage"
+        },
+        {
+            "key": "item.modifier.resistanceIgnored.text",
+            "value": "Ignore {value}% of enemy resistance when attacking"
+        },
+        {
+            "key": "item.unique.catharsisCore.name",
+            "value": "Catharsis Core"
+        },
+        {
+            "key": "item.unique.catharsisCore.lore",
+            "value": "They sealed the shard in a housing meant to contain it. It has been leaking ever since, and whoever carries it stops being able to hold anything back."
+        },
+        {
+            "key": "item.modifier.catharsisExposure.text",
+            "value": "Your elemental resistances are set to 0. Your ability damage is increased by {value}%."
+        }
+    ]
+}

@@ -138,6 +138,32 @@ A lazily built cache inside a ScriptableObject is therefore permanent. `Characte
 
 Treat a ScriptableObject as read-only data. Anything derived from it is built at startup and passed around, never stored back on the asset. If some cache really has to live there, it needs an explicit rebuild call, not a null check.
 
+## A number lives in exactly one file
+
+Every number a sheet, a stage or an item declares lives in **one** file, inside `Assets/`, and nowhere else. `.claude/specs/` holds the rules those files have to obey — prose, formulas and worked examples — and never a second copy of the numbers.
+
+This replaced an arrangement where the design document and the thing the game loaded were two copies of the same numbers, kept in step by hand. It did not work, and the evidence is direct: `DesignBridgeTests` caught drift on character sheets because somebody wrote it, while stages had no such test and quietly diverged — `heroLimit` existed in the stage the game loaded and not in the copy under `.claude/specs/stages/`, and had been missing since 0.8.0.0 with nothing complaining.
+
+The rule that matters: **a duplicated number needs a machine watching it, and the cheapest machine is not having the duplicate.**
+
+The stage copies were deleted outright in 0.11.0.1, and the second one was worse than the first: the copy of the stage's text held 2 entries against the 13 the game loads. Nothing read either file — neither the game nor the suite — which is why they could rot for three version blocks without a symptom.
+
+What this does not change is the duplication CLAUDE.md asks for on purpose, because it is a different one. A test repeats the number from the spec's prose in its own assertion, and that repetition is the second independent statement. Two data files holding the same number are not two statements, they are one statement written twice.
+
+### The sheet is JSON, the asset holds only what JSON cannot
+
+A character sheet is a `.json` file. `CharacterDefinition` keeps only the sprite and animation references, which genuinely cannot live in text, and is matched to its sheet by id — the mechanism `CharacterDatabase` already uses for stages.
+
+That split follows the reason the ScriptableObject existed in the first place. Only the **references** have to be assets; the numbers never did, and holding them there is what forced the second copy to exist.
+
+### The item files are read as a wire format, and that shapes them
+
+`JsonUtility` matches a JSON key against a C# field name character for character, so a key has to be a valid C# identifier. That is the whole reason the item files are camelCase and not kebab: `light-special` cannot be a field, `lightSpecial` can.
+
+Where a file used the id as the **key** of a map, it became an array of objects with an `id` field instead. That was a choice once camelCase removed the obstacle, and it was made because the validator can then check coverage generically — "every declared class appears in the other two tables" — rather than naming six fields in code. Adding a seventh equipment class is data, never a code change.
+
+One trap worth remembering: `JsonUtility` reads a JSON `null` into an `int` as `0`. `maxModifiers` was `null` for the unique technology, and `0` already means something — the technology that carries no modifiers on purpose. It is `-1` now. **Any nullable number in these files has the same problem**, and the fix is always a value that cannot be confused with a real one.
+
 ## Content lives in JSON, assets live in ScriptableObjects
 
 Stages are `.json` files under `Assets/Stages/`. Character sheets stay ScriptableObjects.

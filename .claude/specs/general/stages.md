@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Detalhar o que cada fase contém para ser transformado em `json` na pasta `.claude/specs/stages/`.
+Detalhar as regras que uma fase obedece. Os arquivos em si vivem em `Assets/Stages/`, um `.json` por fase, e o texto que o jogador lê fica em `Assets/Strings/`. **Este arquivo não repete nenhum número deles**, conforme "A number lives in exactly one file" em `.claude/memory/architecture.md`.
 
 ## Como ler uma fase
 

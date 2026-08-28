@@ -81,6 +81,16 @@ O campo `Max Level` fica em `100` para heróis. Para lacaios e vilões ele pode 
 
 O Console avisa se as porcentagens não somarem 100. Elas continuam funcionando (são normalizadas), mas quase sempre é erro de digitação.
 
+## `ItemDatabase`
+
+O catálogo dos arquivos de item, em `Assets/ScriptableObjects/ItemDatabase.asset`. Seis referências de `TextAsset`, uma por arquivo de `Assets/Items/`.
+
+São referências de asset e não caminhos em texto, pelo mesmo motivo do `StageDatabase`: renomear ou mover um arquivo não quebra nada.
+
+**Não guarde nada derivado nele.** O projeto roda com Domain Reload desligado, então um campo de ScriptableObject mantém o valor entre sessões de Play para sempre, e um cache montado numa sessão ruim ficaria ruim para sempre. Foi assim que o `CharacterDatabase` quebrou todas as fases uma vez.
+
+Um teste confere que as seis referências resolvem. Sem ele, uma entrada vazia apareceria como conteúdo que simplesmente não existe.
+
 ### O dano do ataque básico é uma faixa
 
 A ficha declara um **mínimo e um máximo**, cada um com o próprio ganho por nível, e cada golpe sorteia entre os dois. Os campos são `Base Damage Min`, `Base Damage Min Per Level`, `Base Damage Max` e `Base Damage Max Per Level`.

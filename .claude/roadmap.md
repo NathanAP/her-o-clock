@@ -496,33 +496,91 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Achado bom: a diversidade de build subiu na act1-stage4. Três builds que limpavam zero vezes no nível 6 passaram a limpar uma.
 - O resumo completo está em `.claude/versions/20260828_0.10.7.0.md`.
 
-## 0.11.0.0 (próxima)
+## 0.11.0.0 (feita)
 
-- **A base do item, só dados.** Os cinco JSON de `.claude/specs/items/` carregados, modelo de dados, validador no molde do `StageValidator`, catálogo e strings. Nada é vestível ainda.
-- Paga a maior dívida de teste do projeto: hoje nenhuma linha daquela pasta é conferida por nada.
-- Testes: as invariantes de `tiers.json`, a derivação do orçamento de dano de `subtypes.json`, as tabelas de nomenclatura, e todo id tendo texto no arquivo de strings.
+- **A casca dos itens.** Os arquivos carregados, modelo de dados, `ItemValidator` sem dependência da Unity, `ItemDatabase` com referências de `TextAsset`, e as strings. **Nada é vestível e nada chega ao combate**, então o snapshot não se moveu.
+- Os arquivos saíram de `.claude/specs/items/` e viraram **fonte única** em `Assets/Items/`. A pasta de specs guarda só o `items.md`.
+- **camelCase em tudo** — chaves, ids e nome de arquivo. Isso resolveu de graça o bloqueio da `JsonUtility`, que casa chave com nome de campo C# letra por letra e não conseguiria ler `light-special`.
+- Cinco blocos que eram mapa viraram array de objetos com `id`. Deixou de ser obrigatório e virou escolha: é o que o resto do arquivo já fazia, o validador passa a conferir cobertura genericamente, e uma classe nova de equipamento vira dado em vez de dado mais um campo em C#.
+- **Um `null` que teria virado bug silencioso:** `maxModifiers` era `null` para a tecnologia única, e a `JsonUtility` lê `null` como `0` num `int` — que já significa "sem tecnologia", com zero modificadores de propósito. Virou `-1`, com o significado escrito no arquivo.
+- **623 testes, 0 falhas.** Doze novos, e até aqui nenhuma linha daqueles arquivos era conferida por nada.
+- **Achado: a invariante da camada 2 estava imprecisa.** Ela dizia "sobe e depois desce", e a tabela fica parada em 34 entre os níveis 40 e 60. O platô é o ponto de virada e não um defeito, então a invariante virou "a camada 2 é unimodal: nunca desce e volta a subir", que é o que ela queria dizer. Spec corrigida, teste não afrouxado.
+- O resumo completo está em `.claude/versions/20260828_0.11.0.0.md`.
+
+## 0.11.0.1 (feita)
+
+- **As cópias mortas das fases saíram.** `.claude/specs/stages/` guardava um `1-1.json` e um `1-1.strings.json` que ninguém lia e nada vigiava, e os dois já tinham divergido do que o jogo carrega:
+    - faltava o `heroLimit` desde a 0.8.0.0;
+    - o arquivo de texto tinha 2 entradas contra as 13 de `Assets/Strings/en.json`.
+- O `stages.md` passou a apontar para `Assets/Stages/` e `Assets/Strings/`, e o `file-system.md` ganhou a seção "Onde cada número mora".
+- **É a duplicação sem proteção nenhuma**, e por isso vem antes do resto. A ficha de personagem também é duplicada, mas ela é vigiada campo a campo pelo `DesignBridgeTests`, então lá o risco é legibilidade e não divergência.
+- O resumo completo está em `.claude/versions/20260828_0.11.0.1.md`.
 
 ## 0.11.1.0
 
 - **Vestir.** Equipamento no `HeroRecord`, a fotografia no `Character`, o item como fonte nova dentro do `TotalOf` e das defesas, e a composição de classe da 0.10.5.0 recebendo enfim entrada de verdade.
-- **O requerimento é conferido contra o total, com tudo que está vestido emprestando atributo.** Dois itens que se sustentam mutuamente ficam os dois ativos, e tirar um derruba o outro para a borda vermelha. Recombinar depois é problema do jogador, como no Path of Exile.
-- Entram as entradas novas de `ModifiableStat` para dano de habilidade por elemento e para resistência ignorada, que hoje não têm onde pousar.
-- O save ganha o primeiro campo que não é escalar: itens já sorteados, que precisam sobreviver intactos.
 - Ferramenta de editor que entrega item a um herói, já que drop é 0.12.0.0 e inventário é 0.14.0.0.
+- **Esta versão trava o avanço natural do jogo, e isso é aceito.** O herói fica com as defesas da ficha somadas às do item, sem drop para equilibrar. O foco é o teste e o balanceamento medido; quem resolve a experiência é a 0.12.0.0.
+
+### O que precisa ser decidido antes de começar
+
+Levantado ao planejar a 0.11.0.0. Nenhum é código: são buracos de spec, e cada um trava a implementação se aparecer no meio dela.
+
+- **"Resistência ignorada" não tem regra em lugar nenhum.** O `items.md` lista `+X% de resistência ignorada ao atacar` como modificador de software, e `attributes.md` não tem uma linha sobre isso: nem fórmula, nem exemplo. E não é óbvio:
+    - **Cortar os pontos antes da curva.** Um alvo com 1000 de resistência é tratado como 800, e a curva recalcula. Contra um alvo saturado o ganho é pequeno.
+    - **Cortar a mitigação depois da curva.** Um alvo com 60% de mitigação passa a ter 48%. Contra um alvo saturado o ganho é enorme, e é assim que o modificador vira obrigatório.
+    - Pela filosofia do projeto, rendimento decrescente em tudo que é limitado, a primeira é a correta. Mas isso precisa estar escrito com exemplo numérico antes de virar código, senão o teste não tem de onde tirar o valor esperado.
+    - **São dois campos e não um.** O `TargetResistanceBonus` que já existe no `DamageInput` é resistência **do alvo** vinda de fonte especial. Resistência ignorada é do **atacante**.
+- **A regra de requerimento tem uma esquisitice, e existe uma saída melhor.** O combinado é "soma tudo que está vestido, ativo ou não", e isso permite um item **inativo** sustentar outro com o `+POW` dele. A alternativa é um laço: começa com todos ativos, recalcula, desativa quem falhou, repete até nada mudar.
+    - O conjunto ativo só encolhe, então termina em no máximo oito passadas e é determinístico sem depender de ordem de slot.
+    - Ele entrega o mesmo comportamento desejado: dois itens que se sustentam mutuamente ficam os dois ativos, e tirar um derruba o outro em cascata.
+- **`+X à vida total` não cabe na fórmula de vida.** `MaxHealth` é `CON x 10`, e `attributes.md` afirma duas vezes que a vida vem só de CON, inclusive "a vida máxima nunca muda no meio de uma fase, já que ela vem apenas de CON". A conclusão continua válida, mas a fórmula precisa ganhar o termo e a frase precisa ser reescrita.
+- **Onde o item entra no `TotalOf` não está decidido.** Hoje a ordem é base mais pontos de nível, depois multiplicador de fase, depois buffs. Antes do multiplicador significa que o ajuste fino de fase amplifica o equipamento do herói, o que quase certamente não é a intenção. Vale para as defesas e para a composição de classe também.
+- **O save ganha o primeiro campo que não é escalar.** Um item equipado é uma estrutura com valores já sorteados que precisam voltar idênticos: re-sortear na carga faria o item mudar toda vez que o jogo abrisse.
+    - O item precisa de **identidade própria**, porque o inventário da 0.14.0.0 vai movê-lo entre herói e baú.
+    - O **nome não é guardado**, ele é derivado dos modificadores conforme `items.md`. Guardá-lo criaria a segunda cópia de novo.
+    - O `SaveMigration` já resolve campo novo sem conversão, então **não precisa subir a versão do formato**, e o `SaveEnvelope` assina o texto verbatim, então nada disso quebra a assinatura.
+- **Os testes de balanceamento precisam de uma decisão.** Toda a suíte mede um time sem item. Ou ela continua medindo sem item e o equipamento fica sem cobertura, ou a varredura ganha um eixo "equipado", que é o certo e multiplica o tempo da parte já mais lenta da suíte.
+- Entram as entradas novas de `ModifiableStat` para dano de habilidade por elemento, que hoje não têm onde pousar: o `AbilityResolver` não passa por modificador nenhum.
+- Detalhe pequeno: `game-objects/ferramentas-do-editor.md` afirma que a janela de fichas "não considera itens, que ainda não existem". A frase fica falsa nesta versão.
 
 ## 0.11.2.0
 
-- **A arma.** Substitui dano base, velocidade de ataque, alcance e corpo a corpo/à distância.
-- Tira `MinRange`, `MaxRange` e `AutoAttack` de dentro do `CharacterDefinition` compartilhado, que é onde eles moram hoje.
-- **Armas duplas alternam as mãos**: golpe 1 na primária, golpe 2 na secundária, e cada golpe usa os modificadores da arma que golpeou.
+- **A arma.** Substitui dano base, velocidade de ataque, alcance e corpo a corpo ou à distância.
+- Tira `MinRange`, `MaxRange` e `AutoAttack` de dentro do `CharacterDefinition` compartilhado, que é onde eles moram hoje. Encosta em `TargetSelector`, `CharacterMover`, `FacingResolver`, a view do projétil e o `CanAttackFrom`.
 - **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar.
+
+### O que precisa ser decidido antes de começar
+
+- **Armas duplas: os modificadores da secundária valem sempre ou só no golpe dela?** É o maior da versão, e o `items.md` é ambíguo ao dizer que "a secundária contribui apenas com o dano dela e com os modificadores".
+    - **Valendo sempre**, a secundária é só mais uma peça de equipamento que por acaso tem faixa de dano, e só o dano alterna. Simples.
+    - **Valendo só no golpe dela**, os atributos do herói passam a depender de qual mão está golpeando: roubo de vida, dano elemental e espinhos mudam de golpe para golpe. Isso é uma reescrita do modelo de estatísticas inteiro.
+    - A primeira é a recomendada. A segunda é um jogo diferente e não está descrita como intenção em lugar nenhum.
+- **A arma substitui a velocidade base ou o resultado?** `AttacksPerSecond` é `1 x (1 + AGI x taxa)` e depois os buffs. Tem que ser a base, senão a AGI para de valer para quem tem arma e a classe leve perde metade do sentido. A spec só diz "substitui a velocidade de ataque do personagem", que lê como as duas coisas.
+- **O Cannon cobre o tabuleiro inteiro.** A distância é de rei e o tabuleiro é 6x8, então a maior distância possível é **7**. O Cannon tem alcance máximo 8 e o Rifle 6: quem usa Cannon nunca precisa se mover, e a única fraqueza dele vira o alcance mínimo 3. Pode ser exatamente a intenção, mas vale saber que 8 não é "muito longe", é "o tabuleiro todo", e que a diferença entre 8, 7 e 6 desaparece neste tamanho.
+- **A arma inativa e a de duas mãos.** Uma arma que falha o requerimento é desconsiderada e o herói volta ao soco da ficha, que continua existindo por isso. Uma arma de duas mãos precisa esvaziar a mão secundária, e isso vale tanto ao equipar quanto na hora da fotografia. Nenhum dos dois é difícil, e os dois são casos que ninguém lembra de testar.
 
 ## 0.11.3.0
 
-- **O gerador.** Tecnologia, quantidade, divisão hardware/software, pesos, camadas, valores e a montagem do nome.
-- C# puro, sem Unity, com teste de distribuição.
+- **A ficha de personagem vira fonte única.** Os números saem de `.claude/specs/characters/` e vão para `Assets/`, em JSON. O `CharacterDefinition` fica só com a cor e as referências de sprite, resolvido por id como as fases já são.
+- **O arquivo se parte em dois, e não muda de pasta inteiro.** Ele mistura duas coisas hoje:
+    - **números** — atributos, defesa, crescimento, alcance, `autoAttacks` e árvores de habilidade. Duplicados no asset, e é essa cópia que o `DesignBridgeTests` existe para vigiar.
+    - **prosa de design** — `info` com nome, descrição, lore, características e traje, mais o campo `hidden`, que não tem contrapartida nenhuma no código. Nada disso tem segunda cópia, e nada disso deveria virar JSON: é documentação e fica na pasta de specs, junto da arte de referência.
+- **O `DesignBridgeTests` deixa de existir**, e com ele a família inteira de bugs de divergência: sem segunda cópia, não há o que divergir.
+- **O argumento decisivo não é a duplicação, é a legibilidade.** No asset, a liberação de ranks de habilidade da Tempo é `RankAvailability: 01000000060000000e0000001900000028000000` — os números `[1, 6, 14, 25, 40]` serializados como bytes em hexadecimal. Quem rebalancear isso produz um diff que ninguém consegue revisar. Como JSON, o diff se lê sozinho.
+- **Vem depois da arma de propósito**, e não antes de vestir como estava planejado. Dois motivos:
+    - As fichas **já estão protegidas** contra divergência pelo teste de ponte, então aqui não existe bug ativo, só limpeza. O que estava desprotegido eram as fases, e isso foi resolvido na 0.11.0.1.
+    - A 0.11.1.0 e a 0.11.2.0 são as versões mais difíceis do projeto e mexem em `Character`, `CharacterStats` e `HeroRecord`. Um refactor grande dos mesmos arquivos logo antes delas significaria duas causas candidatas para cada problema em vez de uma.
+    - Bônus de esperar: depois da arma, já se sabe exatamente o que a ficha precisa guardar.
+- **Ponto em aberto: os ids também viram camelCase?** `act1-stage1` e `discardedPrototype` são valores e não chaves. Padronizar é coerente, mas **id de fase e id de herói estão dentro do save**, então renomear invalida saves existentes. Como a 0.11 já quebra a experiência de qualquer jeito, provavelmente é a hora certa, mas é decisão e não detalhe.
 
 ## 0.11.4.0
+
+- **O gerador.** Tecnologia, quantidade, divisão hardware/software, pesos, camadas, valores e a montagem do nome.
+- C# puro, sem Unity, com teste de distribuição.
+- **De qual fonte aleatória ele sorteia é decisão, e importa.** O `architecture.md` proíbe `UnityEngine.Random` em combate porque ele é global, e um item gerado no meio de uma fase sortearia dentro da mesma fase. Ou o gerador usa o `BattleRandom` da batalha, e aí o drop faz parte da sequência reproduzível pela semente, ou ele tem uma sequência própria e a batalha deixa de ser reproduzível junto do que ela dropou.
+
+## 0.11.5.0
 
 - **Únicos.** A pasta `Assets/Items/Uniques/`, o `AssetPostprocessor` de autodescoberta e o teste que sustenta a promessa de que um arquivo novo entra sozinho.
 - Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico.

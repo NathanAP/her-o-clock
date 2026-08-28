@@ -6,15 +6,16 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 
 ## Onde os números moram
 
-- Este arquivo descreve as regras. Os números que as regras usam ficam em `.claude/specs/items/`, um arquivo por assunto:
+- Este arquivo descreve as regras. Os números que as regras usam ficam em `Assets/Items/`, um arquivo por assunto:
     - `slots.json` traz os slots, o peso defensivo de cada um, o que cada classe faz com a defesa base e o requerimento de atributo.
     - `subtypes.json` traz os subtipos de arma e de mão secundária defensiva, com mãos, alcance, velocidade e faixa de dano.
     - `modifiers.json` traz todos os modificadores que um item não-único pode sortear.
     - `tiers.json` traz a escada de camadas e a distribuição de camadas por nível do item.
     - `uniques.json` traz as regras que valem para todos os itens únicos, incluindo a tabela de grau de poder.
-    - `uniques/` traz um arquivo por item único.
-    - `items.strings.json` traz todo o texto que o jogador lê, no mesmo formato que as fases já usam.
-- A separação existe porque regra e número mudam em ritmos diferentes. Uma tabela dentro de um `.md` não é conferível por teste e envelhece em silêncio.
+    - `Uniques/` traz um arquivo por item único.
+    - `itemStrings.json` traz todo o texto que o jogador lê, no mesmo formato que as fases já usam.
+- **Cada número mora em exatamente um arquivo, e este `.md` não repete nenhum deles.** Uma tabela dentro de um `.md` não é conferível por teste e envelhece em silêncio; uma segunda cópia do arquivo envelhece do mesmo jeito, e foi o que aconteceu com as fases antes desta regra existir.
+- Ids e chaves são escritos em `camelCase`, em todos os arquivos.
 
 ## Equipamentos
 
