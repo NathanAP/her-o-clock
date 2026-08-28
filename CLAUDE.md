@@ -40,6 +40,8 @@ Utilize estas regras ao desenvolver scripts neste projeto:
 - Dê prioridade em manter vários arquivos pequenos e simples ao invés de poucos arquivos longos e complexos.
 - A pasta `.claude/specs/` é sua melhor amiga. Todos os detalhes presentes nos arquivos são mandatórios e devem ser seguidos.
     - Dito isso, você tem liberdade total para contestar decisões presentes na pasta ou indicar problemas claros.
+- Ao alterar pasta de fichas de personagens ou fases é obrigatório que a documentação também seja alterada e vice-versa.
+    - Dito isso, ambas precisam ser espelhos 100% do tempo. Nenhuma pode ficar desatualizada.
 
 # Regras de alteração de arquivos de especificação
 
