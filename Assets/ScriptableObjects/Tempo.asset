@@ -52,8 +52,10 @@ MonoBehaviour:
     BaseDamage: 6
     BaseDamagePerLevel: 0
     Equipment: 0
-    BasePhysicalArmor: 20
-    PhysicalArmorPerLevel: 20
+    BasePhysicalArmor: 12
+    BaseEvasion: 25
+    EvasionPerLevel: 25
+    PhysicalArmorPerLevel: 12
     BaseFireResistance: 0
     FireResistancePerLevel: 0
     BaseWaterResistance: 0

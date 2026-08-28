@@ -465,15 +465,18 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **599 testes, 0 falhas. O snapshot não mudou um dígito**, que é a afirmação central da versão.
 - O resumo completo está em `.claude/versions/20260827_0.10.5.0.md`.
 
-## 0.10.6.0 (próxima)
+## 0.10.6.0 (feita)
 
-- **A evasão passa a ser a mesma fórmula das outras duas defesas.** Hoje ela é a única que não apodrece com o nível, e isso a torna estritamente melhor no fim do jogo sem ninguém ter decidido isso.
-- O AGI deixa de ser o denominador da curva e vira **fonte de pontos de evasão**, com multiplicador por classe: 10 para leve, 5 para especial e 2 para pesado. A constante passa a ser `50 × nível do atacante`, igual à da armadura e à da resistência.
-- Os multiplicadores foram escolhidos para o AGI crescendo 5 por nível cancelar exatamente a constante crescendo 50 por nível. Uma build inteiramente em AGI fica em **50%, 33.3% ou 16.7%** conforme a classe, em qualquer nível — que são exatamente os três números que os exemplos de `attributes.md` já publicavam.
-- Fecha a pergunta em aberto de `items.md`, e os números de evasão de `slots.json` e `modifiers.json` passam a ser da mesma ordem que os de armadura.
-- Testes: os exemplos de evasão mudam de valor de propósito, e o snapshot se move.
+- **A evasão virou a mesma fórmula das outras duas defesas.** Ela era a única cuja constante não crescia com o nível do atacante, então era a única que não apodrecia — e isso a tornava estritamente a melhor defesa no fim do jogo sem ninguém ter decidido.
+- Agora é um total de pontos contra `50 × nível do atacante`, igual à armadura e à resistência. Os pontos vêm da ficha, que declara valor inicial e ganho por nível, e do AGI, convertido a 1, 0.5 ou 0.2 por ponto conforme a classe.
+- **A chance de evasão deixou de ser um número do defensor sozinho.** `EvasionChance` virou `EvasionPoints`, e quem transforma pontos em chance é o `DamageCalculator`, que já tinha o nível do atacante para a mitigação.
+- **A calibração de 10/5/2 planejada aqui estava errada** e foi descartada: ela vale assintoticamente, mas no nível 1 a constante está no mínimo enquanto a ficha já carrega o AGI base inteiro, e a Tempo saltaria para 64.3% de evasão na fase 1. A evasão na ficha resolve o pico pela causa.
+- A Tempo trocou armadura por evasão a pedido: 20/20 de armadura viraram 12/12, e ela ganhou 25/25 de evasão. A redução média total dela ficou onde estava; o que mudou é qual das duas carrega a maior parte.
+- Fechou a pergunta em aberto de `items.md`, e os números de evasão de `slots.json` e `modifiers.json` foram reescritos para a mesma ordem que os de armadura.
+- **602 testes, 0 falhas.** O snapshot se moveu bastante, e **a parede da act1-stage4 sumiu** — nenhuma das três calibrações testadas preserva as três paredes do ato.
+- O resumo completo está em `.claude/versions/20260828_0.10.6.0.md`.
 
-## 0.10.7.0
+## 0.10.7.0 (próxima)
 
 - **O golpe passa a variar.** O dano base vira mínimo e máximo em todas as fichas, e o sorteio sai do `BattleRandom`.
 - Vale para lacaio e vilão também. Hoje um Discarded Prototype bate exatamente 2, sempre.

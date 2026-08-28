@@ -75,14 +75,18 @@ namespace HerOClock.EditorTools
 
             EditorGUILayout.Space();
 
-            Row("Evasion", stats.EvasionChance.ToString("F1") + "%");
             Row("Cooldown reduction", stats.CooldownReduction.ToString("F1") + "%");
             Row("Physical armour", stats.PhysicalArmor.ToString());
+            Row("Evasion points", stats.EvasionPoints.ToString());
 
-            // Against an attacker of this character's own level, because that is the number the
-            // defence growth exists to hold still. Read against a fixed attacker instead, it
-            // would look like it is collapsing when it is not.
+            // Both against an attacker of this character's own level, because that is the number
+            // the defence growth exists to hold still. Read against a fixed attacker instead, they
+            // would look like they are collapsing when they are not.
+            //
+            // Evasion has no reading without an attacker at all, since its constant grows with the
+            // attacker's level exactly like the mitigation one.
             Row("Mitigation vs same level", stats.PhysicalMitigationAgainst(previewLevel).ToString("F1") + "%");
+            Row("Evasion vs same level", stats.EvasionChanceAgainst(previewLevel).ToString("F1") + "%");
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(

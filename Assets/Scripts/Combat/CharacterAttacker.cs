@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Characters;
 using HerOClock.Targeting;
 
@@ -169,7 +169,7 @@ namespace HerOClock.Combat
                 Type = type,
                 AttackerLevel = attacker.Level,
                 AttackerLifeStealPercent = attacker.Stats.LifeStealPercent,
-                TargetEvasionChance = defender.Stats.EvasionChance,
+                TargetEvasionPoints = defender.Stats.EvasionPoints,
                 TargetMitigationPoints = MitigationPointsOf(defender.Stats, type),
                 TargetResistanceBonus = 0f,
                 TargetThornsPercent = defender.Stats.ThornsPercent,

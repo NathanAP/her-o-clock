@@ -50,6 +50,10 @@
             "base": 0,
             "perLevel": 0
         },
+        "evasion": {
+            "base": 0,
+            "perLevel": 0
+        },
         "fireResistance": {
             "base": 0,
             "perLevel": 0

@@ -54,9 +54,9 @@ apagadas nesta versão. Elas eram um andaime da 0.1.0.0 e nunca foram conteúdo.
 
 ### Crescimento de defesa por nível
 
-Toda ficha declara, ao lado do valor inicial de armadura e de cada resistência, **quanto aquele atributo ganha por nível**. Sem isso a defesa apodrece sozinha, porque a constante da curva de mitigação cresce com o nível do atacante.
+Toda ficha declara, ao lado do valor inicial de armadura, de evasão e de cada resistência, **quanto aquele atributo ganha por nível**. Sem isso a defesa apodrece sozinha, porque a constante da curva cresce com o nível do atacante, e ela é a mesma para as três defesas.
 
-**Ganho igual ao valor inicial mantém a mitigação parada para sempre**, pois a armadura e a constante passam a crescer juntas e se cancelam.
+**Ganho igual ao valor inicial mantém a defesa parada para sempre**, pois o valor e a constante passam a crescer juntos e se cancelam. Vale igual para armadura, evasão e resistência.
 
 Todas as fichas do ato 1 usam essa forma. Os valores de cada uma vivem no documento de design
 dela, e a mitigação que eles produzem em cada nível vive em `.claude/balance/snapshot.md`, que é
@@ -65,7 +65,9 @@ gerado por teste. **Nenhum dos dois é copiado para cá**, porque um número der
 
 Ganhos menores que a base fazem a defesa perder força devagar, e maiores fazem ganhar. As duas coisas são escolhas válidas.
 
-A armadura nas fichas de **herói** é um substituto de equipamento, já que itens ainda não existem. Quando existirem, ela deve ir a zero e o equipamento assumir.
+A armadura e a evasão nas fichas de **herói** são um substituto de equipamento, já que itens ainda não existem. Quando existirem, as duas devem ir a zero e o equipamento assumir.
+
+A **evasão** tem uma segunda fonte além da ficha: o AGI, convertido a 1, 0.5 ou 0.2 ponto por ponto conforme a classe. Por isso um personagem com evasão zero na ficha ainda desvia um pouco, e é o que acontece com todo lacaio e vilão hoje.
 
 ### Crescimento por nível
 

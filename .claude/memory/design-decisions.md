@@ -36,6 +36,30 @@ A gain below the base means a character that slowly loses ground, and above it o
 
 For heroes this is a **stand-in for equipment**. When items arrive, the armour on a hero sheet should drop to zero and the gear should take over, otherwise a defensive item competes with a base that already solved the problem.
 
+## The three defences are one shape with three sources
+
+Physical armour, elemental resistance and evasion are all a pool of points against a constant of `50 x the attacker's level`. Only the cap differs: mitigation stops at 75%, evasion approaches 100%.
+
+Evasion was not always like this. Its constant was fixed at 100, 200 or 500 by class, which made it **the only defence that did not rot**: a character who never improved it kept the same chance from level 1 to 100 while its armour turned to dust. Nobody chose that; the shape of the formula chose it, and the result was that evasion was strictly the best defence at the end of the game.
+
+### The chance is not a property of the defender
+
+The direct consequence, and the one that cost the most code: with the constant depending on who is attacking, no character has an evasion chance of its own. `CharacterStats` exposes points; `DamageCalculator` turns them into a chance using the attacker it already has in hand.
+
+`EvasionChanceAgainst(level)` exists only for places with no attacker — the editor windows and the balance snapshot — and they all pass the character's own level, because a same level attacker is the comparison the defence growth exists to hold still.
+
+### Why AGI alone could not carry it
+
+The first calibration was to keep AGI as the only source and convert it at 10, 5 or 2 points per point, which holds a fully invested build at 50%, 33.3% or 16.7% forever. That is true asymptotically and false where it matters: at level 1 the constant is at its minimum while the character already carries its whole sheet base, and Tempo's 9 base AGI against a growth of 1.75 per level would have made it dodge 64.3% of everything on stage 1.
+
+Worse, the ratio between the constant and the multiplier is **one dial**: pinning level 1 pins the plateau and the other way round. There is no calibration that gives both.
+
+So the sheet declares evasion with a growth per level, exactly as it declares armour. That kills the spike at the cause, because the sheet's own value now scales with the constant. AGI stays in at a small rate — 1, 0.5 and 0.2 by class, the same proportions it converts into attack speed, because both measure how much the gear lets the character move.
+
+### Points are not comparable one to one
+
+Armour cuts up to 75% and an average evasion cuts 50.5% — 30% of evasions are perfect at 75%, the rest are normal at 40%. Equal points are therefore not equal defence, and the equipment budgets in `slots.json` are set so the **average** reduction matches. What separates the two is variance, not strength: armour takes the same bite out of every blow, evasion takes none or a large one.
+
 ## Regeneration is multiplied by CON, never granted by it
 
 The base is zero for everyone. CON's "0.5% of regeneration speed per point" multiplies whatever other sources provide, so a character with no source still regenerates nothing.

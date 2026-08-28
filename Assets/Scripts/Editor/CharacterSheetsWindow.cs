@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Abilities;
 using HerOClock.Characters;
 using HerOClock.Progression;
@@ -407,7 +407,7 @@ namespace HerOClock.EditorTools
             Cell(stats.AttacksPerSecond.ToString("F2"), 4);
             Cell((stats.PhysicalDamage * stats.AttacksPerSecond).ToString("F1"), 5);
             Cell(stats.CellsPerSecond.ToString("F2"), 6);
-            Cell(stats.EvasionChance.ToString("F1") + "%", 7);
+            Cell(stats.EvasionChanceAgainst(level).ToString("F1") + "%", 7);
             Cell(stats.PhysicalArmor.ToString(), 8);
             Cell(stats.PhysicalMitigationAgainst(level).ToString("F1") + "%", 9);
 

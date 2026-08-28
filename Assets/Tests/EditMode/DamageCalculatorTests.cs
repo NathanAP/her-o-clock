@@ -1,4 +1,4 @@
-using HerOClock.Combat;
+﻿using HerOClock.Combat;
 using NUnit.Framework;
 
 namespace HerOClock.Tests
@@ -220,26 +220,34 @@ namespace HerOClock.Tests
         // --- Evasion, and the rule that reductions multiply ---
 
         /// <summary>
-        /// An evasion chance of 100 short circuits the roll, so it never draws from the sequence.
-        /// That is what lets the two tests below pick which kind of evasion they get by seed: the
-        /// first number drawn is the perfect evasion roll, and nothing else has consumed one.
+        /// Enough evasion points that the chance is 99.995% against a level 1 attacker.
+        ///
+        /// It cannot be 100%: attributes.md says the curve only approaches its cap, so an evasion
+        /// that always happens does not exist. The tests below need one anyway, because what they
+        /// are checking is what an evasion does to the damage and not whether it happens.
+        /// </summary>
+        private const int CertainEvasion = 1000000;
+
+        /// <summary>
+        /// The evasion roll draws from the sequence, so the perfect evasion roll is the **second**
+        /// number drawn. That is what the two seeds below are chosen against.
         /// </summary>
         [Test]
-        public void AGuaranteedEvasion_IsAlwaysRolled()
+        public void AnAlmostCertainEvasion_IsRolled()
         {
             DamageInput input = Attack(100, DamageType.Physical);
-            input.TargetEvasionChance = 100f;
+            input.TargetEvasionPoints = CertainEvasion;
 
             DamageResult result = DamageCalculator.Resolve(input, new BattleRandom(SeedOfNormalEvasion));
 
             Assert.IsTrue(result.Evaded);
         }
 
-        /// <summary>Seed whose first draw is above 30, so the perfect evasion roll fails.</summary>
-        private const int SeedOfNormalEvasion = 1;
+        /// <summary>Seed whose second draw is above 30, so the perfect evasion roll fails.</summary>
+        private const int SeedOfNormalEvasion = 2;
 
-        /// <summary>Seed whose first draw is below 30, so the perfect evasion roll succeeds.</summary>
-        private const int SeedOfPerfectEvasion = 2;
+        /// <summary>Seed whose second draw is below 30, so the perfect evasion roll succeeds.</summary>
+        private const int SeedOfPerfectEvasion = 1;
 
         /// <summary>
         /// The spec's worked example uses 75% mitigation, which the curve only approaches and
@@ -259,7 +267,7 @@ namespace HerOClock.Tests
             DamageInput input = Attack(800, DamageType.Physical);
             input.AttackerLevel = 1;
             input.TargetMitigationPoints = 150;
-            input.TargetEvasionChance = 100f;
+            input.TargetEvasionPoints = CertainEvasion;
 
             DamageResult result = DamageCalculator.Resolve(input, new BattleRandom(SeedOfNormalEvasion));
 
@@ -283,7 +291,7 @@ namespace HerOClock.Tests
             DamageInput input = Attack(1000, DamageType.Physical);
             input.AttackerLevel = 1;
             input.TargetMitigationPoints = 150;
-            input.TargetEvasionChance = 100f;
+            input.TargetEvasionPoints = CertainEvasion;
 
             DamageResult result = DamageCalculator.Resolve(input, new BattleRandom(SeedOfNormalEvasion));
 
@@ -298,7 +306,7 @@ namespace HerOClock.Tests
         public void APerfectEvasionRemovesThreeQuarters()
         {
             DamageInput input = Attack(1000, DamageType.Physical);
-            input.TargetEvasionChance = 100f;
+            input.TargetEvasionPoints = CertainEvasion;
 
             DamageResult result = DamageCalculator.Resolve(input, new BattleRandom(SeedOfPerfectEvasion));
 
@@ -310,7 +318,7 @@ namespace HerOClock.Tests
         public void WithoutARandomSource_NothingIsEvaded()
         {
             DamageInput input = Attack(100, DamageType.Physical);
-            input.TargetEvasionChance = 100f;
+            input.TargetEvasionPoints = CertainEvasion;
 
             Assert.IsFalse(DamageCalculator.Resolve(input, null).Evaded);
         }

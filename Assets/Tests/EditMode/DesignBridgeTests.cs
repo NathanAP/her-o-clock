@@ -58,6 +58,7 @@ namespace HerOClock.Tests
         private class Defence
         {
             public Scaled physicalArmor;
+            public Scaled evasion;
             public Scaled fireResistance;
             public Scaled waterResistance;
             public Scaled electricResistance;
@@ -225,6 +226,10 @@ namespace HerOClock.Tests
                 asset.Stats.BasePhysicalArmor, problems);
             Check(sheet.id, "defence.physicalArmor.perLevel", sheet.defence.physicalArmor.perLevel,
                 asset.Stats.PhysicalArmorPerLevel, problems);
+            Check(sheet.id, "defence.evasion.base", sheet.defence.evasion.@base,
+                asset.Stats.BaseEvasion, problems);
+            Check(sheet.id, "defence.evasion.perLevel", sheet.defence.evasion.perLevel,
+                asset.Stats.EvasionPerLevel, problems);
             Check(sheet.id, "defence.fireResistance.base", sheet.defence.fireResistance.@base,
                 asset.Stats.BaseFireResistance, problems);
             Check(sheet.id, "defence.fireResistance.perLevel", sheet.defence.fireResistance.perLevel,

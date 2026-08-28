@@ -118,27 +118,100 @@ namespace HerOClock.Tests
             Assert.AreEqual(3.5f, 7f / cellsPerSecond, 0.01f, "Crossing the 8 row board should take 3.5 seconds.");
         }
 
-        // --- Evasion: 100 x AGI / (AGI + constant), constant 100 / 200 / 500 ---
+        // --- Evasion: points through the same curve as armour, against 50 x attacker level ---
 
-        [TestCase(EquipmentClass.Light, 25, 20.0f)]
-        [TestCase(EquipmentClass.Light, 100, 50.0f)]
-        [TestCase(EquipmentClass.Light, 300, 75.0f)]
-        [TestCase(EquipmentClass.Light, 900, 90.0f)]
-        [TestCase(EquipmentClass.Special, 100, 33.3f)]
-        [TestCase(EquipmentClass.Special, 200, 50.0f)]
-        [TestCase(EquipmentClass.Special, 600, 75.0f)]
-        [TestCase(EquipmentClass.Heavy, 100, 16.7f)]
-        [TestCase(EquipmentClass.Heavy, 500, 50.0f)]
-        [TestCase(EquipmentClass.Heavy, 1500, 75.0f)]
-        public void EvasionChance_MatchesTheExamplesInTheSpec(EquipmentClass equipment, int agility, float expected)
+        /// <summary>
+        /// attributes.md: AGI turns into evasion points at 1, 0.5 or 0.2 per point depending on
+        /// the class. A light character with 100 AGI has 100 points, special has 50, heavy has 20.
+        /// </summary>
+        [TestCase(EquipmentClass.Light, 100, 100)]
+        [TestCase(EquipmentClass.Special, 100, 50)]
+        [TestCase(EquipmentClass.Heavy, 100, 20)]
+        public void EvasionPoints_ConvertAgilityAtTheClassRate(EquipmentClass equipment, int agility, int expected)
         {
-            Assert.AreEqual(expected, Sheet(0, agility, 0, 0, equipment).EvasionChance, Tolerance);
+            Assert.AreEqual(expected, Sheet(0, agility, 0, 0, equipment).EvasionPoints);
+        }
+
+        /// <summary>
+        /// attributes.md: the sheet's own evasion grows per level exactly like armour, and adds to
+        /// whatever AGI contributes. 25 with a growth of 25 is 25 points at level 1 and 2500 at
+        /// level 100.
+        /// </summary>
+        [TestCase(1, 25)]
+        [TestCase(100, 2500)]
+        public void EvasionPoints_AddTheSheetValueGrownByLevel(int level, int expected)
+        {
+            CharacterStats stats = new CharacterStats
+            {
+                Equipment = EquipmentClass.Light,
+                BaseEvasion = 25,
+                EvasionPerLevel = 25
+            };
+
+            stats.ApplyInstance(level, new AttributeGrowth(), 1f);
+
+            Assert.AreEqual(expected, stats.EvasionPoints);
+        }
+
+        /// <summary>
+        /// The two worked examples of attributes.md: 150 points are 75% against a level 1 attacker
+        /// and 23.1% against a level 10 one.
+        ///
+        /// The same defender, two different numbers. That is the whole change: evasion is not a
+        /// property of who is being hit, it is a comparison between two characters.
+        /// </summary>
+        [TestCase(1, 75.0f)]
+        [TestCase(10, 23.1f)]
+        public void EvasionChance_DependsOnWhoIsAttacking(int attackerLevel, float expected)
+        {
+            CharacterStats stats = Evading(150);
+
+            Assert.AreEqual(expected, stats.EvasionChanceAgainst(attackerLevel), Tolerance);
+        }
+
+        /// <summary>
+        /// attributes.md: whenever the points equal 50 x the attacker's level, the chance is
+        /// exactly 50%. It is the same identity the mitigation curve has, and it is what makes the
+        /// constant readable at a glance.
+        /// </summary>
+        [TestCase(1)]
+        [TestCase(12)]
+        [TestCase(100)]
+        public void EvasionChance_IsHalfWhenThePointsMatchTheConstant(int attackerLevel)
+        {
+            Assert.AreEqual(50f, Evading(50 * attackerLevel).EvasionChanceAgainst(attackerLevel), Tolerance);
+        }
+
+        /// <summary>
+        /// attributes.md: a growth equal to the base holds the chance still for the whole game,
+        /// exactly as it does for armour. A sheet with 25 and 25 sits at 33.3% at every level.
+        ///
+        /// This is the reason the whole version exists. Before it, evasion was the one defence
+        /// whose constant did not grow, so it climbed on its own from level 1 to 100 while every
+        /// other defence rotted.
+        /// </summary>
+        [TestCase(1)]
+        [TestCase(12)]
+        [TestCase(100)]
+        public void Evasion_HoldsStillWhenTheGrowthMatchesTheBase(int level)
+        {
+            CharacterStats stats = new CharacterStats
+            {
+                Equipment = EquipmentClass.Light,
+                BaseEvasion = 25,
+                EvasionPerLevel = 25
+            };
+
+            stats.ApplyInstance(level, new AttributeGrowth(), 1f);
+
+            Assert.AreEqual(33.3f, stats.EvasionChanceAgainst(level), Tolerance);
         }
 
         [Test]
-        public void EvasionChance_IsZeroWithoutAgility()
+        public void EvasionPoints_AreZeroWithoutAgilityOrSheetValue()
         {
-            Assert.AreEqual(0f, Sheet(0, 0, 0, 0, EquipmentClass.Light).EvasionChance, Tolerance);
+            Assert.AreEqual(0, Sheet(0, 0, 0, 0, EquipmentClass.Light).EvasionPoints);
+            Assert.AreEqual(0f, Sheet(0, 0, 0, 0, EquipmentClass.Light).EvasionChanceAgainst(1), Tolerance);
         }
 
         /// <summary>
@@ -148,19 +221,33 @@ namespace HerOClock.Tests
         [Test]
         public void EvasionChance_NeverReachesOneHundred()
         {
-            Assert.Less(Sheet(0, 1000000, 0, 0, EquipmentClass.Light).EvasionChance, 100f);
+            Assert.Less(Evading(int.MaxValue / 2).EvasionChanceAgainst(1), 100f);
+        }
+
+        /// <summary>A sheet carrying only evasion points, for the curve.</summary>
+        private static CharacterStats Evading(int points)
+        {
+            CharacterStats stats = new CharacterStats
+            {
+                Equipment = EquipmentClass.Light,
+                BaseEvasion = points,
+                EvasionPerLevel = 0
+            };
+
+            stats.ApplyInstance(1, new AttributeGrowth(), 1f);
+            return stats;
         }
 
         /// <summary>
-        /// attributes.md: with equipment worn, the constant is the mix rather than the sheet's own
-        /// class. The example there — two heavy casings, two light, one medium weapon and one
-        /// special controller — gives a constant of 283.33, and 26.09% of evasion at 100 AGI.
+        /// attributes.md: with equipment worn, AGI converts at the mixed rate rather than the
+        /// sheet's own class. The example there — two heavy casings, two light, one medium weapon
+        /// and one special controller — converts at 0.5833, so 100 AGI is 58 points.
         ///
         /// The sheet says Heavy here on purpose. Wearing something has to beat what the sheet
         /// declares, otherwise equipment would never change a hero at all.
         /// </summary>
         [Test]
-        public void EvasionChance_FollowsTheEquipmentWornRatherThanTheSheet()
+        public void EvasionPoints_FollowTheEquipmentWornRatherThanTheSheet()
         {
             CharacterStats stats = Sheet(0, 100, 0, 0, EquipmentClass.Heavy);
 
@@ -176,7 +263,7 @@ namespace HerOClock.Tests
                 },
                 EquipmentClass.Heavy));
 
-            Assert.AreEqual(26.09f, stats.EvasionChance, Tolerance);
+            Assert.AreEqual(58, stats.EvasionPoints);
         }
 
         /// <summary>
@@ -193,8 +280,8 @@ namespace HerOClock.Tests
             CharacterStats copy = stats.Clone();
             copy.ApplyInstance(1, new AttributeGrowth(), 1f);
 
-            Assert.AreEqual(50.0f, stats.EvasionChance, Tolerance, "The original is wearing light.");
-            Assert.AreEqual(16.7f, copy.EvasionChance, Tolerance, "The copy falls back to its heavy sheet.");
+            Assert.AreEqual(100, stats.EvasionPoints, "The original is wearing light, so 1 point per AGI.");
+            Assert.AreEqual(20, copy.EvasionPoints, "The copy falls back to its heavy sheet, so 0.2 per AGI.");
         }
 
         // --- Cooldown reduction: 60 x SPE / (SPE + constant), constant 60 / 40 / 300 ---

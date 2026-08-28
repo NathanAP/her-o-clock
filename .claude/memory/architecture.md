@@ -120,6 +120,16 @@ The fallback lives in the private `Composition` getter rather than being filled 
 
 `ItemClass` (six) and `EquipmentClass` (three) are deliberately different types. The first is what an item can be, the second is what attributes.md writes numbers for, and `EquipmentComposition` is the only place that translates between them.
 
+## Evasion has no value until both sides are known
+
+`CharacterStats.EvasionPoints` is points, never a chance, and there is no `EvasionChance` property any more. The curve's constant is `50 x the attacker's level`, so the chance is a comparison between two characters and `DamageCalculator` is where it is computed — it already holds the attacker for the mitigation.
+
+`DamageInput` therefore carries `TargetEvasionPoints`. If a `TargetEvasionChance` reappears, the seam has been broken and evasion has silently gone back to being the one defence that does not rot.
+
+`EvasionChanceAgainst(attackerLevel)` exists for the editor windows and the balance snapshot, which have to print a number with no attacker in hand. They all pass the character's own level.
+
+One consequence caught the calculator's own tests: `BattleRandom.Roll` short circuits at 100 without drawing, and the old tests relied on a chance of exactly 100 so that the perfect evasion roll was the first number in the sequence. The curve never reaches 100, so the evasion roll now consumes a draw and the perfect roll is the **second**. The two seeds in `DamageCalculatorTests` are picked against that.
+
 ## ScriptableObjects must hold no runtime state
 
 This project runs with Domain Reload disabled, which makes entering Play Mode almost instant. The price is that nothing is cleared between sessions: static fields keep their values, and so do the fields of any ScriptableObject, because the asset stays loaded.

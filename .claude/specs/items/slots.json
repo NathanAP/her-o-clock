@@ -53,9 +53,9 @@
         }
     ],
     "defenceBudget": {
-        "comment": "A defesa base de um equipamento e 'base + perLevel x (nivel do item - 1)', multiplicada pelo peso do slot e pelo multiplicador da classe. 'perLevel' e igual a 'base' porque attributes.md diz que e assim que a mitigacao fica constante ao longo do jogo: a constante da curva e 50 x nivel do atacante, entao uma defesa parada apodrece. A evasao e o unico caso em que os dois numeros divergem, porque a constante dela nao cresce com o nivel - ver a secao 'Perguntas em aberto' de items.md.",
+        "comment": "A defesa base de um equipamento e 'base + perLevel x (nivel do item - 1)', multiplicada pelo peso do slot e pelo multiplicador da classe. 'perLevel' e igual a 'base' nas tres porque attributes.md diz que e assim que a mitigacao fica constante ao longo do jogo: a constante da curva e 50 x nivel do atacante nas tres defesas, entao uma defesa parada apodrece. O orcamento de evasao e maior que o de armadura porque a armadura corta ate 75% e a evasao corta 50.5% em media, entao pontos iguais nao valeriam o mesmo: os numeros sao escolhidos para a reducao media empatar, e o que separa as duas e a variancia.",
         "armour": { "base": 12, "perLevel": 12 },
-        "evasion": { "base": 0.5, "perLevel": 0.45 },
+        "evasion": { "base": 18, "perLevel": 18 },
         "elementalResistance": { "base": 5, "perLevel": 5 }
     },
     "classDefence": {

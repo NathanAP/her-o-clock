@@ -21,7 +21,8 @@ Falta comparar duas fichas **no nível em que elas se encontram de verdade**. Um
 
 - Um controle de **nível** e um de **multiplicador de fase**, iguais aos do Inspector de ficha.
 - Uma tabela por tipo de personagem — heróis, lacaios, vilões e NPCs — com os quatro atributos, vida, dano, ataques por segundo, dano por segundo, casas por segundo, evasão, armadura e mitigação.
-- A mitigação é lida **contra um atacante do mesmo nível**, que é o número que o crescimento da defesa existe para manter parado. Contra um atacante fixo ela pareceria despencar sem estar despencando.
+- A mitigação e a evasão são lidas **contra um atacante do mesmo nível**, que é o número que o crescimento da defesa existe para manter parado. Contra um atacante fixo elas pareceriam despencar sem estar despencando.
+- A evasão precisa de um atacante para existir: a constante da curva dela cresce com o nível de quem ataca, então um personagem não tem chance de evasão própria. A ficha do personagem mostra os pontos ao lado da chance por esse motivo.
 - Clicar no nome seleciona a ficha no Project, então a janela também é um caminho para dentro delas.
 
 ### As habilidades, e por que elas estão aqui

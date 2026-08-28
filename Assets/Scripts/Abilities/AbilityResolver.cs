@@ -144,7 +144,7 @@ namespace HerOClock.Abilities
                 Type = effect.DamageType,
                 AttackerLevel = user.Level,
                 AttackerLifeStealPercent = user.Stats.LifeStealPercent,
-                TargetEvasionChance = target.Stats.EvasionChance,
+                TargetEvasionPoints = target.Stats.EvasionPoints,
                 TargetMitigationPoints = MitigationPointsOf(target.Stats, effect.DamageType),
                 TargetResistanceBonus = 0f,
                 TargetThornsPercent = target.Stats.ThornsPercent,

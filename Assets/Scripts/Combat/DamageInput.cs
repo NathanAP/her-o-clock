@@ -1,4 +1,4 @@
-namespace HerOClock.Combat
+﻿namespace HerOClock.Combat
 {
     /// <summary>
     /// Everything the damage calculation needs to know about one attack.
@@ -20,8 +20,16 @@ namespace HerOClock.Combat
         /// <summary>Attacker's life steal, from 0 to 100.</summary>
         public float AttackerLifeStealPercent;
 
-        /// <summary>Target's evasion chance, from 0 to 100.</summary>
-        public float TargetEvasionChance;
+        /// <summary>
+        /// The target's evasion points, which the calculator turns into a chance using the
+        /// attacker's level.
+        ///
+        /// Points and not a chance, because the constant of the evasion curve is 50 x the
+        /// attacker's level, exactly like the mitigation one below. The same defender dodges a
+        /// weak enemy more often than a strong one, so the chance simply does not exist until
+        /// both sides are known.
+        /// </summary>
+        public int TargetEvasionPoints;
 
         /// <summary>
         /// The target's physical armour for physical damage, or its resistance points against

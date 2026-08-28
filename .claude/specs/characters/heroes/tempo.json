@@ -54,8 +54,12 @@
     },
     "defence": {
         "physicalArmor": {
-            "base": 20,
-            "perLevel": 20
+            "base": 12,
+            "perLevel": 12
+        },
+        "evasion": {
+            "base": 25,
+            "perLevel": 25
         },
         "fireResistance": {
             "base": 0,

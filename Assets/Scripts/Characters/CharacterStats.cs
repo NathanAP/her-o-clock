@@ -46,6 +46,13 @@ namespace HerOClock.Characters
             + "against a same level attacker constant for the whole game.")]
         [Min(0)] public int PhysicalArmorPerLevel;
 
+        [Tooltip("Evasion points at the character's starting level. Same curve and same constant as "
+            + "physical armour, so the same rule applies: set the growth equal to the base to keep "
+            + "the chance constant for the whole game.")]
+        [Min(0)] public int BaseEvasion;
+
+        [Min(0)] public int EvasionPerLevel;
+
         [Tooltip("Resistance points against fire at the starting level. Same curve as physical armour.")]
         [FormerlySerializedAs("FireResistance")]
         [Min(0)] public int BaseFireResistance;
@@ -387,10 +394,30 @@ namespace HerOClock.Characters
 
         // --- Secondary attributes with diminishing returns ---
 
-        /// <summary>Evasion chance, from 0 to 100. Never reaches 100.</summary>
-        public float EvasionChance
+        /// <summary>
+        /// Total evasion points, counting every source: the sheet's own value grown by level, and
+        /// AGI converted at the rate the worn equipment class gives.
+        ///
+        /// **This is points and not a chance**, and that is the whole shape of the rule. Evasion
+        /// goes through the same curve as physical armour and elemental resistance, against the
+        /// same constant of 50 x the attacker's level, so how much of an attack it avoids depends
+        /// on who is swinging. A character cannot know its own evasion chance on its own, and
+        /// <see cref="Combat.DamageCalculator"/> is where the two sides meet.
+        ///
+        /// Before this, evasion was the one defence whose constant did not grow, so it was the
+        /// only one that never rotted — a character that never improved it kept the same chance
+        /// from level 1 to 100 while its armour turned to dust. Nobody decided that; it was the
+        /// shape of the formula deciding for us.
+        /// </summary>
+        public int EvasionPoints
         {
-            get { return (float)DiminishingReturns(100.0, Agility, EvasionConstant); }
+            get
+            {
+                float fromSheet = DefenceOf(BaseEvasion, EvasionPerLevel);
+                float fromAgility = Agility * EvasionPerAgility;
+
+                return Mathf.Max(0, Mathf.RoundToInt(fromSheet + fromAgility));
+            }
         }
 
         /// <summary>
@@ -417,6 +444,21 @@ namespace HerOClock.Characters
         public float PhysicalMitigationAgainst(int attackerLevel)
         {
             return (float)DiminishingReturns(75.0, PhysicalArmor, 50.0 * Mathf.Max(1, attackerLevel));
+        }
+
+        /// <summary>
+        /// Evasion chance, from 0 to 100, against an attacker of the given level. Same curve and
+        /// same constant as the mitigation above.
+        ///
+        /// The fight itself never calls this: <see cref="Combat.DamageCalculator"/> works from
+        /// <see cref="EvasionPoints"/> and the attacker it already has in hand. This exists for
+        /// the places that want to show a number without an attacker — the editor windows and the
+        /// balance snapshot — and they all pass the character's own level, because that is the
+        /// comparison the defence growth exists to hold still.
+        /// </summary>
+        public float EvasionChanceAgainst(int attackerLevel)
+        {
+            return (float)DiminishingReturns(100.0, EvasionPoints, 50.0 * Mathf.Max(1, attackerLevel));
         }
 
         /// <summary>
@@ -454,9 +496,9 @@ namespace HerOClock.Characters
             get { return Composition.Blend(0.01f, 0.0075f, 0.005f); }
         }
 
-        private float EvasionConstant
+        private float EvasionPerAgility
         {
-            get { return Composition.Blend(100f, 200f, 500f); }
+            get { return Composition.Blend(1f, 0.5f, 0.2f); }
         }
 
         private float CooldownConstant

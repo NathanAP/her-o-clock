@@ -34,6 +34,8 @@ MonoBehaviour:
     BaseDamagePerLevel: 1
     Equipment: 0
     BasePhysicalArmor: 0
+    BaseEvasion: 0
+    EvasionPerLevel: 0
     PhysicalArmorPerLevel: 0
     BaseFireResistance: 0
     FireResistancePerLevel: 0

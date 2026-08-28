@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using HerOClock.Characters;
 
 namespace HerOClock.Combat
@@ -62,7 +62,7 @@ namespace HerOClock.Combat
             // Step 4: evasion, rolled exactly once per attack.
             double evasionFactor = 1.0;
 
-            if (random != null && random.Roll(input.TargetEvasionChance))
+            if (random != null && random.Roll((float)EvasionChance(input)))
             {
                 result.Evaded = true;
                 result.PerfectEvasion = random.Roll(PerfectEvasionShare);
@@ -82,6 +82,20 @@ namespace HerOClock.Combat
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// The target's chance of evading this attack, from its points against the attacker's
+        /// level.
+        ///
+        /// Same curve and same constant as the mitigation below, and that is the point: all three
+        /// defences of attributes.md are now one shape with different sources. The only thing
+        /// that differs is the cap, because evasion approaches 100% while mitigation stops at 75%.
+        /// </summary>
+        private static double EvasionChance(DamageInput input)
+        {
+            double constant = 50.0 * Math.Max(1, input.AttackerLevel);
+            return CharacterStats.DiminishingReturns(100.0, input.TargetEvasionPoints, constant);
         }
 
         /// <summary>

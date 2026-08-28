@@ -101,8 +101,8 @@
             "affix": "Streamlined",
             "slots": "defensive",
             "weight": 100,
-            "min": { "base": 0.25, "perLevel": 0.026 },
-            "max": { "base": 0.4, "perLevel": 0.042 }
+            "min": { "base": 4.5, "perLevel": 0.97 },
+            "max": { "base": 7.4, "perLevel": 1.54 }
         },
         {
             "id": "thorns",

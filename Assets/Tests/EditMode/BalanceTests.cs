@@ -346,7 +346,7 @@ namespace HerOClock.Tests
             page.AppendLine();
             page.AppendLine("Valores no nível inicial da ficha, sem itens.");
             page.AppendLine();
-            page.AppendLine("| Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão | Armadura | Regen/s |");
+            page.AppendLine("| Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão (pts) | Armadura | Regen/s |");
             page.AppendLine("|---|---|---|---|---|---|---|---|");
 
             CharacterDatabase database = Load<CharacterDatabase>();
@@ -361,7 +361,7 @@ namespace HerOClock.Tests
                     + " | " + stats.PhysicalDamage
                     + " | " + Number(stats.AttacksPerSecond, 2)
                     + " | " + Number(stats.CellsPerSecond, 2)
-                    + " | " + Number(stats.EvasionChance, 1) + "%"
+                    + " | " + stats.EvasionPoints
                     + " | " + stats.PhysicalArmor
                     + " | " + Number(stats.HealthPerSecond, 2)
                     + " |");
@@ -380,20 +380,21 @@ namespace HerOClock.Tests
         {
             int[] levels = { 1, 12, 30, 50, 100 };
 
-            page.AppendLine("### Mitigação física contra um atacante do mesmo nível");
+            page.AppendLine("### Defesa contra um atacante do mesmo nível");
             page.AppendLine();
-            page.AppendLine("Uma linha parada significa que a armadura acompanha a curva. Uma linha que cai");
-            page.AppendLine("significa que aquela ficha perde defesa conforme o jogo avança.");
+            page.AppendLine("Mitigação física e chance de evasão, que passam pela mesma curva contra a mesma");
+            page.AppendLine("constante. Uma linha parada significa que aquela defesa acompanha a curva. Uma linha");
+            page.AppendLine("que cai significa que a ficha perde aquela defesa conforme o jogo avança.");
             page.AppendLine();
 
-            page.Append("| Ficha |");
+            page.Append("| Ficha | Defesa |");
             for (int i = 0; i < levels.Length; i++)
             {
                 page.Append(" Nível ").Append(levels[i]).Append(" |");
             }
             page.AppendLine();
 
-            page.Append("|---|");
+            page.Append("|---|---|");
             for (int i = 0; i < levels.Length; i++)
             {
                 page.Append("---|");
@@ -403,7 +404,7 @@ namespace HerOClock.Tests
             for (int i = 0; i < database.Characters.Count; i++)
             {
                 CharacterDefinition definition = database.Characters[i];
-                page.Append("| ").Append(definition.Id).Append(" |");
+                page.Append("| ").Append(definition.Id).Append(" | armadura |");
 
                 for (int l = 0; l < levels.Length; l++)
                 {
@@ -411,6 +412,17 @@ namespace HerOClock.Tests
                     CharacterStats stats = AtLevel(definition, level);
 
                     page.Append(' ').Append(Number(stats.PhysicalMitigationAgainst(level), 1)).Append("% |");
+                }
+
+                page.AppendLine();
+                page.Append("| ").Append(definition.Id).Append(" | evasão |");
+
+                for (int l = 0; l < levels.Length; l++)
+                {
+                    int level = Mathf.Min(levels[l], definition.MaxLevel);
+                    CharacterStats stats = AtLevel(definition, level);
+
+                    page.Append(' ').Append(Number(stats.EvasionChanceAgainst(level), 1)).Append("% |");
                 }
 
                 page.AppendLine();

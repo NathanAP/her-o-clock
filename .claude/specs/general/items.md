@@ -37,6 +37,8 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
         - Modificadores conforme a tecnologia.
     - Os equipamentos defensivos possuem em comum:
         - Armadura (POW) / Evasão (AGI) / Resistência elemental (SPE) base escalada com o nível do item.
+        - **As três são pontos na mesma escala**, porque `attributes.md` passa as três pela mesma curva contra a mesma constante. O orçamento de evasão é maior que o de armadura em `slots.json`.
+            - Dessa forma, a armadura corta 75% no teto e a evasão média corta 50.5%, então pontos iguais valeriam menos. Os orçamentos são escolhidos para que a redução média das duas seja equivalente, e o que separa uma da outra é a variância e não a força.
     - Os equipamentos ofensivos possuem em comum:
         - Faixa de dano escalada com o nível do item.
         - Velocidade de ataque, que substitui a do personagem enquanto a arma estiver equipada.
@@ -385,16 +387,6 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 ## Perguntas em aberto
 
 - Coisas que a spec ainda não decide e que precisam ser decididas antes de os números virarem definitivos.
-
-### A evasão vive em outra escala
-
-- `attributes.md` calcula armadura e resistência elemental com constante `50 × nível do atacante`, e calcula evasão com constante fixa em 100, 200 ou 500 conforme a classe.
-- A consequência é que **a evasão não apodrece com o nível e as outras duas apodrecem**. Um personagem que nunca melhorasse a evasão manteria a mesma chance de desviar do nível 1 ao 100, enquanto a armadura dele viraria pó.
-- A consequência prática para os itens é que os pontos de evasão de um equipamento precisam ser da ordem de dezenas, enquanto os de armadura são da ordem de centenas, e as duas colunas de `modifiers.json` ficam com aparência muito diferente sem que a diferença signifique nada de design.
-- São duas saídas possíveis, e a escolha é de design:
-    - A constante de evasão passa a crescer com o nível do atacante, como as outras duas. As três defesas ficam na mesma escala e a evasão volta a precisar de melhoria contínua.
-    - A evasão segue como está e assume-se conscientemente que ela é a defesa que vale mais no fim do jogo.
-- Os números atuais de `slots.json` e `modifiers.json` estão escritos pela regra que existe hoje. Se a regra mudar, eles mudam junto.
 
 ### Drop e disponibilidade
 

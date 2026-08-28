@@ -16,7 +16,7 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 ## A classe do personagem
 
-- Quatro fórmulas deste arquivo mudam conforme a classe de equipamento que o personagem está usando: a constante de evasão, a constante de redução de recarga, e os ganhos de velocidade de ataque e de velocidade de movimento por ponto de AGI.
+- Quatro fórmulas deste arquivo mudam conforme a classe de equipamento que o personagem está usando: a conversão de AGI em pontos de evasão, a constante de redução de recarga, e os ganhos de velocidade de ataque e de velocidade de movimento por ponto de AGI.
 - As classes que essas fórmulas conhecem são três: **leve**, **especial** e **pesado**.
 - Um personagem, porém, veste até oito equipamentos, e cada um deles tem a classe dele, escolhida entre as seis de `items.md`. **A classe do personagem é a mistura das classes do que ele veste.**
 
@@ -40,11 +40,12 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 - **Um personagem sem nenhum equipamento ativo usa a classe declarada na ficha dele.** É o caso de todo lacaio, vilão e NPC, que nunca vestem nada, e o de um herói que ainda não tem itens.
 - A mistura é feita quando a fase começa, junto de todo o resto que constrói quem luta. Trocar um item no meio de uma fase mexe no herói e não em quem está no tabuleiro, conforme `gameplay.md`.
 
-### O que é misturado é a constante, nunca o resultado
+### O que é misturado é o que entra na fórmula, nunca o que sai dela
 
-- A mistura acontece sobre o valor que entra na fórmula, e não sobre o valor que sai dela.
-- O motivo é que a evasão precisa continuar sendo `100 × AGI ÷ (AGI + Constante)` para uma constante só. Misturando os resultados, a evasão do personagem deixaria de ser uma curva de rendimento decrescente sobre um total de pontos, e tudo que este arquivo pendura nessa forma — inclusive os pontos de evasão que vêm de equipamento — ficaria sem onde entrar.
-- A consequência é que **misturar classes rende um pouco menos que a média dos resultados**, porque a curva é convexa. Isso é proposital: especializar paga, e misturar compra as duas defesas ao custo de não ser ótimo em nenhuma.
+- A mistura acontece sobre o número que a fórmula usa, e não sobre o resultado que ela produz.
+- No caso da redução de recarga isso importa de verdade, porque ela é uma curva: a redução precisa continuar sendo `60 × SPE ÷ (SPE + Constante)` para uma constante só. Misturando os resultados, ela deixaria de ser uma curva de rendimento decrescente sobre um total, e tudo que este arquivo pendura nessa forma ficaria sem onde entrar.
+- A consequência é que **misturar classes rende um pouco menos que a média dos resultados**, porque a curva é convexa. Isso é proposital: especializar paga, e misturar compra dois lados ao custo de não ser ótimo em nenhum.
+- Nas outras três a mistura é sobre uma taxa por ponto de atributo, que é linear, então as duas leituras dariam o mesmo. A regra é escrita uma vez só para valer para as quatro.
 
 ### Exemplo
 
@@ -53,12 +54,14 @@ Neste arquivo é possível encontrar detalhes de cada atributo presente no jogo.
 
 | Fórmula                          | Leve | Especial | Pesado | Resultado do herói |
 | -------------------------------- | ---- | -------- | ------ | ------------------ |
-| Constante de evasão              | 100  | 200      | 500    | 283.33             |
+| Pontos de evasão por AGI         | 1    | 0.5      | 0.2    | 0.5833             |
 | Constante de redução de recarga  | 60   | 40       | 300    | 156.67             |
 | Velocidade de ataque por AGI     | 1%   | 0.5%     | 0.2%   | 0.5833%            |
 | Velocidade de movimento por AGI  | 1%   | 0.75%    | 0.5%   | 0.75%              |
 
-- Com 100 de AGI, esse herói tem 26.09% de evasão. Um herói leve puro teria 50% e um pesado puro teria 16.67%.
+- As duas linhas de 0.5833 são iguais porque as duas tabelas têm as mesmas proporções, e não por acaso: as duas medem o quanto o equipamento deixa o personagem se mover.
+- Com 100 de AGI, esse herói tem 58.33 pontos de evasão. Um leve puro teria 100 e um pesado puro teria 20.
+- Com 100 de SPE, esse herói tem 23.4% de redução de recarga. Um leve puro teria 37.5% e um pesado puro teria 15%.
 
 ## Atributos principais
 
@@ -131,7 +134,7 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
     - Para cada 1 ponto de AGI, o personagem ganha 0.75% de velocidade de movimento quando estiver utilizando equipamentos especiais.
     - Para cada 1 ponto de AGI, o personagem ganha 0.5% de velocidade de movimento quando estiver utilizando equipamentos pesados.
     - Os seis valores acima são os três de cada fórmula, e um personagem que mistura classes fica entre eles, conforme "A classe do personagem".
-    - AGI é a fonte de evasão, mas a conversão em chance de evasão é feita por rendimento decrescente e está descrita em "Evasão".
+    - AGI é uma das fontes de pontos de evasão, e a taxa de conversão depende da classe do personagem. A curva que transforma pontos em chance está descrita em "Evasão".
 - Personagens com mais AGI são capazes de utilizar equipamentos e armaduras mais leves.
 
 ### Especialidade (SPE)
@@ -183,7 +186,7 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 
 ### Atributos limitados crescem com o nível
 
-- Os atributos defensivos que passam pela curva de rendimento decrescente (armadura física e resistência elemental) precisam crescer conforme o personagem sobe de nível.
+- Os atributos defensivos que passam pela curva de rendimento decrescente (armadura física, resistência elemental e evasão) precisam crescer conforme o personagem sobe de nível.
 - O motivo é que a constante da curva é `50 × nível do atacante`. Um valor parado vale cada vez menos, e um personagem sem fonte nova de armadura simplesmente apodrece.
 - Por isso a ficha declara, além do valor inicial, quanto aquele atributo ganha por nível:
     - `Valor = (Valor inicial + Ganho por nível × (nível − 1)) × Multiplicador da fase`
@@ -227,25 +230,34 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 ### Evasão
 
 - Atributo defensivo capaz de fazer com que o personagem desvie parcialmente um ataque, seja ele físico ou elemental.
-- A chance de evasão é calculada por rendimento decrescente sobre o total de AGI do personagem:
-    - `Chance de evasão = 100 × AGI ÷ (AGI + Constante)`
-    - A constante é 100 para um personagem leve puro.
-    - A constante é 200 para um personagem especial puro.
-    - A constante é 500 para um personagem pesado puro.
-    - Um personagem que mistura classes tem uma constante entre essas três, conforme "A classe do personagem".
-- Por exemplo, utilizando equipamentos leves:
-    - Um personagem com 25 de AGI possui 20% de evasão.
-    - Um personagem com 100 de AGI possui 50% de evasão.
-    - Um personagem com 300 de AGI possui 75% de evasão.
-    - Um personagem com 900 de AGI possui 90% de evasão.
-- Por exemplo, utilizando equipamentos especiais:
-    - Um personagem com 100 de AGI possui 33.3% de evasão.
-    - Um personagem com 200 de AGI possui 50% de evasão.
-    - Um personagem com 600 de AGI possui 75% de evasão.
-- Por exemplo, utilizando equipamentos pesados:
-    - Um personagem com 100 de AGI possui 16.7% de evasão.
-    - Um personagem com 500 de AGI possui 50% de evasão.
-    - Um personagem com 1500 de AGI possui 75% de evasão.
+- **A evasão é um total de pontos**, exatamente como a armadura física e a resistência elemental, e a chance sai da curva de rendimento decrescente sobre esse total:
+    - `Chance de evasão = 100 × Pontos de evasão ÷ (Pontos de evasão + 50 × nível do atacante)`
+    - A constante é a mesma das outras duas defesas, e cresce com o nível de quem ataca pelo motivo descrito em "Atributos limitados crescem com o nível".
+- **A chance de evasão depende de quem está atacando**, e não é um número do defensor sozinho. O mesmo personagem desvia mais de um inimigo de nível baixo e menos de um de nível alto, igual acontece com a armadura.
+
+#### De onde vêm os pontos de evasão
+
+- **Da ficha**, que declara um valor inicial e um ganho por nível, do mesmo jeito que declara armadura. Quando os dois são iguais, a evasão fica constante durante o jogo inteiro.
+- **Do AGI**, convertido por uma taxa que depende da classe do personagem:
+
+| Classe          | Pontos de evasão por AGI |
+| --------------- | ------------------------ |
+| Leve puro       | 1                        |
+| Especial puro   | 0.5                      |
+| Pesado puro     | 0.2                      |
+
+- São as mesmas três proporções da conversão de AGI em velocidade de ataque, e não por coincidência: as duas medem o quanto o equipamento deixa o personagem se mover.
+- Um personagem que mistura classes converte a uma taxa entre essas três, conforme "A classe do personagem".
+- **Do equipamento e da árvore de habilidades**, que somam pontos como somam armadura.
+
+#### Exemplos
+
+- Um personagem com 150 pontos de evasão contra um atacante de nível 1 tem 75% de evasão.
+- Os mesmos 150 pontos contra um atacante de nível 10 valem 23.1%.
+- Sempre que os pontos forem iguais a `50 × nível do atacante`, a evasão é de exatamente 50%.
+- Um personagem leve com 100 de AGI, sem nada na ficha e sem itens, tem 100 pontos de evasão. Especial teria 50 e pesado teria 20.
+- Uma ficha com 25 de evasão inicial e 25 por nível dá 25 pontos no nível 1 e 2500 no nível 100, o que contra um atacante do mesmo nível são 33.3% nos dois casos.
+
 - Ao fazer um teste de evasão 30% do valor de evasão se torna chance de evasão perfeita. Por exemplo:
     - Se um personagem possui 10% de evasão, há 3% de chance dessa evasão ser perfeita.
     - Se um personagem possui 20% de evasão, há 6% de chance dessa evasão ser perfeita.
