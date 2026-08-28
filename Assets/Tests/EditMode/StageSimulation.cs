@@ -68,6 +68,18 @@ namespace HerOClock.Tests
 
             /// <summary>True when a wave ran past the time limit instead of being decided.</summary>
             public bool TimedOut;
+
+            /// <summary>
+            /// The first moment the board disagreed with itself, or null when it never did.
+            ///
+            /// Only filled in when the run was asked to watch for it, because the check walks
+            /// every character and every cell on every simulation step, and the sweep takes
+            /// millions of steps.
+            /// </summary>
+            public string GridProblem;
+
+            /// <summary>Which simulation step the disagreement appeared on.</summary>
+            public int GridProblemStep;
         }
 
         /// <summary>
@@ -141,7 +153,8 @@ namespace HerOClock.Tests
             StageData stage,
             IReadOnlyDictionary<string, CharacterDefinition> charactersById,
             int seed,
-            float secondsPerWave = 300f)
+            float secondsPerWave = 300f,
+            bool watchTheGrid = false)
         {
             BattleGrid grid = new BattleGrid(config);
             BattleRandom random = new BattleRandom(seed);
@@ -222,6 +235,8 @@ namespace HerOClock.Tests
                 int limit = Mathf.RoundToInt(secondsPerWave * (stage.waves.Length + 1) / BattleDirector.FixedStep);
                 int fightingSteps = 0;
 
+                List<Character> onBoard = watchTheGrid ? new List<Character>() : null;
+
                 for (int step = 0; step < limit && !cleared.HasValue; step++)
                 {
                     // Read before the step, because the blow that ends a wave lands inside it and
@@ -232,6 +247,45 @@ namespace HerOClock.Tests
                     }
 
                     runner.Advance(BattleDirector.FixedStep);
+
+                    if (onBoard == null || outcome.GridProblem != null)
+                    {
+                        continue;
+                    }
+
+                    // Everything spawned so far, which is the party plus every wave that has been
+                    // placed. Rebuilt each time because a wave is destroyed between the steps.
+                    onBoard.Clear();
+
+                    for (int i = 0; i < spawned.Count; i++)
+                    {
+                        if (spawned[i] == null)
+                        {
+                            continue;
+                        }
+
+                        Character character = spawned[i].GetComponent<Character>();
+
+                        if (character != null)
+                        {
+                            onBoard.Add(character);
+                        }
+                    }
+
+                    string problem = GridInvariant.Check(grid, config, onBoard);
+
+                    // Only while the fight is on. Between waves the party walks back and the board
+                    // scrolls, and neither is what this is looking for.
+                    if (problem == null && runner.IsFighting)
+                    {
+                        problem = GridInvariant.CheckBodies(grid, onBoard, config.CellSize);
+                    }
+
+                    if (problem != null)
+                    {
+                        outcome.GridProblem = problem;
+                        outcome.GridProblemStep = step;
+                    }
                 }
 
                 outcome.Seconds = fightingSteps * BattleDirector.FixedStep;

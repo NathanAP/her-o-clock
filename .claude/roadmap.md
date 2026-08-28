@@ -516,6 +516,17 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **É a duplicação sem proteção nenhuma**, e por isso vem antes do resto. A ficha de personagem também é duplicada, mas ela é vigiada campo a campo pelo `DesignBridgeTests`, então lá o risco é legibilidade e não divergência.
 - O resumo completo está em `.claude/versions/20260828_0.11.0.1.md`.
 
+## 0.11.0.2 (feita)
+
+- **Dois personagens desenhados na mesma casa.** A habilidade da Tempo termina com um blink, e o `AbilityResolver` chama `Character.MoveTo`, que atualiza a célula e o grid sem tocar no corpo — porque o corpo sempre foi trabalho do `CharacterMover`.
+- Ela teleportava logicamente e **deixava o corpo para trás**. A célula desocupada ficava livre de verdade, o próximo lacaio entrava nela com razão, e os dois apareciam empilhados.
+- **Três hipóteses erradas antes desta**, e vale saber quais: a corrida de dois personagens pelo mesmo tile (impossível, a checagem e a reserva estão na mesma chamada); `Occupy` e `Release` sem conferir identidade (existe, mas a invariante lógica ficou verde o tempo inteiro); e o blink cancelando um passo em andamento (a primeira correção escrita, e não consertou nada — a Tempo estava **parada** quando o blink disparou).
+- A correção é `KeepBodyOnItsCell` no `CharacterMover`, com os dois lados: andando, abandona o passo que deixou de levar a lugar nenhum; parado, encosta o corpo na célula. **O segundo lado é o que resolve o caso real.**
+- Escrita como pergunta sobre posse e não como caso especial de blink, para que qualquer reposicionamento futuro já nasça coberto.
+- **639 testes, 0 falhas.** Dezesseis novos, treze deles falhando antes. **O snapshot não se moveu**, o que prova que o bug era só visual: o combate lê a célula, e a célula sempre esteve certa.
+- Achado por medição e não por leitura: as invariantes do `GridInvariant` rodam sobre as quatro fases, em três níveis e quatro builds, e apontam o passo exato.
+- O resumo completo está em `.claude/versions/20260828_0.11.0.2.md`.
+
 ## 0.11.1.0
 
 - **Vestir.** Equipamento no `HeroRecord`, a fotografia no `Character`, o item como fonte nova dentro do `TotalOf` e das defesas, e a composição de classe da 0.10.5.0 recebendo enfim entrada de verdade.

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Targeting;
@@ -85,6 +85,8 @@ namespace HerOClock.Movement
                 return;
             }
 
+            KeepBodyOnItsCell();
+
             if (isStepping)
             {
                 ContinueStep(step);
@@ -153,6 +155,8 @@ namespace HerOClock.Movement
             {
                 return;
             }
+
+            KeepBodyOnItsCell();
 
             if (isStepping)
             {
@@ -295,6 +299,63 @@ namespace HerOClock.Movement
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Makes the body agree with the cell the character actually holds.
+        ///
+        /// **Something other than this class can move a character**, and when it does it changes
+        /// the cell and the grid without touching the body, because the body has always been this
+        /// class's job. Today that something is a blink: `AbilityResolver` calls
+        /// `Character.MoveTo` directly.
+        ///
+        /// Without this the character teleports and **leaves its body behind**. The cell it
+        /// vacated is genuinely free, so the next enemy walks into it and stands on top of a body
+        /// that is not there any more — which is what a player sees, two characters drawn in the
+        /// same square.
+        ///
+        /// Both halves are needed, and the second one is the one that bites: a character blinking
+        /// **while standing still** never reaches <see cref="ContinueStep"/> at all, so checking
+        /// only mid step fixes nothing.
+        ///
+        /// It is written as a question about ownership rather than as a special case for blinking,
+        /// so that any future way of relocating a character is covered the day it is written.
+        /// </summary>
+        private void KeepBodyOnItsCell()
+        {
+            if (isStepping)
+            {
+                if (stepTo.Equals(character.Position))
+                {
+                    return;
+                }
+
+                AbandonStep();
+                return;
+            }
+
+            Vector3 cell = grid.WorldPositionOf(character.Position);
+
+            if (character.transform.position != cell)
+            {
+                character.transform.position = cell;
+            }
+        }
+
+        /// <summary>
+        /// Drops a step that no longer leads anywhere and puts the body on the character's cell.
+        ///
+        /// The carried remainder goes with it. It only ever belongs to the step immediately after
+        /// the one that produced it, and a character that was teleported is not owed the time it
+        /// had spent walking somewhere else.
+        /// </summary>
+        private void AbandonStep()
+        {
+            isStepping = false;
+            stepProgress = 0f;
+            stepCarry = 0f;
+
+            character.transform.position = grid.WorldPositionOf(character.Position);
         }
 
         private static bool IsLowerPosition(GridPosition candidate, GridPosition current)

@@ -130,6 +130,19 @@ The fallback lives in the private `Composition` getter rather than being filled 
 
 One consequence caught the calculator's own tests: `BattleRandom.Roll` short circuits at 100 without drawing, and the old tests relied on a chance of exactly 100 so that the perfect evasion roll was the first number in the sequence. The curve never reaches 100, so the evasion roll now consumes a draw and the perfect roll is the **second**. The two seeds in `DamageCalculatorTests` are picked against that.
 
+## The mover owns the body, and it cannot assume it is the only one moving the character
+
+`Character.Position` is the cell, `transform.position` is the body, and **only `CharacterMover` puts the body where the cell says**. Everything else that relocates a character — `Character.MoveTo` from an ability's blink today, anything similar tomorrow — changes the cell and the grid and leaves the body exactly where it was.
+
+So the mover asks, at the top of every tick, whether the body still agrees with the cell, and fixes it when it does not. Two cases, and the second is the one that actually bites:
+
+- **Mid step**, the destination it is walking to may have stopped being the character's cell. The step is abandoned and the body snaps.
+- **Standing still**, nothing else would ever notice. A character blinking while idle never reaches `ContinueStep` at all, so a check that only guards the walk fixes nothing — which is exactly what the first attempt at 0.11.0.2 did.
+
+The symptom of losing this is two characters drawn in the same square: the cell the teleporter left is genuinely free, so the next enemy walks into it and stands on a body that is not there any more.
+
+**The bookkeeping was never the problem.** `GridInvariant.Check` — grid and positions agreeing — stayed green through the whole investigation, which is what ruled out the two obvious suspects: `Occupy` and `Release` do not verify identity while `ClearFromGrid` does, and that asymmetry is real but caused none of it.
+
 ## ScriptableObjects must hold no runtime state
 
 This project runs with Domain Reload disabled, which makes entering Play Mode almost instant. The price is that nothing is cleared between sessions: static fields keep their values, and so do the fields of any ScriptableObject, because the asset stays loaded.
