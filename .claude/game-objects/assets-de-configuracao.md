@@ -81,6 +81,16 @@ O campo `Max Level` fica em `100` para heróis. Para lacaios e vilões ele pode 
 
 O Console avisa se as porcentagens não somarem 100. Elas continuam funcionando (são normalizadas), mas quase sempre é erro de digitação.
 
+### O dano do ataque básico é uma faixa
+
+A ficha declara um **mínimo e um máximo**, cada um com o próprio ganho por nível, e cada golpe sorteia entre os dois. Os campos são `Base Damage Min`, `Base Damage Min Per Level`, `Base Damage Max` e `Base Damage Max Per Level`.
+
+Deixar os dois iguais faz o personagem bater sempre o mesmo, o que é válido.
+
+**A abertura entre eles é escolha de ficha**, e é o que separa um personagem que bate igual de um que bate em picos. Escreva-a em proporção à média e não em pontos fixos, senão ela vira irrelevante conforme o nível sobe.
+
+Os quatro números são `float`, e não é firula: um lacaio entre 1.5 e 2.5 perderia a faixa inteira se as pontas fossem inteiras.
+
 ### Campos de defesa e ofensiva
 
 Além dos acima, toda ficha possui campos que ainda não têm fonte no jogo, pois dependem de itens e habilidades. Podem ficar em zero, ou ser preenchidos na mão para experimentar:

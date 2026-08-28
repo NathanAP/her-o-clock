@@ -45,6 +45,21 @@ namespace HerOClock.Tests
             return stats;
         }
 
+        /// <summary>A sheet whose basic attack always lands on the same number.</summary>
+        private static CharacterStats Punching(int power, float min, float max)
+        {
+            CharacterStats stats = new CharacterStats
+            {
+                BasePower = power,
+                Equipment = EquipmentClass.Light,
+                BaseDamageMin = min,
+                BaseDamageMax = max
+            };
+
+            stats.ApplyInstance(1, new AttributeGrowth(), 1f);
+            return stats;
+        }
+
         /// <summary>
         /// attributes.md: ten points of POW raise the damage base by one percent, and the attribute
         /// never adds to it. With a base of 100 and 200 points, the swing is 120.
@@ -56,20 +71,91 @@ namespace HerOClock.Tests
         [Test]
         public void PowerMultipliesTheDamageBaseAndNeverAddsToIt()
         {
-            CharacterStats stats = Sheet(200, 0, 0, 0, EquipmentClass.Light);
-            stats.BaseDamage = 100;
+            CharacterStats stats = Punching(200, 100f, 100f);
 
-            Assert.AreEqual(120, stats.PhysicalDamage);
+            Assert.AreEqual(120, stats.RollPhysicalDamage(0f));
+            Assert.AreEqual(120, stats.RollPhysicalDamage(1f), "Both ends of the range are raised.");
         }
 
         /// <summary>A character with no damage base does no damage, however much POW it carries.</summary>
         [Test]
         public void PowerAloneIsWorthNoDamage()
         {
-            CharacterStats stats = Sheet(500, 0, 0, 0, EquipmentClass.Light);
-            stats.BaseDamage = 0;
+            Assert.AreEqual(0, Punching(500, 0f, 0f).RollPhysicalDamage(0.5f));
+        }
 
-            Assert.AreEqual(0, stats.PhysicalDamage);
+        // --- The damage range, rolled once per basic attack ---
+
+        /// <summary>
+        /// attributes.md: every basic attack draws a value between the two ends, with equal chance
+        /// across the range. The draw arrives as a number from 0 to 1, so the two ends and the
+        /// middle are exactly checkable.
+        /// </summary>
+        [TestCase(0f, 5)]
+        [TestCase(0.5f, 6)]
+        [TestCase(1f, 7)]
+        public void ARollLandsAcrossTheWholeRange(float unit, int expected)
+        {
+            Assert.AreEqual(expected, Punching(0, 5f, 7f).RollPhysicalDamage(unit));
+        }
+
+        /// <summary>A sheet with both ends equal never varies, which is what an ability's damage is.</summary>
+        [TestCase(0f)]
+        [TestCase(0.5f)]
+        [TestCase(1f)]
+        public void ARangeOfZeroWidthAlwaysGivesTheSameBlow(float unit)
+        {
+            Assert.AreEqual(9, Punching(0, 9f, 9f).RollPhysicalDamage(unit));
+        }
+
+        /// <summary>
+        /// attributes.md: both ends grow per level, and the rounding happens only at the end.
+        ///
+        /// The minion's sheet is the case that forced this: it sits between 1.5 and 2.5 at level 1,
+        /// and rounding each end before the roll would collapse the range to a single number.
+        /// At level 12 the same sheet spans 9.75 to 16.25.
+        /// </summary>
+        [Test]
+        public void BothEndsGrowPerLevelAndAreNotRoundedBeforeTheRoll()
+        {
+            CharacterStats stats = new CharacterStats
+            {
+                Equipment = EquipmentClass.Light,
+                BaseDamageMin = 1.5f,
+                BaseDamageMinPerLevel = 0.75f,
+                BaseDamageMax = 2.5f,
+                BaseDamageMaxPerLevel = 1.25f
+            };
+
+            stats.ApplyInstance(12, new AttributeGrowth(), 1f);
+
+            Assert.AreEqual(9.75f, stats.PhysicalDamageMin, Tolerance);
+            Assert.AreEqual(16.25f, stats.PhysicalDamageMax, Tolerance);
+            Assert.AreEqual(13f, stats.AveragePhysicalDamage, Tolerance);
+        }
+
+        /// <summary>
+        /// The spread is written in proportion to the average, so it keeps meaning the same thing
+        /// at any level. The minion's sheet is half its average wide at level 1 and at level 100.
+        /// </summary>
+        [TestCase(1)]
+        [TestCase(100)]
+        public void TheSpreadStaysProportionalAsTheLevelRises(int level)
+        {
+            CharacterStats stats = new CharacterStats
+            {
+                Equipment = EquipmentClass.Light,
+                BaseDamageMin = 1.5f,
+                BaseDamageMinPerLevel = 0.75f,
+                BaseDamageMax = 2.5f,
+                BaseDamageMaxPerLevel = 1.25f
+            };
+
+            stats.ApplyInstance(level, new AttributeGrowth(), 1f);
+
+            float width = stats.PhysicalDamageMax - stats.PhysicalDamageMin;
+
+            Assert.AreEqual(0.5f, width / stats.AveragePhysicalDamage, 0.001f);
         }
 
         // --- Attack speed: base 1, plus 1% / 0.5% / 0.2% per AGI by equipment class ---

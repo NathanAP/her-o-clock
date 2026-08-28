@@ -30,8 +30,10 @@ MonoBehaviour:
     BaseAgility: 1
     BaseSpecialty: 0
     BaseConstitution: 2
-    BaseDamage: 2
-    BaseDamagePerLevel: 1
+    BaseDamageMin: 1.5
+    BaseDamageMinPerLevel: 0.75
+    BaseDamageMax: 2.5
+    BaseDamageMaxPerLevel: 1.25
     Equipment: 0
     BasePhysicalArmor: 0
     BaseEvasion: 0

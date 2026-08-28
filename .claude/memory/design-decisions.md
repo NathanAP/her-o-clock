@@ -373,6 +373,26 @@ Mixing results would stop evasion being `100 x AGI / (AGI + constant)` for any s
 
 The side effect is that mixing pays slightly less than averaging the results, because the curve is convex: 26.09% against 33.3% in the spec's own example. That is the intended statement — specialising pays, and mixing buys two defences at the price of being best at neither.
 
+## A basic attack rolls, an ability does not
+
+Every basic attack draws uniformly between two ends declared on the sheet. An ability's damage comes whole from its rank and never varies.
+
+The split is the point rather than a gap: **the ability is the damage a player can count on and the basic attack is the one that swings.** It gives an ability build a reason to exist beyond its numbers, and it keeps the rank as the precise step the sheet controls.
+
+The spread is written in proportion to the average and not in flat points, so it keeps meaning the same thing at level 100. A wide spread buys spikes and suffers more from evasion; a narrow one buys consistency and gets more out of life steal. It is the axis that separates a heavy weapon from a fast one, arriving before weapons do.
+
+### Variance makes the game harder without touching the average
+
+Measured when it landed, and worth knowing before reading a snapshot diff: a stage is won or lost, and nothing heals between waves, so a bad early streak compounds. The median run therefore comes out worse than the mean run even though every sheet kept the average it had.
+
+It cuts the other way too, and that half is welcome: on stage 4, three builds that cleared zero times at level 6 started clearing once. Variance hands an off meta build a chance that the average denied it, which is what the project's flexibility goal is about.
+
+### The roll takes a number, not the random source
+
+`CharacterStats.RollPhysicalDamage` receives a value from 0 to 1. Handing it the `BattleRandom` instead would make `Characters` reference `Combat`, and `Combat` already depends on `CharacterStats`. The caller draws, the sheet does the arithmetic.
+
+Rounding happens once at the end. Both ends of the range are floats and are deliberately not rounded first — the minion sits between 1.5 and 2.5, and rounding each end would collapse its range into a single number.
+
 ## POW is offence only, CON is survival only
 
 POW gives damage and nothing else. CON gives maximum health and multiplies regeneration. AGI gives evasion and speed. SPE gives ability damage and cooldown reduction.

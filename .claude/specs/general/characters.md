@@ -44,8 +44,12 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - `equipment` — a classe de equipamento (`light`, `magic` ou `heavy`), que decide como os atributos principais viram secundários, conforme `items.md`.
     - Lacaios, vilões e NPCs não carregam equipamento de verdade, mas declaram uma classe assim mesmo, pois é ela que define as constantes de evasão, velocidade e recarga deles.
 - `minRange` e `maxRange` — a faixa de alcance do ataque básico, em casas. Corpo a corpo é `1` e `1`. Um alcance mínimo acima de 1 faz o personagem recuar quando um inimigo encosta.
-- `autoAttacks` — como o ataque básico se apresenta. Hoje só carrega `type`, que é `melee` ou `ranged`, e serve ao visual: um ataque `ranged` dispara um projétil. Ele não muda regra nenhuma de combate, pois quem decide alcance são os dois campos acima.
-- `baseDamage` — o dano de um ataque básico antes do POW multiplicar, com o valor inicial e **quanto ganha por nível**, no mesmo formato de `defence`.
+- `autoAttacks` — **uma lista** de ataques básicos. Cada entrada carrega:
+    - `type`, que é `melee` ou `ranged`, e serve ao visual: um ataque `ranged` dispara um projétil. Ele não muda regra nenhuma de combate, pois quem decide alcance são os dois campos acima.
+    - `damage`, com `min` e `max`, cada um trazendo o valor inicial e **quanto ganha por nível**, no mesmo formato de `defence` e no mesmo formato que as armas usam em `items.json`. É a faixa que o golpe sorteia, antes do POW multiplicar.
+- **A lista tem exatamente uma entrada hoje, e mais de uma é recusada.**
+    - Ela é lista porque o `type` pertence a cada ataque e não ao personagem: um inimigo pode muito bem ter um básico corpo a corpo e outro à distância. Adotar o formato agora custa pouco; adotá-lo depois obrigaria a reescrever todas as fichas.
+    - O que ainda não existe é a **regra de escolha** entre elas. Enquanto ela não existir, recusar a segunda entrada é mais honesto do que usar a primeira em silêncio, que deixaria escrever um personagem que funciona pela metade.
     - É o soco do próprio personagem, e é baixo de propósito. Quando itens existirem, a arma equipada substitui esse valor.
     - Heróis deixam o ganho por nível em zero, pois quem os faz bater mais forte é o equipamento. Lacaios e vilões usam o ganho, pois não têm outra fonte.
 - `defence` — os atributos defensivos, cada um com o valor inicial e **quanto ganha por nível**, conforme "Atributos limitados crescem com o nível" em `attributes.md`.

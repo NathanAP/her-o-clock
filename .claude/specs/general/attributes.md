@@ -201,11 +201,24 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 - É o dano causado através de ataques físicos e através do elemento terra.
 - `Dano do ataque básico = Dano base × (1 + POW × 0.001)`
 - O **dano base** vem do conteúdo, e nunca do atributo:
-    - Enquanto o personagem não tem arma, ele é o valor declarado na ficha — o soco do próprio personagem. É baixo de propósito.
-    - Com item, a arma equipada substitui esse valor.
+    - Enquanto o personagem não tem arma, ele é a faixa declarada na ficha — o soco do próprio personagem. É baixo de propósito.
+    - Com item, a arma equipada substitui essa faixa.
 - Assim como a armadura, o dano base declara **quanto ganha por nível**, e pelo mesmo motivo descrito em "Atributos limitados crescem com o nível": um valor parado envelhece.
     - Heróis deixam esse ganho em zero, pois quem os faz bater mais forte é o equipamento.
     - Lacaios e vilões usam o ganho, pois não existe outra coisa que os faça bater mais forte em um ato posterior.
+
+#### O dano base é uma faixa, sorteada a cada golpe
+
+- O dano base tem um **mínimo e um máximo**, cada um com o próprio valor inicial e o próprio ganho por nível.
+- **Cada ataque básico sorteia um valor entre os dois**, com chance igual em toda a faixa. O sorteio sai da mesma fonte aleatória da batalha que a evasão usa, então uma batalha continua se repetindo inteira a partir da mesma semente.
+- O POW multiplica os dois extremos, e o arredondamento acontece só no fim, conforme "Arredondamento".
+- **A abertura da faixa é uma escolha de ficha**, e é o que separa um personagem que bate igual de um que bate em picos. Uma abertura larga entrega golpes imprevisíveis e sofre mais com evasão; uma estreita entrega consistência e se beneficia mais de roubo de vida. É o mesmo eixo que separa uma arma pesada de uma rápida em `items.md`.
+- A abertura é declarada em proporção ao valor médio, e não em pontos fixos, para continuar significando a mesma coisa em qualquer nível.
+
+#### A habilidade não sorteia
+
+- O dano de uma habilidade sai inteiro do rank e não varia.
+- É uma diferença de propósito e não um esquecimento: **a habilidade é o dano com que o jogador pode contar, e o ataque básico é o que balança.** Isso dá sentido a uma build de habilidade além do número, e mantém o rank como o degrau preciso que a ficha controla.
 
 ### Dano elemental
 

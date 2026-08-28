@@ -26,13 +26,21 @@ namespace HerOClock.Characters
         [Min(0)] public int BaseConstitution;
 
         [Header("Damage")]
-        [Tooltip("Damage of one basic attack before POW raises it. The character's own fists, "
+        [Tooltip("Lowest damage of one basic attack before POW raises it. The character's own fists, "
             + "replaced by a weapon once items exist.")]
-        [Min(0)] public int BaseDamage = 1;
+        [Min(0f)] public float BaseDamageMin = 1f;
 
-        [Tooltip("How much the damage base gains per level. Heroes leave it at zero and grow through "
+        [Tooltip("How much the lowest damage gains per level. Heroes leave it at zero and grow through "
             + "items; minions and villains use it, since nothing else makes them hit harder.")]
-        [Min(0)] public int BaseDamagePerLevel;
+        [Min(0f)] public float BaseDamageMinPerLevel;
+
+        [Tooltip("Highest damage of one basic attack before POW raises it. Every blow rolls between "
+            + "this and the minimum, so the gap is how unpredictable this character hits.")]
+        [Min(0f)] public float BaseDamageMax = 1f;
+
+        [Tooltip("How much the highest damage gains per level. Kept in proportion to the minimum's "
+            + "growth, so the spread means the same thing at level 100 as it does at level 1.")]
+        [Min(0f)] public float BaseDamageMaxPerLevel;
 
         [Header("Equipment")]
         public EquipmentClass Equipment = EquipmentClass.Light;
@@ -282,6 +290,17 @@ namespace HerOClock.Characters
         /// </summary>
         private int DefenceOf(int baseValue, int perLevel)
         {
+            return Mathf.Max(0, Mathf.RoundToInt(ScaledOf(baseValue, perLevel)));
+        }
+
+        /// <summary>
+        /// The same growth without the rounding, for the values that are not whole numbers.
+        ///
+        /// The damage range needs it: a minion can sit between 1.5 and 2.5, and rounding each end
+        /// before the roll would collapse the range into a single number.
+        /// </summary>
+        private float ScaledOf(float baseValue, float perLevel)
+        {
             float total = baseValue + perLevel * (level - 1);
 
             if (!Mathf.Approximately(multiplier, 1f))
@@ -289,7 +308,7 @@ namespace HerOClock.Characters
                 total *= multiplier;
             }
 
-            return Mathf.Max(0, Mathf.RoundToInt(total));
+            return Mathf.Max(0f, total);
         }
 
         public int PhysicalArmor
@@ -354,24 +373,70 @@ namespace HerOClock.Characters
         public const float HealthRegenPerConstitution = 0.005f;
 
         /// <summary>
-        /// Damage of one basic attack: the base this character swings with, raised by POW.
+        /// Lowest and highest damage of one basic attack: the range this character swings with,
+        /// both ends raised by POW.
         ///
-        /// The base is the character's own until an item replaces it — the punch a robot throws
+        /// The range is the character's own until an item replaces it — the punch a robot throws
         /// with nothing equipped. POW never adds to it, it multiplies it, which is what keeps a
         /// weapon worth finding.
+        ///
+        /// Both ends grow with the level the same way armour does, and for the same reason: a
+        /// value standing still is a character that stops mattering. A hero leaves the growth at
+        /// zero because a weapon is what raises it; a minion has no weapon, so this is the only
+        /// thing that makes it hit harder in a later act.
+        ///
+        /// They are floats and are not rounded here on purpose. A minion sitting between 1.5 and
+        /// 2.5 would lose its whole range if each end were rounded before the roll.
         /// </summary>
-        public int PhysicalDamage
+        public float PhysicalDamageMin
         {
-            get
-            {
-                // The base grows with the level the same way armour does, and for the same reason:
-                // a value standing still is a character that stops mattering. A hero leaves the
-                // growth at zero because a weapon is what raises it; a minion has no weapon, so
-                // this is the only thing that makes it hit harder in a later act.
-                float swing = DefenceOf(BaseDamage, BaseDamagePerLevel);
+            get { return SwingOf(BaseDamageMin, BaseDamageMinPerLevel); }
+        }
 
-                return Mathf.Max(0, Mathf.RoundToInt(swing * (1f + Power * DamageSharePerPoint)));
-            }
+        /// <inheritdoc cref="PhysicalDamageMin"/>
+        public float PhysicalDamageMax
+        {
+            get { return SwingOf(BaseDamageMax, BaseDamageMaxPerLevel); }
+        }
+
+        /// <summary>
+        /// The middle of the range.
+        ///
+        /// **Nothing in a fight reads this.** It is for the places that compare characters without
+        /// swinging — the editor windows and the balance snapshot — where a single number is what
+        /// makes two sheets comparable. A blow always comes from
+        /// <see cref="RollPhysicalDamage"/>.
+        /// </summary>
+        public float AveragePhysicalDamage
+        {
+            get { return (PhysicalDamageMin + PhysicalDamageMax) * 0.5f; }
+        }
+
+        private float SwingOf(float baseValue, float perLevel)
+        {
+            return ScaledOf(baseValue, perLevel) * (1f + Power * DamageSharePerPoint);
+        }
+
+        /// <summary>
+        /// The damage of one blow, drawn from anywhere in the range with equal chance.
+        ///
+        /// It takes a number from 0 to 1 rather than the battle's random source, and that is
+        /// deliberate: <c>Characters</c> would otherwise have to reference <c>Combat</c>, which is
+        /// the wrong direction — <c>Combat</c> already depends on this class. The caller draws,
+        /// this class does the arithmetic.
+        ///
+        /// The rounding happens once, at the end, following "Arredondamento" in attributes.md.
+        /// </summary>
+        public int RollPhysicalDamage(float unitRoll)
+        {
+            float min = PhysicalDamageMin;
+            float max = PhysicalDamageMax;
+
+            // A sheet with the two ends equal never varies, and a sheet with them the wrong way
+            // round is a content mistake that should not become negative damage.
+            float swing = max > min ? min + Mathf.Clamp01(unitRoll) * (max - min) : min;
+
+            return Mathf.Max(0, Mathf.RoundToInt(swing));
         }
 
         public float AttacksPerSecond

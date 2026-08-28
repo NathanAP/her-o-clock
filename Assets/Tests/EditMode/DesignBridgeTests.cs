@@ -41,8 +41,7 @@ namespace HerOClock.Tests
             public Attributes baseAttributes;
             public Attributes attributeGrowth;
             public Defence defence;
-            public Scaled baseDamage;
-            public AutoAttacks autoAttacks;
+            public AutoAttacks[] autoAttacks;
         }
 
         [Serializable]
@@ -75,6 +74,21 @@ namespace HerOClock.Tests
         private class AutoAttacks
         {
             public string type;
+            public Damage damage;
+        }
+
+        [Serializable]
+        private class Damage
+        {
+            public ScaledFloat min;
+            public ScaledFloat max;
+        }
+
+        [Serializable]
+        private class ScaledFloat
+        {
+            public float @base;
+            public float perLevel;
         }
 
         private static readonly Dictionary<string, CharacterKind> Kinds = new Dictionary<string, CharacterKind>
@@ -200,9 +214,31 @@ namespace HerOClock.Tests
             Check(sheet.id, "maxRange", sheet.maxRange, asset.MaxRange, problems);
             Check(sheet.id, "equipment", Equipment[sheet.equipment], asset.Stats.Equipment, problems);
 
-            if (sheet.autoAttacks != null)
+            if (sheet.autoAttacks != null && sheet.autoAttacks.Length > 0)
             {
-                Check(sheet.id, "autoAttacks.type", Attacks[sheet.autoAttacks.type], asset.AutoAttack, problems);
+                // characters.md: the list is one entry today and a second is refused. It is a list
+                // because the type belongs to each attack rather than to the character, but the
+                // rule that picks between them does not exist yet, and using the first in silence
+                // would let somebody write a character that works by halves.
+                if (sheet.autoAttacks.Length != 1)
+                {
+                    problems.Add(sheet.id + ": autoAttacks has " + sheet.autoAttacks.Length
+                        + " entries, and characters.md allows exactly one until a rule exists for "
+                        + "choosing between them.");
+                }
+
+                AutoAttacks attack = sheet.autoAttacks[0];
+
+                Check(sheet.id, "autoAttacks.type", Attacks[attack.type], asset.AutoAttack, problems);
+
+                Check(sheet.id, "autoAttacks.damage.min.base", attack.damage.min.@base,
+                    asset.Stats.BaseDamageMin, problems);
+                Check(sheet.id, "autoAttacks.damage.min.perLevel", attack.damage.min.perLevel,
+                    asset.Stats.BaseDamageMinPerLevel, problems);
+                Check(sheet.id, "autoAttacks.damage.max.base", attack.damage.max.@base,
+                    asset.Stats.BaseDamageMax, problems);
+                Check(sheet.id, "autoAttacks.damage.max.perLevel", attack.damage.max.perLevel,
+                    asset.Stats.BaseDamageMaxPerLevel, problems);
             }
 
             Check(sheet.id, "baseAttributes.pow", sheet.baseAttributes.pow, asset.Stats.BasePower, problems);
@@ -214,13 +250,6 @@ namespace HerOClock.Tests
             Check(sheet.id, "attributeGrowth.agi", sheet.attributeGrowth.agi, asset.Growth.Agility, problems);
             Check(sheet.id, "attributeGrowth.spe", sheet.attributeGrowth.spe, asset.Growth.Specialty, problems);
             Check(sheet.id, "attributeGrowth.con", sheet.attributeGrowth.con, asset.Growth.Constitution, problems);
-
-            if (sheet.baseDamage != null)
-            {
-                Check(sheet.id, "baseDamage.base", sheet.baseDamage.@base, asset.Stats.BaseDamage, problems);
-                Check(sheet.id, "baseDamage.perLevel", sheet.baseDamage.perLevel,
-                    asset.Stats.BaseDamagePerLevel, problems);
-            }
 
             Check(sheet.id, "defence.physicalArmor.base", sheet.defence.physicalArmor.@base,
                 asset.Stats.BasePhysicalArmor, problems);

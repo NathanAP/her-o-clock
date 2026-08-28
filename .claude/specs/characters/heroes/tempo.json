@@ -48,10 +48,6 @@
         "spe": 25,
         "con": 15
     },
-    "baseDamage": {
-        "base": 6,
-        "perLevel": 0
-    },
     "defence": {
         "physicalArmor": {
             "base": 12,
@@ -77,9 +73,21 @@
     "thornsPercent": 0,
     "lifeStealPercent": 0,
     "healthRegen": 0,
-    "autoAttacks": {
-        "type": "melee"
-    },
+    "autoAttacks": [
+        {
+            "type": "melee",
+            "damage": {
+                "min": {
+                    "base": 5,
+                    "perLevel": 0
+                },
+                "max": {
+                    "base": 7,
+                    "perLevel": 0
+                }
+            }
+        }
+    ],
     "abilityTrees": [
         {
             "id": "speed-tempo",

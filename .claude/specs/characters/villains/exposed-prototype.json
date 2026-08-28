@@ -41,10 +41,6 @@
         "spe": 25,
         "con": 35
     },
-    "baseDamage": {
-        "base": 4,
-        "perLevel": 2
-    },
     "defence": {
         "physicalArmor": {
             "base": 60,
@@ -70,8 +66,20 @@
     "thornsPercent": 0,
     "lifeStealPercent": 0,
     "healthRegen": 0,
-    "autoAttacks": {
-        "type": "melee"
-    },
+    "autoAttacks": [
+        {
+            "type": "melee",
+            "damage": {
+                "min": {
+                    "base": 3,
+                    "perLevel": 1.5
+                },
+                "max": {
+                    "base": 5,
+                    "perLevel": 2.5
+                }
+            }
+        }
+    ],
     "abilities": []
 }

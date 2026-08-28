@@ -132,7 +132,12 @@ namespace HerOClock.Combat
             // the board as it was when the blow was thrown, with the target still standing.
             Struck?.Invoke(character, target);
 
-            DamageResult result = Resolve(character, target, character.Stats.PhysicalDamage, DamageType.Physical, true);
+            // The blow's damage is drawn here rather than inside the stats, so the battle's own
+            // random source stays the only one in play. It is the first draw of an attack, before
+            // evasion, and that order is what a replayed seed depends on.
+            int swing = character.Stats.RollPhysicalDamage(random.NextFloat01());
+
+            DamageResult result = Resolve(character, target, swing, DamageType.Physical, true);
 
             target.TakeDamage(result.Damage);
             target.Heal(result.Healing);

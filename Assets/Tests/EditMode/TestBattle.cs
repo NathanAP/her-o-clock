@@ -73,7 +73,12 @@ namespace HerOClock.Tests
                 // Damage comes from a base the content provides, and POW only multiplies it. A test
                 // character with no base would punch for nothing however much POW it was given, so
                 // the helper hands out a workable weapon unless a test asks for another.
-                BaseDamage = baseDamage
+                //
+                // The two ends are equal on purpose: a test about anything other than the roll
+                // wants a blow it can predict, and a range would make every damage assertion in
+                // the suite depend on where the draw landed.
+                BaseDamageMin = baseDamage,
+                BaseDamageMax = baseDamage
             };
 
             owned.Add(definition);

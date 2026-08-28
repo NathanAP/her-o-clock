@@ -358,7 +358,7 @@ namespace HerOClock.Tests
 
                 page.AppendLine("| " + definition.Id
                     + " | " + stats.MaxHealth
-                    + " | " + stats.PhysicalDamage
+                    + " | " + Mathf.RoundToInt(stats.PhysicalDamageMin) + "-" + Mathf.RoundToInt(stats.PhysicalDamageMax)
                     + " | " + Number(stats.AttacksPerSecond, 2)
                     + " | " + Number(stats.CellsPerSecond, 2)
                     + " | " + stats.EvasionPoints

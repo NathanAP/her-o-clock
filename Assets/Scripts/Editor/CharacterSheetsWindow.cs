@@ -403,9 +403,9 @@ namespace HerOClock.EditorTools
 
             Cell(stats.Power + "/" + stats.Agility + "/" + stats.Specialty + "/" + stats.Constitution, 1);
             Cell(stats.MaxHealth.ToString(), 2);
-            Cell(stats.PhysicalDamage.ToString(), 3);
+            Cell(Mathf.RoundToInt(stats.PhysicalDamageMin) + "-" + Mathf.RoundToInt(stats.PhysicalDamageMax), 3);
             Cell(stats.AttacksPerSecond.ToString("F2"), 4);
-            Cell((stats.PhysicalDamage * stats.AttacksPerSecond).ToString("F1"), 5);
+            Cell((stats.AveragePhysicalDamage * stats.AttacksPerSecond).ToString("F1"), 5);
             Cell(stats.CellsPerSecond.ToString("F2"), 6);
             Cell(stats.EvasionChanceAgainst(level).ToString("F1") + "%", 7);
             Cell(stats.PhysicalArmor.ToString(), 8);

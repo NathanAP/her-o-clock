@@ -68,7 +68,7 @@ namespace HerOClock.EditorTools
             EditorGUILayout.Space();
 
             Row("Maximum health", stats.MaxHealth.ToString());
-            Row("Physical damage", stats.PhysicalDamage.ToString());
+            Row("Physical damage", Range(stats.PhysicalDamageMin, stats.PhysicalDamageMax));
             Row("Attacks per second", stats.AttacksPerSecond.ToString("F2"));
             Row("Cells per second", stats.CellsPerSecond.ToString("F2"));
             Row("Health per second", stats.HealthPerSecond.ToString("F2"));
@@ -94,7 +94,16 @@ namespace HerOClock.EditorTools
                 + "on the other side. It is for comparing sheets against each other, not for predicting a fight.",
                 MessageType.None);
 
-            Row("Physical damage per second", (stats.PhysicalDamage * stats.AttacksPerSecond).ToString("F1"));
+            Row("Physical damage per second", (stats.AveragePhysicalDamage * stats.AttacksPerSecond).ToString("F1"));
+        }
+
+        /// <summary>A damage range as the player would read it, collapsed when both ends match.</summary>
+        private static string Range(float min, float max)
+        {
+            int low = Mathf.RoundToInt(min);
+            int high = Mathf.RoundToInt(max);
+
+            return low == high ? low.ToString() : low + "-" + high;
         }
 
         private static void Row(string label, string value)

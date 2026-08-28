@@ -483,30 +483,20 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Ferramenta de editor, não opção do jogo: o menu do jogador é 0.13.0.0 e terá texto e consequências próprias.
 - O resumo completo está em `.claude/versions/20260828_0.10.6.1.md`.
 
-## 0.10.7.0 (próxima)
+## 0.10.7.0 (feita)
 
-- **O golpe passa a variar.** O dano base vira mínimo e máximo em todas as fichas, e o sorteio sai do `BattleRandom`.
-- Vale para lacaio e vilão também. Hoje um Discarded Prototype bate exatamente 2, sempre.
-- **Habilidade continua fixa.** A habilidade é o dano com que se pode contar e o ataque básico é o que balança, e essa diferença é textura de graça.
-- É aqui que as seeds antigas param de reproduzir as batalhas que reproduziam, sozinho, sem nada de item no diff.
-- **A média de cada ficha fica exatamente onde está**, para o diff do snapshot mostrar o efeito da variância e não uma mudança de força disfarçada:
+- **O golpe passa a variar.** O dano base virou uma faixa, sorteada a cada ataque básico pelo `BattleRandom`, para herói, lacaio e vilão. Até aqui um Discarded Prototype batia exatamente 2, sempre.
+- **A habilidade continua fixa**, de propósito: ela é o dano com que se pode contar e o ataque básico é o que balança.
+- **As médias de todas as fichas ficaram exatamente onde estavam**, para o diff do snapshot mostrar o efeito da variância e não uma mudança de força disfarçada.
+- **`autoAttacks` virou uma lista**, com o `type` e a faixa de dano dentro de cada entrada, e o `baseDamage` saiu da raiz da ficha. O tipo pertence a cada ataque e não ao personagem, já que um inimigo pode ter um básico corpo a corpo e outro à distância. **O teste de ponte exige exatamente uma entrada** enquanto a regra de escolha não existir.
+- A forma da faixa é a mesma de `subtypes.json`, para que equipar uma arma na 0.11.2.0 seja substituir quatro números por quatro números.
+- Quem sorteia é o `CharacterAttacker`; a ficha recebe um número de 0 a 1 e faz a conta. O `DamageCalculator` não mudou uma linha.
+- **611 testes, 0 falhas.** As seeds antigas pararam de reproduzir as batalhas que reproduziam, como planejado.
+- **A variância deixou o jogo mais difícil sem mexer na média**, porque a fase mede vitória ou derrota e não existe cura entre ondas: a corrida mediana fica pior que a média. A parede da act1-stage3 pulou de "4x, 2.7 min" para **"12x, 7.7 min"**, e isso está em aberto.
+- Achado bom: a diversidade de build subiu na act1-stage4. Três builds que limpavam zero vezes no nível 6 passaram a limpar uma.
+- O resumo completo está em `.claude/versions/20260828_0.10.7.0.md`.
 
-| Ficha | Hoje | Mín | Máx | Ganho mín | Ganho máx | Abertura |
-| --- | --- | --- | --- | --- | --- | --- |
-| tempo | 6, +0 | 5 | 7 | 0 | 0 | 0.33 |
-| gadrat | 9, +0 | 7 | 11 | 0 | 0 | 0.44 |
-| discarded-prototype | 2, +1 | 1.5 | 2.5 | 0.75 | 1.25 | 0.50 |
-| exposed-prototype | 4, +2 | 3 | 5 | 1.5 | 2.5 | 0.50 |
-
-- As aberturas são proporcionais, então continuam significando a mesma coisa no nível 100. O Gadrat abre mais que a Tempo porque ele é pesado e ela é rápida — é o eixo que separa um Piledriver de uma Claw chegando antes das armas.
-- **O bloco `autoAttacks` da ficha vira um array**, e a faixa de dano mora dentro de cada entrada junto do `type`. Um inimigo pode ter um básico corpo a corpo e outro à distância, então o tipo é de cada ataque e não do personagem, e isso torna o bloco uma lista por natureza.
-    - **O validador exige exatamente uma entrada** enquanto a regra de escolha não existir. Um array de um item só é formato, não mecânica, e recusar a segunda entrada é mais honesto do que usar a primeira em silêncio.
-    - Adotar o formato agora é barato; adotar depois obrigaria a mexer em todas as fichas de novo.
-- A forma da faixa é a mesma de `subtypes.json` (`min` e `max`, cada um com `base` e `perLevel`), para que equipar uma arma na 0.11.2.0 seja substituir quatro números por quatro números em vez de converter uma forma na outra.
-- Quem sorteia é o `CharacterAttacker`, que já tem o `BattleRandom` na mão. O `DamageCalculator` continua recebendo um `BaseDamage` já resolvido, e é isso que mantém a habilidade fora do sorteio sem nenhum caso especial.
-- Ordem de sorteio por golpe passa a ser: cegueira, dano, evasão, evasão perfeita.
-
-## 0.11.0.0
+## 0.11.0.0 (próxima)
 
 - **A base do item, só dados.** Os cinco JSON de `.claude/specs/items/` carregados, modelo de dados, validador no molde do `StageValidator`, catálogo e strings. Nada é vestível ainda.
 - Paga a maior dívida de teste do projeto: hoje nenhuma linha daquela pasta é conferida por nada.

@@ -45,10 +45,6 @@
         "spe": 25,
         "con": 35
     },
-    "baseDamage": {
-        "base": 9,
-        "perLevel": 0
-    },
     "defence": {
         "physicalArmor": {
             "base": 60,
@@ -74,9 +70,21 @@
     "thornsPercent": 0,
     "lifeStealPercent": 0,
     "healthRegen": 0,
-    "autoAttacks": {
-        "type": "melee"
-    },
+    "autoAttacks": [
+        {
+            "type": "melee",
+            "damage": {
+                "min": {
+                    "base": 7,
+                    "perLevel": 0
+                },
+                "max": {
+                    "base": 11,
+                    "perLevel": 0
+                }
+            }
+        }
+    ],
     "abilityTrees": [
         {
             "id": "son-of-fire",

@@ -27,11 +27,11 @@ Valores no nível inicial da ficha, sem itens.
 
 | Ficha | Vida | Dano fis. | Atq/s | Casas/s | Evasão (pts) | Armadura | Regen/s |
 |---|---|---|---|---|---|---|---|
-| tempo | 70 | 6 | 1.09 | 2.18 | 34 | 12 | 0.00 |
-| gadrat | 120 | 9 | 1.00 | 2.02 | 0 | 60 | 0.00 |
-| gadrat-npc | 120 | 9 | 1.00 | 2.02 | 0 | 60 | 0.00 |
-| discarded-prototype | 20 | 2 | 1.01 | 2.02 | 1 | 0 | 0.00 |
-| exposed-prototype | 40 | 4 | 1.00 | 2.02 | 0 | 60 | 0.00 |
+| tempo | 70 | 5-7 | 1.09 | 2.18 | 34 | 12 | 0.00 |
+| gadrat | 120 | 7-11 | 1.00 | 2.02 | 0 | 60 | 0.00 |
+| gadrat-npc | 120 | 7-11 | 1.00 | 2.02 | 0 | 60 | 0.00 |
+| discarded-prototype | 20 | 2-3 | 1.01 | 2.02 | 1 | 0 | 0.00 |
+| exposed-prototype | 40 | 3-5 | 1.00 | 2.02 | 0 | 60 | 0.00 |
 
 ### Defesa contra um atacante do mesmo nível
 
@@ -60,8 +60,8 @@ A formação de heróis é a do asset. O tempo é só de combate, sem as transi�
 | Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |
 |---|---|---|---|---|---|
 | act1-stage1 | 1 | 1 | 23.5 s | 160 | 16 |
-| act1-stage2 | 2 | 3 | 39.9 s | 800 | 20 |
-| act1-stage3 | 4 | 4 | 46.4 s | 3280 | 28 |
+| act1-stage2 | 2 | 3 | 38.7 s | 800 | 20 |
+| act1-stage3 | 4 | 5 | 42.5 s | 3280 | 28 |
 | act1-stage4 | 3 | 4 | 43.8 s | 2250 | 25 |
 
 ### Paredes
@@ -74,8 +74,8 @@ exigido passa o de chegada, o jogador é obrigado a parar e farmar.
 |---|---|---|---|---|
 | act1-stage1 | 1 | 1 | não | - |
 | act1-stage2 | 2 | 3 | sim | 4x a fase anterior, 1.5 min de combate |
-| act1-stage3 | 3 | 4 | sim | 4x a fase anterior, 2.7 min de combate |
-| act1-stage4 | 4 | 4 | não | - |
+| act1-stage3 | 3 | 5 | sim | 12x a fase anterior, 7.7 min de combate |
+| act1-stage4 | 5 | 4 | não | - |
 
 O custo conta só o tempo de combate, e despreza a experiência parcial que sobra
 de um nível para o outro. As transições entre ondas somam vários segundos por
@@ -118,29 +118,29 @@ Por build, no nível 1:
 | Nível | Limparam | Testadas | % |
 |---|---|---|---|
 | 1 | 0 | 24 | 0% |
-| 2 | 5 | 24 | 21% |
-| 3 | 10 | 24 | 42% |
-| 4 | 13 | 24 | 54% |
+| 2 | 2 | 24 | 8% |
+| 3 | 8 | 24 | 33% |
+| 4 | 11 | 24 | 46% |
 | 5 | 15 | 24 | 63% |
 
 Por build, no nível 3:
 
 | Build | Limpou | Tentativas |
 |---|---|---|
-| a da ficha | 6 | 6 |
+| a da ficha | 5 | 6 |
 | só POW | 1 | 6 |
-| só AGI | 2 | 6 |
+| só AGI | 1 | 6 |
 | só SPE | 1 | 6 |
 
 ### act1-stage3 (recomendado 4 a 5)
 
 | Nível | Limparam | Testadas | % |
 |---|---|---|---|
-| 2 | 14 | 36 | 39% |
-| 3 | 17 | 36 | 47% |
-| 4 | 19 | 36 | 53% |
-| 5 | 19 | 36 | 53% |
-| 6 | 23 | 36 | 64% |
+| 2 | 6 | 36 | 17% |
+| 3 | 15 | 36 | 42% |
+| 4 | 15 | 36 | 42% |
+| 5 | 20 | 36 | 56% |
+| 6 | 21 | 36 | 58% |
 | 7 | 22 | 36 | 61% |
 
 Por build, no nível 5:
@@ -149,7 +149,7 @@ Por build, no nível 5:
 |---|---|---|
 | a da ficha | 6 | 6 |
 | só POW | 0 | 6 |
-| só AGI | 1 | 6 |
+| só AGI | 2 | 6 |
 | só SPE | 0 | 6 |
 | só CON | 6 | 6 |
 | POW/CON | 6 | 6 |
@@ -159,21 +159,21 @@ Por build, no nível 5:
 | Nível | Limparam | Testadas | % |
 |---|---|---|---|
 | 3 | 10 | 84 | 12% |
-| 4 | 17 | 84 | 20% |
-| 5 | 21 | 84 | 25% |
-| 6 | 28 | 84 | 33% |
-| 7 | 37 | 84 | 44% |
-| 8 | 30 | 84 | 36% |
+| 4 | 18 | 84 | 21% |
+| 5 | 24 | 84 | 29% |
+| 6 | 33 | 84 | 39% |
+| 7 | 42 | 84 | 50% |
+| 8 | 32 | 84 | 38% |
 
 Por build, no nível 6:
 
 | Build | Limpou | Tentativas |
 |---|---|---|
-| a da ficha | 6 | 12 |
-| só POW | 0 | 12 |
-| só AGI | 0 | 12 |
-| só SPE | 0 | 12 |
+| a da ficha | 8 | 12 |
+| só POW | 1 | 12 |
+| só AGI | 1 | 12 |
+| só SPE | 1 | 12 |
 | só CON | 12 | 12 |
-| POW/CON | 9 | 12 |
-| AGI/SPE | 1 | 12 |
+| POW/CON | 10 | 12 |
+| AGI/SPE | 0 | 12 |
 
