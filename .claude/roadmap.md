@@ -476,12 +476,35 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **602 testes, 0 falhas.** O snapshot se moveu bastante, e **a parede da act1-stage4 sumiu** — nenhuma das três calibrações testadas preserva as três paredes do ato.
 - O resumo completo está em `.claude/versions/20260828_0.10.6.0.md`.
 
+## 0.10.6.1 (feita)
+
+- `Her-o-clock` → `Delete saved games` no menu da Unity, com confirmação que diz quantos arquivos, qual pasta e qual o mais recente.
+- **O save não estava quebrado.** O `HeroSave` guarda id, nível, experiência, pontos de habilidade e atributos, e nada derivado, então as mudanças de defesa da 0.10.5.0 e da 0.10.6.0 passaram por ele sem tocá-lo. A ferramenta é conveniência para ler um rebalanceamento do nível 1, e não conserto.
+- Ferramenta de editor, não opção do jogo: o menu do jogador é 0.13.0.0 e terá texto e consequências próprias.
+- O resumo completo está em `.claude/versions/20260828_0.10.6.1.md`.
+
 ## 0.10.7.0 (próxima)
 
 - **O golpe passa a variar.** O dano base vira mínimo e máximo em todas as fichas, e o sorteio sai do `BattleRandom`.
 - Vale para lacaio e vilão também. Hoje um Discarded Prototype bate exatamente 2, sempre.
 - **Habilidade continua fixa.** A habilidade é o dano com que se pode contar e o ataque básico é o que balança, e essa diferença é textura de graça.
 - É aqui que as seeds antigas param de reproduzir as batalhas que reproduziam, sozinho, sem nada de item no diff.
+- **A média de cada ficha fica exatamente onde está**, para o diff do snapshot mostrar o efeito da variância e não uma mudança de força disfarçada:
+
+| Ficha | Hoje | Mín | Máx | Ganho mín | Ganho máx | Abertura |
+| --- | --- | --- | --- | --- | --- | --- |
+| tempo | 6, +0 | 5 | 7 | 0 | 0 | 0.33 |
+| gadrat | 9, +0 | 7 | 11 | 0 | 0 | 0.44 |
+| discarded-prototype | 2, +1 | 1.5 | 2.5 | 0.75 | 1.25 | 0.50 |
+| exposed-prototype | 4, +2 | 3 | 5 | 1.5 | 2.5 | 0.50 |
+
+- As aberturas são proporcionais, então continuam significando a mesma coisa no nível 100. O Gadrat abre mais que a Tempo porque ele é pesado e ela é rápida — é o eixo que separa um Piledriver de uma Claw chegando antes das armas.
+- **O bloco `autoAttacks` da ficha vira um array**, e a faixa de dano mora dentro de cada entrada junto do `type`. Um inimigo pode ter um básico corpo a corpo e outro à distância, então o tipo é de cada ataque e não do personagem, e isso torna o bloco uma lista por natureza.
+    - **O validador exige exatamente uma entrada** enquanto a regra de escolha não existir. Um array de um item só é formato, não mecânica, e recusar a segunda entrada é mais honesto do que usar a primeira em silêncio.
+    - Adotar o formato agora é barato; adotar depois obrigaria a mexer em todas as fichas de novo.
+- A forma da faixa é a mesma de `subtypes.json` (`min` e `max`, cada um com `base` e `perLevel`), para que equipar uma arma na 0.11.2.0 seja substituir quatro números por quatro números em vez de converter uma forma na outra.
+- Quem sorteia é o `CharacterAttacker`, que já tem o `BattleRandom` na mão. O `DamageCalculator` continua recebendo um `BaseDamage` já resolvido, e é isso que mantém a habilidade fora do sorteio sem nenhum caso especial.
+- Ordem de sorteio por golpe passa a ser: cegueira, dano, evasão, evasão perfeita.
 
 ## 0.11.0.0
 
@@ -581,6 +604,20 @@ Coisas decididas conscientemente como "não agora". Elas não têm versão marca
 - Saiu da 0.7.1.0: o `warm-up` do Gadrat foi escrito assim originalmente e teve que virar um pulso único.
 - **A condição para ele deixar de esperar** é alguma ficha depender dele de verdade. Se uma ficha nova pedir dano ao longo do tempo, ele vem antes daquela ficha, e nunca depois — senão a ficha é escrita torta e reescrita em seguida.
 - A regra que ficou clara ao discutir isso: **`casting` é congelamento, `duration` é consequência.** Um `casting` alto quase sempre é um número escrito no campo errado.
+
+## Lista de ataques básicos
+
+- Um lacaio ou vilão com **mais de um ataque básico**, alternando entre eles: soco, cuspida, cauda. Ideia do Nathan.
+- **É alternância entre alternativas, e não combo.** Um golpe que aplica dois ou três danos de uma vez seria habilidade, e não ataque básico — combo mexe em roubo de vida, espinhos e evasão, porque cada dano é um evento próprio que sorteia evasão separado.
+- **O formato já chega pronto na 0.10.7.0**: `autoAttacks` vira array e cada entrada carrega o próprio `type` e a própria faixa de dano. O que falta é a mecânica, não a forma.
+- Faz mais sentido para lacaio e vilão do que para herói, porque eles nunca vão ter arma: o ataque básico é a única fonte de dano deles, então a variedade tem que morar ali.
+- **O que precisa ser decidido quando a versão chegar:**
+    - Como uma é escolhida: sorteio por peso, alternância fixa, ou por condição — "a cauda só sai se o alvo estiver a duas casas". A terceira é a mais interessante e a mais cara.
+    - Se cada uma tem velocidade e alcance próprios. Se tiver, o intervalo de ataque deixa de ser um número do personagem, que é a **mesma mudança que a arma faz na 0.11.2.0** — as duas deviam ser pensadas juntas.
+    - Se cada uma tem tipo de dano próprio. Se sim, isso destrava ataque básico elemental, que hoje não existe: nenhum inimigo tem um ponto de resistência elemental porque nada fora de habilidade causa dano elemental.
+    - A escolha consome um sorteio e entra na sequência determinística.
+    - Cada uma vai querer pose e projétil próprios, o que encosta na arte.
+- **A condição para ela deixar de esperar** é uma ficha nova precisar de um segundo ataque. Ela vem antes daquela ficha e nunca depois, pelo mesmo motivo do efeito periódico.
 
 ## Projétil com tempo de voo
 

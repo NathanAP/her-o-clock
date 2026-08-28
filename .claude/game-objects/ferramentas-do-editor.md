@@ -52,6 +52,28 @@ A lista de fichas é lida ao abrir a janela, ao voltar o foco para ela e quando 
 - **Não considera itens**, que ainda não existem.
 - **Não substitui o snapshot.** O snapshot é retrato commitado e conferível por diff; a janela é exploração ao vivo. Os dois respondem perguntas diferentes.
 
+## `Her-o-clock` → `Delete saved games`
+
+Apaga os saves, para recomeçar de um ponto limpo.
+
+### Para que serve
+
+Para quem mexe nos números. Um rebalanceamento é muito mais fácil de ler do nível 1 do que com um time carregando progresso feito sob os números antigos.
+
+**Não é o "recomeçar" do jogador.** Esse é opção de menu do jogo, com texto próprio e consequências próprias, e chega quando o menu existir.
+
+### O que o diálogo diz antes de apagar
+
+Quantos arquivos, qual a pasta e qual é o mais recente. Isso não é firula: todo save é um arquivo novo e os antigos **são o backup**, que é o que permite ao jogador voltar para ontem conforme `save.md`. Então resetar joga fora um histórico inteiro e não um arquivo, e uma confirmação que não diz o tamanho do estrago é um clique errado esperando acontecer.
+
+### O que ele se recusa a tocar
+
+Apenas arquivos cujo nome o jogo entende. Não é cautela gratuita, é a regra de `save.md`: um arquivo com nome ilegível fica onde está, porque não há como saber o que ele é.
+
+### Por que fica cinza durante o Play
+
+Apagar os arquivos no meio de uma sessão não reseta nada — o elenco vive na memória e o fim da próxima onda simplesmente escreve um arquivo novo. Desabilitar é mais honesto do que deixar parecer que não funcionou.
+
 ## `Her-o-clock` → `Link character sprites`
 
 Liga os desenhos de cada personagem à ficha dele, por nome de arquivo, e conserta importação quebrada no caminho. Descrita em `arte-de-personagem.md`.
