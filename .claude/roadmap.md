@@ -596,6 +596,17 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 ## 0.13.0.0
 
+- Inventário.
+- Baús.
+- **Abas no baú e no inventário**, para o jogador organizar. É o que torna um baú grande utilizável em vez de uma lista infinita.
+- **A posição de cada item é guardada**, dentro da aba. O jogador arruma o baú e espera encontrar tudo onde deixou; um baú que reordena sozinho a cada carga desfaz o trabalho dele.
+    - A forma para isso é decidida na 0.11.1.0, quando o save ganha itens: o item mora uma vez só numa lista com id, e o lugar dele é uma referência.
+- **É aqui que o arquivo de save cresce de verdade.** Equipado são no máximo 8 itens por herói; um baú com algumas centenas de itens vira 150 a 200 KB por arquivo, e cada save é um arquivo novo com retenção. "Quantos itens o baú guarda" deixa de ser só design e passa a ser também um número de disco.
+- **Ponto em aberto:** se o jogador puder nomear as abas, o save passa a guardar texto escrito por ele. É a primeira vez que isso acontece, e a regra de idioma do projeto não se aplica — ela vale para o texto que o jogo mostra, e não para o que o jogador digitou.
+- Testes: as regras de espaço e de empilhamento, que são aritmética e não interface. A posição sobreviver a um ciclo de salvar e carregar também é aritmética, e entra junto.
+
+## 0.14.0.0
+
 - Menus.
 - **Leva junto o que a janela sem borda deixou pendente**, já que ela chegou na 0.5.9.0:
     - Um jeito de fechar que não seja Alt+F4, porque não existe mais botão de fechar.
@@ -608,17 +619,6 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **A abertura da fase mostrando o número e o nome**, algo como "1 - 1" grande com o nome embaixo. Os dois textos já existem no arquivo de strings desde a 0.9.0.0 e hoje só aparecem no Console.
 - **Leva junto a tela de volta ao jogo**, que a 0.6.0.0 deixou pendente. Os números da ausência já são calculados e escritos no Console; falta mostrá-los. Eles saem inteiros do `OfflineCredit`, então é só apresentação.
 - Testes: praticamente nenhum. Interface é a única parte do jogo em que o custo de testar não se paga.
-
-## 0.14.0.0
-
-- Inventário.
-- Baús.
-- **Abas no baú e no inventário**, para o jogador organizar. É o que torna um baú grande utilizável em vez de uma lista infinita.
-- **A posição de cada item é guardada**, dentro da aba. O jogador arruma o baú e espera encontrar tudo onde deixou; um baú que reordena sozinho a cada carga desfaz o trabalho dele.
-    - A forma para isso é decidida na 0.11.1.0, quando o save ganha itens: o item mora uma vez só numa lista com id, e o lugar dele é uma referência.
-- **É aqui que o arquivo de save cresce de verdade.** Equipado são no máximo 8 itens por herói; um baú com algumas centenas de itens vira 150 a 200 KB por arquivo, e cada save é um arquivo novo com retenção. "Quantos itens o baú guarda" deixa de ser só design e passa a ser também um número de disco.
-- **Ponto em aberto:** se o jogador puder nomear as abas, o save passa a guardar texto escrito por ele. É a primeira vez que isso acontece, e a regra de idioma do projeto não se aplica — ela vale para o texto que o jogo mostra, e não para o que o jogador digitou.
-- Testes: as regras de espaço e de empilhamento, que são aritmética e não interface. A posição sobreviver a um ciclo de salvar e carregar também é aritmética, e entra junto.
 
 ## 0.15.0.0
 
