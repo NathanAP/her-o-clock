@@ -74,6 +74,28 @@ Apenas arquivos cujo nome o jogo entende. Não é cautela gratuita, é a regra d
 
 Apagar os arquivos no meio de uma sessão não reseta nada — o elenco vive na memória e o fim da próxima onda simplesmente escreve um arquivo novo. Desabilitar é mais honesto do que deixar parecer que não funcionou.
 
+## `Her-o-clock` → `Grant a reference kit`
+
+Veste todos os heróis da sessão com um conjunto simples de equipamento, no nível de cada um e na classe da ficha deles.
+
+### Para que serve
+
+Nada dropa ainda e não existe inventário, então sem isso **não há como assistir uma luta com equipamento**. A única evidência de que a coisa funciona seriam os testes.
+
+Ele entrega o mesmo kit sem graça que o snapshot mede — só a defesa base dos quatro cascos e da mão secundária, sem modificador nenhum. Assim o que aparece na tela e o que está escrito no snapshot são a mesma coisa.
+
+### Por que a classe é a da ficha
+
+Um kit que o herói não consegue sustentar seria entregue e desconsiderado na mesma hora, o que parece exatamente com a ferramenta quebrada. Escolher a classe da ficha é a aposta que tem mais chance de realmente vestir.
+
+### Por que só vale na próxima fase
+
+Ele dá o item ao **registro**, e quem luta é uma fotografia tirada quando a fase começou. Não é limitação: é a regra de `gameplay.md` de que trocar equipamento no meio de uma fase não alcança o tabuleiro, e a ferramenta obedecendo ela é o ponto.
+
+### Por que fica cinza fora do Play
+
+Registro só existe durante uma sessão. Fora dela não há herói para vestir.
+
 ## `Her-o-clock` → `Link character sprites`
 
 Liga os desenhos de cada personagem à ficha dele, por nome de arquivo, e conserta importação quebrada no caminho. Descrita em `arte-de-personagem.md`.

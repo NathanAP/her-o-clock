@@ -47,6 +47,18 @@ namespace HerOClock.Persistence
         public HeroSave[] heroes = new HeroSave[0];
 
         /// <summary>
+        /// Every item the player owns, written once.
+        ///
+        /// Whatever is holding an item refers to it by id — a hero's slot today, a chest tab and
+        /// position from 0.14.0.0. Storing the item inside its holder would mean moving it rewrites
+        /// it, and the same item could end up existing twice with different values.
+        ///
+        /// Added without moving the format version: a file written before it arrives with no items
+        /// and no hero wearing anything, which is exactly what a game that never had them holds.
+        /// </summary>
+        public ItemSave[] items = new ItemSave[0];
+
+        /// <summary>
         /// Team, bench and unlocked positions.
         ///
         /// Added without moving the format version, because a file written before it arrives with

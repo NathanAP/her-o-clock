@@ -58,7 +58,7 @@ namespace HerOClock.Tests
             CharacterDefinition targetSheet = battle.Sheet(
                 "target", CharacterKind.Hero, power: 100, constitution: 500, minRange: 1, maxRange: 1);
 
-            targetSheet.Stats.ThornsPercent = thornsPercent;
+            targetSheet.Stats.BaseThornsPercent = thornsPercent;
 
             target = battle.Spawn(targetSheet, Team.Heroes, 3, 4);
             shooter = battle.Spawn(shooterSheet, Team.Enemies, 3, 8);

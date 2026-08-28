@@ -272,7 +272,7 @@ namespace HerOClock.Tests
             Check(sheet.id, "defence.electricResistance.perLevel", sheet.defence.electricResistance.perLevel,
                 asset.Stats.ElectricResistancePerLevel, problems);
 
-            Check(sheet.id, "thornsPercent", sheet.thornsPercent, (int)asset.Stats.ThornsPercent, problems);
+            Check(sheet.id, "thornsPercent", sheet.thornsPercent, (int)asset.Stats.BaseThornsPercent, problems);
             Check(sheet.id, "lifeStealPercent", sheet.lifeStealPercent, (int)asset.Stats.LifeStealPercent, problems);
             Check(sheet.id, "healthRegen", sheet.healthRegen, (int)asset.Stats.BaseHealthRegen, problems);
         }

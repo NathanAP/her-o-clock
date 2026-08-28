@@ -527,47 +527,27 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Achado por medição e não por leitura: as invariantes do `GridInvariant` rodam sobre as quatro fases, em três níveis e quatro builds, e apontam o passo exato.
 - O resumo completo está em `.claude/versions/20260828_0.11.0.2.md`.
 
-## 0.11.1.0
+## 0.11.1.0 (feita)
 
-- **Vestir.** Equipamento no `HeroRecord`, a fotografia no `Character`, o item como fonte nova dentro do `TotalOf` e das defesas, e a composição de classe da 0.10.5.0 recebendo enfim entrada de verdade.
-- Ferramenta de editor que entrega item a um herói, já que drop é 0.12.0.0 e inventário é 0.14.0.0.
-- **Esta versão trava o avanço natural do jogo, e isso é aceito.** O herói fica com as defesas da ficha somadas às do item, sem drop para equilibrar. O foco é o teste e o balanceamento medido; quem resolve a experiência é a 0.12.0.0.
+- **Vestir.** O item deixou de ser dado parado: um herói carrega equipamento, cada peça é ativa ou não conforme o requerimento, e o que está ativo muda atributos, defesas, vida e a classe efetiva.
+- **A versão foi cortada em duas.** Os dois modificadores que precisam de costura nova — dano de habilidade por elemento e resistência ignorada — viraram a 0.11.1.1, porque nenhum dos dois é necessário para vestir e ambos exigem seam que não existe.
+    - Eles **não são esquecidos em silêncio**: o `ItemContribution` declara `Handled` e `Deferred`, e um teste confere que todo modificador de `modifiers.json` está numa das duas listas.
+- **A escolha é guardada, a derivação não.** O item guarda slot, classe, subtipo, tecnologia, nível e cada modificador com camada e valor. Defesa base, requerimento e nome são recalculados das tabelas toda vez, então mexer em `slots.json` alcança itens que já existem.
+- **A regra de ativação** foi escrita em `items.md` e implementada: começa com nada ativo, liga quem os atributos mais os já ativos sustentam, repete. Dois itens que só se sustentam mutuamente ficam os dois inativos, e um item inativo é desconsiderado por inteiro.
+- **O save ganhou a forma pensada para o baú**: item numa lista com id, e quem o segura refere-se a ele. Se a peça está ativa não é salvo, porque é conta e não fato. A versão do formato não subiu.
+- **A direção das dependências foi preservada:** o saco de números mora em `Characters` e quem o preenche mora em `Items`, do mesmo jeito que o sorteio de dano da 0.10.7.0 recebe um número e não o `BattleRandom`.
+- **666 testes, 0 falhas.** Vinte e sete novos.
+- **Nenhuma linha existente do snapshot se moveu**, porque ninguém veste nada por padrão. Entrou uma tabela nova, e ela já mostra o requerimento mordendo sozinho: a Tempo veste o kit leve até o nível 100 e perde o pesado e o especial a partir do 30.
+- **Pendência de cena:** o `ItemDatabase` precisa ser arrastado para o `BattleBootstrap`. Sem isso equipamento não faz nada, que é de propósito o comportamento de uma cena que não conhece itens.
+- O resumo completo está em `.claude/versions/20260828_0.11.1.0.md`.
 
-### O que já foi decidido
+## 0.11.1.1 (próxima)
 
-Levantado ao planejar a 0.11.0.0 e respondido pelo Nathan antes de a versão começar. Nenhum destes é código: são regras, e cada um travaria a implementação no meio se chegasse lá em aberto.
-
-- **Resistência ignorada corta os pontos antes da curva.** Um alvo com 1000 de resistência contra um atacante que ignora 20% é tratado como tendo 800, e a curva de rendimento decrescente recalcula em cima disso.
-    - Contra um alvo saturado o ganho fica pequeno, e é esse o ponto: cortar a mitigação **depois** da curva transformaria o modificador em obrigatório.
-    - **Os valores ficam baixos de propósito**, para que ignorar 100% nunca aconteça.
-    - **São dois campos e não um.** O `TargetResistanceBonus` que já existe no `DamageInput` é resistência **do alvo** vinda de fonte especial. Resistência ignorada é do **atacante**, e precisa de campo próprio.
-- **Um item só conta quando está ativo, e a ativação cresce do zero.** Comece com nenhum item ativo, ative todo item vestido cujo requerimento é atendido pelos atributos de base mais os itens **já ativos**, e repita até nada mais ativar.
-    - **Dois itens que dependem um do outro ficam os dois inativos.** Nenhum tem de onde tirar o requerimento sozinho, então nenhum liga. Cabe ao jogador arrumar os atributos para conseguir vestir os dois.
-    - A regra equivale a perguntar "daria para equipar um de cada vez, em alguma ordem?", que é o que o Path of Exile faz na prática — lá cada equipar é validado no instante em que acontece, então o estado mútuo nunca é alcançável.
-    - Ela é determinística e não depende da ordem dos slots, porque o conjunto ativo só cresce e o resultado é o mesmo qualquer que seja a ordem em que se tente.
-- **Vida máxima passa a ser `CON × 10 + vida vinda do equipamento`.** A soma do item entra depois da conversão, e `attributes.md` precisa ter a frase "a vida vem apenas de CON" reescrita.
-- **O item entra no `TotalOf` depois do multiplicador de fase**, e antes dos buffs: `(base + pontos de nível) × multiplicador + item`.
-    - Com 20 de POW de ficha e nível, um item de +10 e uma fase de multiplicador 1.5, o total é **40** e não 45.
-    - O multiplicador existe para uma fase ajustar **a ficha** de um personagem. Equipamento não é ficha, é o que o jogador construiu, e deixar a fase amplificá-lo faria uma fase difícil punir mais quem tem item bom.
-    - E o motivo geral, que vale além desta decisão: **tudo que é multiplicado corre risco excessivo de sair de controle.** Somar depois mantém a contribuição do equipamento previsível, qualquer que seja o multiplicador que uma fase futura resolva usar.
-    - Hoje isso não muda nenhum número, porque herói tem multiplicador 1 e só herói veste item. A regra existe para quando isso deixar de ser verdade.
-    - Vale igual para as defesas e para a composição de classe.
-- **O save ganha o primeiro campo que não é escalar.** Não é um problema, é uma forma nova, com quatro consequências:
-    - Os valores sorteados **voltam idênticos**. Re-sortear na carga faria o item mudar toda vez que o jogo abre.
-    - O item tem **identidade própria**, porque o inventário da 0.14.0.0 vai movê-lo entre herói e baú.
-    - **Onde o item está é dado, e ele tem mais de uma forma.** Equipado é `(herói, slot)`; guardado é `(aba, posição)`. O jogador arruma o baú e espera encontrar tudo onde deixou, então a posição é save e não enfeite.
-    - Por isso a recomendação de forma: **o item mora uma vez só, numa lista com id**, e o lugar dele é uma referência a esse id. Mover um item entre herói e baú passa a ser reescrever a referência, e nunca o item — que é o que impede o mesmo item de existir duas vezes com valores diferentes.
-    - Vale desenhar assim já na 0.11.1.0, mesmo com só o equipado existindo, para a 0.14.0.0 não ter que reestruturar o formato.
-    - **O nome não é guardado**, ele é derivado dos modificadores conforme `items.md`. Guardá-lo criaria a segunda cópia de novo.
-    - **Não sobe a versão do formato**: a regra do `SaveMigration` já cobre campo novo, e ausente significa "sem equipamento". O `SaveEnvelope` assina o texto verbatim, então nada disso quebra a assinatura.
-    - Tamanho: equipado são no máximo 8 itens por herói, algo como 20 KB. **Quem enche o arquivo é o baú da 0.14.0.0**, onde algumas centenas de itens viram 150 a 200 KB por arquivo — e cada save é um arquivo novo com retenção.
-- **Os testes de balanceamento usam itens de mock determinísticos, nunca sorteados.** Um teste cujo valor esperado depende de um sorteio não afirma nada.
-    - Dois kits derivados das próprias tabelas: um **médio**, com cada modificador no meio da faixa de camada 1, e um **forte**, no máximo da camada 5. Como saem dos dados, eles se movem quando os dados se movem, que é o certo.
-    - A varredura ganha o eixo "equipado", mas **só com sem-item e o kit médio**. Ela já é a parte mais lenta da suíte e um terceiro valor multiplica isso.
-    - O kit forte e as perguntas pontuais ficam num teste separado, fora do conjunto padrão.
-    - Fica aberta uma entrada parametrizável para a pergunta "o que acontece na fase X-Y com o time A, B, C, D usando os itens N, M, O, P?". É o tipo de conta que ninguém consegue prever no papel e que a simulação responde em segundos.
-- Entram as entradas novas de `ModifiableStat` para dano de habilidade por elemento, que hoje não têm onde pousar: o `AbilityResolver` não passa por modificador nenhum.
-- Detalhe pequeno: `game-objects/ferramentas-do-editor.md` afirma que a janela de fichas "não considera itens, que ainda não existem". A frase fica falsa nesta versão.
+- **Os dois modificadores que precisam de costura nova**, adiados da 0.11.1.0 e já listados em `ItemContribution.Deferred`.
+- **`+X% ao dano de habilidade` por elemento.** Precisa de entradas novas em `ModifiableStat` e de o `AbilityResolver` passar o dano por elas, coisa que hoje ele não faz para nada.
+- **`+X% de resistência ignorada ao atacar.`** A regra já está escrita em `attributes.md`, com exemplo: ela corta os pontos do alvo **antes** da curva, então um alvo com 1000 contra 20% ignorados é tratado como 800.
+    - Precisa de um campo novo no `DamageInput`, do lado do **atacante**. O `TargetResistanceBonus` que existe é do alvo e é outra coisa.
+- Testes: os exemplos numéricos de `attributes.md`, e o teste de cobertura de modificadores passa a exigir que estes cinco saiam de `Deferred`.
 
 ## 0.11.2.0
 

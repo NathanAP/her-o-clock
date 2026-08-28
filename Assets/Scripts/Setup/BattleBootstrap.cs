@@ -28,6 +28,12 @@ namespace HerOClock.Setup
         [SerializeField] private CharacterDatabase characterDatabase;
         [SerializeField] private StageDatabase stageDatabase;
 
+        [Tooltip("The item data files. Leave it empty and equipment simply does nothing, which is "
+            + "what a scene that predates items holds.")]
+        [SerializeField] private Items.ItemDatabase itemDatabase;
+
+        private Items.ItemRules itemRules;
+
         [Tooltip("The .json file holding every piece of text the player reads.")]
         [SerializeField] private TextAsset stringsFile;
 
@@ -161,6 +167,7 @@ namespace HerOClock.Setup
             }
 
             stages = stageDatabase;
+            itemRules = BuildItemRules();
 
             // The records come first and the combatants come last, with the save in between.
             //
@@ -186,6 +193,7 @@ namespace HerOClock.Setup
             if (save.Found)
             {
                 SaveMapper.ApplyHeroes(save.Payload, records);
+                SaveMapper.ApplyItems(save.Payload, records);
                 SaveMapper.ApplyActivity(save.Payload, activity);
                 wallet.Restore(save.Payload.money);
                 integrity = save.Payload.integrity;
@@ -819,10 +827,32 @@ namespace HerOClock.Setup
         private Character CreateHero(HeroRecord record, GridPosition position)
         {
             Character character = NewCombatant(record.Definition);
-            character.InitializeFrom(record, Team.Heroes, position, grid, 1f);
+            character.InitializeFrom(record, Team.Heroes, position, grid, 1f, itemRules);
 
             Dress(character, record.Definition);
             return character;
+        }
+
+        /// <summary>
+        /// The item tables, read once at startup and held for the session.
+        ///
+        /// Built here rather than looked up wherever it is needed, for the reason
+        /// `architecture.md` gives about ScriptableObjects: this project runs with Domain Reload
+        /// off, so anything cached on the asset itself would outlive the session that built it.
+        ///
+        /// Null when no database is assigned, and null means equipment does nothing at all — which
+        /// is exactly what a scene that predates items should do.
+        /// </summary>
+        private Items.ItemRules BuildItemRules()
+        {
+            if (itemDatabase == null)
+            {
+                return null;
+            }
+
+            Items.ItemSlots slots = itemDatabase.LoadSlots();
+
+            return slots != null ? new Items.ItemRules(slots) : null;
         }
 
         private Character NewCombatant(CharacterDefinition definition)

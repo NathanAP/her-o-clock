@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using HerOClock.Characters;
+using HerOClock.Items;
 using HerOClock.Progression;
 using UnityEngine;
 
@@ -30,6 +31,7 @@ namespace HerOClock.Persistence
             payload.stage.id = stageId;
 
             payload.heroes = CaptureHeroes(heroes);
+            payload.items = CaptureItems(heroes);
             payload.activity = CaptureActivity(activity);
 
             return payload;
@@ -64,10 +66,183 @@ namespace HerOClock.Persistence
                     entry.manualPoints[a] = hero.Attributes.ManualOn((Attribute)a);
                 }
 
+                entry.equipment = CaptureSlots(hero);
+
                 saved[i] = entry;
             }
 
             return saved;
+        }
+
+        /// <summary>Which item is in which slot, by id. The items themselves go in the flat list.</summary>
+        private static EquippedSave[] CaptureSlots(HeroRecord hero)
+        {
+            List<EquippedSave> worn = new List<EquippedSave>();
+
+            foreach (Item item in hero.Equipment.Worn)
+            {
+                worn.Add(new EquippedSave { slot = item.SlotId, itemId = item.Id });
+            }
+
+            // Sorted so two saves of the same state come out byte for byte the same. The dictionary
+            // behind the equipment makes no promise about order, and the file is signed.
+            worn.Sort((left, right) => string.CompareOrdinal(left.slot, right.slot));
+
+            return worn.ToArray();
+        }
+
+        /// <summary>
+        /// Every item the player owns, written once.
+        ///
+        /// Today that is only what is being worn. When the chest arrives its contents join the same
+        /// list, and nothing about the shape has to change — which is exactly why the list is flat
+        /// and the holders refer to it.
+        /// </summary>
+        private static ItemSave[] CaptureItems(IReadOnlyList<HeroRecord> heroes)
+        {
+            List<ItemSave> saved = new List<ItemSave>();
+
+            if (heroes == null)
+            {
+                return saved.ToArray();
+            }
+
+            HashSet<string> written = new HashSet<string>();
+
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                foreach (Item item in heroes[i].Equipment.Worn)
+                {
+                    if (!written.Add(item.Id))
+                    {
+                        continue;
+                    }
+
+                    saved.Add(Write(item));
+                }
+            }
+
+            saved.Sort((left, right) => string.CompareOrdinal(left.id, right.id));
+            return saved.ToArray();
+        }
+
+        private static ItemSave Write(Item item)
+        {
+            ItemSave saved = new ItemSave
+            {
+                id = item.Id,
+                slot = item.SlotId,
+                itemClass = item.ClassId,
+                subtype = item.SubtypeId,
+                technology = item.TechnologyId,
+                level = item.Level
+            };
+
+            saved.modifiers = new ItemModifierSave[item.Modifiers.Count];
+
+            for (int i = 0; i < item.Modifiers.Count; i++)
+            {
+                ItemModifierRoll roll = item.Modifiers[i];
+
+                saved.modifiers[i] = new ItemModifierSave
+                {
+                    id = roll.Id,
+                    family = roll.Family,
+                    tier = roll.Tier,
+                    value = roll.Value
+                };
+            }
+
+            return saved;
+        }
+
+        /// <summary>
+        /// Puts the items back on the heroes.
+        ///
+        /// Called after <see cref="ApplyHeroes"/>, and separately from it, because it needs the
+        /// payload's whole item list and not one hero's slice of it.
+        ///
+        /// An id in a slot with no item behind it is skipped and reported. It means the file was
+        /// edited or truncated, and inventing an item to fill the gap would be worse than the hero
+        /// arriving with an empty slot.
+        /// </summary>
+        public static void ApplyItems(SavePayload payload, IReadOnlyList<HeroRecord> heroes)
+        {
+            if (payload == null || heroes == null)
+            {
+                return;
+            }
+
+            Dictionary<string, Item> byId = new Dictionary<string, Item>();
+
+            if (payload.items != null)
+            {
+                for (int i = 0; i < payload.items.Length; i++)
+                {
+                    Item item = Read(payload.items[i]);
+
+                    if (item != null)
+                    {
+                        byId[item.Id] = item;
+                    }
+                }
+            }
+
+            Dictionary<string, Queue<HeroSave>> waiting = ById(payload.heroes ?? new HeroSave[0]);
+
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                Queue<HeroSave> queue;
+
+                if (!waiting.TryGetValue(heroes[i].Id, out queue) || queue.Count == 0)
+                {
+                    continue;
+                }
+
+                HeroSave saved = queue.Dequeue();
+
+                if (saved.equipment == null)
+                {
+                    continue;
+                }
+
+                for (int e = 0; e < saved.equipment.Length; e++)
+                {
+                    EquippedSave slot = saved.equipment[e];
+                    Item item;
+
+                    if (!byId.TryGetValue(slot.itemId ?? string.Empty, out item))
+                    {
+                        Debug.LogWarning("Save: the hero '" + heroes[i].Id + "' had the item '"
+                            + slot.itemId + "' in " + slot.slot + ", and that item is not in the file.");
+                        continue;
+                    }
+
+                    heroes[i].Equipment.Put(item);
+                }
+            }
+        }
+
+        private static Item Read(ItemSave saved)
+        {
+            if (saved == null || string.IsNullOrEmpty(saved.id))
+            {
+                return null;
+            }
+
+            List<ItemModifierRoll> rolls = new List<ItemModifierRoll>();
+
+            if (saved.modifiers != null)
+            {
+                for (int i = 0; i < saved.modifiers.Length; i++)
+                {
+                    ItemModifierSave roll = saved.modifiers[i];
+                    rolls.Add(new ItemModifierRoll(roll.id, roll.family, roll.tier, roll.value));
+                }
+            }
+
+            return new Item(saved.id, saved.slot, saved.itemClass, saved.subtype,
+                saved.technology, saved.level, rolls);
         }
 
         private static ActivitySave CaptureActivity(ActivityLog activity)

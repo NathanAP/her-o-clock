@@ -83,6 +83,8 @@ O Console avisa se as porcentagens não somarem 100. Elas continuam funcionando 
 
 ## `ItemDatabase`
 
+**Precisa ser arrastado para o campo `Item Database` do `BattleBootstrap`**, no objeto `Battle` da cena. Sem isso o campo fica vazio, as regras de item não são construídas e equipamento não faz efeito nenhum — que é de propósito o comportamento de uma cena que não conhece itens.
+
 O catálogo dos arquivos de item, em `Assets/ScriptableObjects/ItemDatabase.asset`. Seis referências de `TextAsset`, uma por arquivo de `Assets/Items/`.
 
 São referências de asset e não caminhos em texto, pelo mesmo motivo do `StageDatabase`: renomear ou mover um arquivo não quebra nada.

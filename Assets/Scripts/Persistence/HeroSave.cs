@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace HerOClock.Persistence
 {
@@ -37,5 +37,18 @@ namespace HerOClock.Persistence
 
         /// <summary>Points placed by hand, in attribute order: power, agility, specialty, constitution.</summary>
         public int[] manualPoints = new int[4];
+
+        /// <summary>
+        /// Which item is in which slot, by id.
+        ///
+        /// Only the reference lives here. The items themselves are in the payload's own list, so a
+        /// piece moving from a hero to the chest changes this line and nothing else.
+        ///
+        /// **Whether a piece is active is not saved**, because it is not a fact about the item — it
+        /// is worked out from the hero's attributes every time a stage builds its combatant.
+        /// Writing it down would be storing a derived value, and it would go stale the moment a
+        /// point was moved.
+        /// </summary>
+        public EquippedSave[] equipment = new EquippedSave[0];
     }
 }

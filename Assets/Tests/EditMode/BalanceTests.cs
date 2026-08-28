@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using HerOClock.Battle;
 using HerOClock.Characters;
+using HerOClock.Items;
 using HerOClock.Progression;
 using HerOClock.Setup;
 using HerOClock.Stages;
@@ -113,6 +114,7 @@ namespace HerOClock.Tests
 
             AppendPacing(page);
             AppendSheets(page);
+            AppendEquipment(page);
             AppendStages(page);
             AppendSweep(page);
 
@@ -473,6 +475,121 @@ namespace HerOClock.Tests
             }
 
             return low;
+        }
+
+        /// <summary>
+        /// What a plain set of gear is worth, with no modifier on it.
+        ///
+        /// Nothing drops yet, so this is the only way to ask the question at all, and the kit is
+        /// deliberately boring: base defence only. Anything else would mean inventing the generator
+        /// that 0.11.3.0 will actually write, and measuring against a guess.
+        ///
+        /// The **active** column is the one to watch. A kit of the hero's own level demands 1.5
+        /// times that level in one attribute, and a hero who spread its points cannot meet that on
+        /// every piece — so the requirement starts biting on its own, without anybody tuning it.
+        /// </summary>
+        private static void AppendEquipment(StringBuilder page)
+        {
+            TextAsset file = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Items/slots.json");
+
+            if (file == null)
+            {
+                return;
+            }
+
+            ItemRules rules = new ItemRules(JsonUtility.FromJson<ItemSlots>(file.text));
+            CharacterDefinition hero = SheetOf("tempo");
+
+            if (hero == null)
+            {
+                return;
+            }
+
+            int[] levels = { 1, 12, 30, 50, 100 };
+            string[] classes = { "light", "heavy", "special" };
+
+            page.AppendLine("## O kit de referência");
+            page.AppendLine();
+            page.AppendLine("A ficha da Tempo vestindo um kit sem modificador nenhum, do mesmo nível que ela:");
+            page.AppendLine("os quatro cascos e a mão secundária, só com a defesa base da classe.");
+            page.AppendLine();
+            page.AppendLine("A coluna **Ativos** é a que interessa. Um kit do próprio nível exige 1.5 vezes esse");
+            page.AppendLine("nível num atributo, e uma heroína que espalhou os pontos não atende isso em tudo.");
+            page.AppendLine();
+            page.AppendLine("| Nível | Kit | Ativos | Armadura | Mitigação | Evasão (pts) | Evasão | Resist. |");
+            page.AppendLine("|---|---|---|---|---|---|---|---|");
+
+            for (int l = 0; l < levels.Length; l++)
+            {
+                int level = Mathf.Min(levels[l], hero.MaxLevel);
+
+                page.AppendLine(Row(hero, level, null, rules, "sem kit", 0));
+
+                for (int c = 0; c < classes.Length; c++)
+                {
+                    List<Item> kit = ReferenceKit.Of(classes[c], level);
+
+                    Equipment worn = new Equipment();
+
+                    for (int i = 0; i < kit.Count; i++)
+                    {
+                        worn.Put(kit[i]);
+                    }
+
+                    page.AppendLine(Row(hero, level, worn, rules, classes[c], kit.Count));
+                }
+            }
+
+            page.AppendLine();
+        }
+
+        private static string Row(
+            CharacterDefinition hero, int level, Equipment worn, ItemRules rules, string label, int pieces)
+        {
+            CharacterStats stats = AtLevel(hero, level);
+            int active = 0;
+
+            if (worn != null)
+            {
+                int[] without =
+                {
+                    stats.TotalOf(Attribute.Power),
+                    stats.TotalOf(Attribute.Agility),
+                    stats.TotalOf(Attribute.Specialty),
+                    stats.TotalOf(Attribute.Constitution)
+                };
+
+                EquipmentResolution resolved = worn.Resolve(rules, without);
+                active = resolved.Active.Count;
+
+                stats.UseEquipment(
+                    EquipmentComposition.Of(resolved.Classes, stats.Equipment), resolved.Totals);
+            }
+
+            return "| " + level
+                + " | " + label
+                + " | " + (worn == null ? "-" : active + "/" + pieces)
+                + " | " + stats.PhysicalArmor
+                + " | " + Number(stats.PhysicalMitigationAgainst(level), 1) + "%"
+                + " | " + stats.EvasionPoints
+                + " | " + Number(stats.EvasionChanceAgainst(level), 1) + "%"
+                + " | " + stats.FireResistance
+                + " |";
+        }
+
+        private static CharacterDefinition SheetOf(string id)
+        {
+            CharacterDatabase database = Load<CharacterDatabase>();
+
+            for (int i = 0; i < database.Characters.Count; i++)
+            {
+                if (database.Characters[i] != null && database.Characters[i].Id == id)
+                {
+                    return database.Characters[i];
+                }
+            }
+
+            return null;
         }
 
         private static void AppendStages(StringBuilder page)

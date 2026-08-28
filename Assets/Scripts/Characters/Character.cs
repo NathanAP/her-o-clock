@@ -131,7 +131,7 @@ namespace HerOClock.Characters
         /// </summary>
         public void Initialize(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid, int level, float multiplier)
         {
-            Build(definition, team, position, grid, level, multiplier, null);
+            Build(definition, team, position, grid, level, multiplier, null, null);
         }
 
         /// <summary>
@@ -143,12 +143,19 @@ namespace HerOClock.Characters
         /// progress. That is the rule "um ponto colocado só passa a valer na próxima fase" in
         /// attributes.md, and it costs no mechanism at all: the next stage takes a new photograph.
         /// </summary>
-        public void InitializeFrom(HeroRecord record, Team team, GridPosition position, BattleGrid grid, float multiplier)
+        /// <param name="rules">
+        /// The item tables, needed to work out which worn pieces are active and what they grant.
+        /// Null means equipment is not applied at all, which is what a test that is not about
+        /// items wants, and what the game does before an item database exists.
+        /// </param>
+        public void InitializeFrom(
+            HeroRecord record, Team team, GridPosition position, BattleGrid grid, float multiplier,
+            Items.ItemRules rules = null)
         {
-            Build(record.Definition, team, position, grid, record.Level, multiplier, record);
+            Build(record.Definition, team, position, grid, record.Level, multiplier, record, rules);
         }
 
-        private void Build(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid, int level, float multiplier, HeroRecord record)
+        private void Build(CharacterDefinition definition, Team team, GridPosition position, BattleGrid grid, int level, float multiplier, HeroRecord record, Items.ItemRules rules = null)
         {
             Definition = definition;
             Record = record;
@@ -179,6 +186,11 @@ namespace HerOClock.Characters
             Stats.UseModifiers(Modifiers);
             Stats.ApplyInstance(this.level, points, multiplier);
 
+            // After the attributes are settled and before anything is read from them, because the
+            // requirement of a piece is measured against what the hero has **without** equipment.
+            // Reading it afterwards would let an item pay for its own requirement.
+            ApplyEquipment(record, rules);
+
             Modifiers.Changed += OnStatsSourceChanged;
 
             InitialPosition = position;
@@ -188,6 +200,36 @@ namespace HerOClock.Characters
 
             grid.Occupy(position, this);
             transform.position = grid.WorldPositionOf(position);
+        }
+
+        /// <summary>
+        /// Resolves what the hero is wearing and hands the result to the stats.
+        ///
+        /// The requirement is checked against the attributes the hero has with **no** equipment on,
+        /// which is exactly what `Stats` reports at this moment: the sheet plus the level points,
+        /// with nothing equipped yet. From there activation grows, and an item already switched on
+        /// can pay for the next one.
+        /// </summary>
+        private void ApplyEquipment(HeroRecord record, Items.ItemRules rules)
+        {
+            if (record == null || rules == null || record.Equipment.Count == 0)
+            {
+                return;
+            }
+
+            int[] withoutEquipment =
+            {
+                Stats.TotalOf(Attribute.Power),
+                Stats.TotalOf(Attribute.Agility),
+                Stats.TotalOf(Attribute.Specialty),
+                Stats.TotalOf(Attribute.Constitution)
+            };
+
+            Items.EquipmentResolution resolved = record.Equipment.Resolve(rules, withoutEquipment);
+
+            Stats.UseEquipment(
+                EquipmentComposition.Of(resolved.Classes, Stats.Equipment),
+                resolved.Totals);
         }
 
         /// <summary>

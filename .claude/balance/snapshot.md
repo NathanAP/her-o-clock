@@ -52,6 +52,37 @@ que cai significa que a ficha perde aquela defesa conforme o jogo avança.
 | exposed-prototype | armadura | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
 | exposed-prototype | evasão | 0.0% | 0.2% | 0.2% | 0.2% | 0.2% |
 
+## O kit de referência
+
+A ficha da Tempo vestindo um kit sem modificador nenhum, do mesmo nível que ela:
+os quatro cascos e a mão secundária, só com a defesa base da classe.
+
+A coluna **Ativos** é a que interessa. Um kit do próprio nível exige 1.5 vezes esse
+nível num atributo, e uma heroína que espalhou os pontos não atende isso em tudo.
+
+| Nível | Kit | Ativos | Armadura | Mitigação | Evasão (pts) | Evasão | Resist. |
+|---|---|---|---|---|---|---|---|
+| 1 | sem kit | - | 12 | 14.5% | 34 | 40.5% | 0 |
+| 1 | light | 5/5 | 12 | 14.5% | 96 | 65.8% | 0 |
+| 1 | heavy | 5/5 | 52 | 38.2% | 27 | 35.1% | 0 |
+| 1 | special | 5/5 | 12 | 14.5% | 30 | 37.5% | 17 |
+| 12 | sem kit | - | 144 | 14.5% | 328 | 35.3% | 0 |
+| 12 | light | 5/5 | 144 | 14.5% | 1063 | 63.9% | 0 |
+| 12 | heavy | 5/5 | 633 | 38.5% | 306 | 33.8% | 0 |
+| 12 | special | 5/5 | 144 | 14.5% | 314 | 34.4% | 204 |
+| 30 | sem kit | - | 360 | 14.5% | 810 | 35.1% | 0 |
+| 30 | light | 5/5 | 360 | 14.5% | 2646 | 63.8% | 0 |
+| 30 | heavy | 0/5 | 360 | 14.5% | 810 | 35.1% | 0 |
+| 30 | special | 0/5 | 360 | 14.5% | 810 | 35.1% | 0 |
+| 50 | sem kit | - | 600 | 14.5% | 1345 | 35.0% | 0 |
+| 50 | light | 5/5 | 600 | 14.5% | 4405 | 63.8% | 0 |
+| 50 | heavy | 0/5 | 600 | 14.5% | 1345 | 35.0% | 0 |
+| 50 | special | 0/5 | 600 | 14.5% | 1345 | 35.0% | 0 |
+| 100 | sem kit | - | 1200 | 14.5% | 2682 | 34.9% | 0 |
+| 100 | light | 5/5 | 1200 | 14.5% | 8802 | 63.8% | 0 |
+| 100 | heavy | 0/5 | 1200 | 14.5% | 2682 | 34.9% | 0 |
+| 100 | special | 0/5 | 1200 | 14.5% | 2682 | 34.9% | 0 |
+
 ## Fases
 
 A formação de heróis é a do asset. O tempo é só de combate, sem as transições.

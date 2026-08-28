@@ -46,6 +46,103 @@ namespace HerOClock.Tests
             }
         }
 
+        /// <summary>An item with one rolled modifier, enough to prove the values survive.</summary>
+        private static Items.Item Piece(string id, string slot, string itemClass, int level, float value)
+        {
+            return new Items.Item(id, slot, itemClass, "shiv", "conventional", level,
+                new System.Collections.Generic.List<Items.ItemModifierRoll>
+                {
+                    new Items.ItemModifierRoll("con", "hardware", 3, value)
+                });
+        }
+
+        /// <summary>
+        /// An equipped item survives a write and a read with **the same rolled values**.
+        ///
+        /// This is the one thing about items the save cannot get wrong. Re-rolling on load would
+        /// make an item a different item every time the game opens, and the player would never be
+        /// able to keep anything.
+        /// </summary>
+        [Test]
+        public void AnEquippedItemComesBackWithTheSameValues()
+        {
+            CharacterDefinition sheet = Sheet();
+            HeroRecord saved = RecordAt(sheet, 5);
+            saved.Equipment.Put(Piece("item-1", "chassis", "heavy", 12, 7.5f));
+
+            store.Write(SaveMapper.Capture(new[] { saved }, new PlayerWallet(), null, "act1-stage1",
+                SavePayload.IntegrityOk), Noon);
+
+            HeroRecord loaded = battle.Record(sheet);
+            SaveReadResult read = store.Load();
+
+            SaveMapper.ApplyHeroes(read.Payload, new[] { loaded });
+            SaveMapper.ApplyItems(read.Payload, new[] { loaded });
+
+            Items.Item back = loaded.Equipment.In("chassis");
+
+            Assert.IsNotNull(back, "The item did not come back at all.");
+            Assert.AreEqual("item-1", back.Id);
+            Assert.AreEqual("heavy", back.ClassId);
+            Assert.AreEqual("shiv", back.SubtypeId);
+            Assert.AreEqual(12, back.Level);
+            Assert.AreEqual(1, back.Modifiers.Count);
+            Assert.AreEqual("con", back.Modifiers[0].Id);
+            Assert.AreEqual(3, back.Modifiers[0].Tier, "The tier travels, since the name is built from it.");
+            Assert.AreEqual(7.5f, back.Modifiers[0].Value, 0.0001f);
+        }
+
+        /// <summary>
+        /// A save written before items existed loads with nobody wearing anything, and no
+        /// conversion step.
+        ///
+        /// It is the rule of <see cref="SaveMigration"/> being used rather than described: a new
+        /// field takes the value a game that never had it would hold, so the format version does
+        /// not move.
+        /// </summary>
+        [Test]
+        public void ASaveWithoutItemsLoadsWithEmptySlots()
+        {
+            CharacterDefinition sheet = Sheet();
+            HeroRecord saved = RecordAt(sheet, 5);
+
+            store.Write(SaveMapper.Capture(new[] { saved }, new PlayerWallet(), null, "act1-stage1",
+                SavePayload.IntegrityOk), Noon);
+
+            HeroRecord loaded = battle.Record(sheet);
+            SaveReadResult read = store.Load();
+
+            SaveMapper.ApplyHeroes(read.Payload, new[] { loaded });
+            SaveMapper.ApplyItems(read.Payload, new[] { loaded });
+
+            Assert.AreEqual(SavePayload.CurrentVersion, read.Payload.version,
+                "Items arrived without moving the format version.");
+            Assert.AreEqual(0, loaded.Equipment.Count);
+        }
+
+        /// <summary>
+        /// The same item worn by two heroes is written **once**, since the list holds items and the
+        /// heroes hold references. It is what makes moving a piece around cost one line.
+        /// </summary>
+        [Test]
+        public void AnItemIsWrittenOnceHoweverManyHoldersNameIt()
+        {
+            CharacterDefinition sheet = Sheet();
+            HeroRecord first = RecordAt(sheet, 5);
+            HeroRecord second = RecordAt(sheet, 5);
+
+            Items.Item shared = Piece("item-1", "chassis", "heavy", 12, 7.5f);
+            first.Equipment.Put(shared);
+            second.Equipment.Put(shared);
+
+            SavePayload payload = SaveMapper.Capture(new[] { first, second }, new PlayerWallet(), null,
+                "act1-stage1", SavePayload.IntegrityOk);
+
+            Assert.AreEqual(1, payload.items.Length);
+            Assert.AreEqual("item-1", payload.heroes[0].equipment[0].itemId);
+            Assert.AreEqual("item-1", payload.heroes[1].equipment[0].itemId);
+        }
+
         private CharacterDefinition Sheet()
         {
             return battle.Sheet("some-hero", CharacterKind.Hero,

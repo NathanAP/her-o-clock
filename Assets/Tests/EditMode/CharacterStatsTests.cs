@@ -347,7 +347,7 @@ namespace HerOClock.Tests
                     ItemClass.Medium,
                     ItemClass.Special
                 },
-                EquipmentClass.Heavy));
+                EquipmentClass.Heavy), null);
 
             Assert.AreEqual(58, stats.EvasionPoints);
         }
@@ -361,7 +361,7 @@ namespace HerOClock.Tests
         {
             CharacterStats stats = Sheet(0, 100, 0, 0, EquipmentClass.Heavy);
             stats.UseEquipment(EquipmentComposition.Of(
-                new List<ItemClass> { ItemClass.Light }, EquipmentClass.Heavy));
+                new List<ItemClass> { ItemClass.Light }, EquipmentClass.Heavy), null);
 
             CharacterStats copy = stats.Clone();
             copy.ApplyInstance(1, new AttributeGrowth(), 1f);

@@ -60,6 +60,28 @@ So the sheet declares evasion with a growth per level, exactly as it declares ar
 
 Armour cuts up to 75% and an average evasion cuts 50.5% — 30% of evasions are perfect at 75%, the rest are normal at 40%. Equal points are therefore not equal defence, and the equipment budgets in `slots.json` are set so the **average** reduction matches. What separates the two is variance, not strength: armour takes the same bite out of every blow, evasion takes none or a large one.
 
+## Equipment activates by growing from nothing
+
+An item counts only while it is active, and activation is worked out for the whole set at once: start with **nothing** on, switch on every worn piece whose requirement the character's own attributes plus the already active pieces can meet, and repeat until a pass switches nothing new on.
+
+The rule answers one question — *could these have been put on one at a time, in some order?* That is exactly what a player does, and it is why the answer never depends on the order the slots are visited.
+
+**Two pieces that only satisfy each other both stay off**, because there is no first one to put on. Sorting that out is the player's job, and it is the deal Path of Exile offers: there, each equip is validated the moment it happens, so the mutual state is never reachable either.
+
+The alternative was shrinking from everything active, deactivating failures until stable. It was rejected because it leaves a mutually supporting pair switched **on**, in a state no sequence of equipping could ever have produced.
+
+**An inactive piece is disregarded whole** — no defence, no attribute, no slice of equipment class. Half counting it would be the worst of both: a red border on something the character is still partly wearing.
+
+## Equipment lands after the stage multiplier
+
+`(base + level points) x stage multiplier + equipment`, and buffs after that.
+
+The multiplier exists for a stage to fine tune a **sheet**. Equipment is not sheet, it is what the player built, and letting a stage amplify it would make a hard stage punish a well equipped hero more than a bare one.
+
+The general reason behind the choice is worth keeping for other decisions: **anything multiplied has a way of running away from whoever wrote the multiplier.** Adding after keeps a known quantity known.
+
+Today it changes no number, since heroes have a multiplier of 1 and only heroes wear equipment. The rule exists for when that stops being true.
+
 ## Regeneration is multiplied by CON, never granted by it
 
 The base is zero for everyone. CON's "0.5% of regeneration speed per point" multiplies whatever other sources provide, so a character with no source still regenerates nothing.

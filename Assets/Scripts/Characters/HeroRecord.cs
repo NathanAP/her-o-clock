@@ -46,6 +46,15 @@ namespace HerOClock.Characters
         /// <summary>Where the level points went. Freely editable — no fight is reading it.</summary>
         public AttributeAllocation Attributes { get; private set; }
 
+        /// <summary>
+        /// What this hero is wearing.
+        ///
+        /// It lives on the record for the same reason the attribute points do: a player changing
+        /// equipment mid stage is changing the hero, not the thing on the board. The combatant took
+        /// its photograph when the stage began and never looks here again.
+        /// </summary>
+        public Items.Equipment Equipment { get; private set; }
+
         public HeroRecord(CharacterDefinition definition)
         {
             Definition = definition;
@@ -57,6 +66,8 @@ namespace HerOClock.Characters
 
             Attributes = new AttributeAllocation(definition.Growth);
             Attributes.GrantFor(startingLevel);
+
+            Equipment = new Items.Equipment();
         }
 
         public string Id

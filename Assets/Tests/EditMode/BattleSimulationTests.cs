@@ -130,7 +130,7 @@ namespace HerOClock.Tests
             CharacterDefinition attackerSheet = battle.Sheet("attacker", CharacterKind.Minion, power: 100, constitution: 500);
 
             CharacterDefinition thornySheet = battle.Sheet("thorny", CharacterKind.Hero, power: 0, constitution: 500);
-            thornySheet.Stats.ThornsPercent = 50f;
+            thornySheet.Stats.BaseThornsPercent = 50f;
             thornySheet.Stats.LifeStealPercent = 50f;
 
             Character thorny = battle.Spawn(thornySheet, Team.Heroes, 3, 4);
@@ -156,7 +156,7 @@ namespace HerOClock.Tests
             CharacterDefinition attackerSheet = battle.Sheet("attacker", CharacterKind.Minion, power: 100, constitution: 500);
 
             CharacterDefinition thornySheet = battle.Sheet("thorny", CharacterKind.Hero, power: 0, constitution: 500);
-            thornySheet.Stats.ThornsPercent = 50f;
+            thornySheet.Stats.BaseThornsPercent = 50f;
 
             Character thorny = battle.Spawn(thornySheet, Team.Heroes, 3, 4);
             Character attacker = battle.Spawn(attackerSheet, Team.Enemies, 3, 5);

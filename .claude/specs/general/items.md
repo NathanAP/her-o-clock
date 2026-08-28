@@ -21,6 +21,18 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 
 - Os equipamentos são itens que os heróis obtêm e podem ser usados quando os requerimentos forem atingidos.
     - Dito isso, se o herói não atender mais o requerimento de um item já equipado, aquele item é desconsiderado. Visualmente falando ele fica com uma borda vermelha para indicar que o item está inativo.
+
+#### Quais equipamentos contam
+
+- **Um item inativo é desconsiderado por inteiro.** Ele não dá defesa, não dá atributo e não conta na mistura de classe do personagem. Não existe meio ativo.
+- A ativação é resolvida assim, e a regra vale para o conjunto todo de uma vez:
+    1. Comece com **nenhum** item ativo.
+    2. Ative todo item vestido cujo requerimento seja atendido pelos atributos do herói **mais os itens já ativos**.
+    3. Repita até que uma passada não ative mais nada.
+- **Um item já ativo pode pagar o requerimento de outro.** É isso que permite montar um conjunto que sozinho o herói não sustentaria.
+- **Dois itens que só se sustentam mutuamente ficam os dois inativos**, porque não existe um primeiro para vestir. Reorganizar os atributos para conseguir vestir os dois é trabalho do jogador.
+- A regra responde uma pergunta só: *daria para vestir estes itens um de cada vez, em alguma ordem?* É exatamente o que o jogador faz, e por isso o resultado nunca depende da ordem em que os slots são olhados.
+- A conta é feita quando a fase começa, junto de todo o resto que constrói quem luta.
 - Apenas heróis usam equipamentos.
 - Os equipamentos não alteram sprites, skins, animações ou efeitos do herói.
 
@@ -49,16 +61,16 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 
 - Os nomes que o jogador lê são em inglês, conforme a regra de idioma do projeto, e os nomes em português existem para esta pasta de specs.
 
-| Id               | Nome do jogador | Nome na spec       | Papel                 |
-| ---------------- | --------------- | ------------------ | --------------------- |
-| `cranial-casing` | Cranial Casing  | Casco craniano     | Defensivo, cabeça     |
-| `chassis`        | Chassis         | Chassi             | Defensivo, corpo      |
-| `arm-servos`     | Arm Servos      | Servos braçais     | Defensivo, braços     |
-| `traction-units` | Traction Units  | Unidades de tração | Defensivo, pernas     |
-| `main-hand`      | Main Hand       | Mão primária       | Ofensivo              |
-| `off-hand`       | Off Hand        | Mão secundária     | Ofensivo ou defensivo |
-| `controller`     | Controller      | Controlador        | Utilitário            |
-| `firmware`       | Firmware        | Firmware           | Utilitário            |
+| Id              | Nome do jogador | Nome na spec       | Papel                 |
+| --------------- | --------------- | ------------------ | --------------------- |
+| `cranialCasing` | Cranial Casing  | Casco craniano     | Defensivo, cabeça     |
+| `chassis`       | Chassis         | Chassi             | Defensivo, corpo      |
+| `armServos`     | Arm Servos      | Servos braçais     | Defensivo, braços     |
+| `tractionUnits` | Traction Units  | Unidades de tração | Defensivo, pernas     |
+| `mainHand`      | Main Hand       | Mão primária       | Ofensivo              |
+| `offHand`       | Off Hand        | Mão secundária     | Ofensivo ou defensivo |
+| `controller`    | Controller      | Controlador        | Utilitário            |
+| `firmware`      | Firmware        | Firmware           | Utilitário            |
 
 - **"Casco" continua sendo o nome da categoria**, e não o nome de nenhum slot. Os quatro defensivos são os cascos quando falamos deles em conjunto, e cada um tem nome próprio na tela.
     - A nomenclatura anterior separava os cascos por posição relativa, e "superior" disputava a mesma região mental que "corporal". Quando um item cai no chão o jogador precisa saber o slot em menos de meio segundo, e anatomia entrega isso enquanto posição relativa não entrega.

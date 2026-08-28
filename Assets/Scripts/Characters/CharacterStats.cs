@@ -81,7 +81,8 @@ namespace HerOClock.Characters
 
         [Tooltip("Physical damage reflected back at the attacker, from 0 to 100. A share of the damage, "
             + "so it does not decay with level and needs no growth of its own.")]
-        [Range(0f, 100f)] public float ThornsPercent;
+        [FormerlySerializedAs("ThornsPercent")]
+        [Range(0f, 100f)] public float BaseThornsPercent;
 
         [Header("Offence")]
         [Tooltip("Health recovered when dealing physical damage, from 0 to 100.")]
@@ -118,6 +119,14 @@ namespace HerOClock.Characters
         /// </summary>
         [NonSerialized] private EquipmentComposition equipment;
 
+        /// <summary>
+        /// What the character's **active** equipment adds up to, or null while nothing is worn.
+        ///
+        /// Inactive pieces are not in here at all. An item that stopped meeting its requirement is
+        /// disregarded whole, so it contributes no attribute, no defence and no slice of class.
+        /// </summary>
+        [NonSerialized] private EquipmentTotals equipmentTotals;
+
         /// <summary>Base attack speed of every character, in attacks per second.</summary>
         public const float BaseAttacksPerSecond = 1f;
 
@@ -142,8 +151,9 @@ namespace HerOClock.Characters
             copy.modifiers = null;
 
             // Same reasoning: equipment belongs to whoever is wearing it. A copy starts from its
-            // own sheet class until somebody hands it a set of its own.
+            // own sheet class and with nothing on until somebody hands it a set of its own.
             copy.equipment = null;
+            copy.equipmentTotals = null;
 
             return copy;
         }
@@ -161,10 +171,23 @@ namespace HerOClock.Characters
         /// points are copied once: what fights is a photograph, and a player re-equipping a hero
         /// mid stage must not reach the board until the next one.
         /// </summary>
-        public void UseEquipment(EquipmentComposition value)
+        public void UseEquipment(EquipmentComposition composition, EquipmentTotals totals)
         {
-            equipment = value;
+            equipment = composition;
+            equipmentTotals = totals;
         }
+
+        /// <summary>What the active equipment gives, or an empty bag when there is none.</summary>
+        private EquipmentTotals Equipped
+        {
+            get { return equipmentTotals ?? Empty; }
+        }
+
+        /// <summary>
+        /// Shared and never written to, so every character with nothing on reads the same zeroes
+        /// instead of allocating a bag each time a stat is asked for.
+        /// </summary>
+        private static readonly EquipmentTotals Empty = new EquipmentTotals();
 
         /// <summary>
         /// The class mix every per class table below reads, falling back to the sheet's own class
@@ -232,6 +255,14 @@ namespace HerOClock.Characters
             {
                 total *= multiplier;
             }
+
+            // Equipment lands **after** the stage's fine tuning and before the buffs. The
+            // multiplier exists for a stage to adjust a *sheet*, and equipment is not sheet, it is
+            // what the player built: letting a stage amplify it would make a hard stage punish a
+            // well equipped hero more than a bare one. The general reason behind that choice is
+            // worth keeping in mind elsewhere too — anything multiplied has a way of running away
+            // from whoever wrote the multiplier.
+            total += Equipped.Of(attribute);
 
             // Buffs come last, on top of everything the sheet and the level produced. A debuff can
             // take an attribute down to 0 and no further, as buffs-and-debuffs.md states.
@@ -315,31 +346,49 @@ namespace HerOClock.Characters
         {
             get
             {
-                float armor = DefenceOf(BasePhysicalArmor, PhysicalArmorPerLevel);
+                float armor = DefenceOf(BasePhysicalArmor, PhysicalArmorPerLevel) + Equipped.Armour;
                 return Mathf.Max(0, Mathf.RoundToInt(Modified(ModifiableStat.PhysicalArmor, armor)));
             }
         }
 
         public int FireResistance
         {
-            get { return DefenceOf(BaseFireResistance, FireResistancePerLevel); }
+            get { return DefenceOf(BaseFireResistance, FireResistancePerLevel) + Equipped.FireResistance; }
         }
 
         public int WaterResistance
         {
-            get { return DefenceOf(BaseWaterResistance, WaterResistancePerLevel); }
+            get { return DefenceOf(BaseWaterResistance, WaterResistancePerLevel) + Equipped.WaterResistance; }
         }
 
         public int ElectricResistance
         {
-            get { return DefenceOf(BaseElectricResistance, ElectricResistancePerLevel); }
+            get { return DefenceOf(BaseElectricResistance, ElectricResistancePerLevel) + Equipped.ElectricResistance; }
+        }
+
+        /// <summary>
+        /// Physical damage sent back at the attacker, counting the sheet and the equipment.
+        ///
+        /// Nothing outside this class reads the sheet's own field, for the same reason nothing
+        /// reads `BasePower`: the moment a second source exists, reading the base is reading a
+        /// number the game does not play with.
+        /// </summary>
+        public float ThornsPercent
+        {
+            get { return BaseThornsPercent + Equipped.ThornsPercent; }
         }
 
         // --- Linear secondary attributes ---
 
+        /// <summary>
+        /// attributes.md: `CON x 10 + vida vinda de outras fontes`.
+        ///
+        /// CON stays the only **attribute** that grants health. What equipment does is add, never
+        /// convert, so a point of CON is worth the same ten whatever the hero is wearing.
+        /// </summary>
         public int MaxHealth
         {
-            get { return Constitution * HealthPerConstitution; }
+            get { return Constitution * HealthPerConstitution + Equipped.Life; }
         }
 
         /// <summary>Health granted by each point of CON, from attributes.md.</summary>
@@ -481,7 +530,7 @@ namespace HerOClock.Characters
                 float fromSheet = DefenceOf(BaseEvasion, EvasionPerLevel);
                 float fromAgility = Agility * EvasionPerAgility;
 
-                return Mathf.Max(0, Mathf.RoundToInt(fromSheet + fromAgility));
+                return Mathf.Max(0, Mathf.RoundToInt(fromSheet + fromAgility + Equipped.Evasion));
             }
         }
 

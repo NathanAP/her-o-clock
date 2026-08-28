@@ -143,6 +143,27 @@ The symptom of losing this is two characters drawn in the same square: the cell 
 
 **The bookkeeping was never the problem.** `GridInvariant.Check` — grid and positions agreeing — stayed green through the whole investigation, which is what ruled out the two obvious suspects: `Occupy` and `Release` do not verify identity while `ClearFromGrid` does, and that asymmetry is real but caused none of it.
 
+## Equipment reaches the stats as a bag of numbers, and the arrow points one way
+
+`Items` already depends on `Characters` for `Attribute` and `ItemClass`. So that `CharacterStats` could read what equipment gives without the two depending on each other, the split is:
+
+- **`Characters.EquipmentTotals`** is the bag — attributes, life, the three defences, thorns — with adders and nothing else.
+- **`Items.ItemContribution`** is what fills it, and the only place that knows what a modifier id means.
+
+It is the same care the damage roll took in 0.10.7.0, where `RollPhysicalDamage` takes a number from 0 to 1 rather than the `BattleRandom`.
+
+`CharacterStats.UseEquipment` receives the mix and the bag together, and every stat folds in one new term. There is no branch anywhere asking whether something is worn: a character with nothing on reads a shared empty bag.
+
+### A modifier cannot be forgotten in silence
+
+`ItemContribution` declares `Handled` and `Deferred`, and a test asserts that **every modifier in `modifiers.json` is on one of the two lists**. Without it, a modifier added to the data that nobody wires up would roll onto items and do nothing at all, with no symptom beyond a player wondering why an item feels weak.
+
+### What is stored about an item, and what is not
+
+Only the choices: the base it came from and the values it rolled. The base defence, the attribute requirement and the name are worked out again from the tables every time, so a change to `slots.json` reaches items that already exist.
+
+Whether a piece is **active** is not stored either. It is not a fact about the item, it is a comparison against the wearer's attributes, recomputed whenever a stage builds its combatants.
+
 ## ScriptableObjects must hold no runtime state
 
 This project runs with Domain Reload disabled, which makes entering Play Mode almost instant. The price is that nothing is cleared between sessions: static fields keep their values, and so do the fields of any ScriptableObject, because the asset stays loaded.
