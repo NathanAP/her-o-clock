@@ -211,6 +211,18 @@ The stage copies were deleted outright in 0.11.0.1, and the second one was worse
 
 What this does not change is the duplication CLAUDE.md asks for on purpose, because it is a different one. A test repeats the number from the spec's prose in its own assertion, and that repetition is the second independent statement. Two data files holding the same number are not two statements, they are one statement written twice.
 
+### A duplication is only protected as far as the test actually reaches
+
+`DesignBridgeTests` compared 27 scalar fields of a character sheet and never mentioned abilities. The roadmap read that as "the sheets are protected", and for the largest and most intricate part of a sheet it simply was not true — the ability trees were duplicated with nothing watching them at all.
+
+There was no live drift, and **that could only be known after writing the test**. The lesson is not about abilities: before trusting a bridge, read what it compares rather than what it is called.
+
+`DesignBridgeAbilityTests` covers them now, and it asserts the pairing in both directions — every asset has a sheet and every sheet has an asset. The special case that used to be skipped by name (`gadrat-npc`, which had no sheet at all) stopped existing instead of being documented.
+
+### Secrets must never reach `Assets/`
+
+Everything under `Assets/` goes into the build, so anything written there is readable by anyone who opens the game folder. That is why a character sheet **splits** rather than moves: the numbers become data the game loads, and the prose — including the real names, ages and parentage that used to sit in a `hidden` block — stays in `.claude/specs/`, under `<private>` in `lore.md`.
+
 ### The sheet is JSON, the asset holds only what JSON cannot
 
 A character sheet is a `.json` file. `CharacterDefinition` keeps only the sprite and animation references, which genuinely cannot live in text, and is matched to its sheet by id — the mechanism `CharacterDatabase` already uses for stages.

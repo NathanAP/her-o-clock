@@ -22,11 +22,11 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
 - Uma habilidade nunca é escrita como um comportamento próprio e exclusivo daquele personagem. Ela é sempre a **combinação** de peças reaproveitáveis, e o que pertence ao personagem são os números e a escolha das peças.
     - Isso vale inclusive para habilidades muito características. O que faz uma habilidade ser marcante é a combinação, não uma regra que só ela usa.
 - As habilidades descritas nas fichas possuem níveis, então certos valores podem acabar mudando (o valor do dano pode aumentar a cada nível investido na habilidade). Nesses casos:
-    - Valores descritos em `arrays` indicam a escalabilidade conforme o nível (index 0 = nível 1, index 1 = nível 2 e assim por diante).
-        - Por exemplo: `{ ..., "duration": [10, 20, 30, 40, 50] }` indica que aquela habilidade possui uma escala conforme seu atual nível.
-    - Valores descritos diretamente em numéricos indicam a escalabilidade constante, ou seja, todos os níveis daquela habilidade usam o mesmo valor.
-        - Por exemplo: `{ ..., "duration": 20 }` indica que aquela habilidade possui a mesma duração em todos os níveis.
-    - Toda habilidade declara quantos níveis ela possui no campo `ranks`, e todo `array` dentro dela precisa ter exatamente esse tamanho.
+    - **Todo valor que muda por rank é escrito como `array`, sempre**, mesmo quando ele é o mesmo em todos os ranks. São eles: `cooldown`, `preparation`, `casting`, `recoil`, `maxTargets`, `duration`, `value`, `base` e `falloff`.
+        - Um `array` com **várias** entradas escala conforme o rank: index 0 é o rank 1, index 1 é o rank 2, e assim por diante. Por exemplo, `"duration": [10, 20, 30, 40, 50]`.
+        - Um `array` com **uma** entrada vale para todos os ranks. Por exemplo, `"duration": [20]`.
+        - Escrever `"duration": 20` era permitido antes e não é mais. O mesmo campo ora número ora lista obriga quem lê o arquivo a lidar com dois tipos para um significado só, e nenhum leitor de JSON comum consegue fazer isso sem código escrito à mão.
+    - Toda habilidade declara quantos níveis ela possui no campo `ranks`, e todo `array` de mais de uma entrada precisa ter exatamente esse tamanho.
         - Sem essa regra, um `array` com um valor a menos faria o último nível da habilidade ler um valor que não existe, e isso não daria erro nenhum. Seria um problema silencioso.
 - Tudo relacionado a tempo na ficha (tempo de duração, tempo de recarga, etc) está indicado em segundos.
 - Enquanto a árvore de habilidades não existir, **toda habilidade é usada no rank 1**. Os demais ranks já ficam escritos na ficha, e é a árvore que vai destravá-los.

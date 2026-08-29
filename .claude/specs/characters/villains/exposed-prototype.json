@@ -26,9 +26,6 @@
             ]
         }
     },
-    "hidden": {
-        "realLore": "Just like the exposed prototypes, they are dead people that were exposed to the Catarsis in a high level. The contamination made them lose their minds instantly and became toxic."
-    },
     "baseAttributes": {
         "pow": 2,
         "agi": 2,

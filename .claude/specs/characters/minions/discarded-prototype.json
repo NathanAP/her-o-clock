@@ -26,9 +26,6 @@
             ]
         }
     },
-    "hidden": {
-        "realLore": "Discarded prototypes are actually dead people that were exposed to the Catarsis but were not able to resist or control the effects. Many attempts were done so there are a lot of them hidden in the government facilities. They are used as weapons by DR Carter, who is the only one that can control them."
-    },
     "baseAttributes": {
         "pow": 1,
         "agi": 1,

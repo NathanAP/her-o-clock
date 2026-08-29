@@ -76,6 +76,38 @@ O foco deste ato é salvar Halo de uma invasão descontrolada. Tempo sabe que su
 
 ## Epílogo
 
+<private>
+
+## Quem os personagens realmente são
+
+O que segue é **totalmente secreto** e não pode aparecer em nenhum texto que o jogador leia: nem descrição de personagem, nem lore de fase, nem arquivo de strings.
+
+Isso mora aqui e não na ficha de cada personagem por um motivo prático além da organização: a ficha vai virar dado carregado de `Assets/`, e **tudo que está em `Assets/` entra no build**. Nome verdadeiro de personagem dentro do build é spoiler a um clique de distância de quem abrir a pasta do jogo.
+
+### Tempo
+
+- Nome real: **Samantha Carter**, chamada de **Sam**.
+- Idade real: 19.
+- Gênero real: feminino.
+- Pai: **Donovan Roads Carter**.
+
+### Gadrat
+
+- Nome real: **Gadrat**.
+- Idade real: 67.
+- Gênero real: masculino.
+- Pai: **Gytoss, Lord of Fire**.
+
+### Protótipos descartados
+
+- São pessoas mortas que foram expostas à Catarsis e não conseguiram resistir nem controlar os efeitos. Foram feitas muitas tentativas, então existem muitos deles escondidos nas instalações do governo. São usados como armas por DR Carter, o único capaz de controlá-los.
+
+### Protótipos expostos
+
+- Também são pessoas mortas expostas à Catarsis, em nível alto. A contaminação os fez perder a mente na hora, e eles se tornaram tóxicos.
+
+</private>
+
 ## Diário
 
 - As passagens disponíveis no diário serão escritas futuramente.

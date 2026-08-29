@@ -1,0 +1,82 @@
+{
+    "id": "gadrat-npc",
+    "kind": "npc",
+    "maxLevel": 100,
+    "equipment": "heavy",
+    "minRange": 1,
+    "maxRange": 1,
+    "info": {
+        "name": "Gadrat",
+        "type": "Robot",
+        "description": "The same Gadrat the player knows, appearing in a stage as somebody the party fights alongside rather than as one of their own.",
+        "lore": "Gadrat does not always answer to the player. There are stages where they are already on the field when the party arrives, fighting their own fight, and the party simply happens to arrive in the middle of it.",
+        "characteristics": {
+            "age": 2,
+            "gender": "Non-binary",
+            "body": "The same body the hero sheet describes. Nothing about Gadrat changes when they are not the one being commanded.",
+            "height": "180 cm",
+            "weight": "120 kg"
+        },
+        "outfit": {
+            "description": "The same costume as the hero sheet, drawn in a lighter tone so the player reads at a glance that this Gadrat is not theirs to command.",
+            "colors": [
+                "red",
+                "gold",
+                "black"
+            ]
+        }
+    },
+    "baseAttributes": {
+        "pow": 10,
+        "agi": 2,
+        "spe": 6,
+        "con": 12
+    },
+    "attributeGrowth": {
+        "pow": 35,
+        "agi": 5,
+        "spe": 25,
+        "con": 35
+    },
+    "defence": {
+        "physicalArmor": {
+            "base": 60,
+            "perLevel": 60
+        },
+        "evasion": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "fireResistance": {
+            "base": 100,
+            "perLevel": 100
+        },
+        "waterResistance": {
+            "base": 0,
+            "perLevel": 0
+        },
+        "electricResistance": {
+            "base": 0,
+            "perLevel": 0
+        }
+    },
+    "thornsPercent": 0,
+    "lifeStealPercent": 0,
+    "healthRegen": 0,
+    "autoAttacks": [
+        {
+            "type": "melee",
+            "damage": {
+                "min": {
+                    "base": 7,
+                    "perLevel": 0
+                },
+                "max": {
+                    "base": 11,
+                    "perLevel": 0
+                }
+            }
+        }
+    ],
+    "abilities": []
+}

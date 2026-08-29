@@ -57,8 +57,8 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
     - Ganho igual ao valor inicial mantém a mitigação parada durante o jogo inteiro, e é o caso mais comum.
 - `thornsPercent`, `lifeStealPercent` e `healthRegen` — secundários que são porcentagem ou taxa, e por isso não precisam de ganho por nível.
 - `info` — tudo que o jogador pode ver: descrição, história, características físicas e visual.
-- `hidden` — a verdade por trás do personagem, que o jogador só descobre jogando.
-    - Este bloco existe **apenas como documento de design**. Ele nunca deve ir para o dado que o jogo lê, senão qualquer pessoa abre o arquivo do jogo e encontra a revelação antes de merecê-la.
+- A verdade por trás de cada personagem **não mora na ficha**. Ela mora na seção `<private>` de `lore.md`, junto de todo o resto que é segredo.
+    - O motivo é prático e não organizacional: a ficha vai virar dado carregado de `Assets/`, e **tudo que está em `Assets/` entra no build**. Nome verdadeiro de personagem dentro do build é spoiler a um clique de distância de quem abrir a pasta do jogo.
 - `baseAttributes` — os atributos principais no nível inicial, antes de qualquer outra fonte.
 - `attributeGrowth` — como o personagem distribui os 5 pontos que recebe a cada nível, em porcentagens. Descrito em `progress.md`.
 - `abilityTrees` ou `abilities` — as habilidades do personagem, descritas por inteiro em `abilities.md`. Qual dos dois campos a ficha usa depende do tipo, e está detalhado logo abaixo.

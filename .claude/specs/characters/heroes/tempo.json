@@ -29,13 +29,6 @@
             ]
         }
     },
-    "hidden": {
-        "realName": "Samantha Carter",
-        "realNickname": "Sam",
-        "realAge": 19,
-        "realGender": "Female",
-        "realFatherName": "Donovan Roads Carter"
-    },
     "baseAttributes": {
         "pow": 6,
         "agi": 9,
@@ -112,9 +105,15 @@
                         22,
                         20
                     ],
-                    "preparation": 0,
-                    "casting": 0.4,
-                    "recoil": 0,
+                    "preparation": [
+                        0
+                    ],
+                    "casting": [
+                        0.4
+                    ],
+                    "recoil": [
+                        0
+                    ],
                     "targeting": {
                         "who": "self",
                         "shape": "self"
@@ -125,7 +124,9 @@
                             "target": "self",
                             "stat": "attackSpeed",
                             "mode": "percent",
-                            "value": 20,
+                            "value": [
+                                20
+                            ],
                             "duration": [
                                 5,
                                 6,
@@ -139,7 +140,9 @@
                             "target": "self",
                             "stat": "movementSpeed",
                             "mode": "percent",
-                            "value": 20,
+                            "value": [
+                                20
+                            ],
                             "duration": [
                                 5,
                                 6,
@@ -153,7 +156,9 @@
                             "target": "self",
                             "stat": "cooldownReduction",
                             "mode": "percent",
-                            "value": 15,
+                            "value": [
+                                15
+                            ],
                             "duration": [
                                 5,
                                 6,
@@ -183,9 +188,15 @@
                         22,
                         20
                     ],
-                    "preparation": 0.4,
-                    "casting": 0.5,
-                    "recoil": 0,
+                    "preparation": [
+                        0.4
+                    ],
+                    "casting": [
+                        0.5
+                    ],
+                    "recoil": [
+                        0
+                    ],
                     "targeting": {
                         "who": "enemies",
                         "shape": "area",
@@ -199,7 +210,9 @@
                             "target": "eachTarget",
                             "stat": "attackSpeed",
                             "mode": "percent",
-                            "value": -10,
+                            "value": [
+                                -10
+                            ],
                             "duration": [
                                 5,
                                 6,
@@ -213,7 +226,9 @@
                             "target": "eachTarget",
                             "stat": "movementSpeed",
                             "mode": "percent",
-                            "value": -10,
+                            "value": [
+                                -10
+                            ],
                             "duration": [
                                 5,
                                 6,
@@ -227,7 +242,9 @@
                             "target": "eachTarget",
                             "stat": "cooldownReduction",
                             "mode": "percent",
-                            "value": -8,
+                            "value": [
+                                -8
+                            ],
                             "duration": [
                                 5,
                                 6,
@@ -257,9 +274,15 @@
                         18,
                         16
                     ],
-                    "preparation": 0,
-                    "casting": 1,
-                    "recoil": 0,
+                    "preparation": [
+                        0
+                    ],
+                    "casting": [
+                        1
+                    ],
+                    "recoil": [
+                        0
+                    ],
                     "targeting": {
                         "who": "enemies",
                         "shape": "chain",
@@ -278,13 +301,17 @@
                             "type": "apply_status",
                             "target": "self",
                             "status": "untargetable",
-                            "duration": 1
+                            "duration": [
+                                1
+                            ]
                         },
                         {
                             "type": "apply_status",
                             "target": "self",
                             "status": "intangible",
-                            "duration": 1
+                            "duration": [
+                                1
+                            ]
                         },
                         {
                             "type": "deal_damage",

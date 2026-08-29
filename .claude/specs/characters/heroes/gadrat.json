@@ -27,12 +27,6 @@
             ]
         }
     },
-    "hidden": {
-        "realName": "Gadrat",
-        "realAge": 67,
-        "realGender": "Male",
-        "realFatherName": "Gytoss, Lord of Fire"
-    },
     "baseAttributes": {
         "pow": 10,
         "agi": 2,
@@ -109,9 +103,15 @@
                         20,
                         15
                     ],
-                    "preparation": 1,
-                    "casting": 1,
-                    "recoil": 0.5,
+                    "preparation": [
+                        1
+                    ],
+                    "casting": [
+                        1
+                    ],
+                    "recoil": [
+                        0.5
+                    ],
                     "targeting": {
                         "who": "enemies",
                         "shape": "line",
@@ -130,7 +130,9 @@
                                 120,
                                 150
                             ],
-                            "falloff": 0.15,
+                            "falloff": [
+                                0.15
+                            ],
                             "scaling": {
                                 "spe": 1.0
                             }
@@ -140,7 +142,9 @@
                             "target": "eachTarget",
                             "stat": "physicalArmor",
                             "mode": "percent",
-                            "value": -20,
+                            "value": [
+                                -20
+                            ],
                             "duration": [
                                 4,
                                 5,
@@ -170,9 +174,15 @@
                         35,
                         30
                     ],
-                    "preparation": 0.5,
-                    "casting": 1,
-                    "recoil": 0.5,
+                    "preparation": [
+                        0.5
+                    ],
+                    "casting": [
+                        1
+                    ],
+                    "recoil": [
+                        0.5
+                    ],
                     "targeting": {
                         "who": "enemies",
                         "shape": "area",

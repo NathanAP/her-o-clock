@@ -600,7 +600,31 @@ Respondido pelo Nathan antes de a versão começar, e implementado como está es
 - **Bug encontrado pela própria tabela:** a geração dela lia os ranks a partir de zero, e o resto do projeto conta a partir de um. Todo rank saiu um degrau abaixo e o último nunca aparecia. Era código novo de teste e não do jogo, mas é exatamente o tipo de erro que uma tabela publicada pega e uma leitura de código não.
 - O resumo completo está em `.claude/versions/20260829_0.11.3.0.md`.
 
-## 0.11.4.0 (próxima)
+## 0.11.4.0 (feita)
+
+- **A ponte passou a cobrir as habilidades**, que eram a maior e mais intrincada parte de uma ficha e estavam duplicadas com **nada** vigiando — a mesma situação das fases antes da 0.11.0.1. O roadmap dizia que as fichas já estavam protegidas, e isso valia só para os 27 campos escalares.
+    - `DesignBridgeAbilityTests` compara rank a rank: ranks, liberação, tempos, alvo, forma, prioridade, área, e cada efeito com tipo, alvo, duração, valor, base, queda, escalonamento e estado.
+    - **A árvore em si não é comparada**, porque ela não tem contrapartida no asset: o asset guarda uma lista lisa. O agrupamento é informação que o código só começa a ler na 0.18.0.0.
+- **O `gadrat-npc` ganhou ficha.** Ele não tinha nenhuma, e o teste antigo o pulava por nome dizendo que ele "espelha a ficha do Gadrat". Não espelhava: ele não tem habilidade nenhuma onde o Gadrat tem duas. Era um personagem cujos números existiam num lugar só e eram conferidos por nada.
+    - A ponte agora exige o par nos **dois sentidos**: todo asset tem ficha e toda ficha tem asset.
+- **Todo valor por rank virou array, sempre.** O mesmo campo era ora número ora lista, e nenhum leitor de JSON comum lida com isso sem código escrito à mão — era o que impedia a ponte de existir. Um array de uma entrada vale para todos os ranks, que é exatamente como o asset já guardava.
+- **O `hidden` saiu das fichas e foi para `<private>` em `lore.md`.** O motivo não é organização: a ficha vai virar dado de `Assets/`, e tudo em `Assets/` entra no build. Nome verdadeiro de personagem dentro do build é spoiler a um clique de distância.
+- **O `RankAvailability` deixou de ser hexadecimal.** O `Tempo.asset` guardava `01000000060000000e...` e o `Gadrat.asset` guardava a mesma coisa como lista. Um campo cujo diff é legível só às vezes é pior que um que nunca é, porque ninguém pode confiar em revisão.
+- **Achado da própria ponte, na primeira rodada:** ela acusou três divergências de `range`, e as três eram da comparação e não do dado — uma forma que não escolhe alvo omite o campo, e o asset guarda o padrão. É o formato esperado de uma primeira rodada, e por isso ela roda antes de qualquer promoção.
+- O resumo completo está em `.claude/versions/20260829_0.11.4.0.md`.
+
+## 0.11.5.0 (próxima)
+
+- **camelCase em todo JSON do projeto**, e não só nos itens: chave, id e valor interno.
+    - Hoje quatro valores fogem disso: `deal_damage`, `modify_stat`, `apply_status` e `move_to`, escritos em `snake_case` ao lado de `eachTarget` e `lastTargetAnySide` no mesmo arquivo.
+    - E os ids: `no-time-to-waste`, `speed-tempo`, `discarded-prototype`, `gadrat-npc`, `act1-stage1`.
+- **Um teste varre todo `.json` do projeto e recusa o que fugir da regra.** É isso que faz a convenção ser regra e não arrumação: sem ele, o próximo arquivo escrito volta a divergir e ninguém percebe.
+- **Renomear id encosta no save.** `HeroSave.id` e `StageSave.id` guardam id, e o `SaveMigration` **não tem nenhum passo de conversão** — a versão 1 é a única que já existiu. Ou essa versão escreve o primeiro passo de verdade, ou aceita que saves quebram. Como a 0.11 já quebra a experiência, quebrar é defensável, mas é decisão e não detalhe.
+- **A ponte da 0.11.4.0 é quem prova que nenhum número se moveu** enquanto os nomes mudam.
+- As duas metades — valores e ids — ficaram na mesma versão porque a dos valores é quatro strings. Separar seria partir uma regra em duas sem ganhar proteção nenhuma.
+
+## 0.11.6.0
+
 
 - **A ficha de personagem vira fonte única.** Os números saem de `.claude/specs/characters/` e vão para `Assets/`, em JSON. O `CharacterDefinition` fica só com a cor e as referências de sprite, resolvido por id como as fases já são.
 - **O arquivo se parte em dois, e não muda de pasta inteiro.** Ele mistura duas coisas hoje:
@@ -614,13 +638,13 @@ Respondido pelo Nathan antes de a versão começar, e implementado como está es
     - Bônus de esperar: depois da arma, já se sabe exatamente o que a ficha precisa guardar.
 - **Ponto em aberto: os ids também viram camelCase?** `act1-stage1` e `discardedPrototype` são valores e não chaves. Padronizar é coerente, mas **id de fase e id de herói estão dentro do save**, então renomear invalida saves existentes. Como a 0.11 já quebra a experiência de qualquer jeito, provavelmente é a hora certa, mas é decisão e não detalhe.
 
-## 0.11.5.0
+## 0.11.7.0
 
 - **O gerador.** Tecnologia, quantidade, divisão hardware/software, pesos, camadas, valores e a montagem do nome.
 - C# puro, sem Unity, com teste de distribuição.
 - **De qual fonte aleatória ele sorteia é decisão, e importa.** O `architecture.md` proíbe `UnityEngine.Random` em combate porque ele é global, e um item gerado no meio de uma fase sortearia dentro da mesma fase. Ou o gerador usa o `BattleRandom` da batalha, e aí o drop faz parte da sequência reproduzível pela semente, ou ele tem uma sequência própria e a batalha deixa de ser reproduzível junto do que ela dropou.
 
-## 0.11.6.0
+## 0.11.8.0
 
 - **Únicos.** A pasta `Assets/Items/Uniques/`, o `AssetPostprocessor` de autodescoberta e o teste que sustenta a promessa de que um arquivo novo entra sozinho.
 - Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico.

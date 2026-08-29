@@ -181,8 +181,10 @@ namespace HerOClock.Tests
         /// <summary>
         /// Field by field, for every design sheet that has an asset.
         ///
-        /// An asset with no sheet is skipped rather than failed: `gadrat-npc` mirrors Gadrat's sheet
-        /// deliberately and has none of its own, and the four test sheets used to live here too.
+        /// Every asset has a sheet since 0.11.4.0, when `gadrat-npc` finally got one. It never
+        /// did mirror Gadrat: it carries no abilities where Gadrat carries two, so it was a
+        /// character whose numbers lived in exactly one place and were checked by nothing.
+        /// `DesignBridgeAbilityTests` is what asserts the pairing now, in both directions.
         /// Every problem is collected before reporting, so one run says everything that is wrong.
         /// </summary>
         [Test]

@@ -322,6 +322,20 @@ The cause is structural rather than a tuning mistake. Damage carries across a wh
 
 Anything that widens that middle is a design lever and not a number: regeneration between waves, fewer waves early, or a partial heal on clearing one. Until one of them exists, the early stages can only be tuned to "flows" or "wall", and nothing in between.
 
+## Every per-rank value is an array, even when it never changes
+
+A field that is sometimes a number and sometimes a list is one meaning with two types, and no ordinary JSON reader can take it without hand written code. It was exactly what stopped a bridge test over the ability trees from being written at all.
+
+So `cooldown`, `preparation`, `casting`, `recoil`, `maxTargets`, `duration`, `value`, `base` and `falloff` are always arrays. **One entry means the same at every rank**, which is already how the asset stores it, so `20` became `[20]` and never `[20, 20, 20, 20, 20]`.
+
+The size rule survives in the shape that still catches the silent bug: an array of more than one entry has to have exactly `ranks` entries.
+
+## A field whose diff is readable only sometimes is worse than one that never is
+
+`RankAvailability` was hex-packed in one character asset and a plain list in another — same field, same project. Nobody can rely on reviewing a diff that is legible half the time, so the habit of reviewing it never forms.
+
+Unity accepts both forms and writes whichever it feels like, which is one more reason the numbers belong in JSON the project controls rather than in an asset the editor rewrites.
+
 ## Rank steps are what make a weak rank 1 possible
 
 Every ability declares `rankAvailability`, one character level per rank, and the caster picks the rank from the character's level.
