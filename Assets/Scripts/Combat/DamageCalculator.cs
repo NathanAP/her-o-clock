@@ -106,7 +106,7 @@ namespace HerOClock.Combat
         private static double Mitigation(DamageInput input)
         {
             double constant = 50.0 * Math.Max(1, input.AttackerLevel);
-            double fromCurve = CharacterStats.DiminishingReturns(MitigationCap, input.TargetMitigationPoints, constant);
+            double fromCurve = CharacterStats.DiminishingReturns(MitigationCap, Considered(input), constant);
 
             if (input.Type == DamageType.Physical)
             {
@@ -115,6 +115,27 @@ namespace HerOClock.Combat
 
             double total = fromCurve + input.TargetResistanceBonus;
             return total < -100.0 ? -100.0 : total;
+        }
+
+        /// <summary>
+        /// The target's defence points as this attacker sees them, after ignored resistance.
+        ///
+        /// attributes.md: `Pontos considerados = Pontos do alvo x (1 - Resistência ignorada / 100)`,
+        /// and the curve then runs on the cut value. Nothing is clamped at 100% ignored on purpose:
+        /// past it the points would go negative and the curve already answers zero, so an explicit
+        /// ceiling would be a second rule saying what the first one already says.
+        /// </summary>
+        private static double Considered(DamageInput input)
+        {
+            double points = input.TargetMitigationPoints;
+
+            if (input.AttackerResistanceIgnoredPercent <= 0f)
+            {
+                return points;
+            }
+
+            double cut = points * (1.0 - input.AttackerResistanceIgnoredPercent / 100.0);
+            return cut < 0.0 ? 0.0 : cut;
         }
 
         /// <summary>

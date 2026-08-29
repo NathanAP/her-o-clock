@@ -198,6 +198,11 @@ namespace HerOClock.Combat
                 TargetEvasionPoints = defender.Stats.EvasionPoints,
                 TargetMitigationPoints = MitigationPointsOf(defender.Stats, type),
                 TargetResistanceBonus = 0f,
+
+                // Read off whoever is swinging, which on a thorns reflection is the character that
+                // reflected. That is the same side life steal is already read from a line above,
+                // and the two have to agree: a reflection is an attack by the one reflecting.
+                AttackerResistanceIgnoredPercent = attacker.Stats.ResistanceIgnoredPercent,
                 TargetThornsPercent = defender.Stats.ThornsPercent,
                 CanTriggerThorns = canTriggerThorns
             };

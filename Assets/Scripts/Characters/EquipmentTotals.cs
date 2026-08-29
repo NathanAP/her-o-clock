@@ -31,6 +31,34 @@ namespace HerOClock.Characters
         /// <summary>Share of physical damage sent back, added to whatever the sheet declares.</summary>
         public float ThornsPercent { get; private set; }
 
+        /// <summary>
+        /// Share of the target's defence this character ignores when attacking, from 0 to 100.
+        ///
+        /// It belongs to the **attacker** and cuts the target's points before the mitigation curve,
+        /// which is not the same thing as lowering the mitigation afterwards. The reasoning and the
+        /// worked example are in "Resistência ignorada" in attributes.md.
+        /// </summary>
+        public float ResistanceIgnoredPercent { get; private set; }
+
+        /// <summary>
+        /// Extra ability damage per element, from 0 upwards, as a percentage.
+        ///
+        /// Four properties rather than one indexed by damage type, because `DamageType` lives in
+        /// `Combat` and this namespace must not depend on it — `Combat` already depends on this
+        /// one. Whoever knows about damage types does the switch, exactly as
+        /// `AbilityResolver.MitigationPointsOf` already does.
+        /// </summary>
+        public float FireAbilityDamagePercent { get; private set; }
+
+        /// <inheritdoc cref="FireAbilityDamagePercent"/>
+        public float WaterAbilityDamagePercent { get; private set; }
+
+        /// <inheritdoc cref="FireAbilityDamagePercent"/>
+        public float ElectricAbilityDamagePercent { get; private set; }
+
+        /// <inheritdoc cref="FireAbilityDamagePercent"/>
+        public float PhysicalAbilityDamagePercent { get; private set; }
+
         public int Of(Attribute attribute)
         {
             return attributes[(int)attribute];
@@ -88,6 +116,31 @@ namespace HerOClock.Characters
         public void AddThornsPercent(float amount)
         {
             ThornsPercent += amount;
+        }
+
+        public void AddResistanceIgnoredPercent(float amount)
+        {
+            ResistanceIgnoredPercent += amount;
+        }
+
+        public void AddFireAbilityDamagePercent(float amount)
+        {
+            FireAbilityDamagePercent += amount;
+        }
+
+        public void AddWaterAbilityDamagePercent(float amount)
+        {
+            WaterAbilityDamagePercent += amount;
+        }
+
+        public void AddElectricAbilityDamagePercent(float amount)
+        {
+            ElectricAbilityDamagePercent += amount;
+        }
+
+        public void AddPhysicalAbilityDamagePercent(float amount)
+        {
+            PhysicalAbilityDamagePercent += amount;
         }
     }
 }

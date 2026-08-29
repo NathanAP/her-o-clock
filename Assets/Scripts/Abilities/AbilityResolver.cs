@@ -132,10 +132,22 @@ namespace HerOClock.Abilities
             BattleRandom random,
             DamageDealt onDamage)
         {
-            // The rank's own number, raised by the share of the user's attributes it scales with.
-            // The attribute multiplies rather than adds, exactly as a weapon and POW do: otherwise
-            // enough points would make the rank stop mattering.
-            float raw = effect.Base.At(rank) * effect.Scaling.MultiplierFor(user.Stats);
+            // The rank's own number, raised by the share of the user's attributes it scales with
+            // **plus** the ability damage percentages that apply to this effect's element.
+            //
+            // The two land in the same sum rather than multiplying each other, which is what makes
+            // 1% of ability damage worth exactly ten attribute points: the same rate, so the player
+            // can trade one for the other knowing the exchange. Multiplying would make each point
+            // worth more the more items were already on, and only the build stacking both would
+            // get the full return.
+            //
+            // Which percentages apply is decided **per effect** and never per ability, because one
+            // damage effect carries exactly one element. An ability that burns and shocks is two
+            // effects, and the fire half gets nothing from investment in electric.
+            float multiplier = effect.Scaling.MultiplierFor(user.Stats)
+                + AbilityDamagePercentOf(user.Stats, effect.DamageType) / 100f;
+
+            float raw = effect.Base.At(rank) * multiplier;
             int baseDamage = Mathf.Max(0, Mathf.RoundToInt(raw * FalloffFactor(user, target, effect, rank)));
 
             DamageInput input = new DamageInput
@@ -147,6 +159,7 @@ namespace HerOClock.Abilities
                 TargetEvasionPoints = target.Stats.EvasionPoints,
                 TargetMitigationPoints = MitigationPointsOf(target.Stats, effect.DamageType),
                 TargetResistanceBonus = 0f,
+                AttackerResistanceIgnoredPercent = user.Stats.ResistanceIgnoredPercent,
                 TargetThornsPercent = target.Stats.ThornsPercent,
 
                 // An ability is not a basic attack, and thorns reflect blows. Letting an area
@@ -279,6 +292,27 @@ namespace HerOClock.Abilities
 
             int cells = GridPosition.Distance(user.Position, target.Position);
             return Mathf.Pow(1f - falloff, Mathf.Max(0, cells - 1));
+        }
+
+        /// <summary>
+        /// The ability damage percentage that applies to one element.
+        ///
+        /// The switch lives here rather than on <see cref="CharacterStats"/> for the same reason
+        /// <see cref="MitigationPointsOf"/> does: `DamageType` belongs to `Combat`, and
+        /// `Characters` must not depend on it.
+        ///
+        /// A general "ability damage" percentage, when one exists, is added here for every element
+        /// at once. There is no such modifier in the data today.
+        /// </summary>
+        private static float AbilityDamagePercentOf(CharacterStats stats, DamageType type)
+        {
+            switch (type)
+            {
+                case DamageType.Fire: return stats.FireAbilityDamagePercent;
+                case DamageType.Water: return stats.WaterAbilityDamagePercent;
+                case DamageType.Electric: return stats.ElectricAbilityDamagePercent;
+                default: return stats.PhysicalAbilityDamagePercent;
+            }
         }
 
         private static int MitigationPointsOf(CharacterStats stats, DamageType type)

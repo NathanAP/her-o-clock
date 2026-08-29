@@ -44,6 +44,22 @@
         /// </summary>
         public float TargetResistanceBonus;
 
+        /// <summary>
+        /// Share of the target's defence the **attacker** ignores, from 0 to 100.
+        ///
+        /// It is the attacker's and not the target's, which is the whole difference between it and
+        /// <see cref="TargetResistanceBonus"/> right above. And it cuts the target's **points**
+        /// before the curve rather than the mitigation after it: cutting afterwards would make the
+        /// gain grow the more defended the target is, turning the modifier into a requirement
+        /// against any resistant enemy. Cutting before, diminishing returns keeps applying and the
+        /// gain against a saturated target stays small.
+        ///
+        /// It applies to physical armour and to the three elemental resistances, because all four
+        /// go through the same curve. It does **not** apply to evasion, which is a chance to avoid
+        /// the attack rather than a defence against it.
+        /// </summary>
+        public float AttackerResistanceIgnoredPercent;
+
         /// <summary>Target's thorns, from 0 to 100.</summary>
         public float TargetThornsPercent;
 

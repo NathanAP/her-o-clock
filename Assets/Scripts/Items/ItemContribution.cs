@@ -29,7 +29,9 @@ namespace HerOClock.Items
             "life",
             "fireResistance", "waterResistance", "electricResistance", "allResistance",
             "localArmour", "localEvasion",
-            "thorns"
+            "thorns",
+            "resistanceIgnored",
+            "fireAbilityDamage", "waterAbilityDamage", "electricAbilityDamage", "physicalAbilityDamage"
         };
 
         /// <summary>
@@ -51,15 +53,11 @@ namespace HerOClock.Items
         /// <summary>
         /// Modifiers that exist in the data and have nowhere to land yet.
         ///
-        /// The four ability damage percentages and the ignored resistance need seams that do not
-        /// exist: `AbilityResolver` runs through no modifier at all, and `DamageInput` has no
-        /// attacker side field for penetration. They arrive in 0.11.3.0.
+        /// **Empty, and that is the point.** Every modifier in `modifiers.json` now reaches the
+        /// game. The list stays because the test that keeps it honest reads all three, and because
+        /// the next modifier that needs a seam has somewhere to wait where nobody can forget it.
         /// </summary>
-        public static readonly IReadOnlyList<string> Deferred = new List<string>
-        {
-            "fireAbilityDamage", "waterAbilityDamage", "electricAbilityDamage", "physicalAbilityDamage",
-            "resistanceIgnored"
-        };
+        public static readonly IReadOnlyList<string> Deferred = new List<string>();
 
         public static void AddTo(EquipmentTotals totals, Item item, ItemDefence defence)
         {
@@ -136,6 +134,15 @@ namespace HerOClock.Items
                 case "localEvasion": totals.AddEvasion(Round(roll.Value)); break;
 
                 case "thorns": totals.AddThornsPercent(roll.Value); break;
+
+                // Percentages are not rounded on the way in. They multiply a base later, and
+                // rounding a 4.5 to a 4 here would quietly throw away an eighth of the modifier.
+                case "resistanceIgnored": totals.AddResistanceIgnoredPercent(roll.Value); break;
+
+                case "fireAbilityDamage": totals.AddFireAbilityDamagePercent(roll.Value); break;
+                case "waterAbilityDamage": totals.AddWaterAbilityDamagePercent(roll.Value); break;
+                case "electricAbilityDamage": totals.AddElectricAbilityDamagePercent(roll.Value); break;
+                case "physicalAbilityDamage": totals.AddPhysicalAbilityDamagePercent(roll.Value); break;
             }
         }
 

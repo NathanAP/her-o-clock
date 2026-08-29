@@ -343,6 +343,10 @@ namespace HerOClock.Tests
             Assert.IsEmpty(unaccounted,
                 "These modifiers exist in the data and nothing applies them:\n"
                 + string.Join("\n", unaccounted));
+
+            Assert.IsEmpty(ItemContribution.Deferred,
+                "Every modifier in the data now reaches the game, so nothing should be waiting: "
+                + string.Join(", ", ItemContribution.Deferred));
         }
 
         private static void Check(ItemModifier[] list, List<string> unaccounted)

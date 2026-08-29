@@ -140,8 +140,9 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 ### Especialidade (SPE)
 
 - SPE aumenta ataques elementais e redução de recarga do personagem.
-    - SPE aumenta o dano das habilidades do personagem. **Quanto ele aumenta ainda não está definido**, e é decidido junto com os itens.
-        - A promessa foi retirada em vez de implementada porque o modelo inteiro muda com os itens: dano de atributo vai deixar de ser um valor somado e passar a ser uma porcentagem sobre a base que o conteúdo fornece — a arma para o ataque básico, o rank para a habilidade. Implementar o valor antigo agora seria construir algo para apagar em seguida.
+    - SPE aumenta o dano das habilidades do personagem **na mesma taxa que todo atributo aumenta uma base**: 10 pontos valem 1% sobre a base, e o atributo multiplica em vez de somar.
+        - É exatamente a taxa com que POW aumenta o dano da arma. Os dois não podem ficar desequilibrados entre si por esse lado, porque é o mesmo número.
+        - **Quanto cada habilidade se apoia em SPE é escolha da própria habilidade**, escrita no `scaling` dela conforme `abilities.md`. Uma habilidade pode escalar com qualquer um dos quatro atributos, ou com nenhum.
     - SPE é a fonte de redução de recarga, mas a conversão em porcentagem é feita por rendimento decrescente e está descrita em "Redução de recarga".
 - Personagens com mais SPE são capazes de utilizar equipamentos e armaduras especiais.
 
@@ -386,6 +387,26 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 - Ela vale para armadura física e para as três resistências elementais, pois todas passam pela mesma curva.
 - Resistência ignorada é do **atacante**, e não deve ser confundida com as fontes especiais de resistência descritas acima, que pertencem ao **alvo** e são somadas depois da curva.
 
+### Dano de habilidade
+
+- Atributo ofensivo que aumenta o dano das habilidades do personagem, separado por elemento. Vem de equipamento e de nós da árvore de habilidades, nunca de atributo principal.
+- **Ele não aumenta o ataque básico.** Quem aumenta o ataque básico é o dano base da arma, descrito em `items.md`. As duas famílias são separadas de propósito: quem constrói ataque básico procura arma, quem constrói habilidade procura estes.
+- **Ele entra na mesma soma que os atributos, e nunca multiplica por fora.**
+    - `Dano = base do rank × (1 + Σ(atributo × peso) × 0.001 + Σ(porcentagens aplicáveis) ÷ 100)`
+    - A consequência que interessa: **1% de dano de habilidade vale exatamente 10 pontos de atributo**, porque é a mesma taxa. Os dois viram a mesma moeda, e o jogador troca um pelo outro sabendo o câmbio.
+    - Multiplicar por fora foi recusado. O ganho de cada ponto passaria a depender de quantos itens o personagem já tem, e vice-versa, então a build que empilha os dois seria a única com retorno cheio e a conta deixaria de ser previsível de cabeça.
+- **Fontes diferentes somam entre si.** Um item com 5% e um buff com 20% valem 25%, e nunca 26%. A regra de que reduções multiplicam vale para reduções: aumentos de dano somam antes de multiplicar a base uma vez só.
+- **As porcentagens aplicáveis são decididas por efeito, e nunca por habilidade.** Cada efeito de dano tem exatamente um elemento, conforme "Ordem do cálculo de dano".
+    - Entram no efeito: a porcentagem do elemento daquele efeito, e uma porcentagem geral de dano de habilidade quando ela existir. Hoje só existem as por elemento.
+    - Uma habilidade com um efeito de fogo e um efeito elétrico calcula os dois separadamente. O efeito de fogo não recebe nada do investimento em elétrico.
+- Por exemplo, uma habilidade de fogo com base de rank 100 e escalonamento `spe: 1.0`, num personagem com 200 de SPE, carregando duas peças que dão 10% e 15% de dano de habilidade de fogo:
+    - As porcentagens somam 25%.
+    - O multiplicador é `1 + 200 × 0.001 + 25 ÷ 100`, ou seja **1.45**.
+    - O dano base do efeito passa a ser `100 × 1.45 = 145`.
+- **Ele vale para o dano que a habilidade causa em quem a usou.** Uma habilidade cujo custo é dano em si mesmo fica mais cara conforme o personagem investe naquele elemento, e a saída é resistência e vida. O custo vira decisão de build em vez de imposto fixo.
+- **Ele vale também quando o ataque vira cura.** Uma base maior cura mais um alvo com mais de 100% de resistência àquele elemento, conforme "Quando o ataque vira cura". É a mesma estratégia que o jogador usa, disponível para o jogo usar contra ele.
+- A queda de dano por distância acontece depois, sobre o valor já multiplicado. Como as duas são multiplicações antes de um único arredondamento, a ordem entre elas não muda o resultado.
+
 ### Roubo de vida
 
 - Atributo ofensivo que faz com que o personagem se cure ao desferir um ataque físico.
@@ -422,7 +443,7 @@ Esta é a regra mais importante desta seção, e ela **não tem exceção**.
 
 1. **Dano base.** É o dano físico ou elemental de quem ataca. Um mesmo ataque nunca é físico e elemental ao mesmo tempo.
 2. **Espinhos.** Calculado sobre o dano base, antes de qualquer mitigação. O valor devolvido é resolvido como um ataque físico independente contra quem atacou, passando pela mitigação dele normalmente.
-3. **Mitigação.** Armadura física para dano físico, resistência do elemento correspondente para dano elemental.
+3. **Mitigação.** Armadura física para dano físico, resistência do elemento correspondente para dano elemental. Se o atacante tiver resistência ignorada, os pontos do alvo são cortados **antes** da curva, conforme "Resistência ignorada".
 4. **Evasão.** Sorteada uma única vez por ataque. Uma evasão normal elimina 40% do dano e uma evasão perfeita elimina 75%.
 5. **Dano final.** Arredondado para o valor inteiro mais próximo e subtraído da vida atual.
 6. **Roubo de vida.** Calculado sobre o dano final e apenas em ataques físicos.

@@ -163,7 +163,8 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
     - `deal_damage` — causa dano. Recebe `damageType`, `base` e `scaling`, e aceita um `falloff` opcional.
         - O `base` vem do **rank** da habilidade, e é o conteúdo dizendo quanto ela vale.
         - O `scaling` é o **peso** de cada atributo sobre a taxa padrão de `attributes.md`, e nunca dano somado por ponto. Peso `1` significa que o atributo paga os 10 pontos por 1% inteiros; `0.5` paga metade disso.
-        - `Dano = base × (1 + Σ(atributo × peso) × 0.001)`
+        - `Dano = base × (1 + Σ(atributo × peso) × 0.001 + Σ(porcentagens de dano de habilidade) ÷ 100)`
+        - As porcentagens vindas de equipamento e da árvore entram na **mesma soma** que os atributos, e as aplicáveis são escolhidas pelo `damageType` deste efeito. A regra inteira, com exemplo, está em "### Dano de habilidade" em `attributes.md`.
         - É a mesma leitura que a arma e o POW têm: o conteúdo dá a base, o atributo multiplica. Somar dano por ponto faria o rank parar de importar assim que o personagem tivesse pontos suficientes, que é exatamente o problema que o dano flat cria com a arma.
     - `apply_status` — aplica um estado nomeado, como `untargetable` ou `intangible`. Cada um deles está descrito em `buffs-and-debuffs.md`.
     - `move_to` — reposiciona alguém. Recebe `anchor`, que hoje só tem um valor: `lastTargetAnySide`, uma das casas vizinhas ao último alvo da habilidade.

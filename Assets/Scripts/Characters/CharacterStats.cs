@@ -406,6 +406,53 @@ namespace HerOClock.Characters
             get { return BaseThornsPercent + Equipped.ThornsPercent; }
         }
 
+        /// <summary>
+        /// Share of the target's defence this character ignores when it attacks, from 0 to 100.
+        ///
+        /// Equipment only, with no field on the sheet. A minion has no items, so it has none of
+        /// this — which is the honest answer rather than a zero pretending to be a choice. The day
+        /// a villain is written that pierces armour, the sheet gains the field and this gains a
+        /// term, exactly as <see cref="ThornsPercent"/> already reads.
+        /// </summary>
+        public float ResistanceIgnoredPercent
+        {
+            get { return Equipped.ResistanceIgnoredPercent; }
+        }
+
+        /// <summary>
+        /// Extra ability damage for one element, as a percentage.
+        ///
+        /// Four properties and not one taking a damage type, because `DamageType` lives in
+        /// `Combat`, which already depends on this namespace. Whoever knows about damage types
+        /// does the switch, the same way the mitigation lookup already does.
+        ///
+        /// **It never touches the basic attack.** What raises a basic attack is the weapon's own
+        /// base damage, and keeping the two families apart is what makes a weapon build and an
+        /// ability build look for different items.
+        /// </summary>
+        public float FireAbilityDamagePercent
+        {
+            get { return Equipped.FireAbilityDamagePercent; }
+        }
+
+        /// <inheritdoc cref="FireAbilityDamagePercent"/>
+        public float WaterAbilityDamagePercent
+        {
+            get { return Equipped.WaterAbilityDamagePercent; }
+        }
+
+        /// <inheritdoc cref="FireAbilityDamagePercent"/>
+        public float ElectricAbilityDamagePercent
+        {
+            get { return Equipped.ElectricAbilityDamagePercent; }
+        }
+
+        /// <inheritdoc cref="FireAbilityDamagePercent"/>
+        public float PhysicalAbilityDamagePercent
+        {
+            get { return Equipped.PhysicalAbilityDamagePercent; }
+        }
+
         // --- Linear secondary attributes ---
 
         /// <summary>
