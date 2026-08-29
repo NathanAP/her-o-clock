@@ -852,7 +852,11 @@ namespace HerOClock.Setup
 
             Items.ItemSlots slots = itemDatabase.LoadSlots();
 
-            return slots != null ? new Items.ItemRules(slots) : null;
+            // The subtypes are what a weapon is made of. Without them the rules still answer every
+            // question about a casing, and nobody can hold anything.
+            Items.ItemSubtypes subtypes = itemDatabase.LoadSubtypes();
+
+            return slots != null ? new Items.ItemRules(slots, subtypes) : null;
         }
 
         private Character NewCombatant(CharacterDefinition definition)

@@ -15,11 +15,12 @@ namespace HerOClock.Items
     public static class ItemContribution
     {
         /// <summary>
-        /// Modifiers this version knows how to apply.
+        /// Modifiers that land in the shared bag of numbers a character carries.
         ///
-        /// Anything outside this list is **not** silently dropped: <see cref="Deferred"/> holds what
-        /// is waiting for a seam that does not exist yet, and a test asserts that every modifier in
-        /// the data is on one list or the other. A modifier added tomorrow that nobody wires up
+        /// Anything outside the three lists is **not** silently dropped: <see cref="HandledByWeapon"/>
+        /// holds what belongs to one weapon rather than to the character, <see cref="Deferred"/>
+        /// holds what is waiting for a seam that does not exist yet, and a test asserts that every
+        /// modifier in the data is on one of them. A modifier added tomorrow that nobody wires up
         /// then fails a test, instead of quietly doing nothing on every item that rolls it.
         /// </summary>
         public static readonly IReadOnlyList<string> Handled = new List<string>
@@ -32,18 +33,32 @@ namespace HerOClock.Items
         };
 
         /// <summary>
+        /// Modifiers that belong to the weapon carrying them, and never to the character.
+        ///
+        /// `weaponDamage` is local in the same sense `localArmour` and `localEvasion` are: it raises
+        /// the base damage of **that** weapon and nothing else. With two weapons held, that is the
+        /// difference between an off hand being a real choice and it being strictly better — a
+        /// character wide modifier on the off hand would raise the main hand's swing too.
+        ///
+        /// It cannot go through <see cref="AddTo"/> at all, because that fills one bag shared by
+        /// everything worn, and this number has to stay attached to one hand.
+        /// </summary>
+        public static readonly IReadOnlyList<string> HandledByWeapon = new List<string>
+        {
+            "weaponDamage"
+        };
+
+        /// <summary>
         /// Modifiers that exist in the data and have nowhere to land yet.
         ///
-        /// - The four ability damage percentages and the ignored resistance need seams that do not
-        ///   exist: `AbilityResolver` runs through no modifier at all, and `DamageInput` has no
-        ///   attacker side field for penetration. They arrive in 0.11.1.1.
-        /// - Weapon damage belongs with the weapon replacing the character's own swing, in 0.11.2.0.
+        /// The four ability damage percentages and the ignored resistance need seams that do not
+        /// exist: `AbilityResolver` runs through no modifier at all, and `DamageInput` has no
+        /// attacker side field for penetration. They arrive in 0.11.3.0.
         /// </summary>
         public static readonly IReadOnlyList<string> Deferred = new List<string>
         {
             "fireAbilityDamage", "waterAbilityDamage", "electricAbilityDamage", "physicalAbilityDamage",
-            "resistanceIgnored",
-            "weaponDamage"
+            "resistanceIgnored"
         };
 
         public static void AddTo(EquipmentTotals totals, Item item, ItemDefence defence)
@@ -68,6 +83,33 @@ namespace HerOClock.Items
             for (int i = 0; i < item.Modifiers.Count; i++)
             {
                 Apply(totals, item.Modifiers[i]);
+            }
+        }
+
+        /// <summary>
+        /// Folds an item's own local modifiers into what that item swings for.
+        ///
+        /// Only the weapon holding the modifier is touched, which is why this takes one weapon and
+        /// not the character. `weaponDamage` adds to the **base**, before POW multiplies, exactly
+        /// where the subtype's own range sits — a modifier that landed after POW would be worth
+        /// more on a hero who never invested in it.
+        /// </summary>
+        public static void AddToWeapon(ref ItemWeapon weapon, Item item)
+        {
+            if (!weapon.Exists || item == null || item.Modifiers == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < item.Modifiers.Count; i++)
+            {
+                ItemModifierRoll roll = item.Modifiers[i];
+
+                if (roll.Id == "weaponDamage")
+                {
+                    weapon.MinDamage += roll.Value;
+                    weapon.MaxDamage += roll.ValueMax;
+                }
             }
         }
 

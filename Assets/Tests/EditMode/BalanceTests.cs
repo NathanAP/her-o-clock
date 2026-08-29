@@ -114,6 +114,7 @@ namespace HerOClock.Tests
 
             AppendPacing(page);
             AppendSheets(page);
+            AppendWeapons(page);
             AppendEquipment(page);
             AppendStages(page);
             AppendSweep(page);
@@ -482,11 +483,15 @@ namespace HerOClock.Tests
         ///
         /// Nothing drops yet, so this is the only way to ask the question at all, and the kit is
         /// deliberately boring: base defence only. Anything else would mean inventing the generator
-        /// that 0.11.3.0 will actually write, and measuring against a guess.
+        /// that 0.11.5.0 will actually write, and measuring against a guess.
         ///
         /// The **active** column is the one to watch. A kit of the hero's own level demands 1.5
         /// times that level in one attribute, and a hero who spread its points cannot meet that on
         /// every piece — so the requirement starts biting on its own, without anybody tuning it.
+        ///
+        /// The kit carries a one handed weapon of its own class, so the offensive table below
+        /// measures a weapon rather than a fist. One handed on purpose: a two hander would empty
+        /// the off hand and move the defensive answer for a reason that has nothing to do with it.
         /// </summary>
         private static void AppendEquipment(StringBuilder page)
         {
@@ -497,7 +502,7 @@ namespace HerOClock.Tests
                 return;
             }
 
-            ItemRules rules = new ItemRules(JsonUtility.FromJson<ItemSlots>(file.text));
+            ItemRules rules = ItemRulesFromDisk();
             CharacterDefinition hero = SheetOf("tempo");
 
             if (hero == null)
@@ -533,7 +538,7 @@ namespace HerOClock.Tests
 
                     for (int i = 0; i < kit.Count; i++)
                     {
-                        worn.Put(kit[i]);
+                        worn.Put(kit[i], rules);
                     }
 
                     page.AppendLine(Row(hero, level, worn, rules, classes[c], kit.Count));
@@ -541,6 +546,159 @@ namespace HerOClock.Tests
             }
 
             page.AppendLine();
+
+            AppendKitOffence(page, hero, rules);
+        }
+
+        /// <summary>
+        /// What each weapon subtype is worth on its own: the range it swings for, how often, and
+        /// the two multiplied together.
+        ///
+        /// This is the table that answers "is a Piledriver still a choice next to a Claw". That the
+        /// derivation holds is asserted by `ItemContentTests.EveryWeaponMeetsItsFamilyBudget`; what
+        /// is published here is the consequence, which is a number of output and belongs nowhere
+        /// else.
+        /// </summary>
+        private static void AppendWeapons(StringBuilder page)
+        {
+            TextAsset file = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Items/subtypes.json");
+
+            if (file == null)
+            {
+                return;
+            }
+
+            ItemSubtypes subtypes = JsonUtility.FromJson<ItemSubtypes>(file.text);
+
+            if (subtypes == null || subtypes.weapons == null)
+            {
+                return;
+            }
+
+            page.AppendLine("## As armas");
+            page.AppendLine();
+            page.AppendLine("O que cada subtipo rende sozinho, antes de POW e de AGI. O dano por segundo é o");
+            page.AppendLine("dano médio vezes a velocidade, que é o orçamento que a família paga.");
+            page.AppendLine();
+            page.AppendLine("| Subtipo | Mãos | Alcance | Atq/s | Dano nv. 1 | DPS nv. 1 | Dano nv. 100 | DPS nv. 100 |");
+            page.AppendLine("|---|---|---|---|---|---|---|---|");
+
+            for (int i = 0; i < subtypes.weapons.Length; i++)
+            {
+                WeaponSubtype weapon = subtypes.weapons[i];
+
+                page.AppendLine("| " + weapon.id
+                    + " | " + weapon.hands
+                    + " | " + weapon.minRange + "-" + weapon.maxRange
+                    + " | " + Number(weapon.attackSpeed, 2)
+                    + " | " + Band(weapon, 1)
+                    + " | " + Number(weapon.damage.AverageAt(1) * weapon.attackSpeed, 1)
+                    + " | " + Band(weapon, 100)
+                    + " | " + Number(weapon.damage.AverageAt(100) * weapon.attackSpeed, 1)
+                    + " |");
+            }
+
+            page.AppendLine();
+        }
+
+        private static string Band(WeaponSubtype weapon, int level)
+        {
+            return Number(weapon.damage.min.At(level), 0) + "-" + Number(weapon.damage.max.At(level), 0);
+        }
+
+        /// <summary>
+        /// What the same reference kit does to the hero on the offensive side: the blow it swings
+        /// for, how often, and the two multiplied.
+        ///
+        /// Kept apart from the defensive table because they answer different questions and share
+        /// only the kit. One table of thirteen columns would answer neither.
+        /// </summary>
+        private static void AppendKitOffence(StringBuilder page, CharacterDefinition hero, ItemRules rules)
+        {
+            int[] levels = { 1, 12, 30, 50, 100 };
+            string[] classes = { "light", "heavy", "special" };
+
+            page.AppendLine("A mesma Tempo, do lado ofensivo. Uma arma inativa devolve o soco da ficha, então");
+            page.AppendLine("uma linha igual à do kit ausente quer dizer que a arma não passou no requerimento.");
+            page.AppendLine();
+            page.AppendLine("| Nível | Kit | Mãos | Dano | Atq/s | DPS |");
+            page.AppendLine("|---|---|---|---|---|---|");
+
+            for (int l = 0; l < levels.Length; l++)
+            {
+                int level = Mathf.Min(levels[l], hero.MaxLevel);
+
+                page.AppendLine(OffenceRow(hero, level, null, rules, "sem kit"));
+
+                for (int c = 0; c < classes.Length; c++)
+                {
+                    Equipment worn = new Equipment();
+                    List<Item> kit = ReferenceKit.Of(classes[c], level);
+
+                    for (int i = 0; i < kit.Count; i++)
+                    {
+                        worn.Put(kit[i], rules);
+                    }
+
+                    page.AppendLine(OffenceRow(hero, level, worn, rules, classes[c]));
+                }
+            }
+
+            page.AppendLine();
+        }
+
+        private static string OffenceRow(
+            CharacterDefinition hero, int level, Equipment worn, ItemRules rules, string label)
+        {
+            CharacterStats stats = Dressed(hero, level, worn, rules);
+
+            return "| " + level
+                + " | " + label
+                + " | " + stats.HandCount
+                + " | " + Number(stats.PhysicalDamageMin, 1) + "-" + Number(stats.PhysicalDamageMax, 1)
+                + " | " + Number(stats.AttacksPerSecond, 2)
+                + " | " + Number(stats.AveragePhysicalDamage * stats.AttacksPerSecond, 1)
+                + " |";
+        }
+
+        /// <summary>The hero at a level, wearing what it is handed. Null means bare.</summary>
+        private static CharacterStats Dressed(
+            CharacterDefinition hero, int level, Equipment worn, ItemRules rules)
+        {
+            CharacterStats stats = AtLevel(hero, level);
+
+            if (worn == null)
+            {
+                return stats;
+            }
+
+            int[] without =
+            {
+                stats.TotalOf(Attribute.Power),
+                stats.TotalOf(Attribute.Agility),
+                stats.TotalOf(Attribute.Specialty),
+                stats.TotalOf(Attribute.Constitution)
+            };
+
+            EquipmentResolution resolved = worn.Resolve(rules, without);
+
+            stats.UseEquipment(
+                EquipmentComposition.Of(resolved.Classes, stats.Equipment),
+                resolved.Totals,
+                WeaponBuilder.Build(resolved.Active, rules));
+
+            return stats;
+        }
+
+        /// <summary>The item tables as the game loads them, subtypes included.</summary>
+        private static ItemRules ItemRulesFromDisk()
+        {
+            TextAsset slots = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Items/slots.json");
+            TextAsset subtypes = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Items/subtypes.json");
+
+            return new ItemRules(
+                JsonUtility.FromJson<ItemSlots>(slots.text),
+                subtypes != null ? JsonUtility.FromJson<ItemSubtypes>(subtypes.text) : null);
         }
 
         private static string Row(

@@ -541,23 +541,30 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **Pendência de cena:** o `ItemDatabase` precisa ser arrastado para o `BattleBootstrap`. Sem isso equipamento não faz nada, que é de propósito o comportamento de uma cena que não conhece itens.
 - O resumo completo está em `.claude/versions/20260828_0.11.1.0.md`.
 
-## 0.11.1.1 (próxima)
+## 0.11.1.1 e 0.11.1.2 (feitas)
 
-- **Os dois modificadores que precisam de costura nova**, adiados da 0.11.1.0 e já listados em `ItemContribution.Deferred`.
-- **`+X% ao dano de habilidade` por elemento.** Precisa de entradas novas em `ModifiableStat` e de o `AbilityResolver` passar o dano por elas, coisa que hoje ele não faz para nada.
-- **`+X% de resistência ignorada ao atacar.`** A regra já está escrita em `attributes.md`, com exemplo: ela corta os pontos do alvo **antes** da curva, então um alvo com 1000 contra 20% ignorados é tratado como 800.
-    - Precisa de um campo novo no `DamageInput`, do lado do **atacante**. O `TargetResistanceBonus` que existe é do alvo e é outra coisa.
-- Testes: os exemplos numéricos de `attributes.md`, e o teste de cobertura de modificadores passa a exigir que estes cinco saiam de `Deferred`.
+- **Duas versões de documentação.** A primeira reordenou o roadmap, trazendo inventário e baús para antes dos menus. A segunda fechou as decisões em aberto da arma e escreveu as respostas em `items.md`.
+- Nenhuma linha de código em nenhuma das duas.
 
-## 0.11.2.0
+## 0.11.2.0 (feita)
 
-- **A arma.** Substitui dano base, velocidade de ataque, alcance e corpo a corpo ou à distância.
-- Tira `MinRange`, `MaxRange` e `AutoAttack` de dentro do `CharacterDefinition` compartilhado, que é onde eles moram hoje. Encosta em `TargetSelector`, `CharacterMover`, `FacingResolver`, a view do projétil e o `CanAttackFrom`.
-- **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar.
+- **A arma.** Ela substitui o **valor base** do dano, da velocidade de ataque e do alcance, e nunca o resultado: a velocidade continua sendo `arma × (1 + AGI × taxa)` e a faixa continua sendo multiplicada por POW.
+- **A faixa de uma arma cresce com o nível do item e não com o de quem a segura**, e o multiplicador da fase não a toca — ele existe para ajustar uma ficha, e arma não é ficha.
+- **`MinRange`, `MaxRange` e `AutoAttack` saíram do asset compartilhado** e viraram campos resolvidos uma vez, quando o combatente nasce. Nenhum consumidor mudou: todos continuam lendo `character.MaxRange`.
+- **Os golpes alternam entre as mãos, e a alternância é uma contagem e não um sorteio.** Ela não consome nada do `BattleRandom`, e é por isso que a sequência determinística de quem não tem arma continua onde estava.
+- **A mão primária vazia é estar desarmado**, mesmo com arma na secundária: velocidade e alcance saem da primária.
+- **A arma de duas mãos esvazia as duas, nos dois sentidos**, e a regra é cobrada ao equipar e de novo quando a luta é montada.
+- **O `weaponDamage` sorteia uma faixa e é local à arma que o carrega.** `ItemModifierRoll` passou a carregar dois números, iguais em todo o resto. O `ItemContribution` ganhou `HandledByWeapon` como terceira lista, porque esse modificador não cabe no saco compartilhado.
+- **Uma regra da spec estava incompleta e virou bug:** "a arma substitui a velocidade base" tinha número e não tinha exemplo. O exemplo entrou em `items.md` antes do teste.
+- **O kit de referência ganhou uma arma de uma mão** da própria classe, e o snapshot ganhou o que cada subtipo rende e o que o kit faz do lado ofensivo.
+- **689 testes, 0 falhas.** Vinte e três novos.
+- **Nenhuma linha de quem não veste arma se moveu no snapshot.** Achado que só ficou visível agora: no nível 1 o kit especial rende menos que mãos vazias, porque o Catalyst tem a mesma faixa do soco da Tempo naquele nível e o kit derruba a conversão de AGI em velocidade. É o desconto que Catalyst e Reactor pagam, aparecendo cru.
+- **A pendência de cena da 0.11.1.0 está fechada:** o `ItemDatabase` estava arrastado no disco e nunca tinha sido commitado.
+- O resumo completo está em `.claude/versions/20260829_0.11.2.0.md`.
 
 ### O que já foi decidido
 
-Respondido pelo Nathan antes de a versão começar. Nenhum destes é código: são regras, e cada um travaria a implementação no meio se chegasse lá em aberto.
+Respondido pelo Nathan antes de a versão começar, e implementado como está escrito aqui.
 
 - **Os modificadores da mão secundária valem sempre. Só o ataque alterna.**
     - A secundária é mais uma peça de equipamento que por acaso tem faixa de dano. Roubo de vida, dano elemental e espinhos valem o tempo todo, não importa qual mão golpeou.
@@ -566,7 +573,7 @@ Respondido pelo Nathan antes de a versão começar. Nenhum destes é código: s�
 - **A arma substitui a velocidade base, e não o resultado.**
     - `AttacksPerSecond` continua sendo `arma x (1 + AGI x taxa)`, com os buffs por cima. O que a arma troca é o `1`.
     - Substituir o resultado faria a AGI parar de valer para quem tem arma, e a classe leve perderia metade do sentido.
-- **`MinRange`, `MaxRange` e `AutoAttack` saem da ficha do herói.** Hoje eles são lidos direto do `CharacterDefinition`, que é um asset compartilhado, então dois heróis da mesma ficha teriam o mesmo alcance qualquer que fosse a arma.
+- **`MinRange`, `MaxRange` e `AutoAttack` saem da ficha do herói.** Eles eram lidos direto do `CharacterDefinition`, que é um asset compartilhado, então dois heróis da mesma ficha tinham o mesmo alcance qualquer que fosse a arma.
     - Encosta em `TargetSelector`, `CharacterMover`, `FacingResolver`, a view do projétil e o `CanAttackFrom`.
 - **O Cannon cobrindo o tabuleiro inteiro é a intenção.** A distância é de rei e o tabuleiro é 6x8, então a maior distância possível é **7**, e o Cannon alcança 8.
     - Quem usa Cannon nunca precisa se mover, e a única fraqueza dele é o alcance mínimo 3. É o que ele compra por render menos dano por segundo.
@@ -574,9 +581,17 @@ Respondido pelo Nathan antes de a versão começar. Nenhum destes é código: s�
 - **Equipar uma arma de duas mãos desequipa as duas mãos.** A que estava na primária **e** a que estava na secundária saem.
     - Enquanto não existe inventário, o que sai não tem para onde ir. Até a 0.14.0.0, quem devolve item ao herói é a ferramenta de editor.
 - **Uma arma que falha o requerimento é desconsiderada e o herói volta ao soco da ficha.** É por isso que o soco continua existindo na ficha mesmo depois de existirem armas.
-- Testes: a alternância das mãos, a velocidade sendo substituída na base com a AGI ainda valendo, o alcance vindo da arma e não da ficha, a arma de duas mãos limpando as duas mãos, e a arma inativa caindo de volta no soco.
 
-## 0.11.3.0
+## 0.11.3.0 (próxima)
+
+- **Os dois modificadores que precisam de costura nova**, adiados da 0.11.1.0 e já listados em `ItemContribution.Deferred`.
+- Os dois são independentes da arma e por isso vieram depois dela: um mexe no `AbilityResolver` e no `DamageInput`, o outro mexeu no ataque básico e no alcance. Juntá-los numa versão só embaralharia o diff do snapshot.
+- **`+X% ao dano de habilidade` por elemento.** Precisa de entradas novas em `ModifiableStat` e de o `AbilityResolver` passar o dano por elas, coisa que hoje ele não faz para nada.
+- **`+X% de resistência ignorada ao atacar.`** A regra já está escrita em `attributes.md`, com exemplo: ela corta os pontos do alvo **antes** da curva, então um alvo com 1000 contra 20% ignorados é tratado como 800.
+    - Precisa de um campo novo no `DamageInput`, do lado do **atacante**. O `TargetResistanceBonus` que existe é do alvo e é outra coisa.
+- Testes: os exemplos numéricos de `attributes.md`, e o teste de cobertura de modificadores passa a exigir que estes cinco saiam de `Deferred`, que fica vazia.
+
+## 0.11.4.0
 
 - **A ficha de personagem vira fonte única.** Os números saem de `.claude/specs/characters/` e vão para `Assets/`, em JSON. O `CharacterDefinition` fica só com a cor e as referências de sprite, resolvido por id como as fases já são.
 - **O arquivo se parte em dois, e não muda de pasta inteiro.** Ele mistura duas coisas hoje:
@@ -590,13 +605,13 @@ Respondido pelo Nathan antes de a versão começar. Nenhum destes é código: s�
     - Bônus de esperar: depois da arma, já se sabe exatamente o que a ficha precisa guardar.
 - **Ponto em aberto: os ids também viram camelCase?** `act1-stage1` e `discardedPrototype` são valores e não chaves. Padronizar é coerente, mas **id de fase e id de herói estão dentro do save**, então renomear invalida saves existentes. Como a 0.11 já quebra a experiência de qualquer jeito, provavelmente é a hora certa, mas é decisão e não detalhe.
 
-## 0.11.4.0
+## 0.11.5.0
 
 - **O gerador.** Tecnologia, quantidade, divisão hardware/software, pesos, camadas, valores e a montagem do nome.
 - C# puro, sem Unity, com teste de distribuição.
 - **De qual fonte aleatória ele sorteia é decisão, e importa.** O `architecture.md` proíbe `UnityEngine.Random` em combate porque ele é global, e um item gerado no meio de uma fase sortearia dentro da mesma fase. Ou o gerador usa o `BattleRandom` da batalha, e aí o drop faz parte da sequência reproduzível pela semente, ou ele tem uma sequência própria e a batalha deixa de ser reproduzível junto do que ela dropou.
 
-## 0.11.5.0
+## 0.11.6.0
 
 - **Únicos.** A pasta `Assets/Items/Uniques/`, o `AssetPostprocessor` de autodescoberta e o teste que sustenta a promessa de que um arquivo novo entra sozinho.
 - Os itens são tão importantes quanto a árvore de passivas, e a troca entre os dois é o que torna o respec estratégico.

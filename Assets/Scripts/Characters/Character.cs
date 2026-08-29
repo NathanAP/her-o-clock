@@ -15,6 +15,21 @@ namespace HerOClock.Characters
         private int level;
 
         /// <summary>
+        /// Reach and how the swing is drawn, settled once when this combatant was built.
+        ///
+        /// They are **this combatant's** and not the sheet's. The sheet is a shared asset, so
+        /// reading the reach from it would give two heroes built from the same file the same reach
+        /// no matter which weapons they were holding — and reach is the first thing a weapon is
+        /// supposed to change.
+        ///
+        /// A character with no weapon lands back on the sheet's own three values, which is what
+        /// keeps the punch on the sheet meaningful.
+        /// </summary>
+        private int minRange;
+        private int maxRange;
+        private AutoAttackType autoAttack;
+
+        /// <summary>
         /// The attribute points this combatant fights with, frozen at construction.
         ///
         /// A copy and never a live reference. Everything that made a mid stage rebuild dangerous
@@ -97,18 +112,18 @@ namespace HerOClock.Characters
 
         public int MinRange
         {
-            get { return Definition.MinRange; }
+            get { return minRange; }
         }
 
         public int MaxRange
         {
-            get { return Definition.MaxRange; }
+            get { return maxRange; }
         }
 
         /// <summary>Whether the basic attack draws a projectile. Visual only, and no rule reads it.</summary>
         public AutoAttackType AutoAttack
         {
-            get { return Definition.AutoAttack; }
+            get { return autoAttack; }
         }
 
         public bool IsAlive
@@ -189,7 +204,7 @@ namespace HerOClock.Characters
             // After the attributes are settled and before anything is read from them, because the
             // requirement of a piece is measured against what the hero has **without** equipment.
             // Reading it afterwards would let an item pay for its own requirement.
-            ApplyEquipment(record, rules);
+            UseReach(ApplyEquipment(record, rules));
 
             Modifiers.Changed += OnStatsSourceChanged;
 
@@ -210,11 +225,12 @@ namespace HerOClock.Characters
         /// with nothing equipped yet. From there activation grows, and an item already switched on
         /// can pay for the next one.
         /// </summary>
-        private void ApplyEquipment(HeroRecord record, Items.ItemRules rules)
+        /// <returns>What the hero ended up holding, or null when it fights bare.</returns>
+        private WeaponLoadout ApplyEquipment(HeroRecord record, Items.ItemRules rules)
         {
             if (record == null || rules == null || record.Equipment.Count == 0)
             {
-                return;
+                return null;
             }
 
             int[] withoutEquipment =
@@ -227,9 +243,35 @@ namespace HerOClock.Characters
 
             Items.EquipmentResolution resolved = record.Equipment.Resolve(rules, withoutEquipment);
 
+            // Built from the **active** pieces only, which is what makes a weapon that stopped
+            // meeting its requirement fall back to the punch without a single line asking about it.
+            WeaponLoadout weapons = Items.WeaponBuilder.Build(resolved.Active, rules);
+
             Stats.UseEquipment(
                 EquipmentComposition.Of(resolved.Classes, Stats.Equipment),
-                resolved.Totals);
+                resolved.Totals,
+                weapons);
+
+            return weapons;
+        }
+
+        /// <summary>
+        /// Settles the reach and the swing drawing: from the weapon when there is one, from the
+        /// sheet when there is not.
+        /// </summary>
+        private void UseReach(WeaponLoadout weapons)
+        {
+            if (weapons == null)
+            {
+                minRange = Definition.MinRange;
+                maxRange = Definition.MaxRange;
+                autoAttack = Definition.AutoAttack;
+                return;
+            }
+
+            minRange = weapons.MinRange;
+            maxRange = weapons.MaxRange;
+            autoAttack = weapons.Attack;
         }
 
         /// <summary>

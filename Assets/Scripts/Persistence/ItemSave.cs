@@ -51,6 +51,11 @@ namespace HerOClock.Persistence
     /// The tier travels with the value even though the value already contains it, because the name
     /// of an item is built from the highest tier of each family it carries. Dropping the tier would
     /// mean the name could not be worked out again.
+    ///
+    /// Two values, because `weaponDamage` rolls a range rather than an amount. On every other
+    /// modifier they are the same number, and a file written before this field existed reads
+    /// <see cref="valueMax"/> as zero — which is why loading treats anything below
+    /// <see cref="value"/> as "no second number" instead of as a range running backwards.
     /// </summary>
     [Serializable]
     public class ItemModifierSave
@@ -59,6 +64,7 @@ namespace HerOClock.Persistence
         public string family;
         public int tier = 1;
         public float value;
+        public float valueMax;
     }
 
     /// <summary>Which item is in which of a hero's slots.</summary>

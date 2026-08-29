@@ -103,8 +103,13 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
     - No segundo caso, o jogador não poderá equipar itens na mão secundária.
 - **A arma substitui três coisas da ficha do personagem enquanto estiver equipada**: o dano base, a velocidade de ataque e o alcance.
     - Ela substitui o **valor base** de cada uma, e nunca o resultado. A velocidade continua sendo `arma × (1 + AGI × taxa da classe)`, então quem investe em AGI continua ganhando com isso — e sem essa parte a classe leve perderia metade do sentido.
+        - Exemplo: uma heroína de classe leve com 20 de AGI segurando uma Claw ataca `1.7 × (1 + 20 × 0.01) = 2.04` vezes por segundo. A mesma heroína de mãos vazias ataca `1 × 1.2 = 1.2` vezes.
+        - O mesmo vale para o dano: a faixa da arma é multiplicada por POW igual a faixa da ficha seria. O que troca é de onde a faixa vem.
+    - A faixa de dano de uma arma cresce com o **nível do item**, e não com o nível de quem a segura. Uma heroína de nível 1 com uma arma de nível 60 bate como uma arma de nível 60.
     - A velocidade e o alcance passam a ser assim porque sem isso o subtipo não significa nada. Uma Claw e um Piledriver que atacam na mesma velocidade e à mesma distância são a mesma arma com números diferentes.
     - Sem arma, o herói usa os três valores da própria ficha: o soco dele, a velocidade 1 e o alcance declarado.
+    - **A mão primária vazia significa não ter arma nenhuma**, mesmo com uma arma na secundária. A velocidade e o alcance saem da primária, então não há de onde tirá-los, e o herói soca com a ficha.
+- **O ataque à distância desenha um projétil apenas nas famílias à distância**, conforme `subtypes.json`. Uma arma corpo a corpo que alcança duas ou três casas continua sendo alguém golpeando de mais longe, e não um tiro: quem decide alcance são os dois números do alcance, e o desenho é só desenho.
 
 #### Mão secundária
 
@@ -114,6 +119,8 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
 - **Os modificadores das duas armas valem sempre**, e não apenas no golpe da mão que os carrega. Roubo de vida, dano elemental e espinhos são do herói, e o que pertence à mão é só o dano.
     - Fazer o contrário significaria que os atributos do herói mudam de um golpe para o outro, o que é um jogo diferente do que este arquivo descreve.
 - **Equipar uma arma de duas mãos desequipa as duas mãos**, tanto a arma que estava na primária quanto o que estava na secundária.
+    - A regra vale nos dois sentidos: equipar qualquer coisa na secundária enquanto uma arma de duas mãos está na primária tira aquela arma. A secundária estar vazia com uma arma de duas mãos é uma invariante, e uma invariante que só vale por um lado não é invariante.
+    - Enquanto não existe inventário, o que sai não tem para onde ir.
 
 #### Controlador
 
@@ -377,6 +384,8 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
     - +X de AGI.
     - +X de SPE.
     - +X - +Y ao dano base da arma.
+        - É o único modificador que sorteia uma **faixa** em vez de um valor: o mínimo é somado ao mínimo da arma e o máximo ao máximo dela. Um valor único somado nas duas pontas nunca alargaria a faixa, que é justamente o que este modificador faz.
+        - Ele é **local à arma que o carrega**, no mesmo sentido de "neste equipamento": vale para o dano daquela arma e de mais nada. Com duas armas empunhadas, um modificador que valesse para as duas faria a secundária ser sempre melhor que qualquer alternativa, em vez de ser uma escolha.
     - +X% ao dano de habilidades de fogo.
     - +X% ao dano de habilidades de água.
     - +X% ao dano de habilidades elétricas.

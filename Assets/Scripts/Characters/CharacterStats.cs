@@ -127,7 +127,21 @@ namespace HerOClock.Characters
         /// </summary>
         [NonSerialized] private EquipmentTotals equipmentTotals;
 
-        /// <summary>Base attack speed of every character, in attacks per second.</summary>
+        /// <summary>
+        /// What the character's hands are holding, or null while it fights bare.
+        ///
+        /// Null is the answer and not a gap, exactly like <see cref="equipment"/>: a character with
+        /// no weapon uses the three values on its own sheet — the punch, the speed 1 and the reach
+        /// it declares. Every fallback below reads this being null, so "unarmed" is written once.
+        /// </summary>
+        [NonSerialized] private WeaponLoadout weapons;
+
+        /// <summary>
+        /// Base attack speed of a character holding nothing, in attacks per second.
+        ///
+        /// This is the `1` a weapon replaces. What it never replaces is the AGI term multiplying
+        /// it: a weapon swaps the base, never the result.
+        /// </summary>
         public const float BaseAttacksPerSecond = 1f;
 
         /// <summary>Base movement speed of every character, in cells per second.</summary>
@@ -154,6 +168,7 @@ namespace HerOClock.Characters
             // own sheet class and with nothing on until somebody hands it a set of its own.
             copy.equipment = null;
             copy.equipmentTotals = null;
+            copy.weapons = null;
 
             return copy;
         }
@@ -171,10 +186,23 @@ namespace HerOClock.Characters
         /// points are copied once: what fights is a photograph, and a player re-equipping a hero
         /// mid stage must not reach the board until the next one.
         /// </summary>
-        public void UseEquipment(EquipmentComposition composition, EquipmentTotals totals)
+        public void UseEquipment(
+            EquipmentComposition composition, EquipmentTotals totals, WeaponLoadout loadout = null)
         {
             equipment = composition;
             equipmentTotals = totals;
+            weapons = loadout;
+        }
+
+        /// <summary>
+        /// How many hands take turns swinging: two while a second weapon is held, one otherwise.
+        ///
+        /// Whoever counts the blows uses this to know which hand is next. It is never zero, so a
+        /// caller never has to check whether there is a weapon at all.
+        /// </summary>
+        public int HandCount
+        {
+            get { return weapons != null ? weapons.HandCount : 1; }
         }
 
         /// <summary>What the active equipment gives, or an empty bag when there is none.</summary>
@@ -439,13 +467,41 @@ namespace HerOClock.Characters
         /// </summary>
         public float PhysicalDamageMin
         {
-            get { return SwingOf(BaseDamageMin, BaseDamageMinPerLevel); }
+            get { return PhysicalDamageMinOf(0); }
         }
 
         /// <inheritdoc cref="PhysicalDamageMin"/>
         public float PhysicalDamageMax
         {
-            get { return SwingOf(BaseDamageMax, BaseDamageMaxPerLevel); }
+            get { return PhysicalDamageMaxOf(0); }
+        }
+
+        /// <summary>
+        /// The same range, for one of the hands that take turns swinging.
+        ///
+        /// With two weapons held the two hands have different ranges, and each blow uses the range
+        /// of the hand that threw it. Everything else about the character stays the same from one
+        /// blow to the next: life steal, thorns and elemental damage belong to the hero, and only
+        /// the damage belongs to the hand.
+        ///
+        /// A weapon's range is already scaled by the **item's** level when it arrives here, so it
+        /// does not go through <see cref="ScaledOf"/> again — and it is not touched by the stage
+        /// multiplier either, for the reason written on <see cref="TotalOf"/>: the multiplier exists
+        /// to adjust a sheet, and a weapon is not sheet.
+        /// </summary>
+        public float PhysicalDamageMinOf(int hand)
+        {
+            return weapons != null
+                ? weapons.MinDamageOf(hand) * PowerShare
+                : SwingOf(BaseDamageMin, BaseDamageMinPerLevel);
+        }
+
+        /// <inheritdoc cref="PhysicalDamageMinOf"/>
+        public float PhysicalDamageMaxOf(int hand)
+        {
+            return weapons != null
+                ? weapons.MaxDamageOf(hand) * PowerShare
+                : SwingOf(BaseDamageMax, BaseDamageMaxPerLevel);
         }
 
         /// <summary>
@@ -458,12 +514,33 @@ namespace HerOClock.Characters
         /// </summary>
         public float AveragePhysicalDamage
         {
-            get { return (PhysicalDamageMin + PhysicalDamageMax) * 0.5f; }
+            get
+            {
+                float total = 0f;
+
+                // Averaged across the hands rather than read off the first one, because the hands
+                // alternate one for one: over any stretch of a fight, half the blows come from each.
+                for (int hand = 0; hand < HandCount; hand++)
+                {
+                    total += (PhysicalDamageMinOf(hand) + PhysicalDamageMaxOf(hand)) * 0.5f;
+                }
+
+                return total / HandCount;
+            }
         }
 
         private float SwingOf(float baseValue, float perLevel)
         {
-            return ScaledOf(baseValue, perLevel) * (1f + Power * DamageSharePerPoint);
+            return ScaledOf(baseValue, perLevel) * PowerShare;
+        }
+
+        /// <summary>
+        /// What POW multiplies a damage base by. Never an addition, for the reason written on
+        /// <see cref="DamageSharePerPoint"/>.
+        /// </summary>
+        private float PowerShare
+        {
+            get { return 1f + Power * DamageSharePerPoint; }
         }
 
         /// <summary>
@@ -478,8 +555,14 @@ namespace HerOClock.Characters
         /// </summary>
         public int RollPhysicalDamage(float unitRoll)
         {
-            float min = PhysicalDamageMin;
-            float max = PhysicalDamageMax;
+            return RollPhysicalDamage(unitRoll, 0);
+        }
+
+        /// <inheritdoc cref="RollPhysicalDamage(float)"/>
+        public int RollPhysicalDamage(float unitRoll, int hand)
+        {
+            float min = PhysicalDamageMinOf(hand);
+            float max = PhysicalDamageMaxOf(hand);
 
             // A sheet with the two ends equal never varies, and a sheet with them the wrong way
             // round is a content mistake that should not become negative damage.
@@ -488,13 +571,29 @@ namespace HerOClock.Characters
             return Mathf.Max(0, Mathf.RoundToInt(swing));
         }
 
+        /// <summary>
+        /// Attacks per second: the weapon's own speed, then AGI, then the buffs.
+        ///
+        /// The weapon replaces the base and never the result, which is what keeps AGI worth
+        /// investing in for somebody holding one. Substituting the result instead would make the
+        /// light class stop paying the moment a weapon is equipped.
+        ///
+        /// Only the main hand has a say. Two weapons held do not attack at two speeds; they take
+        /// turns at the speed of the one in the main hand.
+        /// </summary>
         public float AttacksPerSecond
         {
             get
             {
-                float rate = BaseAttacksPerSecond * (1f + Agility * AttackSpeedPerAgility);
+                float rate = WeaponAttackSpeed * (1f + Agility * AttackSpeedPerAgility);
                 return Mathf.Max(0f, Modified(ModifiableStat.AttackSpeed, rate));
             }
+        }
+
+        /// <summary>The base a weapon replaces, or the bare character's own 1.</summary>
+        private float WeaponAttackSpeed
+        {
+            get { return weapons != null ? weapons.AttackSpeed : BaseAttacksPerSecond; }
         }
 
         public float CellsPerSecond

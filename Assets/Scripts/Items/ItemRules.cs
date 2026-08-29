@@ -17,14 +17,33 @@ namespace HerOClock.Items
     /// </summary>
     public class ItemRules
     {
+        /// <summary>
+        /// The two slots the hand rules talk about.
+        ///
+        /// They are consts because three different rules name them — a two handed weapon emptying
+        /// the off hand, the resolution refusing an off hand it cannot use, and the loadout reading
+        /// speed and reach off the main hand. A typo in one of the three would be a rule that
+        /// silently stops applying.
+        /// </summary>
+        public const string MainHandSlot = "mainHand";
+
+        /// <inheritdoc cref="MainHandSlot"/>
+        public const string OffHandSlot = "offHand";
+
         private readonly Dictionary<string, ItemSlot> slots = new Dictionary<string, ItemSlot>();
         private readonly Dictionary<string, ClassDefence> classDefence = new Dictionary<string, ClassDefence>();
         private readonly Dictionary<string, string[]> classAttributes = new Dictionary<string, string[]>();
+        private readonly Dictionary<string, WeaponSubtype> weapons = new Dictionary<string, WeaponSubtype>();
 
         private readonly DefenceBudget budget;
         private readonly SlotRequirement requirement;
 
-        public ItemRules(ItemSlots table)
+        /// <summary>
+        /// The subtype table is optional, and its absence means one thing only: nobody is holding a
+        /// weapon. A test about the requirement of a casing has no business loading `subtypes.json`,
+        /// and a character built without it simply punches with the range on its own sheet.
+        /// </summary>
+        public ItemRules(ItemSlots table, ItemSubtypes subtypes = null)
         {
             if (table == null)
             {
@@ -33,6 +52,14 @@ namespace HerOClock.Items
 
             budget = table.defenceBudget;
             requirement = table.requirement;
+
+            if (subtypes != null && subtypes.weapons != null)
+            {
+                for (int i = 0; i < subtypes.weapons.Length; i++)
+                {
+                    weapons[subtypes.weapons[i].id] = subtypes.weapons[i];
+                }
+            }
 
             for (int i = 0; i < table.slots.Length; i++)
             {
@@ -156,6 +183,68 @@ namespace HerOClock.Items
             }
         }
 
+        /// <summary>
+        /// What an item swings for, or an <see cref="ItemWeapon"/> that does not exist when the item
+        /// is not a weapon at all.
+        ///
+        /// The three numbers a weapon replaces are read straight off the subtype and scaled by the
+        /// **item's** level, never by the character's. That is the whole difference between a weapon
+        /// and a sheet: a level 1 hero holding a level 60 Cannon hits like a level 60 Cannon.
+        ///
+        /// The local `weaponDamage` modifier is folded in here, through
+        /// <see cref="ItemContribution"/>, because that stays the only place that knows what a
+        /// modifier id means.
+        /// </summary>
+        public ItemWeapon WeaponOf(Item item)
+        {
+            ItemWeapon weapon = new ItemWeapon();
+
+            if (item == null)
+            {
+                return weapon;
+            }
+
+            WeaponSubtype subtype;
+
+            if (!weapons.TryGetValue(item.SubtypeId ?? string.Empty, out subtype))
+            {
+                return weapon;
+            }
+
+            weapon.Exists = true;
+            weapon.Hands = subtype.hands;
+            weapon.MinRange = subtype.minRange;
+            weapon.MaxRange = subtype.maxRange;
+            weapon.AttackSpeed = subtype.attackSpeed;
+
+            if (subtype.damage != null)
+            {
+                weapon.MinDamage = subtype.damage.min != null ? subtype.damage.min.At(item.Level) : 0f;
+                weapon.MaxDamage = subtype.damage.max != null ? subtype.damage.max.At(item.Level) : 0f;
+            }
+
+            // A bolt is drawn for the two ranged families and for nobody else. A Lance reaching two
+            // cells is still somebody swinging a lance from further away, which is exactly what
+            // `AutoAttackType` has always meant: reach is decided by the ranges, not by the drawing.
+            weapon.Ranged = subtype.family != null && subtype.family.Contains("Ranged");
+
+            ItemContribution.AddToWeapon(ref weapon, item);
+
+            return weapon;
+        }
+
+        /// <summary>
+        /// Whether this item takes both hands, which is what empties the off hand.
+        ///
+        /// False for everything that is not a weapon, including the defensive off hands: nothing
+        /// but a weapon can ever occupy two slots at once.
+        /// </summary>
+        public bool IsTwoHanded(Item item)
+        {
+            ItemWeapon weapon = WeaponOf(item);
+            return weapon.Exists && weapon.Hands >= 2;
+        }
+
         public bool KnowsSlot(string slotId)
         {
             return slots.ContainsKey(slotId);
@@ -201,5 +290,33 @@ namespace HerOClock.Items
         public float Armour;
         public float Evasion;
         public float ElementalResistance;
+    }
+
+    /// <summary>
+    /// What a weapon replaces on whoever holds it: the damage range, the speed and the reach.
+    ///
+    /// <see cref="Exists"/> is the whole answer to "is this a weapon". A casing, a controller and a
+    /// defensive off hand all come back with it false, and the caller falls through to the sheet.
+    /// </summary>
+    public struct ItemWeapon
+    {
+        public bool Exists;
+
+        /// <summary>1 or 2. A two handed weapon empties the off hand.</summary>
+        public int Hands;
+
+        public float MinDamage;
+
+        public float MaxDamage;
+
+        /// <summary>Attacks per second before AGI multiplies it.</summary>
+        public float AttackSpeed;
+
+        public int MinRange;
+
+        public int MaxRange;
+
+        /// <summary>Whether the swing draws a bolt. Visual only.</summary>
+        public bool Ranged;
     }
 }

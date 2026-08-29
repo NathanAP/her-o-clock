@@ -111,11 +111,17 @@ namespace HerOClock.Tests
         /// reading whatever the record says at that moment. It is deliberately the only way a
         /// test can make a build take effect, for the same reason it is the only way the game can.
         /// </summary>
-        public Character SpawnHero(HeroRecord record, Team team, int column, int row, float multiplier = 1f)
+        /// <param name="rules">
+        /// The item tables, without which equipment is not applied at all. That is what a test not
+        /// about items wants, and it is also what the game does before an item database exists.
+        /// </param>
+        public Character SpawnHero(
+            HeroRecord record, Team team, int column, int row, float multiplier = 1f,
+            Items.ItemRules rules = null)
         {
             GameObject instance = new GameObject(record.Id);
             Character character = instance.AddComponent<Character>();
-            character.InitializeFrom(record, team, new GridPosition(column, row), Grid, multiplier);
+            character.InitializeFrom(record, team, new GridPosition(column, row), Grid, multiplier, rules);
 
             owned.Add(instance);
             return character;

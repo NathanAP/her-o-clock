@@ -49,7 +49,7 @@ A lista de fichas é lida ao abrir a janela, ao voltar o foco para ela e quando 
 ### O que ela não faz
 
 - **Não escreve nada.** Tudo é lido pelas mesmas propriedades que o jogo lê, então não pode divergir do que acontece de verdade.
-- **Não considera itens**, que ainda não existem.
+- **Não considera itens.** Ela lê a ficha, então o dano e a velocidade que ela mostra são os do soco e nunca os de uma arma.
 - **Não substitui o snapshot.** O snapshot é retrato commitado e conferível por diff; a janela é exploração ao vivo. Os dois respondem perguntas diferentes.
 
 ## `Her-o-clock` → `Delete saved games`
@@ -82,7 +82,9 @@ Veste todos os heróis da sessão com um conjunto simples de equipamento, no ní
 
 Nada dropa ainda e não existe inventário, então sem isso **não há como assistir uma luta com equipamento**. A única evidência de que a coisa funciona seriam os testes.
 
-Ele entrega o mesmo kit sem graça que o snapshot mede — só a defesa base dos quatro cascos e da mão secundária, sem modificador nenhum. Assim o que aparece na tela e o que está escrito no snapshot são a mesma coisa.
+Ele entrega o mesmo kit sem graça que o snapshot mede — os quatro cascos, a mão secundária e uma arma de uma mão da classe do kit, sem modificador nenhum. Assim o que aparece na tela e o que está escrito no snapshot são a mesma coisa.
+
+A arma é de **uma mão** de propósito: uma de duas mãos esvaziaria a secundária, e o kit deixaria de medir a defesa que ele existe para medir.
 
 ### Por que a classe é a da ficha
 

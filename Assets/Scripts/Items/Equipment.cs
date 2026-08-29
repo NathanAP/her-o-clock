@@ -30,12 +30,42 @@ namespace HerOClock.Items
             return bySlot.TryGetValue(slotId, out item) ? item : null;
         }
 
-        /// <summary>Puts an item on, replacing whatever was in that slot.</summary>
-        public void Put(Item item)
+        /// <summary>
+        /// Puts an item on, replacing whatever was in that slot.
+        ///
+        /// ## The two hands hold one weapon between them
+        ///
+        /// Equipping a two handed weapon empties **both** hands: the weapon that was in the main
+        /// hand and whatever was in the off hand. And the rule holds from the other side too —
+        /// putting anything in the off hand while a two handed weapon is held takes that weapon
+        /// off. `items.md` states the off hand is empty while a two hander is held, and an
+        /// invariant that only holds when approached from one direction is not an invariant.
+        ///
+        /// While there is no inventory, what comes off has nowhere to go. That is the deal until
+        /// 0.14.0.0, and it is why the editor tool is the only thing handing items out.
+        ///
+        /// Without <paramref name="rules"/> nothing is enforced here, because how many hands a
+        /// weapon takes is a question only the tables can answer. <see cref="Resolve"/> asks it
+        /// again when the fight is built, so a set that arrived some other way still cannot swing
+        /// with three hands.
+        /// </summary>
+        public void Put(Item item, ItemRules rules = null)
         {
             if (item == null || string.IsNullOrEmpty(item.SlotId))
             {
                 return;
+            }
+
+            if (rules != null)
+            {
+                if (item.SlotId == ItemRules.MainHandSlot && rules.IsTwoHanded(item))
+                {
+                    bySlot.Remove(ItemRules.OffHandSlot);
+                }
+                else if (item.SlotId == ItemRules.OffHandSlot && rules.IsTwoHanded(In(ItemRules.MainHandSlot)))
+                {
+                    bySlot.Remove(ItemRules.MainHandSlot);
+                }
             }
 
             bySlot[item.SlotId] = item;
@@ -82,6 +112,22 @@ namespace HerOClock.Items
             // about order and the balance snapshot has to come out the same every time.
             pending.Sort((left, right) => string.CompareOrdinal(left.SlotId, right.SlotId));
 
+            // An off hand held alongside a two handed weapon is refused before anything is
+            // switched on. `Put` already prevents the pair from existing, but this is the moment
+            // the fight is built from whatever the save happened to contain, and it is the last
+            // place the rule can still be enforced.
+            //
+            // It lands in the inactive list rather than being dropped, because that list is what
+            // the interface paints with a red border: the player is told the piece is not counting,
+            // instead of it quietly doing nothing.
+            Item blockedOffHand = null;
+
+            if (rules.IsTwoHanded(In(ItemRules.MainHandSlot)))
+            {
+                blockedOffHand = In(ItemRules.OffHandSlot);
+                pending.Remove(blockedOffHand);
+            }
+
             while (true)
             {
                 int[] attributes = Attributes(attributesWithoutEquipment, resolution.Totals);
@@ -111,6 +157,12 @@ namespace HerOClock.Items
             }
 
             resolution.Inactive.AddRange(pending);
+
+            if (blockedOffHand != null)
+            {
+                resolution.Inactive.Add(blockedOffHand);
+            }
+
             return resolution;
         }
 

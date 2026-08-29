@@ -26,6 +26,22 @@ namespace HerOClock.Combat
         private readonly BattleRandom random;
         private float cooldown;
 
+        /// <summary>
+        /// Which hand throws the next blow, while two weapons are held.
+        ///
+        /// The blows alternate — primary, secondary, primary — and each one uses the damage range
+        /// of the hand that threw it. Everything else stays the character's: life steal, thorns and
+        /// elemental damage do not change from one blow to the next, because they belong to the
+        /// hero and not to the hand.
+        ///
+        /// **It consumes no draw from the random source.** The alternation is a count and not a
+        /// roll, so the deterministic sequence of a character with one weapon, or none, is exactly
+        /// the one it had before any of this existed.
+        ///
+        /// It advances on a blow actually thrown, so a swing lost to blindness does not skip a hand.
+        /// </summary>
+        private int hand;
+
         public CharacterAttacker(Character character, BattleRandom random)
         {
             this.character = character;
@@ -60,6 +76,7 @@ namespace HerOClock.Combat
         public void Reset()
         {
             cooldown = AttackInterval;
+            hand = 0;
         }
 
         /// <summary>
@@ -135,7 +152,11 @@ namespace HerOClock.Combat
             // The blow's damage is drawn here rather than inside the stats, so the battle's own
             // random source stays the only one in play. It is the first draw of an attack, before
             // evasion, and that order is what a replayed seed depends on.
-            int swing = character.Stats.RollPhysicalDamage(random.NextFloat01());
+            int swinging = hand;
+            int hands = character.Stats.HandCount;
+            hand = hands <= 1 ? 0 : (hand + 1) % hands;
+
+            int swing = character.Stats.RollPhysicalDamage(random.NextFloat01(), swinging);
 
             DamageResult result = Resolve(character, target, swing, DamageType.Physical, true);
 

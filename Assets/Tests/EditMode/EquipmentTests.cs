@@ -358,6 +358,11 @@ namespace HerOClock.Tests
                     known = ItemContribution.Handled[h] == id;
                 }
 
+                for (int w = 0; w < ItemContribution.HandledByWeapon.Count && !known; w++)
+                {
+                    known = ItemContribution.HandledByWeapon[w] == id;
+                }
+
                 for (int d = 0; d < ItemContribution.Deferred.Count && !known; d++)
                 {
                     known = ItemContribution.Deferred[d] == id;

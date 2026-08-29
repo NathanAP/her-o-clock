@@ -149,7 +149,8 @@ namespace HerOClock.Persistence
                     id = roll.Id,
                     family = roll.Family,
                     tier = roll.Tier,
-                    value = roll.Value
+                    value = roll.Value,
+                    valueMax = roll.ValueMax
                 };
             }
 
@@ -237,7 +238,8 @@ namespace HerOClock.Persistence
                 for (int i = 0; i < saved.modifiers.Length; i++)
                 {
                     ItemModifierSave roll = saved.modifiers[i];
-                    rolls.Add(new ItemModifierRoll(roll.id, roll.family, roll.tier, roll.value));
+                    rolls.Add(new ItemModifierRoll(
+                        roll.id, roll.family, roll.tier, roll.value, roll.valueMax));
                 }
             }
 

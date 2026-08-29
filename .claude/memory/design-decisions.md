@@ -395,6 +395,30 @@ Mixing results would stop evasion being `100 x AGI / (AGI + constant)` for any s
 
 The side effect is that mixing pays slightly less than averaging the results, because the curve is convex: 26.09% against 33.3% in the spec's own example. That is the intended statement — specialising pays, and mixing buys two defences at the price of being best at neither.
 
+## The damage belongs to the hand, everything else belongs to the hero
+
+With a weapon in each hand the blows alternate, and each one uses the damage range of the hand that threw it. **Every other modifier both weapons carry applies the whole time**: life steal, thorns and elemental damage do not change from one blow to the next.
+
+The alternative — modifiers counting only on the blow of the hand carrying them — would mean a hero's own attributes change between one swing and the next, and that is a rewrite of the whole statistics model rather than a rule about weapons.
+
+The one exception is `weaponDamage`, and it is an exception for the same reason `localArmour` is: it is **local to the weapon it landed on**. A character wide version would raise the main hand's swing from the off hand, and an off hand carrying it would stop being a choice and start being strictly better.
+
+## An empty main hand is unarmed, whatever the off hand holds
+
+Speed and reach come from the main hand and from nowhere else, so a weapon alone in the off hand has nothing to take them from. It adds a second swing to a weapon that is already there, and never arms anybody on its own.
+
+## The two hands hold one weapon between them, from both directions
+
+Equipping a two handed weapon takes off what was in both hands, and putting anything in the off hand takes off a two hander. `items.md` states the off hand is empty while a two hander is held; an invariant that only holds when approached from one side is not an invariant.
+
+It is enforced twice on purpose — when equipping, and again when the fight is built. The second one is the only place it can still be caught on a set that arrived from a save rather than through equipping.
+
+## The Cannon covering the whole board is the intention
+
+The board is 6 by 8 and distance is measured like a king moves, so the furthest two cells can be is **7**. The Cannon reaches 8. Whoever carries one never has to move, and pays for it with a minimum range of 3 and the lowest damage per second of any two hander.
+
+The consequence worth not forgetting: at this board size, reach 6, 7 and 8 are indistinguishable. Tuning between those three numbers would do nothing at all.
+
 ## A basic attack rolls, an ability does not
 
 Every basic attack draws uniformly between two ends declared on the sheet. An ability's damage comes whole from its rank and never varies.

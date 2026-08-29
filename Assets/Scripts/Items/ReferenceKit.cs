@@ -25,14 +25,32 @@ namespace HerOClock.Items
         /// <summary>
         /// The slots a plain kit fills.
         ///
-        /// The four casings and the off hand, which are the ones carrying defence weight. The main
-        /// hand is left out because a weapon is 0.11.2.0 and a weapon with no rules yet would be an
-        /// empty slot with a name. The controller and the firmware are left out because they carry
-        /// no base defence at all — they exist for modifiers, and this kit has none.
+        /// The four casings and the off hand carry defence weight; the main hand carries the weapon,
+        /// which is what the kit measures on the offensive side. The controller and the firmware are
+        /// left out because they carry no base defence at all — they exist for modifiers, and this
+        /// kit has none.
         /// </summary>
         public static readonly IReadOnlyList<string> Slots = new List<string>
         {
-            "cranialCasing", "chassis", "armServos", "tractionUnits", "offHand"
+            "cranialCasing", "chassis", "armServos", "tractionUnits", "mainHand", "offHand"
+        };
+
+        /// <summary>
+        /// The weapon each class carries, picked as the plainest one handed subtype of its natural
+        /// class in `subtypes.json`.
+        ///
+        /// One handed on purpose. A two hander would empty the off hand, and the kit would stop
+        /// measuring the defence it was built to measure — the answer would move for a reason that
+        /// has nothing to do with the change being looked at.
+        ///
+        /// A subtype missing here means that class simply has no weapon in the kit, which is the
+        /// honest answer rather than a guess.
+        /// </summary>
+        private static readonly Dictionary<string, string> WeaponByClass = new Dictionary<string, string>
+        {
+            { "light", "blade" },
+            { "heavy", "ram" },
+            { "special", "catalyst" }
         };
 
         /// <summary>
@@ -45,17 +63,37 @@ namespace HerOClock.Items
 
             for (int i = 0; i < Slots.Count; i++)
             {
+                string subtype = SubtypeFor(Slots[i], classId);
+
+                if (Slots[i] == ItemRules.MainHandSlot && string.IsNullOrEmpty(subtype))
+                {
+                    continue;
+                }
+
                 kit.Add(new Item(
                     "reference-" + classId + "-" + level + "-" + Slots[i],
                     Slots[i],
                     classId,
-                    string.Empty,
+                    subtype,
                     "noTechnology",
                     level,
                     new List<ItemModifierRoll>()));
             }
 
             return kit;
+        }
+
+        /// <summary>
+        /// The subtype a slot needs, which is only the main hand: a casing's subtype is nominal and
+        /// a defensive off hand takes its defence from its slot and class rather than from a table.
+        /// </summary>
+        private static string SubtypeFor(string slotId, string classId)
+        {
+            string weapon;
+
+            return slotId == ItemRules.MainHandSlot && WeaponByClass.TryGetValue(classId, out weapon)
+                ? weapon
+                : string.Empty;
         }
     }
 }

@@ -71,6 +71,16 @@ namespace HerOClock.Items
     /// The tier is kept alongside the value even though the value already contains it. The name of
     /// an item is built from the **highest tier** hardware and software it carries, so throwing the
     /// tier away would mean the name could not be worked out again.
+    ///
+    /// ## Every roll is a range, and almost every range is a single point
+    ///
+    /// One modifier in the data adds a **range** rather than an amount: `weaponDamage` reads
+    /// `+{min}-{max} to weapon base damage`, and a single number added to both ends of a weapon
+    /// would never widen anything, which is the one thing that modifier is for.
+    ///
+    /// So a roll carries two numbers, and for every other modifier they are the same number. That
+    /// is cheaper than a second kind of roll: nothing that reads <see cref="Value"/> has to ask
+    /// which kind it is holding, and a range modifier added tomorrow needs no new shape.
     /// </summary>
     [Serializable]
     public class ItemModifierRoll
@@ -82,14 +92,24 @@ namespace HerOClock.Items
 
         public int Tier { get; private set; }
 
+        /// <summary>The value, or the low end of it on the one modifier that rolls a range.</summary>
         public float Value { get; private set; }
 
+        /// <summary>The high end, equal to <see cref="Value"/> on everything but `weaponDamage`.</summary>
+        public float ValueMax { get; private set; }
+
         public ItemModifierRoll(string id, string family, int tier, float value)
+            : this(id, family, tier, value, value)
+        {
+        }
+
+        public ItemModifierRoll(string id, string family, int tier, float value, float valueMax)
         {
             Id = id;
             Family = family;
             Tier = tier;
             Value = value;
+            ValueMax = valueMax < value ? value : valueMax;
         }
     }
 }

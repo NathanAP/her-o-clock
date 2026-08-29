@@ -156,13 +156,32 @@ It is the same care the damage roll took in 0.10.7.0, where `RollPhysicalDamage`
 
 ### A modifier cannot be forgotten in silence
 
-`ItemContribution` declares `Handled` and `Deferred`, and a test asserts that **every modifier in `modifiers.json` is on one of the two lists**. Without it, a modifier added to the data that nobody wires up would roll onto items and do nothing at all, with no symptom beyond a player wondering why an item feels weak.
+`ItemContribution` declares `Handled`, `HandledByWeapon` and `Deferred`, and a test asserts that **every modifier in `modifiers.json` is on one of the three lists**. Without it, a modifier added to the data that nobody wires up would roll onto items and do nothing at all, with no symptom beyond a player wondering why an item feels weak.
+
+The middle list is not a detail of bookkeeping. A modifier on it belongs to **one weapon** rather than to the character, so it cannot go through the shared bag at all — `weaponDamage` raises the base damage of the weapon carrying it and of nothing else.
 
 ### What is stored about an item, and what is not
 
 Only the choices: the base it came from and the values it rolled. The base defence, the attribute requirement and the name are worked out again from the tables every time, so a change to `slots.json` reaches items that already exist.
 
 Whether a piece is **active** is not stored either. It is not a fact about the item, it is a comparison against the wearer's attributes, recomputed whenever a stage builds its combatants.
+
+## The weapon is a second bag, and the reach belongs to the combatant
+
+`Characters.WeaponLoadout` is the offensive twin of `EquipmentTotals`, filled by `Items.WeaponBuilder`. Same arrow, same direction: `Items` knows what a subtype means, `Characters` never learns what an item is.
+
+Two things follow from it that are easy to get wrong:
+
+- **A weapon replaces a base and never a result.** `AttacksPerSecond` is `weapon x (1 + AGI x rate)` and the damage range is `weapon x (1 + POW x share)`. Substituting the result instead would make AGI stop paying for anybody holding a weapon, and the light class would lose half its point.
+- **A weapon's damage scales with the item's level, not the holder's.** So it does not go through `ScaledOf`, and the stage multiplier does not touch it either — that multiplier exists to adjust a *sheet*, and a weapon is not sheet.
+
+`Character.MinRange`, `MaxRange` and `AutoAttack` are **fields settled once when the combatant is built**, and no longer passes through to `CharacterDefinition`. The sheet is a shared asset, so reading reach from it gave two heroes built from the same file the same reach whatever they were holding — and reach is the first thing a weapon is supposed to change. The sheet still declares all three: they are the punch, and they are what a character with no weapon falls back to.
+
+`null` is the answer for "unarmed", exactly as it is for `equipment`. Every fallback reads the same null, so the rule is written once.
+
+### The hands alternate by counting, never by rolling
+
+With two weapons held, `CharacterAttacker` walks a hand index forward on each blow thrown. It consumes **no draw from `BattleRandom`**, which is what keeps every existing deterministic sequence exactly where it was — and it is why the balance snapshot did not move for anybody unarmed when weapons arrived.
 
 ## ScriptableObjects must hold no runtime state
 
