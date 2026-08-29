@@ -102,13 +102,18 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
     - No primeiro caso, o jogador pode utilizar duas armas de uma mão ou uma arma e mais um equipamento defensivo na mão secundária.
     - No segundo caso, o jogador não poderá equipar itens na mão secundária.
 - **A arma substitui três coisas da ficha do personagem enquanto estiver equipada**: o dano base, a velocidade de ataque e o alcance.
+    - Ela substitui o **valor base** de cada uma, e nunca o resultado. A velocidade continua sendo `arma × (1 + AGI × taxa da classe)`, então quem investe em AGI continua ganhando com isso — e sem essa parte a classe leve perderia metade do sentido.
     - A velocidade e o alcance passam a ser assim porque sem isso o subtipo não significa nada. Uma Claw e um Piledriver que atacam na mesma velocidade e à mesma distância são a mesma arma com números diferentes.
     - Sem arma, o herói usa os três valores da própria ficha: o soco dele, a velocidade 1 e o alcance declarado.
 
 #### Mão secundária
 
 - Corresponde a equipamentos ofensivos ou defensivos que o herói usa, porém fica vazio caso o herói use uma arma de duas mãos na mão primária.
-- Quando o herói usa duas armas de uma mão, a velocidade e o alcance efetivos são os da mão primária. A secundária contribui apenas com o dano dela e com os modificadores.
+- Quando o herói usa duas armas de uma mão, a velocidade e o alcance efetivos são os da mão primária.
+- **Os golpes alternam as mãos**: o primeiro sai da primária, o segundo da secundária, o terceiro da primária, e assim por diante. Cada golpe usa a faixa de dano da arma que golpeou.
+- **Os modificadores das duas armas valem sempre**, e não apenas no golpe da mão que os carrega. Roubo de vida, dano elemental e espinhos são do herói, e o que pertence à mão é só o dano.
+    - Fazer o contrário significaria que os atributos do herói mudam de um golpe para o outro, o que é um jogo diferente do que este arquivo descreve.
+- **Equipar uma arma de duas mãos desequipa as duas mãos**, tanto a arma que estava na primária quanto o que estava na secundária.
 
 #### Controlador
 

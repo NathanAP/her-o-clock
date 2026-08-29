@@ -555,15 +555,26 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Tira `MinRange`, `MaxRange` e `AutoAttack` de dentro do `CharacterDefinition` compartilhado, que é onde eles moram hoje. Encosta em `TargetSelector`, `CharacterMover`, `FacingResolver`, a view do projétil e o `CanAttackFrom`.
 - **Item nenhum aumenta o rank de uma habilidade acima do 5.** É um problema conhecido do Path of Exile e a decisão é não repeti-lo: o rank é o degrau que a ficha controla, e um item que o ultrapassa devolve ao jogo o pico que o degrau existe para evitar.
 
-### O que precisa ser decidido antes de começar
+### O que já foi decidido
 
-- **Armas duplas: os modificadores da secundária valem sempre ou só no golpe dela?** É o maior da versão, e o `items.md` é ambíguo ao dizer que "a secundária contribui apenas com o dano dela e com os modificadores".
-    - **Valendo sempre**, a secundária é só mais uma peça de equipamento que por acaso tem faixa de dano, e só o dano alterna. Simples.
-    - **Valendo só no golpe dela**, os atributos do herói passam a depender de qual mão está golpeando: roubo de vida, dano elemental e espinhos mudam de golpe para golpe. Isso é uma reescrita do modelo de estatísticas inteiro.
-    - A primeira é a recomendada. A segunda é um jogo diferente e não está descrita como intenção em lugar nenhum.
-- **A arma substitui a velocidade base ou o resultado?** `AttacksPerSecond` é `1 x (1 + AGI x taxa)` e depois os buffs. Tem que ser a base, senão a AGI para de valer para quem tem arma e a classe leve perde metade do sentido. A spec só diz "substitui a velocidade de ataque do personagem", que lê como as duas coisas.
-- **O Cannon cobre o tabuleiro inteiro.** A distância é de rei e o tabuleiro é 6x8, então a maior distância possível é **7**. O Cannon tem alcance máximo 8 e o Rifle 6: quem usa Cannon nunca precisa se mover, e a única fraqueza dele vira o alcance mínimo 3. Pode ser exatamente a intenção, mas vale saber que 8 não é "muito longe", é "o tabuleiro todo", e que a diferença entre 8, 7 e 6 desaparece neste tamanho.
-- **A arma inativa e a de duas mãos.** Uma arma que falha o requerimento é desconsiderada e o herói volta ao soco da ficha, que continua existindo por isso. Uma arma de duas mãos precisa esvaziar a mão secundária, e isso vale tanto ao equipar quanto na hora da fotografia. Nenhum dos dois é difícil, e os dois são casos que ninguém lembra de testar.
+Respondido pelo Nathan antes de a versão começar. Nenhum destes é código: são regras, e cada um travaria a implementação no meio se chegasse lá em aberto.
+
+- **Os modificadores da mão secundária valem sempre. Só o ataque alterna.**
+    - A secundária é mais uma peça de equipamento que por acaso tem faixa de dano. Roubo de vida, dano elemental e espinhos valem o tempo todo, não importa qual mão golpeou.
+    - A alternativa — modificadores valendo só no golpe da mão que golpeou — faria os atributos do herói mudarem de golpe para golpe, e seria uma reescrita do modelo de estatísticas inteiro.
+    - Isso resolve a ambiguidade de `items.md`, que diz que "a secundária contribui apenas com o dano dela e com os modificadores": o dano é da mão, os modificadores são do herói.
+- **A arma substitui a velocidade base, e não o resultado.**
+    - `AttacksPerSecond` continua sendo `arma x (1 + AGI x taxa)`, com os buffs por cima. O que a arma troca é o `1`.
+    - Substituir o resultado faria a AGI parar de valer para quem tem arma, e a classe leve perderia metade do sentido.
+- **`MinRange`, `MaxRange` e `AutoAttack` saem da ficha do herói.** Hoje eles são lidos direto do `CharacterDefinition`, que é um asset compartilhado, então dois heróis da mesma ficha teriam o mesmo alcance qualquer que fosse a arma.
+    - Encosta em `TargetSelector`, `CharacterMover`, `FacingResolver`, a view do projétil e o `CanAttackFrom`.
+- **O Cannon cobrindo o tabuleiro inteiro é a intenção.** A distância é de rei e o tabuleiro é 6x8, então a maior distância possível é **7**, e o Cannon alcança 8.
+    - Quem usa Cannon nunca precisa se mover, e a única fraqueza dele é o alcance mínimo 3. É o que ele compra por render menos dano por segundo.
+    - **Consequência a não esquecer:** neste tamanho de tabuleiro, alcance 6, 7 e 8 são indistinguíveis. Afinar o balanceamento entre esses três números não faria nada, e o Rifle com 6 já alcança quase tudo.
+- **Equipar uma arma de duas mãos desequipa as duas mãos.** A que estava na primária **e** a que estava na secundária saem.
+    - Enquanto não existe inventário, o que sai não tem para onde ir. Até a 0.14.0.0, quem devolve item ao herói é a ferramenta de editor.
+- **Uma arma que falha o requerimento é desconsiderada e o herói volta ao soco da ficha.** É por isso que o soco continua existindo na ficha mesmo depois de existirem armas.
+- Testes: a alternância das mãos, a velocidade sendo substituída na base com a AGI ainda valendo, o alcance vindo da arma e não da ficha, a arma de duas mãos limpando as duas mãos, e a arma inativa caindo de volta no soco.
 
 ## 0.11.3.0
 
