@@ -582,16 +582,25 @@ Respondido pelo Nathan antes de a versão começar, e implementado como está es
     - Enquanto não existe inventário, o que sai não tem para onde ir. Até a 0.14.0.0, quem devolve item ao herói é a ferramenta de editor.
 - **Uma arma que falha o requerimento é desconsiderada e o herói volta ao soco da ficha.** É por isso que o soco continua existindo na ficha mesmo depois de existirem armas.
 
-## 0.11.3.0 (próxima)
+## 0.11.3.0 (feita)
 
-- **Os dois modificadores que precisam de costura nova**, adiados da 0.11.1.0 e já listados em `ItemContribution.Deferred`.
-- Os dois são independentes da arma e por isso vieram depois dela: um mexe no `AbilityResolver` e no `DamageInput`, o outro mexeu no ataque básico e no alcance. Juntá-los numa versão só embaralharia o diff do snapshot.
-- **`+X% ao dano de habilidade` por elemento.** Precisa de entradas novas em `ModifiableStat` e de o `AbilityResolver` passar o dano por elas, coisa que hoje ele não faz para nada.
-- **`+X% de resistência ignorada ao atacar.`** A regra já está escrita em `attributes.md`, com exemplo: ela corta os pontos do alvo **antes** da curva, então um alvo com 1000 contra 20% ignorados é tratado como 800.
-    - Precisa de um campo novo no `DamageInput`, do lado do **atacante**. O `TargetResistanceBonus` que existe é do alvo e é outra coisa.
-- Testes: os exemplos numéricos de `attributes.md`, e o teste de cobertura de modificadores passa a exigir que estes cinco saiam de `Deferred`, que fica vazia.
+- **Os dois modificadores que faltavam.** `ItemContribution.Deferred` ficou vazia, e um teste afirma isso: todo modificador de `modifiers.json` chega ao jogo.
+- **`+X% ao dano de habilidade` por elemento entra na mesma soma que os atributos, e nunca multiplica por fora.**
+    - A propriedade que decidiu: **1% vale exatamente 10 pontos de atributo**, porque é a mesma taxa. Os dois viram a mesma moeda e o jogador troca um pelo outro sabendo o câmbio.
+    - Multiplicar foi medido antes de ser recusado: a diferença é exatamente `fatia do atributo × porcentagem`, então só premiaria a build que já empilhou os dois.
+    - **As porcentagens aplicáveis são escolhidas por efeito e nunca por habilidade**, porque um efeito de dano carrega exatamente um elemento. Uma habilidade que queima e choca são dois efeitos, e a metade de fogo não ganha nada com investimento em elétrico.
+    - **Vale para o dano que a habilidade causa em quem a usou**, que é o custo virando decisão de build. O dano em si mesmo do Warm Up não escala com atributo nenhum, então a porcentagem é a única coisa que o move.
+    - **Não encosta no ataque básico.** Quem levanta ataque básico é o dano base da arma.
+- **`+X% de resistência ignorada` corta os pontos do alvo antes da curva.** Vale para armadura física e para as três resistências, e **não** para evasão, que é chance de evitar e não defesa contra. Numa reflexão de espinhos ela é lida de quem refletiu, do mesmo lado de onde o roubo de vida já era lido.
+- **O `ModifiableStat` não cresceu, de propósito.** Ele é o enum do efeito `modify_stat`, e nenhuma ficha pede dano de habilidade — quem pede é item, e item chega pelo `EquipmentTotals`. O enum cresce no dia em que um buff quiser.
+- **Uma contradição entre specs foi fechada.** O `attributes.md` dizia que o ganho de dano de habilidade por SPE "ainda não está definido", e o `abilities.md` define desde a 0.7.0.0.
+- **A ordem do cálculo de dano passou a mencionar o corte** no passo da mitigação, que antes só existia na seção própria.
+- **706 testes, 0 falhas.** Dezessete novos.
+- **O snapshot ganhou a tabela das habilidades e nenhuma linha existente se moveu**, porque ninguém veste nada por padrão. A tabela nova é o instrumento que responde "habilidade está acima da arma", e a primeira leitura dela diz que a resposta hoje é o contrário.
+- **Bug encontrado pela própria tabela:** a geração dela lia os ranks a partir de zero, e o resto do projeto conta a partir de um. Todo rank saiu um degrau abaixo e o último nunca aparecia. Era código novo de teste e não do jogo, mas é exatamente o tipo de erro que uma tabela publicada pega e uma leitura de código não.
+- O resumo completo está em `.claude/versions/20260829_0.11.3.0.md`.
 
-## 0.11.4.0
+## 0.11.4.0 (próxima)
 
 - **A ficha de personagem vira fonte única.** Os números saem de `.claude/specs/characters/` e vão para `Assets/`, em JSON. O `CharacterDefinition` fica só com a cor e as referências de sprite, resolvido por id como as fases já são.
 - **O arquivo se parte em dois, e não muda de pasta inteiro.** Ele mistura duas coisas hoje:
@@ -680,6 +689,29 @@ Respondido pelo Nathan antes de a versão começar, e implementado como está es
 # No radar
 
 Coisas decididas conscientemente como "não agora". Elas não têm versão marcada, e estão aqui para não serem redescobertas do zero mais tarde.
+
+## O equilíbrio entre lutar com arma e lutar com habilidade
+
+- A pergunta é "habilidade rende mais que ataque básico, e por quanto". Ela **não se resolve agora**, e este bloco existe para ela não ser redescoberta do zero.
+
+### O que já está travado e não pode escorregar
+
+- **POW → arma e SPE → habilidade convertem na mesma taxa.** É o mesmo número, `0.001`, lido pelos dois lados. Nenhum dos dois pode ficar acima do outro por aí.
+- **1% de dano de habilidade vale 10 pontos de atributo**, pela mesma taxa.
+- **Não mexa nessa taxa para calibrar.** Ela é compartilhada com a arma, então movê-la move os dois lados juntos e parece que não consertou nada. Quem calibra são as bases de rank e os pesos de `scaling`, que são **por habilidade** — um erro fica contido numa ficha.
+
+### O que ainda vai ser decidido
+
+- As **bases de rank** de cada habilidade e os **pesos de `scaling`** de cada uma. São os únicos números em aberto.
+
+### Em que altura
+
+- **Não agora.** São 2 heróis e um punhado de habilidades: afinar contra essa amostra é afinar contra ruído.
+- O **instrumento** já existe desde a 0.11.3.0: a tabela "As habilidades" do snapshot, ao lado de "As armas". A pergunta virou uma linha de diff em vez de uma sensação.
+- Ela deixa de esperar quando as duas metades que faltam existirem:
+    - o **drop** (0.12.0.0), que é quando um herói de verdade acumula as porcentagens em vez de elas serem hipótese;
+    - a **árvore de habilidades** (0.18.0.0), que é a outra metade do escalonamento e pode mudar a conta inteira.
+- Até lá a obrigação é só uma: **olhar o diff das duas tabelas a cada versão** e perguntar se a mudança era desejada.
 
 ## Efeito periódico
 

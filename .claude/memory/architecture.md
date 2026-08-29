@@ -156,7 +156,7 @@ It is the same care the damage roll took in 0.10.7.0, where `RollPhysicalDamage`
 
 ### A modifier cannot be forgotten in silence
 
-`ItemContribution` declares `Handled`, `HandledByWeapon` and `Deferred`, and a test asserts that **every modifier in `modifiers.json` is on one of the three lists**. Without it, a modifier added to the data that nobody wires up would roll onto items and do nothing at all, with no symptom beyond a player wondering why an item feels weak.
+`ItemContribution` declares `Handled`, `HandledByWeapon` and `Deferred`, and a test asserts that **every modifier in `modifiers.json` is on one of the three lists**. `Deferred` is empty today, and a second assertion says so out loud: every modifier in the data reaches the game. Without it, a modifier added to the data that nobody wires up would roll onto items and do nothing at all, with no symptom beyond a player wondering why an item feels weak.
 
 The middle list is not a detail of bookkeeping. A modifier on it belongs to **one weapon** rather than to the character, so it cannot go through the shared bag at all — `weaponDamage` raises the base damage of the weapon carrying it and of nothing else.
 
@@ -165,6 +165,14 @@ The middle list is not a detail of bookkeeping. A modifier on it belongs to **on
 Only the choices: the base it came from and the values it rolled. The base defence, the attribute requirement and the name are worked out again from the tables every time, so a change to `slots.json` reaches items that already exist.
 
 Whether a piece is **active** is not stored either. It is not a fact about the item, it is a comparison against the wearer's attributes, recomputed whenever a stage builds its combatants.
+
+## Whoever knows about damage types does the switch
+
+`Combat` depends on `Characters` and never the other way round, so `DamageType` cannot appear in a `Characters` signature. That is why `CharacterStats` exposes `FireAbilityDamagePercent` and its three siblings as four separate properties rather than one method taking a type.
+
+The switch lives with the caller — `AbilityResolver.AbilityDamagePercentOf`, right next to the `MitigationPointsOf` that has always done the same thing. Any new per-element number follows the same shape.
+
+`ModifiableStat` deliberately did **not** grow for these. It is the enum of the `modify_stat` ability effect, and its own comment promises entries arrive when an ability needs one. Nothing on a sheet asks for ability damage; what asks is an item, and items reach the stats through `EquipmentTotals`. The enum grows the day a buff wants it.
 
 ## The weapon is a second bag, and the reach belongs to the combatant
 

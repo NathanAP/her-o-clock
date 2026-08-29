@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Text;
+using HerOClock.Abilities;
 using HerOClock.Battle;
 using HerOClock.Characters;
 using HerOClock.Items;
@@ -115,6 +116,7 @@ namespace HerOClock.Tests
             AppendPacing(page);
             AppendSheets(page);
             AppendWeapons(page);
+            AppendAbilities(page);
             AppendEquipment(page);
             AppendStages(page);
             AppendSweep(page);
@@ -599,6 +601,134 @@ namespace HerOClock.Tests
             }
 
             page.AppendLine();
+        }
+
+        /// <summary>
+        /// What each ability is worth per second, next to what a weapon is worth per second.
+        ///
+        /// This is the table that answers the question SPE keeps raising: is fighting with
+        /// abilities ahead of fighting with a weapon, and by how much. It cannot be answered by
+        /// looking at the damage alone, because an ability pays for its number with a cooldown and
+        /// collects it back by hitting several targets at once.
+        ///
+        /// Every row is read at the level where that rank opens, which is the moment the player
+        /// actually gets it. No items are worn, so the ability damage percentages are all zero and
+        /// what is left is the sheet against itself.
+        /// </summary>
+        private static void AppendAbilities(StringBuilder page)
+        {
+            CharacterDatabase database = Load<CharacterDatabase>();
+
+            page.AppendLine("## As habilidades");
+            page.AppendLine();
+            page.AppendLine("O que cada habilidade rende, lida no n\u00edvel em que aquele rank abre e sem item nenhum.");
+            page.AppendLine("A recarga efetiva j\u00e1 conta a redu\u00e7\u00e3o de recarga da ficha e o tempo parado da");
+            page.AppendLine("habilidade. O DPS \u00e9 **por alvo**: multiplique pelos alvos para o total.");
+            page.AppendLine();
+            page.AppendLine("| Ficha | Habilidade | N\u00edvel | Rank | Dano/alvo | Alvos | Custo | Recarga ef. | DPS/alvo |");
+            page.AppendLine("|---|---|---|---|---|---|---|---|---|");
+
+            for (int c = 0; c < database.Characters.Count; c++)
+            {
+                CharacterDefinition sheet = database.Characters[c];
+
+                if (sheet == null || sheet.Abilities == null)
+                {
+                    continue;
+                }
+
+                for (int a = 0; a < sheet.Abilities.Count; a++)
+                {
+                    AppendAbilityRows(page, sheet, sheet.Abilities[a]);
+                }
+            }
+
+            page.AppendLine();
+        }
+
+        private static void AppendAbilityRows(StringBuilder page, CharacterDefinition sheet, AbilityDefinition ability)
+        {
+            if (ability == null || ability.Effects == null || ability.RankAvailability == null)
+            {
+                return;
+            }
+
+            // Ranks count from 1 everywhere in the project: `RankedValue.At` clamps `rank - 1`
+            // into its array and `AbilityDefinition.RankAt` hands out 1 for the first one. Walking
+            // this loop from zero reads every rank one step too low and never reaches the last.
+            for (int rank = 1; rank <= ability.Ranks && rank <= ability.RankAvailability.Length; rank++)
+            {
+                int level = Mathf.Clamp(ability.RankAvailability[rank - 1], 1, sheet.MaxLevel);
+                CharacterStats stats = AtLevel(sheet, level);
+
+                float atTarget = 0f;
+                float atSelf = 0f;
+
+                for (int e = 0; e < ability.Effects.Length; e++)
+                {
+                    AbilityEffect effect = ability.Effects[e];
+
+                    if (effect == null || effect.Type != EffectType.DealDamage)
+                    {
+                        continue;
+                    }
+
+                    // No items are worn here, so the ability damage percentages are all zero and
+                    // the multiplier is the attribute share on its own.
+                    float damage = effect.Base.At(rank) * effect.Scaling.MultiplierFor(stats);
+
+                    if (effect.Target == EffectTarget.Self)
+                    {
+                        atSelf += damage;
+                    }
+                    else
+                    {
+                        atTarget += damage;
+                    }
+                }
+
+                if (atTarget <= 0f && atSelf <= 0f)
+                {
+                    // An ability that only buffs or moves has no row here. It is not worth nothing,
+                    // it is worth something this table does not measure.
+                    continue;
+                }
+
+                float cooldown = ability.Cooldown.At(rank) * (1f - stats.CooldownReduction / 100f)
+                    + ability.BusySeconds(rank);
+
+                page.AppendLine("| " + sheet.Id
+                    + " | " + ability.Id
+                    + " | " + level
+                    + " | " + rank
+                    + " | " + Number(atTarget, 1)
+                    + " | " + TargetsOf(ability)
+                    + " | " + (atSelf > 0f ? Number(atSelf, 1) : "-")
+                    + " | " + Number(cooldown, 1) + "s"
+                    + " | " + (cooldown > 0f ? Number(atTarget / cooldown, 1) : "-")
+                    + " |");
+            }
+        }
+
+        /// <summary>
+        /// The most targets one use can reach, which is what turns a slow ability into a fast one.
+        ///
+        /// It is the shape and not a measurement of a real fight: an area of three by three reaches
+        /// nine cells whether or not nine enemies are standing in them.
+        /// </summary>
+        private static string TargetsOf(AbilityDefinition ability)
+        {
+            AbilityTargeting targeting = ability.Targeting;
+
+            switch (targeting.Shape)
+            {
+                case AbilityShape.Area:
+                    return (targeting.AreaColumns * targeting.AreaRows).ToString(CultureInfo.InvariantCulture);
+                case AbilityShape.Line:
+                    return targeting.Range.ToString(CultureInfo.InvariantCulture);
+                default:
+                    return "1";
+            }
         }
 
         private static string Band(WeaponSubtype weapon, int level)

@@ -419,6 +419,40 @@ The board is 6 by 8 and distance is measured like a king moves, so the furthest 
 
 The consequence worth not forgetting: at this board size, reach 6, 7 and 8 are indistinguishable. Tuning between those three numbers would do nothing at all.
 
+## An ability percentage and an attribute point are the same currency
+
+`+X% to fire ability damage` joins the **same sum** as the attribute share instead of multiplying it:
+
+`damage = rank base x (1 + Σ(attribute x weight) x 0.001 + Σ(applicable percentages) / 100)`
+
+The property that decides it: **1% of ability damage is worth exactly ten attribute points**, because it is the same rate. The two become one currency, so a player can trade a passive node for an item and back knowing the exchange.
+
+Multiplying was measured before it was rejected. On a level 100 Gadrat with a rank 5 Dragon Breath it costs almost nothing at low investment and reaches about 30% at the far end, and the shape is the problem rather than the size: the gap is exactly `attribute share x percentage`, so it only ever rewards the build that already stacked both. The build that needs no help would have been the only one with the full return.
+
+### The percentages that apply are chosen per effect, never per ability
+
+One damage effect carries exactly one element, which attributes.md already required. An ability that burns and shocks is two effects, and the fire half gets nothing from investment in electric. Summing all of a character's percentages onto every effect would pay the fire half for electric gear.
+
+### It reaches the ability's own cost, and the healing conversion
+
+A `deal_damage` aimed at the user is the price of a strong ability, and the percentage raises it too. That is intended: a hero stacking fire pays more for a fire ability that burns them, and the way out is fire resistance and health, so the cost becomes a build decision instead of a flat tax. Gadrat's Warm Up is the case it was written against, and its self damage carries **no** scaling at all, so the percentage is the only thing that moves it.
+
+By the same arithmetic, a bigger base heals more when the target is past 100% resistance. The game gets to use the player's own strategy back.
+
+### It never touches the basic attack
+
+What raises a basic attack is the weapon's own base damage. Keeping the two families apart is what makes a weapon build and an ability build look for different items, and it is why `physicalAbilityDamage` helps nobody swinging a weapon even though a swing is physical.
+
+## Ignored resistance cuts the points, never the mitigation
+
+`Considered points = target points x (1 - ignored / 100)`, and the curve then runs on the cut value.
+
+The measurement that settles it: a level 10 attacker against 1000 points goes from 500 damage to **538** with 20% ignored. Cutting the mitigation afterwards instead would have given **600**, and the gain would have grown the more defended the target was — which turns the modifier into a requirement against every resistant enemy. Cutting before, diminishing returns keeps applying and the gain against a saturated target stays small.
+
+It works on physical armour and the three elemental resistances, since all four share the curve. It does **not** touch evasion, which is a chance to avoid the attack rather than a defence against it.
+
+On a thorns reflection it is read off the character that reflected, because a reflection is an attack by the one reflecting — the same side life steal is already read from.
+
 ## A basic attack rolls, an ability does not
 
 Every basic attack draws uniformly between two ends declared on the sheet. An ability's damage comes whole from its rank and never varies.

@@ -64,8 +64,11 @@ namespace HerOClock.Tests
         {
             int dealt = 0;
 
+            // Rank 1, because ranks count from 1 in this project. Every value these abilities
+            // carry is a constant, so it would read the same at any rank — passing the right one
+            // anyway keeps the test from teaching the wrong convention to whoever copies it.
             AbilityResolver.Apply(
-                user, ability, 0, new List<Character> { target }, battle.Grid, new BattleRandom(1),
+                user, ability, 1, new List<Character> { target }, battle.Grid, new BattleRandom(1),
                 (u, t, result) => dealt += result.Damage);
 
             return dealt;
@@ -231,7 +234,7 @@ namespace HerOClock.Tests
                 int before = caster.CurrentHealth;
 
                 AbilityResolver.Apply(
-                    caster, burn, 0, new List<Character>(), battle.Grid, new BattleRandom(1), null);
+                    caster, burn, 1, new List<Character>(), battle.Grid, new BattleRandom(1), null);
 
                 Assert.AreEqual(30, before - caster.CurrentHealth, "24 x 1.25, with no scaling to help.");
             }

@@ -72,6 +72,30 @@ dano médio vezes a velocidade, que é o orçamento que a família paga.
 | cannon | 2 | 3-8 | 0.45 | 14-35 | 11.0 | 153-382 | 120.2 |
 | reactor | 2 | 1-3 | 0.70 | 10-16 | 9.1 | 109-174 | 99.2 |
 
+## As habilidades
+
+O que cada habilidade rende, lida no nível em que aquele rank abre e sem item nenhum.
+A recarga efetiva já conta a redução de recarga da ficha e o tempo parado da
+habilidade. O DPS é **por alvo**: multiplique pelos alvos para o total.
+
+| Ficha | Habilidade | Nível | Rank | Dano/alvo | Alvos | Custo | Recarga ef. | DPS/alvo |
+|---|---|---|---|---|---|---|---|---|
+| tempo | fast-and-furious | 1 | 1 | 12.1 | 1 | - | 19.6s | 0.6 |
+| tempo | fast-and-furious | 10 | 2 | 40.7 | 1 | - | 16.4s | 2.5 |
+| tempo | fast-and-furious | 20 | 3 | 72.1 | 1 | - | 15.2s | 4.7 |
+| tempo | fast-and-furious | 32 | 4 | 99.3 | 1 | - | 14.3s | 7.0 |
+| tempo | fast-and-furious | 45 | 5 | 127.3 | 1 | - | 12.1s | 10.5 |
+| gadrat | dragon-breath | 1 | 1 | 15.1 | 4 | - | 37.1s | 0.4 |
+| gadrat | dragon-breath | 10 | 2 | 50.8 | 4 | - | 31.5s | 1.6 |
+| gadrat | dragon-breath | 20 | 3 | 92.7 | 4 | - | 26.1s | 3.5 |
+| gadrat | dragon-breath | 35 | 4 | 125.8 | 4 | - | 20.8s | 6.0 |
+| gadrat | dragon-breath | 50 | 5 | 160.1 | 4 | - | 15.9s | 10.1 |
+| gadrat | warm-up | 1 | 1 | 10.1 | 9 | 8.0 | 41.5s | 0.2 |
+| gadrat | warm-up | 8 | 2 | 35.5 | 9 | 12.0 | 40.9s | 0.9 |
+| gadrat | warm-up | 18 | 3 | 61.6 | 9 | 16.0 | 35.3s | 1.7 |
+| gadrat | warm-up | 30 | 4 | 88.6 | 9 | 20.0 | 34.4s | 2.6 |
+| gadrat | warm-up | 45 | 5 | 116.7 | 9 | 24.0 | 29.0s | 4.0 |
+
 ## O kit de referência
 
 A ficha da Tempo vestindo um kit sem modificador nenhum, do mesmo nível que ela:
