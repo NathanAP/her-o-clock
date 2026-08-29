@@ -52,7 +52,7 @@ namespace HerOClock.Tests
 
         private static AbilityDefinition Burn(float damage)
         {
-            return TestAbility.Instant("warm-up")
+            return TestAbility.Instant("warmUp")
                 .Shaped(AbilityShape.Area)
                 .WithDamage(damage, target: EffectTarget.Self);
         }

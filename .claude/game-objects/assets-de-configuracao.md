@@ -42,9 +42,9 @@ que a ponte da 0.9.1.0 existe para pegar.
 |---|---|---|---|
 | Tempo | `tempo` | Hero | `heroes/tempo.json` |
 | Gadrat | `gadrat` | Hero | `heroes/gadrat.json` |
-| Gadrat NPC | `gadrat-npc` | Npc | `heroes/gadrat.json`, sem as habilidades |
-| Discarded Prototype | `discarded-prototype` | Minion | `minions/discarded-prototype.json` |
-| Exposed Prototype | `exposed-prototype` | Villain | `villains/exposed-prototype.json` |
+| Gadrat NPC | `gadratNpc` | Npc | `heroes/gadrat.json`, sem as habilidades |
+| Discarded Prototype | `discardedPrototype` | Minion | `minions/discardedPrototype.json` |
+| Exposed Prototype | `exposedPrototype` | Villain | `villains/exposedPrototype.json` |
 
 O `Gadrat NPC` é o mesmo personagem espelhado: mesmos atributos, mesma defesa, **lista de
 habilidades vazia**. Ele só dá ataque básico, e é assim que a fase 3 o usa.

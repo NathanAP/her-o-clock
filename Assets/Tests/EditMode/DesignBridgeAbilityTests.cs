@@ -104,10 +104,10 @@ namespace HerOClock.Tests
 
         private static readonly Dictionary<string, EffectType> Types = new Dictionary<string, EffectType>
         {
-            { "modify_stat", EffectType.ModifyStat },
-            { "deal_damage", EffectType.DealDamage },
-            { "apply_status", EffectType.ApplyStatus },
-            { "move_to", EffectType.MoveTo }
+            { "modifyStat", EffectType.ModifyStat },
+            { "dealDamage", EffectType.DealDamage },
+            { "applyStatus", EffectType.ApplyStatus },
+            { "moveTo", EffectType.MoveTo }
         };
 
         private static readonly Dictionary<string, EffectTarget> Targets = new Dictionary<string, EffectTarget>
@@ -262,7 +262,7 @@ namespace HerOClock.Tests
         /// Every character the game loads has a design sheet, and every design sheet has a
         /// character.
         ///
-        /// `gadrat-npc` used to be the exception, skipped by name with a comment saying it mirrored
+        /// `gadratNpc` used to be the exception, skipped by name with a comment saying it mirrored
         /// Gadrat. It did not: it has no abilities where Gadrat has two, so it was a fifth character
         /// whose numbers existed in exactly one place and were checked by nothing.
         /// </summary>

@@ -62,7 +62,7 @@ namespace HerOClock.Text
         ///
         /// A missing key comes back as the key itself between hashes rather than as an empty
         /// string. Empty text is invisible, and a label that silently disappears is the kind of
-        /// problem that ships. <c>#stage.act1-stage1.name#</c> on screen is impossible to miss.
+        /// problem that ships. <c>#stage.act1Stage1.name#</c> on screen is impossible to miss.
         /// </summary>
         public string Get(string key)
         {

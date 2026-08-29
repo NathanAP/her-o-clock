@@ -1,10 +1,10 @@
 namespace HerOClock.Abilities
 {
     /// <summary>
-    /// The named states an `apply_status` effect can grant, described in buffs-and-debuffs.md.
+    /// The named states an `applyStatus` effect can grant, described in buffs-and-debuffs.md.
     ///
     /// A named state only exists when it does something the game cannot already express. Anything
-    /// that is only a number belongs in `modify_stat`, which is why there is no "faster" or
+    /// that is only a number belongs in `modifyStat`, which is why there is no "faster" or
     /// "tougher" here.
     /// </summary>
     public enum StatusKind

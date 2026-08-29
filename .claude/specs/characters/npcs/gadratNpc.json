@@ -1,5 +1,5 @@
 {
-    "id": "gadrat-npc",
+    "id": "gadratNpc",
     "kind": "npc",
     "maxLevel": 100,
     "equipment": "heavy",

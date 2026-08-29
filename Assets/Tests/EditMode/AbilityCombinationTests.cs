@@ -51,7 +51,7 @@ namespace HerOClock.Tests
         {
             CharacterDefinition heroSheet = Sturdy("hero", CharacterKind.Hero, 40, 30);
 
-            heroSheet.Give(TestAbility.Timed("fast-and-furious", 0f, 0.2f, 0f, 20f)
+            heroSheet.Give(TestAbility.Timed("fastAndFurious", 0f, 0.2f, 0f, 20f)
                 .Shaped(AbilityShape.Chain, AbilityWho.Enemies, 3)
                 .WithStatus(StatusKind.Untargetable, 1f, EffectTarget.Self)
                 .WithStatus(StatusKind.Intangible, 1f, EffectTarget.Self)

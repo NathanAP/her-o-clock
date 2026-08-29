@@ -107,7 +107,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - A suíte de testes. 209 verificações em EditMode e 2 em PlayMode, todas passando.
 - O código do jogo ganhou `Assets/Scripts/HerOClock.asmdef`, sem o qual nenhum teste o enxergaria.
 - Três bugs achados pelos próprios testes: o cálculo de dano dava resultados diferentes dentro e fora da Unity, porque estava em `float` e o C# deixa o runtime escolher a precisão dos intermediários; o gerador aleatório era quase linear nas sementes pequenas, então toda semente digitada à mão sorteava evasão perfeita no primeiro teste; e `attributes.md` guardava a travessia do tabuleiro 6x12 que foi recusado, dizendo 6 segundos onde são 3.5.
-- O primeiro `.claude/balance/snapshot.md` foi gerado. Ele mediu pela primeira vez o que `fases.md` afirmava: a `act1-stage1` é vencível no nível 1 em 26,2 segundos, e a `act1-stage2` exige nível 20.
+- O primeiro `.claude/balance/snapshot.md` foi gerado. Ele mediu pela primeira vez o que `fases.md` afirmava: a `act1Stage1` é vencível no nível 1 em 26,2 segundos, e a `act1Stage2` exige nível 20.
 - O resumo completo está em `.claude/versions/20260813_0.5.2.0.md`.
 
 ## 0.5.3.0 (feita)
@@ -152,7 +152,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 ## 0.5.7.0 (feita)
 
 - Modelo de atributos de lacaios e vilões. **O modelo não mudou:** o problema era de ergonomia, não de conceito.
-- Inimigos mantêm os atributos principais, porque as habilidades escalam por atributo e os `modify_stat` de buff e debuff precisam de algo em que morder. Tirá-los exigiria um segundo caminho só para eles nos dois sistemas.
+- Inimigos mantêm os atributos principais, porque as habilidades escalam por atributo e os `modifyStat` de buff e debuff precisam de algo em que morder. Tirá-los exigiria um segundo caminho só para eles nos dois sistemas.
 - A dificuldade de autoria foi resolvida no Inspector: a ficha passou a mostrar ao vivo o que produz, em qualquer nível e com qualquer multiplicador de fase, lendo as mesmas propriedades que o jogo lê.
 - `characters.md` fechou a estrutura da ficha, que a 0.5.6.0 tinha adiado para cá, e registrou o porquê de inimigos terem primários.
 - O resumo completo está em `.claude/versions/20260814_0.5.7.0.md`.
@@ -205,7 +205,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 ## 0.6.0.3 (feita)
 
 - Conferência da spec de habilidades contra o critério de "isto dá para testar?". Só documentação, nenhuma linha de código.
-- Um erro de conta corrigido, uma contradição deixada pela remoção do `bestPlacement` resolvida, e os dois furos que faltavam fechados: empilhamento de buff e o `move_to` sem casa livre.
+- Um erro de conta corrigido, uma contradição deixada pela remoção do `bestPlacement` resolvida, e os dois furos que faltavam fechados: empilhamento de buff e o `moveTo` sem casa livre.
 - `Intangível` e `Inalvejável` ganharam definição mecânica, e ficou registrado que prioridade de alvo alternativa **não existe** — em vez de ficar subentendido, virou coisa que o validador recusa.
 - O plano de testes da 0.7.0.0 ficou escrito abaixo.
 - O resumo completo está em `.claude/versions/20260817_0.6.0.3.md`.
@@ -234,7 +234,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 
 - Queda de dano por distância e autodano que não mata. 529 verificações no EditMode, contra 510, e 2 no PlayMode. O snapshot não se moveu.
 - A gramática de habilidades tinha sido declarada fechada na 0.7.0.0, e **a primeira ficha escrita à mão de verdade abriu ela de novo**. Era o previsto: o validador só começa a pagar quando encontra ficha escrita por uma pessoa.
-- **`falloff` entrou no `deal_damage`.** Multiplicativo, com expoente `distância − 1`, então o alvo colado leva o número cheio da ficha e o dano nunca chega a zero. Recusado em `self` e `single`.
+- **`falloff` entrou no `dealDamage`.** Multiplicativo, com expoente `distância − 1`, então o alvo colado leva o número cheio da ficha e o dano nunca chega a zero. Recusado em `self` e `single`.
 - **Dano da habilidade em quem a usou trava em 1 de vida.** Proibir o uso teria dois furos: o preparo desatualiza a conta, e o personagem ficaria desarmado justamente com a vida baixa.
 - A trava vale só para o dano da própria habilidade. Espinhos, área de aliado e ataque básico continuam matando, senão o custo viraria defesa.
 - O resumo completo está em `.claude/versions/20260818_0.7.1.0.md`.
@@ -413,7 +413,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - A regra acima em vigor. `AttributeAllocation` passou a ter dois `AttributeSplit`: o que o jogador edita e o que os atributos leem. `Commit` é a única passagem entre os dois, e acontece ao nascer e ao começar uma fase.
 - Saiu o `Heal` que a 0.10.2.4 tinha colocado no `SaveMapper`: era código morto, e o comentário que o justificava afirmava algo falso sobre o sistema.
 - **587 testes, 0 falhas.** Quatro novos sobre a regra, um guardando a fronteira da armadura, e quatro que mudaram de significado de propósito.
-- **Impacto no balanceamento:** uma linha do snapshot, `act1-stage1` de 23.3 s para 23.4 s. Nenhum nível mínimo mudou.
+- **Impacto no balanceamento:** uma linha do snapshot, `act1Stage1` de 23.3 s para 23.4 s. Nenhum nível mínimo mudou.
 - O resumo completo está em `.claude/versions/20260827_0.10.3.0.md`.
 
 ## 0.10.4.0 (feita)
@@ -424,7 +424,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - Lacaios, vilões e NPCs sempre foram recriados por fase. O herói era a exceção, e a exceção era o bug.
 - **Apagados:** o `AttributeSplit` da 0.10.3.0, o `ResetForBattle`, o `SpawnHeroes` (código morto), e o rótulo de nível embaixo do personagem.
 - Achado no caminho: o `SaveService` recebia a lista de heróis uma vez, então um herói desbloqueado no meio da sessão nunca era salvo.
-- **583 testes, 0 falhas.** Impacto no balanceamento: `act1-stage1` de 23.4 s para 24.3 s, sem mexer em nenhum nível mínimo nem parede.
+- **583 testes, 0 falhas.** Impacto no balanceamento: `act1Stage1` de 23.4 s para 24.3 s, sem mexer em nenhum nível mínimo nem parede.
 - **Fica em aberto:** não existe mais lugar para ver o nível de um herói durante o desenvolvimento.
 - O resumo completo está em `.claude/versions/20260827_0.10.4.0.md`.
 
@@ -473,7 +473,7 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - **A calibração de 10/5/2 planejada aqui estava errada** e foi descartada: ela vale assintoticamente, mas no nível 1 a constante está no mínimo enquanto a ficha já carrega o AGI base inteiro, e a Tempo saltaria para 64.3% de evasão na fase 1. A evasão na ficha resolve o pico pela causa.
 - A Tempo trocou armadura por evasão a pedido: 20/20 de armadura viraram 12/12, e ela ganhou 25/25 de evasão. A redução média total dela ficou onde estava; o que mudou é qual das duas carrega a maior parte.
 - Fechou a pergunta em aberto de `items.md`, e os números de evasão de `slots.json` e `modifiers.json` foram reescritos para a mesma ordem que os de armadura.
-- **602 testes, 0 falhas.** O snapshot se moveu bastante, e **a parede da act1-stage4 sumiu** — nenhuma das três calibrações testadas preserva as três paredes do ato.
+- **602 testes, 0 falhas.** O snapshot se moveu bastante, e **a parede da act1Stage4 sumiu** — nenhuma das três calibrações testadas preserva as três paredes do ato.
 - O resumo completo está em `.claude/versions/20260828_0.10.6.0.md`.
 
 ## 0.10.6.1 (feita)
@@ -492,8 +492,8 @@ Utilize tons de azul para heróis; tons de vermelho para vilões; tons de rosa p
 - A forma da faixa é a mesma de `subtypes.json`, para que equipar uma arma na 0.11.2.0 seja substituir quatro números por quatro números.
 - Quem sorteia é o `CharacterAttacker`; a ficha recebe um número de 0 a 1 e faz a conta. O `DamageCalculator` não mudou uma linha.
 - **611 testes, 0 falhas.** As seeds antigas pararam de reproduzir as batalhas que reproduziam, como planejado.
-- **A variância deixou o jogo mais difícil sem mexer na média**, porque a fase mede vitória ou derrota e não existe cura entre ondas: a corrida mediana fica pior que a média. A parede da act1-stage3 pulou de "4x, 2.7 min" para **"12x, 7.7 min"**, e isso está em aberto.
-- Achado bom: a diversidade de build subiu na act1-stage4. Três builds que limpavam zero vezes no nível 6 passaram a limpar uma.
+- **A variância deixou o jogo mais difícil sem mexer na média**, porque a fase mede vitória ou derrota e não existe cura entre ondas: a corrida mediana fica pior que a média. A parede da act1Stage3 pulou de "4x, 2.7 min" para **"12x, 7.7 min"**, e isso está em aberto.
+- Achado bom: a diversidade de build subiu na act1Stage4. Três builds que limpavam zero vezes no nível 6 passaram a limpar uma.
 - O resumo completo está em `.claude/versions/20260828_0.10.7.0.md`.
 
 ## 0.11.0.0 (feita)
@@ -592,7 +592,7 @@ Respondido pelo Nathan antes de a versão começar, e implementado como está es
     - **Vale para o dano que a habilidade causa em quem a usou**, que é o custo virando decisão de build. O dano em si mesmo do Warm Up não escala com atributo nenhum, então a porcentagem é a única coisa que o move.
     - **Não encosta no ataque básico.** Quem levanta ataque básico é o dano base da arma.
 - **`+X% de resistência ignorada` corta os pontos do alvo antes da curva.** Vale para armadura física e para as três resistências, e **não** para evasão, que é chance de evitar e não defesa contra. Numa reflexão de espinhos ela é lida de quem refletiu, do mesmo lado de onde o roubo de vida já era lido.
-- **O `ModifiableStat` não cresceu, de propósito.** Ele é o enum do efeito `modify_stat`, e nenhuma ficha pede dano de habilidade — quem pede é item, e item chega pelo `EquipmentTotals`. O enum cresce no dia em que um buff quiser.
+- **O `ModifiableStat` não cresceu, de propósito.** Ele é o enum do efeito `modifyStat`, e nenhuma ficha pede dano de habilidade — quem pede é item, e item chega pelo `EquipmentTotals`. O enum cresce no dia em que um buff quiser.
 - **Uma contradição entre specs foi fechada.** O `attributes.md` dizia que o ganho de dano de habilidade por SPE "ainda não está definido", e o `abilities.md` define desde a 0.7.0.0.
 - **A ordem do cálculo de dano passou a mencionar o corte** no passo da mitigação, que antes só existia na seção própria.
 - **706 testes, 0 falhas.** Dezessete novos.
@@ -605,7 +605,7 @@ Respondido pelo Nathan antes de a versão começar, e implementado como está es
 - **A ponte passou a cobrir as habilidades**, que eram a maior e mais intrincada parte de uma ficha e estavam duplicadas com **nada** vigiando — a mesma situação das fases antes da 0.11.0.1. O roadmap dizia que as fichas já estavam protegidas, e isso valia só para os 27 campos escalares.
     - `DesignBridgeAbilityTests` compara rank a rank: ranks, liberação, tempos, alvo, forma, prioridade, área, e cada efeito com tipo, alvo, duração, valor, base, queda, escalonamento e estado.
     - **A árvore em si não é comparada**, porque ela não tem contrapartida no asset: o asset guarda uma lista lisa. O agrupamento é informação que o código só começa a ler na 0.18.0.0.
-- **O `gadrat-npc` ganhou ficha.** Ele não tinha nenhuma, e o teste antigo o pulava por nome dizendo que ele "espelha a ficha do Gadrat". Não espelhava: ele não tem habilidade nenhuma onde o Gadrat tem duas. Era um personagem cujos números existiam num lugar só e eram conferidos por nada.
+- **O `gadratNpc` ganhou ficha.** Ele não tinha nenhuma, e o teste antigo o pulava por nome dizendo que ele "espelha a ficha do Gadrat". Não espelhava: ele não tem habilidade nenhuma onde o Gadrat tem duas. Era um personagem cujos números existiam num lugar só e eram conferidos por nada.
     - A ponte agora exige o par nos **dois sentidos**: todo asset tem ficha e toda ficha tem asset.
 - **Todo valor por rank virou array, sempre.** O mesmo campo era ora número ora lista, e nenhum leitor de JSON comum lida com isso sem código escrito à mão — era o que impedia a ponte de existir. Um array de uma entrada vale para todos os ranks, que é exatamente como o asset já guardava.
 - **O `hidden` saiu das fichas e foi para `<private>` em `lore.md`.** O motivo não é organização: a ficha vai virar dado de `Assets/`, e tudo em `Assets/` entra no build. Nome verdadeiro de personagem dentro do build é spoiler a um clique de distância.
@@ -613,17 +613,20 @@ Respondido pelo Nathan antes de a versão começar, e implementado como está es
 - **Achado da própria ponte, na primeira rodada:** ela acusou três divergências de `range`, e as três eram da comparação e não do dado — uma forma que não escolhe alvo omite o campo, e o asset guarda o padrão. É o formato esperado de uma primeira rodada, e por isso ela roda antes de qualquer promoção.
 - O resumo completo está em `.claude/versions/20260829_0.11.4.0.md`.
 
-## 0.11.5.0 (próxima)
+## 0.11.5.0 (feita)
 
-- **camelCase em todo JSON do projeto**, e não só nos itens: chave, id e valor interno.
-    - Hoje quatro valores fogem disso: `deal_damage`, `modify_stat`, `apply_status` e `move_to`, escritos em `snake_case` ao lado de `eachTarget` e `lastTargetAnySide` no mesmo arquivo.
-    - E os ids: `no-time-to-waste`, `speed-tempo`, `discarded-prototype`, `gadrat-npc`, `act1-stage1`.
-- **Um teste varre todo `.json` do projeto e recusa o que fugir da regra.** É isso que faz a convenção ser regra e não arrumação: sem ele, o próximo arquivo escrito volta a divergir e ninguém percebe.
-- **Renomear id encosta no save.** `HeroSave.id` e `StageSave.id` guardam id, e o `SaveMigration` **não tem nenhum passo de conversão** — a versão 1 é a única que já existiu. Ou essa versão escreve o primeiro passo de verdade, ou aceita que saves quebram. Como a 0.11 já quebra a experiência, quebrar é defensável, mas é decisão e não detalhe.
-- **A ponte da 0.11.4.0 é quem prova que nenhum número se moveu** enquanto os nomes mudam.
-- As duas metades — valores e ids — ficaram na mesma versão porque a dos valores é quatro strings. Separar seria partir uma regra em duas sem ganhar proteção nenhuma.
+- **camelCase em todo JSON do projeto**: chave, id e valor interno. A regra saiu de `items.md`, onde valia só para itens, e virou "## Como um JSON é escrito" em `file-system.md`, valendo para o projeto inteiro.
+- **Nenhuma chave estava fora da regra.** O que estava eram treze ids e quatro valores: `deal_damage`, `modify_stat`, `apply_status` e `move_to`, escritos em `snake_case` ao lado de `eachTarget` e `lastTargetAnySide` no mesmo arquivo.
+- **Os nomes de arquivo seguiram os ids**: `act1Stage1.json`, `discardedPrototype.json`, `gadratNpc.json`, `exposedPrototype.json`.
+- **Um teste varre todo `.json` de `Assets/` e de `.claude/specs/` e recusa o que fugir.** É só isso que faz a convenção ser regra: ela já estava escrita desde a 0.11.0.0 e as fichas a quebraram mesmo assim.
+    - O bloco `info` de uma ficha é pulado, porque é prosa: `"type": "Robot"` é uma palavra e não um enum.
+    - O que é valor interno vem de uma lista escrita, e não de adivinhação. Conferir toda string do projeto acusaria todo nome, toda descrição e todo comentário.
+- **O save não ganhou passo de migração, e isso é escolha.** `save.md` já dizia que um herói com id desconhecido é ignorado com registro no Console, então um save antigo carrega sem quebrar e chega sem os heróis. É recomeçar de um ponto limpo em vez de manter estado que ninguém consegue conferir, e a ferramenta `Delete saved games` existe para essa hora.
+- **Achado no caminho:** o bloco `sourceKinds` de `uniques.json` tinha chaves `stage` e `character` guardando frases explicativas. Virou array de objetos com `id` e `comment`, que é o mesmo formato que cinco blocos daquele arquivo já adotaram na 0.11.0.0.
+- **A ponte da 0.11.4.0 é quem provou que nada mais se moveu** enquanto treze nomes mudavam em 37 arquivos.
+- O resumo completo está em `.claude/versions/20260829_0.11.5.0.md`.
 
-## 0.11.6.0
+## 0.11.6.0 (próxima)
 
 
 - **A ficha de personagem vira fonte única.** Os números saem de `.claude/specs/characters/` e vão para `Assets/`, em JSON. O `CharacterDefinition` fica só com a cor e as referências de sprite, resolvido por id como as fases já são.
@@ -636,7 +639,7 @@ Respondido pelo Nathan antes de a versão começar, e implementado como está es
     - As fichas **já estão protegidas** contra divergência pelo teste de ponte, então aqui não existe bug ativo, só limpeza. O que estava desprotegido eram as fases, e isso foi resolvido na 0.11.0.1.
     - A 0.11.1.0 e a 0.11.2.0 são as versões mais difíceis do projeto e mexem em `Character`, `CharacterStats` e `HeroRecord`. Um refactor grande dos mesmos arquivos logo antes delas significaria duas causas candidatas para cada problema em vez de uma.
     - Bônus de esperar: depois da arma, já se sabe exatamente o que a ficha precisa guardar.
-- **Ponto em aberto: os ids também viram camelCase?** `act1-stage1` e `discardedPrototype` são valores e não chaves. Padronizar é coerente, mas **id de fase e id de herói estão dentro do save**, então renomear invalida saves existentes. Como a 0.11 já quebra a experiência de qualquer jeito, provavelmente é a hora certa, mas é decisão e não detalhe.
+- **Ponto em aberto: os ids também viram camelCase?** `act1Stage1` e `discardedPrototype` são valores e não chaves. Padronizar é coerente, mas **id de fase e id de herói estão dentro do save**, então renomear invalida saves existentes. Como a 0.11 já quebra a experiência de qualquer jeito, provavelmente é a hora certa, mas é decisão e não detalhe.
 
 ## 0.11.7.0
 
@@ -739,9 +742,9 @@ Coisas decididas conscientemente como "não agora". Elas não têm versão marca
 
 ## Efeito periódico
 
-- Um `deal_damage` que acontece várias vezes ao longo de uma duração, em vez de uma só. Precisa da `duration`, que já existe, e de um intervalo entre os tiques, que não existe.
+- Um `dealDamage` que acontece várias vezes ao longo de uma duração, em vez de uma só. Precisa da `duration`, que já existe, e de um intervalo entre os tiques, que não existe.
 - Destrava aura, queimadura, veneno e zona de cura de uma vez, pois todos eles são a mesma peça com números diferentes.
-- Saiu da 0.7.1.0: o `warm-up` do Gadrat foi escrito assim originalmente e teve que virar um pulso único.
+- Saiu da 0.7.1.0: o `warmUp` do Gadrat foi escrito assim originalmente e teve que virar um pulso único.
 - **A condição para ele deixar de esperar** é alguma ficha depender dele de verdade. Se uma ficha nova pedir dano ao longo do tempo, ele vem antes daquela ficha, e nunca depois — senão a ficha é escrita torta e reescrita em seguida.
 - A regra que ficou clara ao discutir isso: **`casting` é congelamento, `duration` é consequência.** Um `casting` alto quase sempre é um número escrito no campo errado.
 

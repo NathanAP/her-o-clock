@@ -1,12 +1,12 @@
 {
-    "id": "act1-stage2",
+    "id": "act1Stage2",
     "enemyLevel": 2,
     "heroLimit": 1,
     "waves": [
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 3,
                     "row": 6,
                     "multiplier": 0.7
@@ -16,13 +16,13 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 2,
                     "row": 6,
                     "multiplier": 0.7
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 5,
                     "row": 6,
                     "multiplier": 0.7
@@ -32,7 +32,7 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 4,
                     "row": 7,
                     "multiplier": 0.7
@@ -42,13 +42,13 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 2,
                     "row": 7,
                     "multiplier": 0.7
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 4,
                     "row": 6,
                     "multiplier": 0.7
@@ -58,13 +58,13 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 3,
                     "row": 6,
                     "multiplier": 0.7
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 5,
                     "row": 7,
                     "multiplier": 0.7
@@ -75,19 +75,19 @@
     "villainWave": {
         "placements": [
             {
-                "character": "discarded-prototype",
+                "character": "discardedPrototype",
                 "column": 2,
                 "row": 6,
                 "multiplier": 0.7
             },
             {
-                "character": "discarded-prototype",
+                "character": "discardedPrototype",
                 "column": 4,
                 "row": 6,
                 "multiplier": 0.7
             },
             {
-                "character": "exposed-prototype",
+                "character": "exposedPrototype",
                 "column": 3,
                 "row": 8,
                 "multiplier": 0.7

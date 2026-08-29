@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf44a08b4b6abc4a9c7c7dca3fbd4aa, type: 3}
   m_Name: Discarded Prototype
   m_EditorClassIdentifier: Assembly-CSharp::HerOClock.Characters.CharacterDefinition
-  Id: discarded-prototype
+  Id: discardedPrototype
   Kind: 1
   Color: {r: 0.9098039, g: 0.43529412, b: 0.65882355, a: 1}
   Level: 1

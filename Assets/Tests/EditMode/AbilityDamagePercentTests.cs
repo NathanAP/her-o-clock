@@ -221,7 +221,7 @@ namespace HerOClock.Tests
                 Character caster = Caster(battle, rules, 0, 200,
                     Piece("controller", "fireAbilityDamage", 25f));
 
-                AbilityDefinition burn = TestAbility.Instant("warm-up").With(new AbilityEffect
+                AbilityDefinition burn = TestAbility.Instant("warmUp").With(new AbilityEffect
                 {
                     Type = EffectType.DealDamage,
                     Target = EffectTarget.Self,

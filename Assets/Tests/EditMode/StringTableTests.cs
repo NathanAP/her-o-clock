@@ -38,8 +38,8 @@ namespace HerOClock.Tests
         public void KeysAreBuiltFromTheId()
         {
             Assert.AreEqual("character.some-hero.name", StringTable.CharacterName("some-hero"));
-            Assert.AreEqual("stage.act1-stage1.name", StringTable.StageName("act1-stage1"));
-            Assert.AreEqual("stage.act1-stage1.lore", StringTable.StageLore("act1-stage1"));
+            Assert.AreEqual("stage.act1Stage1.name", StringTable.StageName("act1Stage1"));
+            Assert.AreEqual("stage.act1Stage1.lore", StringTable.StageLore("act1Stage1"));
         }
 
         // --- Reading ---
@@ -57,7 +57,7 @@ namespace HerOClock.Tests
         /// <summary>
         /// A missing key comes back visible on purpose. An empty string would simply not be drawn,
         /// and a label that quietly disappears is far harder to notice than one reading
-        /// <c>#stage.act1-stage1.name#</c>.
+        /// <c>#stage.act1Stage1.name#</c>.
         /// </summary>
         [Test]
         public void AMissingKeyComesBackAsSomethingImpossibleToMiss()

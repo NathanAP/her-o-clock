@@ -14,21 +14,21 @@ O preço é que uma referência vira texto e um erro de digitação só aparecer
 
 ```json
 {
-  "id": "act1-stage1",
+  "id": "act1Stage1",
   "enemyLevel": 1,
   "allies": [
-    { "character": "gadrat-npc", "column": 4, "row": 3 }
+    { "character": "gadratNpc", "column": 4, "row": 3 }
   ],
   "waves": [
     {
       "placements": [
-        { "character": "discarded-prototype", "column": 3, "row": 6 }
+        { "character": "discardedPrototype", "column": 3, "row": 6 }
       ]
     }
   ],
   "villainWave": {
     "placements": [
-      { "character": "exposed-prototype", "column": 4, "row": 8 }
+      { "character": "exposedPrototype", "column": 4, "row": 8 }
     ]
   }
 }
@@ -90,7 +90,7 @@ A mesma casa em ondas diferentes é permitida, pois as ondas nunca coexistem.
 
 **As duas fases que existem hoje são casos de teste, não conteúdo.** Elas foram escritas na 0.3.0.0 para exercitar o sistema de fases, e nenhum número delas é alvo de balanceamento. O conteúdo de verdade do ato 1 nasce na 0.9.0.0.
 
-- `act1-stage1.json` — vencível com as fichas atuais. Três ondas de nível 1 e um vilão acompanhado. Serve como o caso feliz: uma fase que o time limpa do começo ao fim.
-- `act1-stage2.json` — deliberadamente muito acima do nível do time, com inimigos de nível 12. Serve para exercitar **herói caindo em combate e avanço bloqueado**, que é o único jeito de testar esses caminhos enquanto não existe conteúdo real.
+- `act1Stage1.json` — vencível com as fichas atuais. Três ondas de nível 1 e um vilão acompanhado. Serve como o caso feliz: uma fase que o time limpa do começo ao fim.
+- `act1Stage2.json` — deliberadamente muito acima do nível do time, com inimigos de nível 12. Serve para exercitar **herói caindo em combate e avanço bloqueado**, que é o único jeito de testar esses caminhos enquanto não existe conteúdo real.
     - O `enemyLevel: 12` é extremo de propósito. Ele **não** é uma estimativa do que a segunda fase de um ato deveria pedir.
     - Por isso o snapshot mostra uma parede enorme entre as duas. É o valor esperado deste par de fixtures, e não um problema a resolver.

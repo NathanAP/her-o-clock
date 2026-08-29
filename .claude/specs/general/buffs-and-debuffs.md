@@ -10,7 +10,7 @@
 - Os debuffs são efeitos negativos aplicados de diversas formas aos personagens.
 - As habilidades descrevem individualmente quais buffs e debuffs são aplicados aos seus alvos.
 - Os valores que cada buff e debuff aplica são sempre descritos nas fichas.
-- Buff e debuff são a mesma coisa por dentro. O que separa os dois é o sinal do valor, conforme o efeito `modify_stat` em `abilities.md`.
+- Buff e debuff são a mesma coisa por dentro. O que separa os dois é o sinal do valor, conforme o efeito `modifyStat` em `abilities.md`.
 
 ## O mesmo buff chegando duas vezes
 

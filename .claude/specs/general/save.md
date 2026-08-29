@@ -135,6 +135,7 @@ A ordem dos passos 5, 6 e 7 não é livre:
 - Cada entrada do save é usada **uma única vez**: o segundo herói de uma ficha recebe a segunda entrada com aquele `id`.
     - Um grupo pode conter dois heróis da mesma ficha, e a formação de teste de hoje contém dois de cada. Casar pelo primeiro `id` encontrado daria o mesmo progresso aos dois e perderia um deles a cada carregamento, sem erro nenhum.
 - Um herói no save cujo `id` não existe mais é ignorado, com registro no Console.
+    - **É também o que acontece quando um id é renomeado**, e nenhum passo de migração é escrito para isso. Um save antigo carrega sem quebrar e chega sem os heróis que ele guardava, o que é recomeçar de um ponto limpo em vez de manter estado que ninguém consegue conferir. A ferramenta `Delete saved games` existe exatamente para essa hora.
 - Um herói da formação que não está no save entra como novo, no nível que a ficha declara.
 - Uma fase no save que não existe mais faz o jogo voltar para a primeira fase, mantendo tudo o mais.
 

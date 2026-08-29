@@ -1,7 +1,7 @@
 namespace HerOClock.Abilities
 {
     /// <summary>
-    /// Where a `move_to` effect puts somebody, from abilities.md.
+    /// Where a `moveTo` effect puts somebody, from abilities.md.
     /// </summary>
     public enum MoveAnchor
     {

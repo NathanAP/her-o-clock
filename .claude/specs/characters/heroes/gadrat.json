@@ -81,11 +81,11 @@
     ],
     "abilityTrees": [
         {
-            "id": "son-of-fire",
+            "id": "sonOfFire",
             "name": "Son of Fire",
             "abilities": [
                 {
-                    "id": "dragon-breath",
+                    "id": "dragonBreath",
                     "name": "Dragon Breath",
                     "description": "Gadrat releases fire from their mouth, burning every enemy in a straight line in front of them and melting their armor. The flames thin out with distance.",
                     "ranks": 5,
@@ -120,7 +120,7 @@
                     },
                     "effects": [
                         {
-                            "type": "deal_damage",
+                            "type": "dealDamage",
                             "target": "eachTarget",
                             "damageType": "fire",
                             "base": [
@@ -138,7 +138,7 @@
                             }
                         },
                         {
-                            "type": "modify_stat",
+                            "type": "modifyStat",
                             "target": "eachTarget",
                             "stat": "physicalArmor",
                             "mode": "percent",
@@ -156,7 +156,7 @@
                     ]
                 },
                 {
-                    "id": "warm-up",
+                    "id": "warmUp",
                     "name": "Warm Up",
                     "description": "Gadrat envelops themselves in fire, burning every enemy around them. The heat also burns Gadrat, but leaves them running hotter and faster for a while.",
                     "ranks": 5,
@@ -192,7 +192,7 @@
                     },
                     "effects": [
                         {
-                            "type": "deal_damage",
+                            "type": "dealDamage",
                             "target": "eachTarget",
                             "damageType": "fire",
                             "base": [
@@ -207,7 +207,7 @@
                             }
                         },
                         {
-                            "type": "deal_damage",
+                            "type": "dealDamage",
                             "target": "self",
                             "damageType": "fire",
                             "base": [
@@ -220,7 +220,7 @@
                             "scaling": {}
                         },
                         {
-                            "type": "modify_stat",
+                            "type": "modifyStat",
                             "target": "self",
                             "stat": "attackSpeed",
                             "mode": "percent",

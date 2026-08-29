@@ -70,7 +70,7 @@ namespace HerOClock.Tests
             HeroRecord saved = RecordAt(sheet, 5);
             saved.Equipment.Put(Piece("item-1", "chassis", "heavy", 12, 7.5f));
 
-            store.Write(SaveMapper.Capture(new[] { saved }, new PlayerWallet(), null, "act1-stage1",
+            store.Write(SaveMapper.Capture(new[] { saved }, new PlayerWallet(), null, "act1Stage1",
                 SavePayload.IntegrityOk), Noon);
 
             HeroRecord loaded = battle.Record(sheet);
@@ -106,7 +106,7 @@ namespace HerOClock.Tests
             CharacterDefinition sheet = Sheet();
             HeroRecord saved = RecordAt(sheet, 5);
 
-            store.Write(SaveMapper.Capture(new[] { saved }, new PlayerWallet(), null, "act1-stage1",
+            store.Write(SaveMapper.Capture(new[] { saved }, new PlayerWallet(), null, "act1Stage1",
                 SavePayload.IntegrityOk), Noon);
 
             HeroRecord loaded = battle.Record(sheet);
@@ -136,7 +136,7 @@ namespace HerOClock.Tests
             second.Equipment.Put(shared);
 
             SavePayload payload = SaveMapper.Capture(new[] { first, second }, new PlayerWallet(), null,
-                "act1-stage1", SavePayload.IntegrityOk);
+                "act1Stage1", SavePayload.IntegrityOk);
 
             Assert.AreEqual(1, payload.items.Length);
             Assert.AreEqual("item-1", payload.heroes[0].equipment[0].itemId);
@@ -179,7 +179,7 @@ namespace HerOClock.Tests
             wallet.Add(4321);
 
             SavePayload payload = SaveMapper.Capture(
-                new[] { hero }, wallet, new ActivityLog(), "act1-stage2", SavePayload.IntegrityOk);
+                new[] { hero }, wallet, new ActivityLog(), "act1Stage2", SavePayload.IntegrityOk);
 
             store.Write(payload, Noon);
 
@@ -306,7 +306,7 @@ namespace HerOClock.Tests
                 "The combatant built from the restored record does not match the one saved.");
 
             Assert.AreEqual(4321L, read.Payload.money, "The money was lost.");
-            Assert.AreEqual("act1-stage2", read.Payload.stage.id);
+            Assert.AreEqual("act1Stage2", read.Payload.stage.id);
         }
 
         /// <summary>
@@ -325,7 +325,7 @@ namespace HerOClock.Tests
             fighting.TakeDamage(fighting.Stats.MaxHealth - 1);
 
             SavePayload payload = SaveMapper.Capture(
-                new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
+                new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1Stage1", null);
 
             store.Write(payload, Noon);
 
@@ -386,7 +386,7 @@ namespace HerOClock.Tests
             Assert.AreEqual(20, second.Level, "The setup did not tell the two heroes apart.");
 
             SavePayload payload = SaveMapper.Capture(
-                new[] { first, second }, new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
+                new[] { first, second }, new PlayerWallet(), new ActivityLog(), "act1Stage1", null);
 
             store.Write(payload, Noon);
 
@@ -414,7 +414,7 @@ namespace HerOClock.Tests
             HeroRecord hero = RecordAt(known, 10);
 
             SavePayload payload = SaveMapper.Capture(
-                new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
+                new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1Stage1", null);
 
             HeroRecord newcomer = battle.Record(added);
             SaveMapper.ApplyHeroes(payload, new[] { newcomer });
@@ -433,7 +433,7 @@ namespace HerOClock.Tests
             HeroRecord hero = RecordAt(Sheet(), 10);
 
             SavePayload payload = SaveMapper.Capture(
-                new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
+                new[] { hero }, new PlayerWallet(), new ActivityLog(), "act1Stage1", null);
 
             HeroSave[] withAGhost = new HeroSave[2];
             withAGhost[0] = new HeroSave { id = "hero-deleted", level = 60 };
@@ -461,7 +461,7 @@ namespace HerOClock.Tests
             activity.Advance(ActivityLog.BucketSeconds * 2f);
 
             SavePayload payload = SaveMapper.Capture(
-                new HeroRecord[0], new PlayerWallet(), activity, "act1-stage1", null);
+                new HeroRecord[0], new PlayerWallet(), activity, "act1Stage1", null);
 
             store.Write(payload, Noon);
 
@@ -492,7 +492,7 @@ namespace HerOClock.Tests
         {
             SavePayload payload = SaveMapper.Capture(
                 new HeroRecord[0], new PlayerWallet(), new ActivityLog(),
-                "act1-stage1", SavePayload.IntegrityBroken);
+                "act1Stage1", SavePayload.IntegrityBroken);
 
             store.Write(payload, Noon);
 
@@ -506,7 +506,7 @@ namespace HerOClock.Tests
         public void AFreshSaveIsMarkedAsIntact()
         {
             SavePayload payload = SaveMapper.Capture(
-                new HeroRecord[0], new PlayerWallet(), new ActivityLog(), "act1-stage1", null);
+                new HeroRecord[0], new PlayerWallet(), new ActivityLog(), "act1Stage1", null);
 
             store.Write(payload, Noon);
 

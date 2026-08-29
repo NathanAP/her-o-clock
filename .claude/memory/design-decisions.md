@@ -214,7 +214,7 @@ The order is load-bearing rather than cosmetic, and the spec's own example is th
 
 ## A skill never fails whole because one effect did not fit
 
-`move_to` with `lastTargetAnySide` looks at the four cells around the last target and takes the first free one on the board, ordered by lowest row then lowest column. If none of them serves, the character simply stays where it is and the rest of the skill resolves normally.
+`moveTo` with `lastTargetAnySide` looks at the four cells around the last target and takes the first free one on the board, ordered by lowest row then lowest column. If none of them serves, the character simply stays where it is and the rest of the skill resolves normally.
 
 Two things are load-bearing there. The order has to be **fixed** rather than "nearest" or "most convenient", or the same battle from the same seed can end differently. And effects are independent: they resolve in the order they are written, and one that cannot happen does not cancel the others.
 
@@ -228,7 +228,7 @@ Giving melee characters body blocking would remove the value of free movement. B
 
 ## Damage falloff multiplies, so it never reaches zero
 
-`Damage = base x (1 - falloff) ^ (distance - 1)`, on the `deal_damage` effect, with distance counted in cells from the user.
+`Damage = base x (1 - falloff) ^ (distance - 1)`, on the `dealDamage` effect, with distance counted in cells from the user.
 
 It is the same reasoning as reductions multiplying instead of adding. A subtractive falloff would zero the damage past some distance, and then every ability using it would need a floor written by hand — one more constant to calibrate per ability, and none of them discussable on its own. Multiplying means being in the line always counts for something and being close always counts for more, with no extra number.
 
@@ -274,9 +274,9 @@ The practical rule: anything under `Assets/Scripts/View/` may read the battle, a
 
 Ids are lowercase and hyphenated, and they never carry an instance number. Several identical enemies in one wave are the **same id placed at different cells**, which is what the stage format already does.
 
-Numbering them (`discarded-prototype-1`, `-2`) would create one sheet per copy holding the same block of numbers, which is the duplication `progress.md` exists to prevent, plus one strings key per copy all spelling the same name. The number would also never mean anything: a wave needing a seventh enemy would force somebody to invent a seventh character to place the same enemy once more.
+Numbering them (`discardedPrototype1`, `discardedPrototype2`) would create one sheet per copy holding the same block of numbers, which is the duplication `progress.md` exists to prevent, plus one strings key per copy all spelling the same name. The number would also never mean anything: a wave needing a seventh enemy would force somebody to invent a seventh character to place the same enemy once more.
 
-Two enemies that genuinely differ are two characters, and each gets a descriptive id such as `discarded-prototype-armored`. The same holds for heroes: a copy of one would be a character with an identity of its own, not `gadrat-2`.
+Two enemies that genuinely differ are two characters, and each gets a descriptive id such as `discardedPrototypeArmored`. The same holds for heroes: a copy of one would be a character with an identity of its own, not `gadrat2`.
 
 ## An NPC fights on the hero side but never counts as one
 
@@ -449,7 +449,7 @@ One damage effect carries exactly one element, which attributes.md already requi
 
 ### It reaches the ability's own cost, and the healing conversion
 
-A `deal_damage` aimed at the user is the price of a strong ability, and the percentage raises it too. That is intended: a hero stacking fire pays more for a fire ability that burns them, and the way out is fire resistance and health, so the cost becomes a build decision instead of a flat tax. Gadrat's Warm Up is the case it was written against, and its self damage carries **no** scaling at all, so the percentage is the only thing that moves it.
+A `dealDamage` aimed at the user is the price of a strong ability, and the percentage raises it too. That is intended: a hero stacking fire pays more for a fire ability that burns them, and the way out is fire resistance and health, so the cost becomes a build decision instead of a flat tax. Gadrat's Warm Up is the case it was written against, and its self damage carries **no** scaling at all, so the percentage is the only thing that moves it.
 
 By the same arithmetic, a bigger base heals more when the target is past 100% resistance. The game gets to use the player's own strategy back.
 

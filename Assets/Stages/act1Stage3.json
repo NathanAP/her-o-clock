@@ -1,5 +1,5 @@
 {
-    "id": "act1-stage3",
+    "id": "act1Stage3",
     "enemyLevel": 4,
     "heroLimit": 1,
     "firstClear": {
@@ -8,7 +8,7 @@
     },
     "allies": [
         {
-            "character": "gadrat-npc",
+            "character": "gadratNpc",
             "column": 4,
             "row": 3,
             "level": 2
@@ -18,13 +18,13 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 3,
                     "row": 6,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 4,
                     "row": 6,
                     "multiplier": 0.5
@@ -34,19 +34,19 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 2,
                     "row": 6,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 4,
                     "row": 6,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 5,
                     "row": 7,
                     "multiplier": 0.5
@@ -56,13 +56,13 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 2,
                     "row": 7,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 4,
                     "row": 6,
                     "multiplier": 0.5
@@ -72,19 +72,19 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 2,
                     "row": 6,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 3,
                     "row": 7,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 5,
                     "row": 6,
                     "multiplier": 0.5
@@ -94,13 +94,13 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 3,
                     "row": 6,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 5,
                     "row": 6,
                     "multiplier": 0.5
@@ -110,19 +110,19 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 2,
                     "row": 6,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 4,
                     "row": 7,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 5,
                     "row": 6,
                     "multiplier": 0.5
@@ -132,19 +132,19 @@
         {
             "placements": [
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 2,
                     "row": 7,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 3,
                     "row": 6,
                     "multiplier": 0.5
                 },
                 {
-                    "character": "discarded-prototype",
+                    "character": "discardedPrototype",
                     "column": 5,
                     "row": 6,
                     "multiplier": 0.5
@@ -155,7 +155,7 @@
     "villainWave": {
         "placements": [
             {
-                "character": "exposed-prototype",
+                "character": "exposedPrototype",
                 "column": 3,
                 "row": 7,
                 "level": 2,

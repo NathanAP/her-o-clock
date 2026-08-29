@@ -29,9 +29,9 @@ Valores no nível inicial da ficha, sem itens.
 |---|---|---|---|---|---|---|---|
 | tempo | 70 | 5-7 | 1.09 | 2.18 | 34 | 12 | 0.00 |
 | gadrat | 120 | 7-11 | 1.00 | 2.02 | 0 | 60 | 0.00 |
-| gadrat-npc | 120 | 7-11 | 1.00 | 2.02 | 0 | 60 | 0.00 |
-| discarded-prototype | 20 | 2-3 | 1.01 | 2.02 | 1 | 0 | 0.00 |
-| exposed-prototype | 40 | 3-5 | 1.00 | 2.02 | 0 | 60 | 0.00 |
+| gadratNpc | 120 | 7-11 | 1.00 | 2.02 | 0 | 60 | 0.00 |
+| discardedPrototype | 20 | 2-3 | 1.01 | 2.02 | 1 | 0 | 0.00 |
+| exposedPrototype | 40 | 3-5 | 1.00 | 2.02 | 0 | 60 | 0.00 |
 
 ### Defesa contra um atacante do mesmo nível
 
@@ -45,12 +45,12 @@ que cai significa que a ficha perde aquela defesa conforme o jogo avança.
 | tempo | evasão | 40.5% | 35.3% | 35.1% | 35.0% | 34.9% |
 | gadrat | armadura | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
 | gadrat | evasão | 0.0% | 0.2% | 0.1% | 0.1% | 0.1% |
-| gadrat-npc | armadura | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
-| gadrat-npc | evasão | 0.0% | 0.2% | 0.1% | 0.1% | 0.1% |
-| discarded-prototype | armadura | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
-| discarded-prototype | evasão | 2.0% | 2.0% | 2.0% | 2.0% | 2.0% |
-| exposed-prototype | armadura | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
-| exposed-prototype | evasão | 0.0% | 0.2% | 0.2% | 0.2% | 0.2% |
+| gadratNpc | armadura | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
+| gadratNpc | evasão | 0.0% | 0.2% | 0.1% | 0.1% | 0.1% |
+| discardedPrototype | armadura | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| discardedPrototype | evasão | 2.0% | 2.0% | 2.0% | 2.0% | 2.0% |
+| exposedPrototype | armadura | 40.9% | 40.9% | 40.9% | 40.9% | 40.9% |
+| exposedPrototype | evasão | 0.0% | 0.2% | 0.2% | 0.2% | 0.2% |
 
 ## As armas
 
@@ -80,21 +80,21 @@ habilidade. O DPS é **por alvo**: multiplique pelos alvos para o total.
 
 | Ficha | Habilidade | Nível | Rank | Dano/alvo | Alvos | Custo | Recarga ef. | DPS/alvo |
 |---|---|---|---|---|---|---|---|---|
-| tempo | fast-and-furious | 1 | 1 | 12.1 | 1 | - | 19.6s | 0.6 |
-| tempo | fast-and-furious | 10 | 2 | 40.7 | 1 | - | 16.4s | 2.5 |
-| tempo | fast-and-furious | 20 | 3 | 72.1 | 1 | - | 15.2s | 4.7 |
-| tempo | fast-and-furious | 32 | 4 | 99.3 | 1 | - | 14.3s | 7.0 |
-| tempo | fast-and-furious | 45 | 5 | 127.3 | 1 | - | 12.1s | 10.5 |
-| gadrat | dragon-breath | 1 | 1 | 15.1 | 4 | - | 37.1s | 0.4 |
-| gadrat | dragon-breath | 10 | 2 | 50.8 | 4 | - | 31.5s | 1.6 |
-| gadrat | dragon-breath | 20 | 3 | 92.7 | 4 | - | 26.1s | 3.5 |
-| gadrat | dragon-breath | 35 | 4 | 125.8 | 4 | - | 20.8s | 6.0 |
-| gadrat | dragon-breath | 50 | 5 | 160.1 | 4 | - | 15.9s | 10.1 |
-| gadrat | warm-up | 1 | 1 | 10.1 | 9 | 8.0 | 41.5s | 0.2 |
-| gadrat | warm-up | 8 | 2 | 35.5 | 9 | 12.0 | 40.9s | 0.9 |
-| gadrat | warm-up | 18 | 3 | 61.6 | 9 | 16.0 | 35.3s | 1.7 |
-| gadrat | warm-up | 30 | 4 | 88.6 | 9 | 20.0 | 34.4s | 2.6 |
-| gadrat | warm-up | 45 | 5 | 116.7 | 9 | 24.0 | 29.0s | 4.0 |
+| tempo | fastAndFurious | 1 | 1 | 12.1 | 1 | - | 19.6s | 0.6 |
+| tempo | fastAndFurious | 10 | 2 | 40.7 | 1 | - | 16.4s | 2.5 |
+| tempo | fastAndFurious | 20 | 3 | 72.1 | 1 | - | 15.2s | 4.7 |
+| tempo | fastAndFurious | 32 | 4 | 99.3 | 1 | - | 14.3s | 7.0 |
+| tempo | fastAndFurious | 45 | 5 | 127.3 | 1 | - | 12.1s | 10.5 |
+| gadrat | dragonBreath | 1 | 1 | 15.1 | 4 | - | 37.1s | 0.4 |
+| gadrat | dragonBreath | 10 | 2 | 50.8 | 4 | - | 31.5s | 1.6 |
+| gadrat | dragonBreath | 20 | 3 | 92.7 | 4 | - | 26.1s | 3.5 |
+| gadrat | dragonBreath | 35 | 4 | 125.8 | 4 | - | 20.8s | 6.0 |
+| gadrat | dragonBreath | 50 | 5 | 160.1 | 4 | - | 15.9s | 10.1 |
+| gadrat | warmUp | 1 | 1 | 10.1 | 9 | 8.0 | 41.5s | 0.2 |
+| gadrat | warmUp | 8 | 2 | 35.5 | 9 | 12.0 | 40.9s | 0.9 |
+| gadrat | warmUp | 18 | 3 | 61.6 | 9 | 16.0 | 35.3s | 1.7 |
+| gadrat | warmUp | 30 | 4 | 88.6 | 9 | 20.0 | 34.4s | 2.6 |
+| gadrat | warmUp | 45 | 5 | 116.7 | 9 | 24.0 | 29.0s | 4.0 |
 
 ## O kit de referência
 
@@ -160,10 +160,10 @@ A formação de heróis é a do asset. O tempo é só de combate, sem as transi�
 
 | Fase | Nível dos inimigos | Nível mínimo | Tempo | Experiência | Dinheiro |
 |---|---|---|---|---|---|
-| act1-stage1 | 1 | 1 | 23.5 s | 160 | 16 |
-| act1-stage2 | 2 | 3 | 38.7 s | 800 | 20 |
-| act1-stage3 | 4 | 5 | 42.5 s | 3280 | 28 |
-| act1-stage4 | 3 | 4 | 43.8 s | 2250 | 25 |
+| act1Stage1 | 1 | 1 | 23.5 s | 160 | 16 |
+| act1Stage2 | 2 | 3 | 38.7 s | 800 | 20 |
+| act1Stage3 | 4 | 5 | 42.5 s | 3280 | 28 |
+| act1Stage4 | 3 | 4 | 43.8 s | 2250 | 25 |
 
 ### Paredes
 
@@ -173,10 +173,10 @@ exigido passa o de chegada, o jogador é obrigado a parar e farmar.
 
 | Fase | Chega com | Exige | Parede | Custo |
 |---|---|---|---|---|
-| act1-stage1 | 1 | 1 | não | - |
-| act1-stage2 | 2 | 3 | sim | 4x a fase anterior, 1.5 min de combate |
-| act1-stage3 | 3 | 5 | sim | 12x a fase anterior, 7.7 min de combate |
-| act1-stage4 | 5 | 4 | não | - |
+| act1Stage1 | 1 | 1 | não | - |
+| act1Stage2 | 2 | 3 | sim | 4x a fase anterior, 1.5 min de combate |
+| act1Stage3 | 3 | 5 | sim | 12x a fase anterior, 7.7 min de combate |
+| act1Stage4 | 5 | 4 | não | - |
 
 O custo conta só o tempo de combate, e despreza a experiência parcial que sobra
 de um nível para o outro. As transições entre ondas somam vários segundos por
@@ -200,7 +200,7 @@ alguns níveis abaixo a maioria não passa.
 A amostra cresce junto com o espaço. No começo não há o que variar: um herói
 no nível 1 não tem ponto nenhum para distribuir.
 
-### act1-stage1 (recomendado 1 a 1)
+### act1Stage1 (recomendado 1 a 1)
 
 | Nível | Limparam | Testadas | % |
 |---|---|---|---|
@@ -214,7 +214,7 @@ Por build, no nível 1:
 |---|---|---|
 | a da ficha | 6 | 6 |
 
-### act1-stage2 (recomendado 2 a 3)
+### act1Stage2 (recomendado 2 a 3)
 
 | Nível | Limparam | Testadas | % |
 |---|---|---|---|
@@ -233,7 +233,7 @@ Por build, no nível 3:
 | só AGI | 1 | 6 |
 | só SPE | 1 | 6 |
 
-### act1-stage3 (recomendado 4 a 5)
+### act1Stage3 (recomendado 4 a 5)
 
 | Nível | Limparam | Testadas | % |
 |---|---|---|---|
@@ -255,7 +255,7 @@ Por build, no nível 5:
 | só CON | 6 | 6 |
 | POW/CON | 6 | 6 |
 
-### act1-stage4 (recomendado 5 a 6)
+### act1Stage4 (recomendado 5 a 6)
 
 | Nível | Limparam | Testadas | % |
 |---|---|---|---|

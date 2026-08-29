@@ -19,8 +19,8 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 ### Lacaios e vilões também têm atributos principais
 
 - Pode parecer estranho, já que eles não carregam equipamento e ninguém distribui pontos por eles. Foi discutido e a decisão é mantê-los, por dois motivos que só aparecem mais adiante:
-    - **As habilidades escalam por atributo.** O bloco `scaling` de um `deal_damage` fala em frações de POW ou de SPE, e vilões vão ter habilidades.
-    - **Buffs e debuffs precisam de um atributo em que morder.** Um `modify_stat` que reduz POW não teria efeito nenhum sobre um inimigo que não tem POW.
+    - **As habilidades escalam por atributo.** O bloco `scaling` de um `dealDamage` fala em frações de POW ou de SPE, e vilões vão ter habilidades.
+    - **Buffs e debuffs precisam de um atributo em que morder.** Um `modifyStat` que reduz POW não teria efeito nenhum sobre um inimigo que não tem POW.
 - Tirar os primários dos inimigos exigiria construir um segundo caminho, só para eles, nos dois sistemas.
 - A dificuldade real que isso cria é de autoria: escrever "POW 24, CON 25" para chegar em "370 de vida, 24 de dano" é indireto. Isso é resolvido no Inspector, que mostra ao vivo o que a ficha produz em qualquer nível, e não no modelo.
 - As fichas também indicam valores de dano, redução de recarga, escala para buffs e debuffs, entre outros.
@@ -30,11 +30,11 @@ Especificar todos os detalhes gerais sobre os personagens presentes em Her-o-clo
 - `id` — identificador estável em texto. É por ele que fases, saves, o arquivo de strings e outras fichas apontam para este personagem, então ele nunca muda depois que existe conteúdo o referenciando.
     - O nome mostrado ao jogador **não fica na ficha**. Ele mora em `Assets/Strings/`, na chave `character.{id}.name`.
     - Escrito em minúsculas, com hífen separando as palavras.
-    - **O id diz quem o personagem é, e nunca quantos são.** Nada de `discarded-prototype-1`, `-2`, `-3`.
+    - **O id diz quem o personagem é, e nunca quantos são.** Nada de `discardedPrototype1`, `discardedPrototype2`, `discardedPrototype3`.
         - Vários inimigos iguais na mesma onda são o **mesmo id em posições diferentes**, que é exatamente o que o formato de fase já faz. A instância é a posição somada ao nível da fase, e nada disso mora na ficha.
         - Numerar os ids criaria uma ficha por cópia, com o mesmo bloco de números repetido, que é o problema descrito em "### A ficha diz quem o personagem é, a fase diz quão forte ele está" em `progress.md`. Criaria também uma chave de texto por cópia, todas escrevendo o mesmo nome.
         - E o número nunca significaria nada: se um dia a onda precisar de sete inimigos e só existirem seis ids, alguém teria que inventar um sétimo personagem para posicionar o mesmo inimigo mais uma vez.
-    - Quando dois personagens são **de fato diferentes**, eles são personagens diferentes e cada um ganha o seu id descritivo, como `discarded-prototype-armored`. Aí o sufixo diz alguma coisa sobre quem ele é.
+    - Quando dois personagens são **de fato diferentes**, eles são personagens diferentes e cada um ganha o seu id descritivo, como `discardedPrototypeArmored`. Aí o sufixo diz alguma coisa sobre quem ele é.
     - Isso vale igualmente para heróis. Uma eventual cópia de um herói é um personagem com identidade própria, e não `gadrat-2`.
 - `kind` — o tipo: `hero`, `minion`, `villain` ou `npc`.
 - `initialLevel` e `maxLevel` — a faixa de níveis que aquele personagem alcança.

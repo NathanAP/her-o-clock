@@ -10,47 +10,47 @@
             "value": "Gadrat"
         },
         {
-            "key": "character.gadrat-npc.name",
+            "key": "character.gadratNpc.name",
             "value": "Gadrat"
         },
         {
-            "key": "character.discarded-prototype.name",
+            "key": "character.discardedPrototype.name",
             "value": "Discarded Prototype"
         },
         {
-            "key": "character.exposed-prototype.name",
+            "key": "character.exposedPrototype.name",
             "value": "Exposed Prototype"
         },
         {
-            "key": "stage.act1-stage1.name",
+            "key": "stage.act1Stage1.name",
             "value": "Sunrise Over Halo"
         },
         {
-            "key": "stage.act1-stage1.lore",
+            "key": "stage.act1Stage1.lore",
             "value": "The sun comes up over a city that does not know what woke up with it. Something is moving between the streets, and it is not going home."
         },
         {
-            "key": "stage.act1-stage2.name",
+            "key": "stage.act1Stage2.name",
             "value": "The Long Morning"
         },
         {
-            "key": "stage.act1-stage2.lore",
+            "key": "stage.act1Stage2.lore",
             "value": "Daylight makes them easier to count, and there are more of them than yesterday. Whatever is discarding these things has not stopped."
         },
         {
-            "key": "stage.act1-stage3.name",
+            "key": "stage.act1Stage3.name",
             "value": "Someone Got Here First"
         },
         {
-            "key": "stage.act1-stage3.lore",
+            "key": "stage.act1Stage3.lore",
             "value": "The heat of the afternoon is not all from the sun. Somebody has been fighting here for a while, and they are still standing."
         },
         {
-            "key": "stage.act1-stage4.name",
+            "key": "stage.act1Stage4.name",
             "value": "Before the Lights Go Out"
         },
         {
-            "key": "stage.act1-stage4.lore",
+            "key": "stage.act1Stage4.lore",
             "value": "The last of the light goes down over Halo, and they come in numbers now. Whatever was testing the city has finished testing."
         }
     ]

@@ -42,8 +42,16 @@
     ],
     "sourceKinds": {
         "comment": "As formas validas de preencher 'sources'. A lista e curta de proposito: cada forma nova e uma consulta que o sorteio de drop precisa saber responder.",
-        "stage": "Um id de fase, como act1-stage4. O unico so cai naquela fase.",
-        "character": "Um id de personagem, como exposed-prototype. O unico so cai daquele personagem, em qualquer fase em que ele apareca."
+        "kinds": [
+            {
+                "id": "stage",
+                "comment": "Um id de fase, como act1Stage4. O unico so cai naquela fase."
+            },
+            {
+                "id": "character",
+                "comment": "Um id de personagem, como exposedPrototype. O unico so cai daquele personagem, em qualquer fase em que ele apareca."
+            }
+        ]
     },
     "discovery": {
         "comment": "Como um item unico novo entra no jogo. A resposta curta e: colocando o arquivo na pasta, e mais nada.",

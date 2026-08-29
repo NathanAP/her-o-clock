@@ -181,7 +181,7 @@ namespace HerOClock.Tests
         /// <summary>
         /// Field by field, for every design sheet that has an asset.
         ///
-        /// Every asset has a sheet since 0.11.4.0, when `gadrat-npc` finally got one. It never
+        /// Every asset has a sheet since 0.11.4.0, when `gadratNpc` finally got one. It never
         /// did mirror Gadrat: it carries no abilities where Gadrat carries two, so it was a
         /// character whose numbers lived in exactly one place and were checked by nothing.
         /// `DesignBridgeAbilityTests` is what asserts the pairing now, in both directions.

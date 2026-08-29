@@ -83,11 +83,11 @@
     ],
     "abilityTrees": [
         {
-            "id": "speed-tempo",
+            "id": "speedTempo",
             "name": "Speed Tempo",
             "abilities": [
                 {
-                    "id": "no-time-to-waste",
+                    "id": "noTimeToWaste",
                     "name": "No time to waste!",
                     "description": "Tempo increases their own speed, granting increased attack speed, movement speed and cooldown reduction for a duration.",
                     "ranks": 5,
@@ -120,7 +120,7 @@
                     },
                     "effects": [
                         {
-                            "type": "modify_stat",
+                            "type": "modifyStat",
                             "target": "self",
                             "stat": "attackSpeed",
                             "mode": "percent",
@@ -136,7 +136,7 @@
                             ]
                         },
                         {
-                            "type": "modify_stat",
+                            "type": "modifyStat",
                             "target": "self",
                             "stat": "movementSpeed",
                             "mode": "percent",
@@ -152,7 +152,7 @@
                             ]
                         },
                         {
-                            "type": "modify_stat",
+                            "type": "modifyStat",
                             "target": "self",
                             "stat": "cooldownReduction",
                             "mode": "percent",
@@ -206,7 +206,7 @@
                     },
                     "effects": [
                         {
-                            "type": "modify_stat",
+                            "type": "modifyStat",
                             "target": "eachTarget",
                             "stat": "attackSpeed",
                             "mode": "percent",
@@ -222,7 +222,7 @@
                             ]
                         },
                         {
-                            "type": "modify_stat",
+                            "type": "modifyStat",
                             "target": "eachTarget",
                             "stat": "movementSpeed",
                             "mode": "percent",
@@ -238,7 +238,7 @@
                             ]
                         },
                         {
-                            "type": "modify_stat",
+                            "type": "modifyStat",
                             "target": "eachTarget",
                             "stat": "cooldownReduction",
                             "mode": "percent",
@@ -256,7 +256,7 @@
                     ]
                 },
                 {
-                    "id": "fast-and-furious",
+                    "id": "fastAndFurious",
                     "name": "Fast and Furious!",
                     "description": "Tempo blinks through nearby enemies, striking each one of them, and lands behind the last enemy hit. They cannot be touched while moving between them.",
                     "ranks": 5,
@@ -298,7 +298,7 @@
                     },
                     "effects": [
                         {
-                            "type": "apply_status",
+                            "type": "applyStatus",
                             "target": "self",
                             "status": "untargetable",
                             "duration": [
@@ -306,7 +306,7 @@
                             ]
                         },
                         {
-                            "type": "apply_status",
+                            "type": "applyStatus",
                             "target": "self",
                             "status": "intangible",
                             "duration": [
@@ -314,7 +314,7 @@
                             ]
                         },
                         {
-                            "type": "deal_damage",
+                            "type": "dealDamage",
                             "target": "eachTarget",
                             "damageType": "physical",
                             "base": [
@@ -329,7 +329,7 @@
                             }
                         },
                         {
-                            "type": "move_to",
+                            "type": "moveTo",
                             "target": "self",
                             "anchor": "lastTargetAnySide"
                         }

@@ -172,7 +172,7 @@ Whether a piece is **active** is not stored either. It is not a fact about the i
 
 The switch lives with the caller — `AbilityResolver.AbilityDamagePercentOf`, right next to the `MitigationPointsOf` that has always done the same thing. Any new per-element number follows the same shape.
 
-`ModifiableStat` deliberately did **not** grow for these. It is the enum of the `modify_stat` ability effect, and its own comment promises entries arrive when an ability needs one. Nothing on a sheet asks for ability damage; what asks is an item, and items reach the stats through `EquipmentTotals`. The enum grows the day a buff wants it.
+`ModifiableStat` deliberately did **not** grow for these. It is the enum of the `modifyStat` ability effect, and its own comment promises entries arrive when an ability needs one. Nothing on a sheet asks for ability damage; what asks is an item, and items reach the stats through `EquipmentTotals`. The enum grows the day a buff wants it.
 
 ## The weapon is a second bag, and the reach belongs to the combatant
 
@@ -217,7 +217,7 @@ What this does not change is the duplication CLAUDE.md asks for on purpose, beca
 
 There was no live drift, and **that could only be known after writing the test**. The lesson is not about abilities: before trusting a bridge, read what it compares rather than what it is called.
 
-`DesignBridgeAbilityTests` covers them now, and it asserts the pairing in both directions — every asset has a sheet and every sheet has an asset. The special case that used to be skipped by name (`gadrat-npc`, which had no sheet at all) stopped existing instead of being documented.
+`DesignBridgeAbilityTests` covers them now, and it asserts the pairing in both directions — every asset has a sheet and every sheet has an asset. The special case that used to be skipped by name (`gadratNpc`, which had no sheet at all) stopped existing instead of being documented.
 
 ### Secrets must never reach `Assets/`
 
@@ -228,6 +228,23 @@ Everything under `Assets/` goes into the build, so anything written there is rea
 A character sheet is a `.json` file. `CharacterDefinition` keeps only the sprite and animation references, which genuinely cannot live in text, and is matched to its sheet by id — the mechanism `CharacterDatabase` already uses for stages.
 
 That split follows the reason the ScriptableObject existed in the first place. Only the **references** have to be assets; the numbers never did, and holding them there is what forced the second copy to exist.
+
+### A convention nobody checks is a convention the next file ignores
+
+`camelCase` for keys, ids and internal values was written down for the item files in 0.11.0.0, and the character sheets broke it anyway — `deal_damage` and `modify_stat` sat next to `eachTarget` in the same file, for months, with nobody noticing.
+
+`JsonConventionTests` scans every `.json` under `Assets/` and `.claude/specs/` and refuses anything outside the rule. Two things make it workable:
+
+- **Only a written list of keys has its value checked.** A value is checked when we know it names something; checking every string in the project would fail on every name, description and comment.
+- **The `info` block of a design sheet is skipped**, because it is prose. `"type": "Robot"` there is a word, while `"type": "dealDamage"` in an effect is an enum. Same key, two jobs, and the block is what tells them apart.
+
+It is not a matter of taste. `JsonUtility` matches a key to a C# field letter by letter, so a key written any other way is not read at all.
+
+### Renaming an id does not get a migration step
+
+Ids live in the save. `save.md` already said a hero whose id no longer exists is ignored with a line in the Console, so a renamed id means an old save loads without breaking and arrives without its heroes.
+
+That is the answer rather than a gap: it is starting from a clean point instead of keeping state nobody can verify, and `Delete saved games` exists for exactly that moment. `SaveMigration` still has an empty list of conversions, and the first real step should be spent on something that cannot be solved by starting over.
 
 ### The item files are read as a wire format, and that shapes them
 

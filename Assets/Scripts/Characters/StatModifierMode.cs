@@ -1,7 +1,7 @@
 namespace HerOClock.Characters
 {
     /// <summary>
-    /// How a stat modifier is applied, from the `mode` field of `modify_stat` in abilities.md.
+    /// How a stat modifier is applied, from the `mode` field of `modifyStat` in abilities.md.
     /// </summary>
     public enum StatModifierMode
     {

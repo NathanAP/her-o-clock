@@ -35,6 +35,17 @@ Utilize este arquivo para visualizar e manter a estrutura geral do projeto organ
 
 A regra e o motivo estão em "A number lives in exactly one file", em `.claude/memory/architecture.md`. A exceção que ainda existe é a ficha de personagem, que hoje vive em dois lugares e é vigiada pelo `DesignBridgeTests` enquanto isso não é resolvido.
 
+## Como um JSON é escrito
+
+- **Chave, id e valor interno são escritos em `camelCase`**, em todo arquivo `.json` do projeto. Vale para os itens, para as fases, para as fichas de personagem e para o arquivo de strings.
+    - **Chave** é o nome do campo: `attributeGrowth`, `rankAvailability`, `perLevel`.
+    - **Id** é o nome estável de alguma coisa: `act1Stage1`, `discardedPrototype`, `dragonBreath`.
+    - **Valor interno** é um valor que o jogo compara com alguma coisa, e não texto que o jogador lê: `dealDamage`, `eachTarget`, `lightSpecial`, `noTechnology`.
+- **O nome do arquivo segue o id que ele descreve**, então ele também é `camelCase`: `act1Stage1.json`, `discardedPrototype.json`.
+- **Não vale para o que o jogador lê.** Nome de personagem, descrição, lore, palavra de afixo e o bloco `info` de uma ficha são prosa, e prosa se escreve como prosa.
+- **Um teste varre todo `.json` do projeto e recusa o que fugir da regra.** É isso que faz disso uma regra: ela já existia escrita para os itens desde a 0.11.0.0, e as fichas de personagem a quebraram mesmo assim, com `deal_damage` ao lado de `eachTarget` no mesmo arquivo.
+- O motivo não é estético. A `JsonUtility` casa chave com nome de campo C# **letra por letra**, então uma chave escrita de outro jeito simplesmente não é lida. É a mesma parede que a 0.11.0.0 encontrou e pagou.
+
 ## O que não fica na pasta do projeto
 
 - O **save** do jogador mora na pasta de dados persistentes que o sistema operacional oferece ao jogo, e nunca aqui dentro. Uma pasta do projeto viaja no git e é apagada por uma reinstalação, então nenhuma das duas serve para guardar progresso. O formato e a organização dos arquivos estão em `save.md`.

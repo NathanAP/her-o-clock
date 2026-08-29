@@ -68,7 +68,7 @@ MonoBehaviour:
     LifeStealPercent: 0
     BaseHealthRegen: 0
   Abilities:
-  - Id: no-time-to-waste
+  - Id: noTimeToWaste
     Ranks: 5
     RankAvailability:
     - 1
@@ -294,7 +294,7 @@ MonoBehaviour:
         PerRank: []
       Status: 0
       Anchor: 0
-  - Id: fast-and-furious
+  - Id: fastAndFurious
     Ranks: 5
     RankAvailability:
     - 1

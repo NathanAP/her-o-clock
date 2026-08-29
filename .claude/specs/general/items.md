@@ -15,7 +15,7 @@ Especificar todos os detalhes gerais sobre os itens presentes em Her-o-clock.
     - `Uniques/` traz um arquivo por item único.
     - `itemStrings.json` traz todo o texto que o jogador lê, no mesmo formato que as fases já usam.
 - **Cada número mora em exatamente um arquivo, e este `.md` não repete nenhum deles.** Uma tabela dentro de um `.md` não é conferível por teste e envelhece em silêncio; uma segunda cópia do arquivo envelhece do mesmo jeito, e foi o que aconteceu com as fases antes desta regra existir.
-- Ids e chaves são escritos em `camelCase`, em todos os arquivos.
+- Ids, chaves e valores internos são escritos em `camelCase`, conforme "## Como um JSON é escrito" em `file-system.md`. A regra vale para o projeto inteiro e não só para os itens.
 
 ## Equipamentos
 

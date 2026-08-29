@@ -14,7 +14,7 @@ namespace HerOClock.EditorTools
     ///
     /// So the sheet keeps the primaries and the Inspector answers the question instead. Minions
     /// and villains keep their primary attributes for a reason worth remembering: abilities scale
-    /// off attributes, and the buffs and debuffs of `modify_stat` need an attribute to bite on.
+    /// off attributes, and the buffs and debuffs of `modifyStat` need an attribute to bite on.
     /// Take the primaries away from enemies and both need a second path built just for them.
     ///
     /// This is a preview and nothing else. Every number here is read from the same properties the

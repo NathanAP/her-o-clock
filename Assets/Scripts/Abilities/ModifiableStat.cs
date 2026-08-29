@@ -1,7 +1,7 @@
 namespace HerOClock.Abilities
 {
     /// <summary>
-    /// Which stat a `modify_stat` effect can move.
+    /// Which stat a `modifyStat` effect can move.
     ///
     /// The four primaries and the derived values that content actually asks for. The list is
     /// closed on purpose: a sheet naming a stat that is not here is refused by

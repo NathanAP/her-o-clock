@@ -49,7 +49,7 @@ MonoBehaviour:
     LifeStealPercent: 0
     BaseHealthRegen: 0
   Abilities:
-  - Id: dragon-breath
+  - Id: dragonBreath
     Ranks: 5
     RankAvailability:
     - 1
@@ -136,7 +136,7 @@ MonoBehaviour:
         PerRank: []
       Status: 0
       Anchor: 0
-  - Id: warm-up
+  - Id: warmUp
     Ranks: 5
     RankAvailability:
     - 1

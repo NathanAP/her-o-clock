@@ -157,22 +157,22 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
 - Todo efeito declara a sua própria `duration` quando faz sentido ter uma.
     - A duração pertence ao efeito e não à habilidade, para que uma mesma habilidade possa aplicar um buff longo e um atordoamento curto.
 - Os tipos de efeito existentes são poucos de propósito, e cada um serve a muitas habilidades diferentes:
-    - `modify_stat` — altera um atributo por um tempo. Recebe `stat`, `mode` (`percent` ou `flat`) e `value`.
+    - `modifyStat` — altera um atributo por um tempo. Recebe `stat`, `mode` (`percent` ou `flat`) e `value`.
         - Buff e debuff são o mesmo efeito. O que separa os dois é o sinal do valor.
         - O mesmo efeito chegando duas vezes renova em vez de somar, conforme `buffs-and-debuffs.md`.
-    - `deal_damage` — causa dano. Recebe `damageType`, `base` e `scaling`, e aceita um `falloff` opcional.
+    - `dealDamage` — causa dano. Recebe `damageType`, `base` e `scaling`, e aceita um `falloff` opcional.
         - O `base` vem do **rank** da habilidade, e é o conteúdo dizendo quanto ela vale.
         - O `scaling` é o **peso** de cada atributo sobre a taxa padrão de `attributes.md`, e nunca dano somado por ponto. Peso `1` significa que o atributo paga os 10 pontos por 1% inteiros; `0.5` paga metade disso.
         - `Dano = base × (1 + Σ(atributo × peso) × 0.001 + Σ(porcentagens de dano de habilidade) ÷ 100)`
         - As porcentagens vindas de equipamento e da árvore entram na **mesma soma** que os atributos, e as aplicáveis são escolhidas pelo `damageType` deste efeito. A regra inteira, com exemplo, está em "### Dano de habilidade" em `attributes.md`.
         - É a mesma leitura que a arma e o POW têm: o conteúdo dá a base, o atributo multiplica. Somar dano por ponto faria o rank parar de importar assim que o personagem tivesse pontos suficientes, que é exatamente o problema que o dano flat cria com a arma.
-    - `apply_status` — aplica um estado nomeado, como `untargetable` ou `intangible`. Cada um deles está descrito em `buffs-and-debuffs.md`.
-    - `move_to` — reposiciona alguém. Recebe `anchor`, que hoje só tem um valor: `lastTargetAnySide`, uma das casas vizinhas ao último alvo da habilidade.
-- Um estado nomeado só existe quando ele faz algo que o jogo ainda não sabe fazer. Estados que são apenas números não precisam existir, pois `modify_stat` já dá conta deles.
+    - `applyStatus` — aplica um estado nomeado, como `untargetable` ou `intangible`. Cada um deles está descrito em `buffs-and-debuffs.md`.
+    - `moveTo` — reposiciona alguém. Recebe `anchor`, que hoje só tem um valor: `lastTargetAnySide`, uma das casas vizinhas ao último alvo da habilidade.
+- Um estado nomeado só existe quando ele faz algo que o jogo ainda não sabe fazer. Estados que são apenas números não precisam existir, pois `modifyStat` já dá conta deles.
 
 ### A queda de dano por distância
 
-- O `deal_damage` aceita um campo `falloff`, que é o quanto o dano perde a cada casa de distância entre quem usou a habilidade e quem está recebendo.
+- O `dealDamage` aceita um campo `falloff`, que é o quanto o dano perde a cada casa de distância entre quem usou a habilidade e quem está recebendo.
 - A conta é multiplicativa:
     - `Dano = Dano base × (1 − falloff) ^ (distância − 1)`
     - A `distância` é medida em casas a partir de quem usou, contando a diagonal como 1, do mesmo jeito que o resto do jogo mede.
@@ -195,7 +195,7 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
 
 ### Dano em quem usou a habilidade
 
-- Uma habilidade pode causar dano em quem a usou, declarando um `deal_damage` com `target` igual a `self`. É assim que se escreve o custo de uma habilidade poderosa.
+- Uma habilidade pode causar dano em quem a usou, declarando um `dealDamage` com `target` igual a `self`. É assim que se escreve o custo de uma habilidade poderosa.
 - **Esse dano nunca leva a vida abaixo de 1.** Quando não há vida suficiente, ele é reduzido ao que sobra e o personagem continua vivo com 1 ponto.
 - A trava existe para que a promessa seja absoluta. A alternativa seria impedir o uso quando a conta mataria, e ela tem dois furos:
     - A habilidade tem preparo. O personagem passaria na conferência, levaria dano durante o preparo e morreria quando ela finalmente saísse. A proibição teria olhado para um número que já não valia mais.
@@ -204,7 +204,7 @@ Nesta página utilizaremos um personagem fictício para demonstrar exemplos. Seg
     - Espinhos de um inimigo, dano em área de um aliado e o ataque básico de qualquer um continuam capazes de matar normalmente.
     - Sem esse limite, um personagem com uma habilidade de custo se tornaria imortal por acidente, e a trava deixaria de ser um custo para virar uma defesa.
 
-### Para onde o `move_to` leva
+### Para onde o `moveTo` leva
 
 - `lastTargetAnySide` considera as casas imediatamente acima, abaixo, à esquerda e à direita do último alvo.
 - Vale a primeira casa **livre e dentro do tabuleiro**, na ordem de menor fileira e, persistindo o empate, menor coluna. É a mesma ordem de desempate que o resto do jogo já usa.
